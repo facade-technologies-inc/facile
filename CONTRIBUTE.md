@@ -5,10 +5,10 @@ This guide describes how to properly contribute to the facile project. Before de
 The following tools will be used by the development team while working on this project. Developers will be expected to use these tools throughout the duration of this project.
 | Tool      | Version  | purpose |
 |------     |---------:|---------|
-|Python     |3.7.4     |This entire project will be programmed in Python.|
-|PyCharm    |2019.1.3  |Used for Python development. Includes great linters to help developers keep to style guidelines and includes debugger as well as many other tools. |
-|Qt Creator |4.10.0    |GUI development toolset. We'll be using PySide2 (a Python Qt wrapper) to create the GUI.|
-|Git        |2.23.0    |Used for version control|
+|Python     |3.7.4     |[Tutorial](./Python.md) - This entire project will be programmed in Python.|
+|PyCharm    |2019.1.3  |[Tutorial](./PyCharm.md) - Used for Python development. Includes great linters to help developers keep to style guidelines and includes debugger as well as many other tools. |
+|Qt Creator |4.10.0    |[Tutorial](./QtCreator.md) - GUI development toolset. We'll be using PySide2 (a Python Qt wrapper) to create the GUI.|
+|Git        |2.23.0    |[Tutorial](./Git.md) - Used for version control|
 
 ## Git Branching Scheme
 This repository uses the [GitFlow](https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow) branching scheme with the following caveats:
