@@ -6,10 +6,10 @@ The following tools will be used by the development team while working on this p
 
 | Tool      | Version  | purpose |
 |------     |---------:|---------|
-|Python     |3.7.4     |[Tutorial](./Python.md) - This entire project will be programmed in Python.|
-|PyCharm    |2019.1.3  |[Tutorial](./PyCharm.md) - Used for Python development. Includes great linters to help developers keep to style guidelines and includes debugger as well as many other tools. |
-|Qt Creator |4.10.0    |[Tutorial](./Qt5.md) - GUI development toolset. We'll be using PySide2 (a Python Qt wrapper) to create the GUI.|
-|Git        |2.23.0    |[Tutorial](./Git.md) - Used for version control|
+|Python     |3.7.4     |[Tutorial](https://github.com/facade-technologies-inc/facile/blob/master/tutorials/Python.md) - This entire project will be programmed in Python.|
+|PyCharm    |2019.1.3  |[Tutorial](https://github.com/facade-technologies-inc/facile/blob/master/tutorials/PyCharm.md) - Used for Python development. Includes great linters to help developers keep to style guidelines and includes debugger as well as many other tools. |
+|Qt Creator |4.10.0    |[Tutorial](https://github.com/facade-technologies-inc/facile/blob/master/tutorials/Qt5.md) - GUI development toolset. We'll be using PySide2 (a Python Qt wrapper) to create the GUI.|
+|Git        |2.23.0    |[Tutorial](https://github.com/facade-technologies-inc/facile/blob/master/tutorials/Git.md) - Used for version control|
 
 ## Git Branching Scheme
 This repository uses the [GitFlow](https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow) branching scheme with the following caveats:
