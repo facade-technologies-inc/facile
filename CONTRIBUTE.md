@@ -1,6 +1,29 @@
 # Contributor's Guide (Team #19033)
 This guide describes how to properly contribute to the facile project. Before developing, please read this document thoroughly.
 
+## Copyright Banner
+The following banner __must__ be the first thing to appear in every module's Docstring:
+```
+/------------------------------------------------------------------------------\
+|                 -- FACADE TECHNOLOGIES INC.  CONFIDENTIAL --                 |
+|------------------------------------------------------------------------------|
+|                                                                              |
+|    Copyright [2019] Facade Technologies Inc.                                 |
+|    All Rights Reserved.                                                      |
+|                                                                              |
+| NOTICE:  All information contained herein is, and remains the property of    |
+| Facade Technologies Inc. and its suppliers if any.  The intellectual and     |
+| and technical concepts contained herein are proprietary to Facade            |
+| Technologies Inc. and its suppliers and may be covered by U.S. and Foreign   |
+| Patents, patents in process, and are protected by trade secret or copyright  |
+| law.  Dissemination of this information or reproduction of this material is  |
+| strictly forbidden unless prior written permission is obtained from Facade   |
+| Technologies Inc.                                                            |
+|                                                                              |
+\------------------------------------------------------------------------------/
+```
+
+
 ## Developer Tools
 The following tools will be used by the development team while working on this project. Developers will be expected to use these tools throughout the duration of this project.
 
