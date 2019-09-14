@@ -1,0 +1,21 @@
+# Contributor's Guide
+This guide describes how to properly contribute to the facile project. Before developing, please read this document thoroughly.
+
+## Developer Tools
+The following tools will be used by the development team while working on this project. Developers will be expected to use these tools throughout the duration of this project.
+| Tool      | Version  | purpose |
+|------     |---------:|---------|
+|Python     |3.7.4     |This entire project will be programmed in Python.|
+|PyCharm    |2019.1.3  |Used for Python development. Includes great linters to help developers keep to style guidelines and includes debugger as well as many other tools. |
+|Qt Creator |4.10.0    |GUI development toolset. We'll be using PySide2 (a Python Qt wrapper) to create the GUI.|
+|Git        |2.23.0    |Used for version control|
+
+## Git Branching Scheme
+This repository uses the [GitFlow](https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow) branching scheme with the following caveats:
+  1. the `git flow <subcommand> finish <branch>` commands are never used. Instead, when you would like a branch to be merged, simply push the branch to GitHub and submit a pull request.
+
+## Coding Standards
+By default, this project will be developed to the [PEP 8](https://www.python.org/dev/peps/pep-0008/) and [PEP 257](https://www.python.org/dev/peps/pep-0257/) standards. Any preferred deviations from these styles are specified below:
+  1. All Docstrings will use the [reST](format).
+  1. Every module, class, and function must have a Docstring that sufficiently describes the purpose of it.
+  1. For methods and functions, Docstrings must specify parameters, parameter types, exceptions that can be thrown, and return types as well as a description of what the function or method does.
