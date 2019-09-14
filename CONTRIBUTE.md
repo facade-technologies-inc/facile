@@ -3,6 +3,7 @@ This guide describes how to properly contribute to the facile project. Before de
 
 ## Developer Tools
 The following tools will be used by the development team while working on this project. Developers will be expected to use these tools throughout the duration of this project.
+
 | Tool      | Version  | purpose |
 |------     |---------:|---------|
 |Python     |3.7.4     |[Tutorial](./Python.md) - This entire project will be programmed in Python.|
