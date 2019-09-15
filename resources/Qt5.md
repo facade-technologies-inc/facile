@@ -1,4 +1,4 @@
-# Qt5 Tutorial (Team #19033)
+# Qt5 Resources
 
 Welcome to the Qt5 lazy tutorial!
 

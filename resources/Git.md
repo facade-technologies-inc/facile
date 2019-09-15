@@ -1,4 +1,4 @@
-# Git + GitHub Tutorial (team #19033 specific)
+# Git + GitHub Resources
 It is important that you follow these instructions as we will be using some tools that are non-standard.
 
 ## Prerequisites
