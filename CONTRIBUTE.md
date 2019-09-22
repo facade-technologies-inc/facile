@@ -40,6 +40,6 @@ This repository uses the [GitFlow](https://www.atlassian.com/git/tutorials/compa
 
 ## Coding Standards
 By default, this project will be developed to the [PEP 8](https://www.python.org/dev/peps/pep-0008/) and [PEP 257](https://www.python.org/dev/peps/pep-0257/) standards. Any preferred deviations from these styles are specified below:
-  1. All Docstrings will use the [reST](format).
+  1. All Docstrings will use the [reST format](http://openalea.gforge.inria.fr/doc/openalea/doc/_build/html/source/sphinx/rest_syntax.html).
   1. Every module, class, and function must have a Docstring that sufficiently describes the purpose of it.
   1. For methods and functions, Docstrings must specify parameters, parameter types, exceptions that can be thrown, and return types as well as a description of what the function or method does.
