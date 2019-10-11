@@ -47,7 +47,7 @@ class MyTreeModel(QAbstractItemModel):
 	
 	
 	def columnCount(self, parent):
-		return 1
+		return 2
 	
 	def rowCount(self, parent):
 		#if parent.column() > 0:
@@ -66,7 +66,7 @@ class MyTreeModel(QAbstractItemModel):
 			return None
 		
 		item = index.internalPointer()
-		return item.getID()
+		return [item.getID(), item.getName()][index.column()]
 	
 	def flags(self, index):
 		if not index.isValid():
@@ -76,7 +76,7 @@ class MyTreeModel(QAbstractItemModel):
 	
 	def headerData(self, section, orientation, role):
 		if orientation == Qt.Horizontal and role == Qt.DisplayRole:
-			return "ID"
+			return ["ID", "Name"][section]
 		
 		return None
 	

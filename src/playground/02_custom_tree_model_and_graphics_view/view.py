@@ -17,15 +17,17 @@ class NodeItem(QGraphicsItem):
 	def __init__(self, node, parent = None):
 		QGraphicsItem.__init__(self, parent)
 		self._dataNode = node
+		self.setFlag(QGraphicsItem.ItemIsMovable)
 
 	def boundingRect(self):
 		penWidth = 1.0
 		id = self._dataNode.getID()
-		return QRectF(-10 - penWidth / 2, -10*(id+1)*3 - penWidth / 2, 20 + penWidth, 20 + penWidth)
+		return QRectF(-20 - penWidth / 2, -20*(id+1)*3 - penWidth / 2, 500 + penWidth, 40 + penWidth)
 		
 	def paint(self, painter, option, widget):
 		id = self._dataNode.getID()
-		painter.drawRoundedRect(-10, -10*(id+1)*3, 20, 20, 5, 5)
+		painter.drawRoundedRect(-20, -20*(id+1)*3, 500, 40, 5, 5)
+		painter.drawText(-5, -20*(id+1)*3+30, "Node {}: {}".format(self._dataNode.getID(), self._dataNode.getName()))
 		
 		
 		

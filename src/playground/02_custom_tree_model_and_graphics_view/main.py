@@ -7,14 +7,14 @@ from data import Tree, TreeNode
 if __name__ == "__main__":
 	app = QApplication()
 	
-	root = TreeNode()
-	a = TreeNode(root)
-	b = TreeNode(root)
-	c = TreeNode(root)
-	d = TreeNode(a)
-	e = TreeNode(a)
-	f = TreeNode(d)
-	g = TreeNode(b)
+	root = TreeNode(name="Target GUI Model")
+	a = TreeNode(root, name="Window 1")
+	b = TreeNode(root, name="Window 2")
+	c = TreeNode(root, name="Window 3")
+	d = TreeNode(a, name="Component 1")
+	e = TreeNode(a, name="Quit Button")
+	f = TreeNode(d, name="Login Button")
+	g = TreeNode(b, name="Submit Button")
 	
 	tree = Tree(root)
 	

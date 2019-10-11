@@ -47,7 +47,7 @@ class TreeNode:
 	
 	count = 0
 	
-	def __init__(self, parent = None):
+	def __init__(self, parent = None, name=""):
 		TreeNode.count+=1
 		self._id = TreeNode.count
 		self._parent = parent
@@ -56,9 +56,13 @@ class TreeNode:
 			parent.addChild(self)
 		
 		self._nodeItem = NodeItem(self, self.getParentNodeItem())
+		self._name = name
 			
 	def getID(self):
 		return self._id
+	
+	def getName(self):
+		return self._name
 	
 	def getChildren(self):
 		return self._children
@@ -97,14 +101,14 @@ class TreeNode:
 		
 		
 if __name__ == "__main__":
-	root = TreeNode()
-	a = TreeNode(root)
-	b = TreeNode(root)
-	c = TreeNode(root)
-	d = TreeNode(a)
-	e = TreeNode(a)
-	f = TreeNode(d)
-	g = TreeNode(b)
+	root = TreeNode(name="Target GUI Model")
+	a = TreeNode(root, name="Window 1")
+	b = TreeNode(root, name="Window 2")
+	c = TreeNode(root, name="Window 3")
+	d = TreeNode(a, name="Component 1")
+	e = TreeNode(a, name="Quit Button")
+	f = TreeNode(d, name="Login Button")
+	g = TreeNode(b, name="Submit Button")
 	
 	tree = Tree(root)
 	
