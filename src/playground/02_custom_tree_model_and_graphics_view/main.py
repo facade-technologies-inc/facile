@@ -7,6 +7,7 @@ from data import Tree, TreeNode
 if __name__ == "__main__":
 	app = QApplication()
 	
+	# Create the tree structure
 	root = TreeNode(name="Target GUI Model")
 	a = TreeNode(root, name="Window 1")
 	b = TreeNode(root, name="Window 2")
@@ -15,9 +16,22 @@ if __name__ == "__main__":
 	e = TreeNode(a, name="Quit Button")
 	f = TreeNode(d, name="Login Button")
 	g = TreeNode(b, name="Submit Button")
-	
+	h = TreeNode(d, name="another button")
+	i = TreeNode(d, name="another button")
+	j = TreeNode(i, name="another button")
+	k = TreeNode(j, name="another button")
+	l = TreeNode(k, name="another button")
+	m = TreeNode(k, name="another button")
+	n = TreeNode(k, name="another button")
+	o = TreeNode(n, name="another button")
+	p = TreeNode(a, name="another button")
+	q = TreeNode(p, name="another button")
+	r = TreeNode(q, name="another button")
 	tree = Tree(root)
 	
+	# Create the views to display and edit the tree
 	widget = MyView(tree)
+	
+	
 	widget.show()
 	sys.exit(app.exec_())

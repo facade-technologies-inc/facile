@@ -1,5 +1,5 @@
 from PySide2.QtCore import QRectF
-from PySide2.QtGui import QPainterPath
+from PySide2.QtGui import QPainterPath, QColor
 from PySide2.QtWidgets import QSplitter, QTreeView
 from PySide2.QtWidgets import QGraphicsView, QGraphicsScene, QGraphicsItem
 from PySide2.QtWidgets import QHBoxLayout, QVBoxLayout, QWidget, QPushButton
@@ -71,6 +71,12 @@ class NodeItem(QGraphicsItem):
 		return path
 		
 	def paint(self, painter, option, widget):
+		
+		numD = (self._dataNode.getNumDescendants() + 1) * 0.3
+		# set background color:
+		painter.setBrush(QColor(100, 200, 255, 255/10))
+		
+		
 		id = self._dataNode.getID()
 		boundingRect = self.boundingRect()
 		x = int(boundingRect.x())
@@ -91,7 +97,6 @@ class TwoViews(QSplitter):
 		self.addWidget(self._graphicsView)
 		self.addWidget(self._treeView)
 		
-	
 		self._treeView.setModel(dataTree.getModel())
 		self._graphicsView.setScene(dataTree.getScene())
 		
@@ -110,8 +115,4 @@ class MyView(QWidget):
 		self._lowerLayout.addWidget(self._addBtn)
 		self._lowerLayout.addWidget(self._removeBtn)
 		
-	def setAddSlot(self, slot):
-		self._addBtn.clicked.connect(slot)
-		
-	def setRemoveSlot(self, slot):
-		self._removeBtn.clicked.connect(slot)
+		#self.addBtn.clicked.connect(lambda: dataTree.getModel().insertRow(dataTree.getModel().s))

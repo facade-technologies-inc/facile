@@ -78,6 +78,7 @@ class MyTreeModel(QAbstractItemModel):
 		if index.column() == 1:
 			index.internalPointer().setName(value)
 			index.internalPointer().getNodeItem().update()
+			self.dataChanged.emit()
 			return True
 			
 		else:
@@ -98,3 +99,11 @@ class MyTreeModel(QAbstractItemModel):
 			return ["ID", "Name"][section]
 		
 		return None
+	
+	def insertRow(self):
+		self.beginInsertRows()
+		self.endInsertRows()
+		
+	def removeRow(self):
+		self.beginRemoveRows()
+		self.endRemoveRows()
