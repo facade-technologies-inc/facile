@@ -67,6 +67,12 @@ class TreeNode:
 	def getChildren(self):
 		return self._children
 	
+	def getSiblings(self):
+		if self.getParent() is None:
+			return []
+		else:
+			return self.getParent().getChildren()
+	
 	def childCount(self):
 		return len(self._children)
 	
@@ -81,19 +87,42 @@ class TreeNode:
 	
 	def getNodeItem(self):
 		return self._nodeItem
-			
-	def addChild(self, child):
-		self._children.append(child)
-		
+	
 	def getNthChild(self, n):
 		if len(self._children) > n:
 			return self._children[n]
 		return None
 	
+	def getNumDescendants(self):
+		numDescendants = 0
+		
+		if len(self.getChildren()) == 0:
+			return 0
+		
+		for child in self.getChildren():
+			numDescendants += 1
+			numDescendants += child.getNumDescendants()
+			
+		return numDescendants
+	
+	def getMaxDepth(self, curDepth=1):
+		maxDepth = [curDepth]
+		
+		for child in self.getChildren():
+			maxDepth.append(child.getMaxDepth(curDepth+1))
+			
+		return max(maxDepth)
+	
 	def getRow(self):
 		if self._parent == None:
 			return 0
 		return self._parent.getChildren().index(self)
+			
+	def addChild(self, child):
+		self._children.append(child)
+		
+	def setName(self, name):
+		self._name = name
 		
 		
 	def __repr__(self):

@@ -68,16 +68,33 @@ class MyTreeModel(QAbstractItemModel):
 		item = index.internalPointer()
 		return [item.getID(), item.getName()][index.column()]
 	
+	def setData(self, index, value, role):
+		if role != Qt.EditRole:
+			return False
+		
+		if not index.isValid():
+			return False
+		
+		if index.column() == 1:
+			index.internalPointer().setName(value)
+			index.internalPointer().getNodeItem().update()
+			return True
+			
+		else:
+			return False
+	
 	def flags(self, index):
 		if not index.isValid():
 			return Qt.NoItemFlags
 		
-		return Qt.ItemIsEnabled | Qt.ItemIsSelectable
+		# allow the user to edit the name of a node, but not the ID
+		if index.column() == 1:
+			return Qt.ItemIsEnabled | Qt.ItemIsSelectable | Qt.ItemIsEditable
+		else:
+			return Qt.ItemIsEnabled | Qt.ItemIsSelectable
 	
 	def headerData(self, section, orientation, role):
 		if orientation == Qt.Horizontal and role == Qt.DisplayRole:
 			return ["ID", "Name"][section]
 		
 		return None
-	
-	
