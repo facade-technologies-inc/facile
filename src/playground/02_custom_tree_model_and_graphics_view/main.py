@@ -31,7 +31,5 @@ if __name__ == "__main__":
 	
 	# Create the views to display and edit the tree
 	widget = MyView(tree)
-	
-	
 	widget.show()
 	sys.exit(app.exec_())

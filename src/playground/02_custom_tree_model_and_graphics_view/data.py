@@ -13,6 +13,17 @@ class Tree:
 	def getRoot(self):
 		return self._root
 	
+	def getNode(self, id):
+		workTodo = []
+		workTodo.append(self._root)
+		while len(workTodo) > 0:
+			curWork = workTodo.pop(-1)
+			for child in curWork.getChildren():
+				if child.getID() == id:
+					return child
+				workTodo.append(child)
+		return None
+	
 	def getModel(self):
 		return self._model
 	
@@ -118,12 +129,20 @@ class TreeNode:
 			return 0
 		return self._parent.getChildren().index(self)
 			
-	def addChild(self, child):
-		self._children.append(child)
+	def addChild(self, child, pos=0):
+		self._children.insert(pos, child)
 		
 	def setName(self, name):
 		self._name = name
 		
+	def remove(self):
+		for child in self.getChildren():
+			child.remove()
+		siblings = self.getSiblings()
+		self._parent = None
+		if self in siblings:
+			siblings.remove(self)
+		self._nodeItem.scene().removeItem(self._nodeItem)
 		
 	def __repr__(self):
 		return str(self._id)

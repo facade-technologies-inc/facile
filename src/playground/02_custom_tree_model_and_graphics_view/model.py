@@ -1,5 +1,5 @@
 from PySide2.QtCore import QAbstractItemModel, QModelIndex, Qt
-
+import data
 
 class MyTreeModel(QAbstractItemModel):
 	def __init__(self, dataTree):
@@ -13,6 +13,9 @@ class MyTreeModel(QAbstractItemModel):
 	################################
 	# OVERWRITTEN ABSTRACT METHODS #
 	################################
+	def indexFromID(self, id):
+		self._dataTree.getNode(id)
+		# not finished here
 	
 	def index(self, row, column, parent):
 		# check to see if the index exists
@@ -78,7 +81,7 @@ class MyTreeModel(QAbstractItemModel):
 		if index.column() == 1:
 			index.internalPointer().setName(value)
 			index.internalPointer().getNodeItem().update()
-			self.dataChanged.emit()
+			self.dataChanged.emit(index, index, [])
 			return True
 			
 		else:
@@ -100,10 +103,43 @@ class MyTreeModel(QAbstractItemModel):
 		
 		return None
 	
-	def insertRow(self):
-		self.beginInsertRows()
-		self.endInsertRows()
+	def insertRow(self, row, parent=QModelIndex()):
+		if type(parent) == list:
+			if len(parent) == 0:
+				return False
+			rows = set()
+			for p in parent:
+				rows.add(p.row())
+			if len(rows) > 1:
+				return False
+			
+			parent = parent[0]
+			
+		if not parent.isValid():
+			return False
 		
-	def removeRow(self):
-		self.beginRemoveRows()
+		self.beginInsertRows(parent, 0, 0)
+		newNode = data.TreeNode(parent.internalPointer(), name="New Node")
+		newNode.getNodeItem().update()
+		self.endInsertRows()
+		return True
+		
+	def removeRowOfIndex(self, indexes):
+		if type(indexes) == list:
+			if len(indexes) == 0:
+				return False
+			rows = set()
+			for i in indexes:
+				rows.add(i.row())
+			if len(rows) > 1:
+				return False
+			
+			index = indexes[0]
+		
+		if not index.isValid():
+			return False
+		
+		self.beginRemoveRows(self.parent(index), index.row(), index.row())
+		index.internalPointer().remove()
 		self.endRemoveRows()
+		return True

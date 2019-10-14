@@ -3,9 +3,11 @@ from PySide2.QtGui import QPainterPath, QColor
 from PySide2.QtWidgets import QSplitter, QTreeView
 from PySide2.QtWidgets import QGraphicsView, QGraphicsScene, QGraphicsItem
 from PySide2.QtWidgets import QHBoxLayout, QVBoxLayout, QWidget, QPushButton
+from PySide2.QtCore import Signal
 
 
 class MyTreeScene(QGraphicsScene):
+	itemSelected = Signal(int)
 	def __init__(self, dataTree):
 		QGraphicsScene.__init__(self)
 		self._dataTree = dataTree
@@ -17,6 +19,10 @@ class MyTreeScene(QGraphicsScene):
 		self.update()
 		for view in self.views():
 			view.update()
+			
+	def emitItemSelected(self, id):
+		print("Item selected: {}".format(id))
+		self.itemSelected.emit(id)
 
 
 class NodeItem(QGraphicsItem):
@@ -33,6 +39,8 @@ class NodeItem(QGraphicsItem):
 		QGraphicsItem.__init__(self, parent)
 		self._dataNode = node
 		self.setFlag(QGraphicsItem.ItemIsMovable)
+		self.setFlag(QGraphicsItem.ItemIsSelectable)
+		#self.setFlag(QGraphicsItem.ItemContainsChildrenInShape)
 		
 
 	def boundingRect(self):
@@ -57,6 +65,7 @@ class NodeItem(QGraphicsItem):
 		
 		yPos = -(totalHeight/2) - penWidth/2 + offsetFromParentTop
 		xPos = -(totalWidth / 2) - penWidth / 2
+		#print(self._dataNode.getID())
 		if self._dataNode.getParent() is not None:
 			parentBounding = self.parentItem().boundingRect()
 			yPos = parentBounding.y() + offsetFromParentTop - penWidth/2
@@ -86,7 +95,10 @@ class NodeItem(QGraphicsItem):
 		painter.drawRoundedRect(x+NodeItem.leftMargin, y+NodeItem.topMargin, width - NodeItem.leftMargin - NodeItem.rightMargin, height - NodeItem.topMargin - NodeItem.bottomMargin, 5, 5)
 		painter.drawText(x+NodeItem.leftMargin*1.5, y+NodeItem.topMargin+30, "Node {}: {}".format(self._dataNode.getID(), self._dataNode.getName()))
 		
-		
+	def mousePressEvent(self, event):
+		self.setSelected(True)
+		self.scene().emitItemSelected(self._dataNode.getID())
+	
 		
 class TwoViews(QSplitter):
 	def __init__(self, dataTree):
@@ -99,6 +111,9 @@ class TwoViews(QSplitter):
 		
 		self._treeView.setModel(dataTree.getModel())
 		self._graphicsView.setScene(dataTree.getScene())
+		
+	def getTreeView(self):
+		return self._treeView
 		
 class MyView(QWidget):
 	def __init__(self, dataTree):
@@ -115,4 +130,5 @@ class MyView(QWidget):
 		self._lowerLayout.addWidget(self._addBtn)
 		self._lowerLayout.addWidget(self._removeBtn)
 		
-		#self.addBtn.clicked.connect(lambda: dataTree.getModel().insertRow(dataTree.getModel().s))
+		self._addBtn.clicked.connect(lambda: dataTree.getModel().insertRow(0, self._views.getTreeView().selectionModel().selectedIndexes()))
+		self._removeBtn.clicked.connect(lambda: dataTree.getModel().removeRowOfIndex(self._views.getTreeView().selectionModel().selectedIndexes()))
