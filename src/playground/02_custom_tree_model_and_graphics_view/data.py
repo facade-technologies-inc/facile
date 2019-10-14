@@ -146,20 +146,5 @@ class TreeNode:
 		
 	def __repr__(self):
 		return str(self._id)
-		
-		
-if __name__ == "__main__":
-	root = TreeNode(name="Target GUI Model")
-	a = TreeNode(root, name="Window 1")
-	b = TreeNode(root, name="Window 2")
-	c = TreeNode(root, name="Window 3")
-	d = TreeNode(a, name="Component 1")
-	e = TreeNode(a, name="Quit Button")
-	f = TreeNode(d, name="Login Button")
-	g = TreeNode(b, name="Submit Button")
 	
-	tree = Tree(root)
-	
-	print(tree.depthFirstTraversal())
-	print(tree.breadthFirstTraversal())
 	

@@ -69,7 +69,8 @@ class MyTreeModel(QAbstractItemModel):
 			return None
 		
 		item = index.internalPointer()
-		return [item.getID(), item.getName()][index.column()]
+		l = [item.getID(), item.getName()]
+		return l[index.column()]
 	
 	def setData(self, index, value, role):
 		if role != Qt.EditRole:

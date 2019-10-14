@@ -7,7 +7,9 @@ from PySide2.QtCore import Signal
 
 
 class MyTreeScene(QGraphicsScene):
+	
 	itemSelected = Signal(int)
+	
 	def __init__(self, dataTree):
 		QGraphicsScene.__init__(self)
 		self._dataTree = dataTree
@@ -132,3 +134,4 @@ class MyView(QWidget):
 		
 		self._addBtn.clicked.connect(lambda: dataTree.getModel().insertRow(0, self._views.getTreeView().selectionModel().selectedIndexes()))
 		self._removeBtn.clicked.connect(lambda: dataTree.getModel().removeRowOfIndex(self._views.getTreeView().selectionModel().selectedIndexes()))
+		
