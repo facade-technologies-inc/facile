@@ -14,8 +14,15 @@ class MyTreeModel(QAbstractItemModel):
 	# OVERWRITTEN ABSTRACT METHODS #
 	################################
 	def indexFromID(self, id):
-		self._dataTree.getNode(id)
-		# not finished here
+		dataNode = self._dataTree.getNode(id)
+		pathFromRoot = dataNode.getPathFromRoot()
+		curNode, row = pathFromRoot.pop()
+		curIndex = self.index(row, 0, QModelIndex())
+		while len(pathFromRoot) > 0:
+			curNode, row = pathFromRoot.pop()
+			curIndex = self.index(row, 0, curIndex)
+			
+		return curIndex
 	
 	def index(self, row, column, parent):
 		# check to see if the index exists
@@ -23,7 +30,7 @@ class MyTreeModel(QAbstractItemModel):
 			return QModelIndex()
 		
 		if not parent.isValid():
-			if row == 0:
+			if row == 0 and self._dataTree.getRoot() is not None:
 				return self.createIndex(row, column, self._dataTree.getRoot())
 			else:
 				return QModelIndex()
@@ -41,6 +48,10 @@ class MyTreeModel(QAbstractItemModel):
 			return QModelIndex()
 		
 		childItem = index.internalPointer()
+		
+		if childItem is None:
+			return None
+		
 		parentItem = childItem.getParent()
 		
 		if parentItem is None:
@@ -69,6 +80,9 @@ class MyTreeModel(QAbstractItemModel):
 			return None
 		
 		item = index.internalPointer()
+		
+		if item is None:
+			return None
 		l = [item.getID(), item.getName()]
 		return l[index.column()]
 	
@@ -105,24 +119,32 @@ class MyTreeModel(QAbstractItemModel):
 		return None
 	
 	def insertRow(self, row, parent=QModelIndex()):
+		newRoot = False
 		if type(parent) == list:
 			if len(parent) == 0:
-				return False
-			rows = set()
-			for p in parent:
-				rows.add(p.row())
-			if len(rows) > 1:
-				return False
-			
-			parent = parent[0]
+				parent = QModelIndex()
+			else:
+				rows = set()
+				for p in parent:
+					rows.add(p.row())
+				if len(rows) > 1:
+					return False
+				parent = parent[0]
 			
 		if not parent.isValid():
-			return False
+			if self._dataTree.getRoot() is None:
+				newRoot = True
+			else:
+				return False
 		
 		self.beginInsertRows(parent, 0, 0)
-		newNode = data.TreeNode(parent.internalPointer(), name="New Node")
-		newNode.getNodeItem().update()
+		if newRoot:
+			newNode = data.TreeNode(None, name="New Node")
+			self._dataTree.setRoot(newNode)
+		else:
+			newNode = data.TreeNode(parent.internalPointer(), name="New Node")
 		self.endInsertRows()
+		newNode.getNodeItem().triggerSceneUpdate()
 		return True
 		
 	def removeRowOfIndex(self, indexes):

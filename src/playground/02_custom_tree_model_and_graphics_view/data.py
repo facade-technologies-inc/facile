@@ -5,22 +5,31 @@ from model import MyTreeModel
 
 class Tree:
 	def __init__(self, root):
-		self._root = root
+		self._root = None
 		self._model = MyTreeModel(self)
 		self._scene = MyTreeScene(self)
-		self._scene.addItem(root.getNodeItem())
+		self.setRoot(root)
 		
 	def getRoot(self):
+		if self._root.isDeleted():
+			return None
 		return self._root
+	
+	def setRoot(self, newRoot):
+		if self._root is None:
+			self._root = newRoot
+		elif self._root.isDeleted():
+			self._root = newRoot
+		self._scene.addItem(newRoot.getNodeItem())
 	
 	def getNode(self, id):
 		workTodo = []
 		workTodo.append(self._root)
 		while len(workTodo) > 0:
 			curWork = workTodo.pop(-1)
+			if curWork.getID() == id:
+				return curWork
 			for child in curWork.getChildren():
-				if child.getID() == id:
-					return child
 				workTodo.append(child)
 		return None
 	
@@ -68,9 +77,13 @@ class TreeNode:
 		
 		self._nodeItem = NodeItem(self, self.getParentNodeItem())
 		self._name = name
+		self._isDeleted = False
 			
 	def getID(self):
 		return self._id
+	
+	def isDeleted(self):
+		return self._isDeleted
 	
 	def getName(self):
 		return self._name
@@ -80,7 +93,7 @@ class TreeNode:
 	
 	def getSiblings(self):
 		if self.getParent() is None:
-			return []
+			return [self]
 		else:
 			return self.getParent().getChildren()
 	
@@ -95,6 +108,14 @@ class TreeNode:
 			return None
 		else:
 			return self._parent.getNodeItem()
+		
+	def getPathFromRoot(self):
+		path = [(self, self.getRow())]
+		possibleRoot = self.getParent()
+		while possibleRoot is not None:
+			path.append((possibleRoot, possibleRoot.getRow()))
+			possibleRoot = possibleRoot.getParent()
+		return path
 	
 	def getNodeItem(self):
 		return self._nodeItem
@@ -136,15 +157,18 @@ class TreeNode:
 		self._name = name
 		
 	def remove(self):
-		for child in self.getChildren():
-			child.remove()
-		siblings = self.getSiblings()
-		self._parent = None
-		if self in siblings:
-			siblings.remove(self)
-		self._nodeItem.scene().removeItem(self._nodeItem)
 		
+		scene = self.getNodeItem().scene()
+		
+		self._isDeleted = True
+		siblings = self.getSiblings()
+		oldParent = self._parent
+		self._parent = None
+		siblings.remove(self)
+		
+		scene.removeItem(self._nodeItem)
+		
+		if oldParent:
+			oldParent.getNodeItem().triggerSceneUpdate()
 	def __repr__(self):
 		return str(self._id)
-	
-	
