@@ -1,3 +1,5 @@
+import sys
+from PySide2.QtWidgets import QApplication, QTreeView
 import data
 
 if __name__ == "__main__":
@@ -6,6 +8,7 @@ if __name__ == "__main__":
 	
 	# 1. instantiate Properties Object
 	prop = data.GUIComponentProperties()
+	print(prop)
 	
 	# 2. Get model object associated with Properties object
 	model = prop.getModel()
@@ -14,6 +17,6 @@ if __name__ == "__main__":
 	view = QTreeView()
 	
 	# 4. load model into view.
-	
-	
+	view.setModel(model)
+	view.show()
 	sys.exit(app.exec_())

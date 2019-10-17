@@ -1,4 +1,5 @@
 from collections import OrderedDict
+import model
 
 class Property:
 	def __init__(self, name, value, type, readOnly=False):
@@ -14,7 +15,7 @@ class Property:
 		return self._value
 	
 	def getType(self):
-                return self._type
+		return self._type
 	
 	def __str__(self):
 		return "{}:{}".format(self._name, self._value)
@@ -25,11 +26,12 @@ class Property:
 
 class Properties:
 	def __init__(self):
-                self._categories = OrderedDict()
-                self._model = PropModel(self)
+		self._categories = OrderedDict()
+		self._model = model.PropModel(self)
 		
 	def getCategories(self):
 		return self._categories
+
 	
 	def addProperty(self, category, name, value, type, readOnly = False):
 		
@@ -38,15 +40,31 @@ class Properties:
 		
 		self._categories[category].append(Property(name, value, type, readOnly))
 
+	def getModel(self):
+		return self._model
 
-        def getModel(self):
-            return self._model
+	def getNumCategories(self):
+		return len(self._categories)
 
-        def getNumCategories(self):
-            return len(self._categories)
+	def getCategories(self):
+		return list(self._categories.keys())
 
-        def getCategories(self):
-            return list(self._categories.keys())
+	def getCategoryProperties(self, category):
+		return self._categories[category]
+
+	def getPropertyCategory(self, property):
+		for category in self.getCategories():
+			props = self.getCategoryProperties(category)
+			if property in props:
+				return category
+
+	def getCategoryIndex(self, category):
+		categories = self.getCategories()
+		return categories.index(category)
+
+	def getNumPropertiesInCategory(self, category):
+		properties = self.getCategoryProperties(category)
+		return len(properties)
 
 		
 	def __str__(self):
@@ -95,13 +113,18 @@ class VisibilityBehaviorProperties(VisualProperties):
 
 if __name__ == "__main__":
 	mainWindow = GUIComponentProperties()
-	textEdit = GUIComponentProperties()
-	button1 = GUIComponentProperties()
-	button2 = GUIComponentProperties()
-	fileSelectorWindow = GUIComponentProperties()
+
 	
 	print(mainWindow)
-	print(textEdit)
-	print(button1)
-	print(button2)
-	print(fileSelectorWindow)
+
+	assert(mainWindow.getNumCategories()==3)
+
+	assert(mainWindow.getCategories()==["Base","Visual","GUI Component"])
+
+	print(mainWindow.getCategoryProperties("Base"))
+
+	assert(mainWindow.getPropertyCategory(mainWindow.getCategoryProperties("Base")[0]) == "Base")
+
+	assert(mainWindow.getCategoryIndex("Visual")==1)
+
+	assert(mainWindow.getNumPropertiesInCategory("Base")==3)
