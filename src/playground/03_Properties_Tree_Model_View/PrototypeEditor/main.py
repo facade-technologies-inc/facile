@@ -1,22 +1,19 @@
-# This Python file uses the following encoding: utf-8
-import sys
-from PySide2.QtWidgets import QApplication, QLabel, QPushButton
-from PySide2.QtCore import SIGNAL, QObject
-
-
-def func():
-    print("func has been called!")
+import data
 
 if __name__ == "__main__":
-    app = QApplication()
-
-    #Create the tree structure
-    label = QLabel("<font color=red size40>PropertyEditor</font>")
-    label.show()
-
-    button = QPushButton("Call func")
-    QObject.connect(button, SIGNAL('clicked()'), func)
-    button.show()
-    sys.exit(app.exec_())
-
-
+	
+	app = QApplication()
+	
+	# 1. instantiate Properties Object
+	prop = data.GUIComponentProperties()
+	
+	# 2. Get model object associated with Properties object
+	model = prop.getModel()
+	
+	# 3. Instantiate QTreeView object
+	view = QTreeView()
+	
+	# 4. load model into view.
+	
+	
+	sys.exit(app.exec_())

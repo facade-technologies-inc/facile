@@ -1,3 +1,5 @@
+from collections import OrderedDict
+
 class Property:
 	def __init__(self, name, value, type, readOnly=False):
 		self._name = name
@@ -12,17 +14,19 @@ class Property:
 		return self._value
 	
 	def getType(self):
-		return self._type
+                return self._type
 	
 	def __str__(self):
 		return "{}:{}".format(self._name, self._value)
 	
 	def __repr__(self):
 		return str(self)
-		
+
+
 class Properties:
 	def __init__(self):
-		self._categories = {}
+                self._categories = OrderedDict()
+                self._model = PropModel(self)
 		
 	def getCategories(self):
 		return self._categories
@@ -33,6 +37,17 @@ class Properties:
 			raise Exception("{} does not exist".format(category))
 		
 		self._categories[category].append(Property(name, value, type, readOnly))
+
+
+        def getModel(self):
+            return self._model
+
+        def getNumCategories(self):
+            return len(self._categories)
+
+        def getCategories(self):
+            return list(self._categories.keys())
+
 		
 	def __str__(self):
 		retStr = "/-------------------------------------------------------\n"
@@ -40,7 +55,7 @@ class Properties:
 			retStr += "| {} -> {}\n".format(category, self._categories[category])
 		retStr += "\\-------------------------------------------------------\n"
 		return retStr
-		
+
 		
 class BaseProperties(Properties):
 	def __init__(self):
