@@ -1,5 +1,5 @@
 from PySide2.QtGui import QStandardItem
-from PySide2.QtCore import QAbstractItemModel, QModelIndex, Qt
+from PySide2.QtCore import QAbstractItemModel, QModelIndex, QPersistentModelIndex, Qt
 
 def pop_standard_model(model):
 
@@ -12,127 +12,188 @@ def pop_standard_model(model):
             parent1.appendRow([child1, child2, child3])
         model.appendRow(parent1)
 
-class MultipleProxyModel(QAbstractItemModel): 
+class MultipleProxyModel(QAbstractItemModel):
+    """
+    This class is used to access multiple models as one. It will primarily be used as the model in the Project Explorer.
+    
+    How it works:
+        References to 3 other models are stored as attributes of this class.
+        
+        Each index in this model will either be carrying a string (which acts as a label), or a reference to an index from
+        one of the inner models.
+        
+        The indexes from the inner models are converted to QPersistentModelIndexes so that we can store them in indexes of
+        this model.
+        
+        We have to store references to the QPersistentModelIndexes so Python's the garbage collector doesn't delete them too
+        early. This requires managing references to indexes as they are created because we don't want to store infinite indexes.
+    """
     def __init__(self,componentsModel,behaviorsModel,apiModulesModel):
         QAbstractItemModel.__init__(self)
         self._componentsModel = componentsModel
         self._behaviorsModel = behaviorsModel
         self._apiModulesModel = apiModulesModel
+        
+        
+        # Storing references to all persistent indexes so they don't go out of scope and get deleted.
+        # This is terribly inefficient and will eat up RAM with big projects or even with projects that are
+        # open for a while.
+        #
+        # TODO: Figure out a more memory-efficient way to keep the persistent model indexes from going out of scope and getting deleted.
+        # possible solutions:
+        #   1) periodically remove persistent indexes that aren't needed anymore.
+        #   2) use a data structure (possibly custom) that removes irrelevant persistent indexes.
+        self._persistentIndexes = []
       
 
     def index(self,row,column,parent):
         if not self.hasIndex(row,column,parent):
             return QModelIndex()
 
+        # If the parent is the ghost root, return an index with the appropriate string.
         if not parent.isValid():
-            if column != 0:
-                return QModelIndex()
-            elif row == 0:
-                return self.createIndex(row,column,"Target GUI")
+            if row == 0:
+                return self.createIndex(row, column, "Target GUI")
 
             elif row == 1:
-                return self.createIndex(row,column,"API Modules")
+                return self.createIndex(row, column, "API Modules")
 
             else:
                 return QModelIndex()
-
-        if self._componentsModel.checkIndex(parent):
-            return self._componentsModel.index(row,column,parent)
-
-        elif self._behaviorsModel.checkIndex(parent):
-            return self._behaviorsModel.index(row,column,parent)
-
-        elif self._apiModulesModel.checkIndex(parent):
-            return self._apiModulesModel.index(row,column,parent)
-            
 
         data = parent.internalPointer()
-       
-
-        if data == "Target GUI":
-            if column != 0:
-                return QModelIndex()
-            elif row == 0:
-                return self.createIndex(row,column, "Components")
-            elif row == 1:
-                return self.createIndex(row,column, "Behaviors")
+        
+        # If the parent index holds a string, we'll be returning an index that holds either another string
+        # or a top-level index of a sub-model.
+        if isinstance(data, str):
+            if data == "Target GUI":
+                if row == 0:
+                    return self.createIndex(row, column, "Components")
+                elif row == 1:
+                    return self.createIndex(row, column, "Behaviors")
+                else:
+                    return QModelIndex()
+    
+            elif data == "Components":
+                pi = QPersistentModelIndex(self._componentsModel.index(row, column, QModelIndex()))
+                self._persistentIndexes.append(pi)
+                return self.createIndex(row, column, pi)
+    
+            elif data == "Behaviors":
+                pi = QPersistentModelIndex(self._behaviorsModel.index(row, column, QModelIndex()))
+                self._persistentIndexes.append(pi)
+                return self.createIndex(row, column, pi)
+            
+            elif data == "API Modules":
+                pi = QPersistentModelIndex(self._apiModulesModel.index(row, column, QModelIndex()))
+                self._persistentIndexes.append(pi)
+                return self.createIndex(row, column, pi)
+            
             else:
-                return QModelIndex()
+                raise Exception("Unsupported data string: {}".format(data))
 
-        elif data == "API Modules":
-            return self._apiModulesModel.index(row,column,QModelIndex())
-
-        elif data == "Components":
-            return self._componentsModel.index(row,column,QModelIndex())
-
-        elif data == "Behaviors":
-            return self._behaviorsModel.index(row,column,QModelIndex())
-
-
-
-
+        # if the parent index is holding another index, we'll determine which model the inner index belongs to
+        # and query that model for another index. We'll wrap the index that the inner model returns in another
+        # index for our model.
+        elif isinstance(data, QPersistentModelIndex):
+            print(data.model())
+            
+            if self._componentsModel is data.model():
+                pi = QPersistentModelIndex(self._componentsModel.index(row, column, data))
+                self._persistentIndexes.append(pi)
+                return self.createIndex(row, column, pi)
+    
+            elif self._behaviorsModel is data.model():
+                pi = QPersistentModelIndex(self._behaviorsModel.index(row, column, data))
+                self._persistentIndexes.append(pi)
+                return self.createIndex(row, column, pi)
+    
+            elif self._apiModulesModel is data.model():
+                pi = QPersistentModelIndex(self._apiModulesModel.index(row, column, data))
+                self._persistentIndexes.append(pi)
+                return self.createIndex(row, column, pi)
+            
+            else:
+                raise Exception("Unsupported model: {}".format(data.model()))
+            
+        else:
+            raise Exception("Unsupported data type in index: {}".format(type(data)))
+            
     def parent(self,index):
         if not index.isValid():
             return QModelIndex()
 
-        if self._componentsModel.checkIndex(index):
-            parent = self._componentsModel.parent(index)
-            if not parent.isValid():
-                return self.createIndex(0,0,"Components")
-            else:
-                return parent
-
-        elif self._behaviorsModel.checkIndex(index):
-            parent = self._behaviorsModel.parent(index)
-            if not parent.isValid():
-                return self.createIndex(0,0,"Behaviors")
-            else:
-                return parent
-
-        elif self._apiModulesModel.checkIndex(index):
-            parent = self._apiModulesModel.parent(index)
-            if not parent.isValid():
-                return self.createIndex(0,0,"API Modules")
-            else:
-                return parent
-
         data = index.internalPointer()
-
-        if data == "Target GUI" or data == "API Modules":
-            return QModelIndex()
-
-        elif data == "Components" or data == "Behaviors":
-            return self.createIndex(0,0,"Target GUI")
-
-        
-
+        if isinstance(data, str):
+            if data == "Target GUI" or data == "API Modules":
+                return QModelIndex()
+    
+            elif data == "Components" or data == "Behaviors":
+                return self.createIndex(0, 0, "Target GUI")
+            
+        elif isinstance(data, QPersistentModelIndex):
+            print(data.model())
+            if self._componentsModel is data.model():
+                parent = self._componentsModel.parent(data)
+                if not parent.isValid():
+                    return self.createIndex(0, 0, "Components")
+                else:
+                    pi = QPersistentModelIndex(parent)
+                    self._persistentIndexes.append(pi)
+                    return self.createIndex(parent.row(), parent.column(), pi)
+    
+            elif self._behaviorsModel is data.model():
+                parent = self._behaviorsModel.parent(data)
+                if not parent.isValid():
+                    return self.createIndex(1,0,"Behaviors")
+                else:
+                    pi = QPersistentModelIndex(parent)
+                    self._persistentIndexes.append(pi)
+                    return self.createIndex(parent.row(), parent.column(), pi)
+    
+            elif self._apiModulesModel is data.model():
+                parent = self._apiModulesModel.parent(data)
+                if not parent.isValid():
+                    return self.createIndex(1,0,"API Modules")
+                else:
+                    pi = QPersistentModelIndex(parent)
+                    self._persistentIndexes.append(pi)
+                    return self.createIndex(parent.row(), parent.column(), pi)
+                
+        else:
+            raise Exception("Unsupported data type in index: {}".format(type(data)))
 
     def rowCount(self,parent):
         if not parent.isValid():
             return 2
 
-        if self._componentsModel.checkIndex(parent):
-            return self._componentsModel.rowCount(parent)
-
-        elif self._behaviorsModel.checkIndex(parent):
-            return self._behaviorsModel.rowCount(parent)
-
-        elif self._apiModulesModel.checkIndex(parent):
-            return self._apiModulesModel.rowCount(parent)
-
         data = parent.internalPointer()
-
-        if data == "Target GUI":
-            return 2
-
-        elif data == "Components":
-            return self._componentsModel.rowCount(QModelIndex())
-
-        elif data == "Behaviors":
-            return self._behaviorsModel.rowCount(QModelIndex())
-
-        elif data == "API Modules":
-            return self._apiModulesModel.rowCount(QModelIndex())
+        if isinstance(data, str):
+            if data == "Target GUI":
+                return 2
+    
+            elif data == "Components":
+                return self._componentsModel.rowCount(QModelIndex())
+    
+            elif data == "Behaviors":
+                return self._behaviorsModel.rowCount(QModelIndex())
+    
+            elif data == "API Modules":
+                return self._apiModulesModel.rowCount(QModelIndex())
+            
+        elif isinstance(data, QPersistentModelIndex):
+            print(data.model())
+            if self._componentsModel is data.model():
+                return self._componentsModel.rowCount(data)
+    
+            elif self._behaviorsModel is data.model():
+                return self._behaviorsModel.rowCount(data)
+    
+            elif self._apiModulesModel is data.model():
+                return self._apiModulesModel.rowCount(data)
+            
+        else:
+            raise Exception("Unsupported data type in index: {}".format(type(data)))
 
     def columnCount(self,parent):
         return 2
@@ -151,35 +212,29 @@ class MultipleProxyModel(QAbstractItemModel):
         elif role != Qt.DisplayRole:
             return None
 
-        elif self._componentsModel.checkIndex(index):
-            return self._componentsModel.data(index,role)
-
-        elif self._behaviorsModel.checkIndex(index):
-            return self._behaviorsModel.data(index,role)
-
-        elif self._apiModulesModel.checkIndex(index):
-            return self._apiModulesModel.data(index,role)
-        
         data = index.internalPointer()
         col = index.column()
+        row = index.row()
 
-        if col != 0:
-            return None
-
+        if isinstance(data, str):
+            if col == 0:
+                return data
+            else:
+                return None
+                
+        elif isinstance(data, QPersistentModelIndex):
+            if self._componentsModel is data.model():
+                return self._componentsModel.data(data,role)
+    
+            elif self._behaviorsModel is data.model():
+                return self._behaviorsModel.data(data,role)
+    
+            elif self._apiModulesModel is data.model():
+                return self._apiModulesModel.data(data,role)
+            
         else:
-            return data
-
-
-
-    def headerData(self,section,orientation,role):
+            raise Exception("Unsupported data type in index: {}".format(type(data)))
+        
+    def headerData(self, section, orientation, role=Qt.DisplayRole):
         if orientation == Qt.Horizontal and role == Qt.DisplayRole:
             return ["Name", "Description"][section]
-
-
-
-
-
-
-
-   
-        
