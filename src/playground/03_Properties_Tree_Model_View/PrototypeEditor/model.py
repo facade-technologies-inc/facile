@@ -153,28 +153,3 @@ class PropModel(QAbstractItemModel):
                 return Qt.ItemIsEnabled | Qt.ItemIsSelectable | Qt.ItemIsEditable
             else:
                 return Qt.ItemIsEnabled | Qt.ItemIsSelectable
-
-
-
-
-
-
-        
-    
-        
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
