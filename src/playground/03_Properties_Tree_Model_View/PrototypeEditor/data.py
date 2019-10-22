@@ -93,6 +93,8 @@ class BaseProperties(Properties):
 		self.addProperty("Base", "Name", "default", str)
 		self.addProperty("Base", "Type", "Push Button", str)
 		self.addProperty("Base", "Annotation", "", str)
+		self.addProperty("Base", "Read-Only", True, bool)
+		self.addProperty("Base", "Size", 3.45, float)
 		
 class VisualProperties(BaseProperties):
 	def __init__(self):
