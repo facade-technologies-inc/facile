@@ -38,6 +38,6 @@ class Project:
 	def __init__(self):
 		self._targetApp = Project.TargetApplicationProfile()
 		self._changelog = Project.ChangeLog()
-		self._targetGUIModel = TargetGUIModel()
-		self._APIModel = APIModel()
+		self._targetGUIModel = None #TargetGUIModel()
+		self._APIModel = None #APIModel()
 		
