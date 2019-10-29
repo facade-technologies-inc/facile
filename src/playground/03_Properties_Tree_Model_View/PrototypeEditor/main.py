@@ -1,22 +1,33 @@
 import sys
 from PySide2.QtWidgets import QApplication, QTreeView
 import data
+from propertyeditordelegate import PropertyEditorDelegate
 
 if __name__ == "__main__":
 	
 	app = QApplication()
 	
-	# 1. instantiate Properties Object
+	# Instantiate Properties Object
 	prop = data.GUIComponentProperties()
-	print(prop)
+	"""
+	propFactory = PropertiesFactory()
+	prop = propFactory.createPropertiesObject([Base])
+	"""
 	
-	# 2. Get model object associated with Properties object
+	# Get model object associated with Properties object
 	model = prop.getModel()
-	
-	# 3. Instantiate QTreeView object
+
+	# Instantiate custom delegate
+	delegate = PropertyEditorDelegate()
+
+	# Instantiate QTreeView object
 	view = QTreeView()
 	
-	# 4. load model into view.
+	# load model into view.
 	view.setModel(model)
+
+	#load delegate into view
+	view.setItemDelegate(delegate)
+
 	view.show()
 	sys.exit(app.exec_())

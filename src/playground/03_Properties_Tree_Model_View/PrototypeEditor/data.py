@@ -7,7 +7,10 @@ class Property:
 		self._value = value
 		self._type = type
 		self._readOnly = readOnly
-		
+
+	def isReadOnly(self):
+		return self._readOnly
+
 	def getName(self):
 		return self._name
 	
@@ -16,6 +19,14 @@ class Property:
 	
 	def getType(self):
 		return self._type
+
+	def setValue(self, newValue):
+		if self.isReadOnly():
+			return False
+		else:
+			self._value = newValue
+			return True
+
 	
 	def __str__(self):
 		return "{}:{}".format(self._name, self._value)
@@ -82,6 +93,8 @@ class BaseProperties(Properties):
 		self.addProperty("Base", "Name", "default", str)
 		self.addProperty("Base", "Type", "Push Button", str)
 		self.addProperty("Base", "Annotation", "", str)
+		self.addProperty("Base", "Read-Only", True, bool)
+		self.addProperty("Base", "Size", 3.45, float)
 		
 class VisualProperties(BaseProperties):
 	def __init__(self):
