@@ -120,7 +120,42 @@ class PropModel(QAbstractItemModel):
     
         
 
+    def setData(self, index, value, role):
+        """Purpose of this function is to set the data associated with an index given a specified role """
+        if role != Qt.EditRole:
+            return False
 
+        if not index.isValid():
+            return False
+
+        if not value:
+            return False
+
+        data = index.internalPointer()
+
+        if data in self._propData.getCategories():
+            return False
+        else:
+            if index.column() != 1:
+                return False
+            else:
+                valueWasSet = data.setValue(value)
+                return valueWasSet
+
+    def flags(self, index):
+        """Purpose of this function is to determine what can be done with a given index"""
+        if not index.isValid():
+            return Qt.NoItemFlags
+
+        data = index.internalPointer()
+
+        if data in self._propData.getCategories():
+            return Qt.ItemIsEnabled | Qt.ItemIsSelectable
+        else:
+            if index.column() == 1:
+                return Qt.ItemIsEnabled | Qt.ItemIsSelectable | Qt.ItemIsEditable
+            else:
+                return Qt.ItemIsEnabled | Qt.ItemIsSelectable
 
 
 
