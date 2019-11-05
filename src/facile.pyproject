@@ -1,0 +1,3 @@
+{
+    "files": ["facile.py","gui/ui/facileview.ui","gui/ui/copyprojectdialog.ui","gui/ui/newprojectdialog.ui","gui/ui/manageprojectdialog.ui"]
+}
