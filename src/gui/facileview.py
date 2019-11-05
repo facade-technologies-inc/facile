@@ -66,7 +66,7 @@ class FacileView(QMainWindow):
 			for proj in recentProjects[:10]:
 				if os.path.exists(proj):
 					action = self.ui.menuRecent_Projects.addAction(proj)
-					action.triggered.connect(lambda: self._setProject(Project.load(proj)))
+					action.triggered.connect(self._onOpenRecentProject)
 		
 	@Slot(Project)
 	def _setProject(self, project: Project) -> None:
@@ -82,7 +82,8 @@ class FacileView(QMainWindow):
 		self._project = project
 		
 		if not project is None:
-			print("Project set: {}".format(project.getName()))
+			self.setWindowTitle("Facile - " + self._project.getMainProjectFile())
+			print(self._project.getProjectDir())
 			self.projectChanged.emit(project)
 			self._project.save()
 			
@@ -200,7 +201,18 @@ class FacileView(QMainWindow):
 		copyProjectDialog = CopyProjectDialog()
 		copyProjectDialog.projectCreated.connect(self._setProject)
 		copyProjectDialog.exec_()
-	 
+	
+	@Slot()
+	def _onOpenRecentProject(self) -> None:
+		"""
+		This slot is run when the user selects to open a recent project.
+		
+		:return: None
+		:rtype: NoneType
+		"""
+		
+		self._setProject(Project.load(self.sender().text()))
+	
 	@Slot()
 	def _onOpenProjectTriggered(self) -> None:
 		"""
