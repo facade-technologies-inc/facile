@@ -25,7 +25,7 @@ import sys
 from PySide2.QtWidgets import QApplication
 from PySide2.QtGui import QPalette, QColor, Qt
 
-from builder.view.facileview import FacileView
+from gui.facileview import FacileView
 
 if __name__ == "__main__":
     
@@ -55,4 +55,5 @@ if __name__ == "__main__":
     stylize(app)
     window = FacileView()
     window.show()
+    window.showMaximized()
     sys.exit(app.exec_())

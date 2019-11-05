@@ -53,15 +53,15 @@
      <property name="title">
       <string>Recent Projects</string>
      </property>
-     <addaction name="actionExample_Project"/>
     </widget>
     <addaction name="menuNew_Project"/>
-    <addaction name="actionOpen_API"/>
+    <addaction name="actionOpen_Project"/>
     <addaction name="menuRecent_Projects"/>
     <addaction name="separator"/>
     <addaction name="actionSave_Project"/>
     <addaction name="actionSave_as"/>
-    <addaction name="actionSave_New_Version"/>
+    <addaction name="separator"/>
+    <addaction name="actionManage_Project"/>
    </widget>
    <widget class="QMenu" name="menuWindow">
     <property name="title">
@@ -203,7 +203,7 @@
    <addaction name="actionShow_Behaviors"/>
    <addaction name="separator"/>
   </widget>
-  <action name="actionOpen_API">
+  <action name="actionOpen_Project">
    <property name="text">
     <string>Open Project</string>
    </property>
@@ -306,6 +306,11 @@
   <action name="actionAPI_Modules">
    <property name="text">
     <string>API Modules</string>
+   </property>
+  </action>
+  <action name="actionManage_Project">
+   <property name="text">
+    <string>Project Settings</string>
    </property>
   </action>
  </widget>

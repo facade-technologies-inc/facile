@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'FacileView.ui',
-# licensing of 'FacileView.ui' applies.
+# Form implementation generated from reading ui file 'facileview.ui',
+# licensing of 'facileview.ui' applies.
 #
-# Created: Sat Oct  5 01:18:58 2019
+# Created: Sun Nov  3 21:01:48 2019
 #      by: pyside2-uic  running on PySide2 5.13.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -95,8 +95,8 @@ class Ui_MainWindow(object):
         self.toolBar = QtWidgets.QToolBar(MainWindow)
         self.toolBar.setObjectName("toolBar")
         MainWindow.addToolBar(QtCore.Qt.TopToolBarArea, self.toolBar)
-        self.actionOpen_API = QtWidgets.QAction(MainWindow)
-        self.actionOpen_API.setObjectName("actionOpen_API")
+        self.actionOpen_Project = QtWidgets.QAction(MainWindow)
+        self.actionOpen_Project.setObjectName("actionOpen_Project")
         self.actionSave_Project = QtWidgets.QAction(MainWindow)
         self.actionSave_Project.setObjectName("actionSave_Project")
         self.actionSave_as = QtWidgets.QAction(MainWindow)
@@ -133,16 +133,18 @@ class Ui_MainWindow(object):
         self.actionIgnoreExplore.setObjectName("actionIgnoreExplore")
         self.actionAPI_Modules = QtWidgets.QAction(MainWindow)
         self.actionAPI_Modules.setObjectName("actionAPI_Modules")
+        self.actionManage_Project = QtWidgets.QAction(MainWindow)
+        self.actionManage_Project.setObjectName("actionManage_Project")
         self.menuNew_Project.addAction(self.actionFrom_Scratch)
         self.menuNew_Project.addAction(self.actionFrom_Existing_Project)
-        self.menuRecent_Projects.addAction(self.actionExample_Project)
         self.menuFile.addAction(self.menuNew_Project.menuAction())
-        self.menuFile.addAction(self.actionOpen_API)
+        self.menuFile.addAction(self.actionOpen_Project)
         self.menuFile.addAction(self.menuRecent_Projects.menuAction())
         self.menuFile.addSeparator()
         self.menuFile.addAction(self.actionSave_Project)
         self.menuFile.addAction(self.actionSave_as)
-        self.menuFile.addAction(self.actionSave_New_Version)
+        self.menuFile.addSeparator()
+        self.menuFile.addAction(self.actionManage_Project)
         self.menuWindow.addAction(self.actionProject_Tree)
         self.menuWindow.addAction(self.actionProperty_Editor)
         self.menuWindow.addAction(self.actionTarget_GUI_Model)
@@ -182,7 +184,7 @@ class Ui_MainWindow(object):
         self.treeWidget_3.headerItem().setText(0, QtWidgets.QApplication.translate("MainWindow", "Module", None, -1))
         self.treeWidget_3.headerItem().setText(1, QtWidgets.QApplication.translate("MainWindow", "Description", None, -1))
         self.toolBar.setWindowTitle(QtWidgets.QApplication.translate("MainWindow", "toolBar", None, -1))
-        self.actionOpen_API.setText(QtWidgets.QApplication.translate("MainWindow", "Open Project", None, -1))
+        self.actionOpen_Project.setText(QtWidgets.QApplication.translate("MainWindow", "Open Project", None, -1))
         self.actionSave_Project.setText(QtWidgets.QApplication.translate("MainWindow", "Save Project", None, -1))
         self.actionSave_as.setText(QtWidgets.QApplication.translate("MainWindow", "Save As . . .", None, -1))
         self.actionSave_New_Version.setText(QtWidgets.QApplication.translate("MainWindow", "Save New Version", None, -1))
@@ -203,4 +205,5 @@ class Ui_MainWindow(object):
         self.actionIgnoreExplore.setText(QtWidgets.QApplication.translate("MainWindow", "Ignore Explore", None, -1))
         self.actionIgnoreExplore.setToolTip(QtWidgets.QApplication.translate("MainWindow", "The user can interact with the target GUI without changes being recognized.", None, -1))
         self.actionAPI_Modules.setText(QtWidgets.QApplication.translate("MainWindow", "API Modules", None, -1))
+        self.actionManage_Project.setText(QtWidgets.QApplication.translate("MainWindow", "Manage Project", None, -1))
 

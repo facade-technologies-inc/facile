@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE QtCreatorProject>
-<!-- Written by QtCreator 4.10.0, 2019-10-07T20:38:24. -->
+<!-- Written by QtCreator 4.10.0, 2019-11-04T00:43:50. -->
 <qtcreator>
  <data>
   <variable>EnvironmentId</variable>
@@ -137,11 +137,11 @@
     </valuelist>
     <value type="int" key="PE.EnvironmentAspect.Base">2</value>
     <valuelist type="QVariantList" key="PE.EnvironmentAspect.Changes"/>
-    <value type="QString" key="ProjectExplorer.ProjectConfiguration.DefaultDisplayName">Run C:/Users/smalb/facade-technologies-inc/facile/src/builder/view/facileview.py</value>
-    <value type="QString" key="ProjectExplorer.ProjectConfiguration.DisplayName">facileview</value>
-    <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">PythonEditor.RunConfiguration.C:/Users/smalb/facade-technologies-inc/facile/src/builder/view/facileview.py</value>
+    <value type="QString" key="ProjectExplorer.ProjectConfiguration.DefaultDisplayName">Run </value>
+    <value type="QString" key="ProjectExplorer.ProjectConfiguration.DisplayName">facile</value>
+    <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">PythonEditor.RunConfiguration.C:/Users/smalb/facade-technologies-inc/facile/src/Facile/facile.py</value>
     <value type="QString" key="PythonEditor.RunConfiguation.Interpreter">C:\Users\smalb\AppData\Local\Programs\Python\Python37\python.exe</value>
-    <value type="QString" key="PythonEditor.RunConfiguation.Script">C:/Users/smalb/facade-technologies-inc/facile/src/builder/view/facileview.py</value>
+    <value type="QString" key="PythonEditor.RunConfiguation.Script"></value>
     <value type="QString" key="RunConfiguration.Arguments"></value>
     <value type="uint" key="RunConfiguration.QmlDebugServerPort">3768</value>
     <value type="bool" key="RunConfiguration.UseCppDebugger">false</value>
