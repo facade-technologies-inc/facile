@@ -24,12 +24,14 @@ import os
 import json
 from copy import deepcopy
 from PySide2.QtWidgets import QMainWindow, QFileDialog, QMessageBox
+from PySide2.QtGui import QStandardItemModel
 from PySide2.QtCore import Signal, Slot
 from gui.ui.ui_facileview import Ui_MainWindow as Ui_FacileView
 from gui.newprojectdialog import NewProjectDialog
 from gui.copyprojectdialog import CopyProjectDialog
 from gui.manageprojectdialog import ManageProjectDialog
 from data.project import Project
+from qt_models.projectexplorermodel import ProjectExplorerModel, pop_standard_model
 
 
 class FacileView(QMainWindow):
@@ -67,6 +69,21 @@ class FacileView(QMainWindow):
 				if os.path.exists(proj):
 					action = self.ui.menuRecent_Projects.addAction(proj)
 					action.triggered.connect(self._onOpenRecentProject)
+		
+		# create model project explorer model and put it in view
+		model_1 = QStandardItemModel()
+		model_2 = QStandardItemModel()
+		model_3 = QStandardItemModel()
+		pop_standard_model(model_1)
+		pop_standard_model(model_2)
+		pop_standard_model(model_3)
+		projectExplorerModel = ProjectExplorerModel(model_1, model_2, model_3)
+		projectExplorerModel.componentSelected.connect(lambda o: print(o))
+		projectExplorerModel.behaviorSelected.connect(lambda o: print(o))
+		projectExplorerModel.pipelineSelected.connect(lambda o: print(o))
+		self.ui.projectExplorerView.setModel(projectExplorerModel)
+		selectionModel = self.ui.projectExplorerView.selectionModel()
+		selectionModel.selectionChanged.connect(projectExplorerModel.onSelectionChanged)
 		
 	@Slot(Project)
 	def _setProject(self, project: Project) -> None:
