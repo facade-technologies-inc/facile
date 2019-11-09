@@ -1,12 +1,47 @@
+"""
+/------------------------------------------------------------------------------\
+|                 -- FACADE TECHNOLOGIES INC.  CONFIDENTIAL --                 |
+|------------------------------------------------------------------------------|
+|                                                                              |
+|    Copyright [2019] Facade Technologies Inc.                                 |
+|    All Rights Reserved.                                                      |
+|                                                                              |
+| NOTICE:  All information contained herein is, and remains the property of    |
+| Facade Technologies Inc. and its suppliers if any.  The intellectual and     |
+| and technical concepts contained herein are proprietary to Facade            |
+| Technologies Inc. and its suppliers and may be covered by U.S. and Foreign   |
+| Patents, patents in process, and are protected by trade secret or copyright  |
+| law.  Dissemination of this information or reproduction of this material is  |
+| strictly forbidden unless prior written permission is obtained from Facade   |
+| Technologies Inc.                                                            |
+|                                                                              |
+\------------------------------------------------------------------------------/
+
+This module contains the TargetGuiModel class.
+"""
+
 
 # TODO: Import Ramos's QGraphicsScene class. ???
 # TODO: Import corresponding QModel classes for the componentTree and the visibility behaviors.
 # TODO: Import GuiComponent class.
-# TODO: Import SuperToken class
-
+# TODO: Import SuperToken class.
+# TODO: finish adding doc strings.
 
 class TargetGuiModel:
+    """
+    This class models the structure and behavior of the target gui.
+    It contains Components organized in a tree structure, and stores the VisibilityBehaviors.
+    New components are constructed and added to the tree when it receives new SuperTokens from
+    the Observer.
+    """
+
     def __init__(self):
+        """
+        Constructs a TargetGuiModel object.
+
+        :return: The constructed TargetGuiModel object
+        :rtype: TargetGuiModel
+        """
         self._root = None  # TODO: Initialize the root.
         self._componentTreeQModel = None  # TODO: Initialize new QModel here.
         self._visibilityBehaviorsQModel = None   # TODO: Initialize new QModel here.
