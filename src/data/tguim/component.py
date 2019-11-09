@@ -1,15 +1,11 @@
 
-from entityProto import Entity
-from view import NodeItem # for testing only.
+from data.tguim.entity import Entity
 
 
-class GuiComponent(Entity):
+class Component(Entity):
 
-	# count = 0
 
-	# Adding a reference to the tree as a param so that the node
-	# can add itself to the tree's self._components dictionary.
-	def __init__(self, tree, parent=None, name=""):
+	def __init__(self, parent=None, name=""):
 		super().__init__()
 		# GuiComponent.count += 1
 		# self._id = GuiComponent.count
@@ -18,11 +14,10 @@ class GuiComponent(Entity):
 		if parent is not None:
 			parent.addChild(self)
 
-		self._nodeItem = NodeItem(self, self.getParentNodeItem())
+		#self._nodeItem = NodeItem(self, self.getParentNodeItem())
 		self._name = name
 		self._isDeleted = False
 		# Add self to the dictionary of guiComponents in the tree.
-		tree.getComponents()[self._id] = self
 		#TODO: add guiComponentToken.
 	
 	# def getId(self):
@@ -49,11 +44,11 @@ class GuiComponent(Entity):
 	def getParent(self):
 		return self._parent
 	
-	def getParentNodeItem(self):
-		if self._parent is None:
-			return None
-		else:
-			return self._parent.getNodeItem()
+	# def getParentNodeItem(self):
+	# 	if self._parent is None:
+	# 		return None
+	# 	else:
+	# 		return self._parent.getNodeItem()
 
 	def getPathFromRoot(self):
 		path = [(self, self.getRow())]

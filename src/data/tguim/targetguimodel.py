@@ -23,7 +23,7 @@ This module contains the TargetGuiModel class.
 
 # TODO: Import Ramos's QGraphicsScene class. ???
 # TODO: Import corresponding QModel classes for the componentTree and the visibility behaviors.
-# TODO: Import GuiComponent class.
+# TODO: Import Component class.
 # TODO: Import SuperToken class.
 # TODO: finish adding doc strings.
 
