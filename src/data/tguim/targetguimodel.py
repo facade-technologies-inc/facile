@@ -20,10 +20,10 @@
 This module contains the TargetGuiModel class.
 """
 
+from data.tguim.component import Component
+from data.tguim.visibilitybehavior import VisibilityBehavior
 
 # TODO: Import Ramos's QGraphicsScene class. ???
-# TODO: Import corresponding QModel classes for the componentTree and the visibility behaviors.
-# TODO: Import Component class.
 # TODO: Import SuperToken class.
 # TODO: finish adding doc strings.
 
@@ -42,55 +42,83 @@ class TargetGuiModel:
         :return: The constructed TargetGuiModel object
         :rtype: TargetGuiModel
         """
-        self._root = None  # TODO: Initialize the root.
-        self._componentTreeQModel = None  # TODO: Initialize new QModel here.
-        self._visibilityBehaviorsQModel = None   # TODO: Initialize new QModel here.
+        self._root = Component()  # Note: remains constant. Represents the application.
         self._scene = None  # TODO: Use Ramos' class here. Maybe pass as param?
-        self._components = {}  # TODO: Add root "component" to the dict? Maybe it needs to remain inaccessible.
+        self._components = {}  # Note: Root Component not stored here.
         self._visibilityBehaviors = {}
 
-    # TODO: This getter may not be necessary.
-    # def getRoot(self):
-    #     # if self._root.isDeleted():
-    #     #     return None
-    #     return self._root
-
-    # TODO: Want the root to always remain constant.
-    # def setRoot(self, newRoot):
-    #     if self._root is None:
-    #         self._root = newRoot
-    #     elif self._root.isDeleted():
-    #         self._root = newRoot
-    #     self._scene.addItem(newRoot.getNodeItem())
-
-    def getComponentTreeQModel(self):
-        return self._componentTreeQModel
-
-    def getScene(self):
+    # TODO: Type hint Ramos's scene class and add doc string.
+    def getScene(self) -> :
         return self._scene
 
-    def getComponents(self):
+    def getComponents(self) -> dict:
+        """
+        Gets the dictionary of components.
+
+        :return: The dictionary of components.
+        :rtype: dict
+        """
         return self._components
 
-    def getComponent(self, iD):
+    def getComponent(self, iD: int) -> Component:
+        """
+        Gets the component with the specified id.
+
+        :param iD: The component's unique identifier. See Entity class.
+        :type iD: int
+        :return: Component with the given id
+        :rtype: Component
+        """
+
         if iD in self._components:
             return self._components[iD]
         else:
             return None
 
     # Slot function for when the Observer emits the "newSuperToken" signal.
-    def createComponent(self, superToken):
+    def createComponent(self, superToken: SuperToken) -> None:
+        """
+        The slot function which is called when the Observer emits the "newSuperToken" signal.
+        Creates a new component using info from the SuperToken and adds it to the component tree.
+
+        :param superToken: The SuperToken associated with the component in the target GUI.
+        :type superToken: SuperToken
+        :return: None
+        :rtype: NoneType
+        """
         pass  # TODO: define this function.
 
-    def getVisibilityBehaviors(self):
+    def getVisibilityBehaviors(self) -> dict:
+        """
+        Gets the dictionary of VisibilityBehaviors.
+
+        :return: The dictionary of VisibilityBehaviors.
+        :rtype: dict
+        """
         return self._visibilityBehaviors
 
-    def getVisibilityBehavior(self, iD):
+    def getVisibilityBehavior(self, iD: int) -> VisibilityBehavior:
+        """
+        Gets the VisibilityBehavior with the specified id.
+
+        :param iD: The id of the desired VisibilityBehavior
+        :type iD: int
+        :return: The VisibilityBehavior with the specified id.
+        :rtype: VisibilityBehavior
+        """
         if iD in self._visibilityBehaviors:
             return self._visibilityBehaviors[iD]
         else:
             return None
 
-    def addVisibilityBehavior(self, newVisBehavior):
+    def addVisibilityBehavior(self, newVisBehavior: VisibilityBehavior) -> None:
+        """
+        Adds a given VisibilityBehavior to the dictionary of VisibilityBehaviors.
+
+        :param newVisBehavior: The VisibilityBehavior object to be added.
+        :type newVisBehavior: VisibilityBehavior
+        :return: None
+        :rtype: NoneType
+        """
         if newVisBehavior.getId() not in self._visibilityBehaviors:
             self._visibilityBehaviors[newVisBehavior.getId()] = newVisBehavior
