@@ -2,7 +2,8 @@
 import sys
 from PySide2.QtWidgets import QApplication
 from view import MyView
-from data import Tree, TreeNode
+from data import Tree, TreeNode, Edge
+
 
 if __name__ == "__main__":
 	app = QApplication()
@@ -27,6 +28,23 @@ if __name__ == "__main__":
 	p = TreeNode(a, name="another button")
 	q = TreeNode(p, name="another button")
 	r = TreeNode(q, name="another button")
+
+	edgeOne = Edge(a, f)
+	a.addSourceEdge(edgeOne)
+	f.addDesEdge(edgeOne)
+	# edgeTwo = Edge(c, d)
+	# c.addSourceEdge(edgeTwo)
+	# d.addDesEdge(edgeTwo)
+	# edgeThree = Edge(e, f)
+	# e.addSourceEdge(edgeThree)
+	# f.addDesEdge(edgeThree)
+	# edgeFour = Edge(g, h)
+	# g.addSourceEdge(edgeFour)
+	# h.addDesEdge(edgeFour)
+	# edgeFive = Edge(root, f)
+	# root.addSourceEdge(edgeFive)
+	# f.addDesEdge(edgeFive)
+
 	tree = Tree(root)
 	
 	# Create the views to display and edit the tree

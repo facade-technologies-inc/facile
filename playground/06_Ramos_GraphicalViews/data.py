@@ -1,14 +1,24 @@
+import weakref
 
 from PySide2.QtWidgets import QGraphicsScene
-from view import NodeItem, MyTreeScene
+import view
 from model import MyTreeModel
 
 class Tree:
 	def __init__(self, root):
 		self._root = None
 		self._model = MyTreeModel(self)
-		self._scene = MyTreeScene(self)
+		self._scene = view.MyTreeScene(self)
 		self.setRoot(root)
+		nodes = self.traversal()
+		edges = set()
+		for node in nodes:
+			nodeEdges = node.getSourceEdges() + node.getDestinationEdges()
+			for edge in nodeEdges:
+				if edge not in edges:
+					edges.add(edge)
+					self._scene.addItem(edge.getEdgeItem())
+
 		
 	def getRoot(self):
 		if self._root.isDeleted():
@@ -63,6 +73,18 @@ class Tree:
 		
 		return order
 
+	def traversal(self):
+		order = []
+		workTodo = []
+		workTodo.append(self._root)
+		while len(workTodo) > 0:
+			curWork = workTodo.pop(-1)
+			for child in curWork.getChildren()[::-1]:
+				workTodo.append(child)
+			order.append(curWork)
+
+		return order
+
 class TreeNode:
 	
 	count = 0
@@ -74,11 +96,24 @@ class TreeNode:
 		self._children = []
 		if parent != None:
 			parent.addChild(self)
-		
-		self._nodeItem = NodeItem(self, self.getParentNodeItem())
+		self._nodeItem = view.NodeItem(self, self.getParentNodeItem())
 		self._name = name
 		self._isDeleted = False
+		self._edgeSrcList = []
+		self._edgeDesList = []
+
+	def addSourceEdge(self, edge):
+		self._edgeSrcList.append(edge)
+
+	def addDesEdge(self, edge):
+		self._edgeDesList.append(edge)
 			
+	def getSourceEdges(self):
+		return self._edgeSrcList
+
+	def getDestinationEdges(self):
+		return self._edgeDesList
+
 	def getID(self):
 		return self._id
 	
@@ -172,3 +207,27 @@ class TreeNode:
 			oldParent.getNodeItem().triggerSceneUpdate()
 	def __repr__(self):
 		return str(self._id)
+
+
+class Edge:
+	def __init__(self, srcNode:TreeNode, desNode:TreeNode):
+		self._srcNode = srcNode
+		self._desNode = desNode
+		self._edgeItem = view.EdgeItem(self)
+		self.sourceCenterPoint = self._srcNode.getNodeItem().boundingRect().center()
+		self.destCenterPoint = self._desNode.getNodeItem().boundingRect().center()
+
+	def setSrcNode(self, srcNode):
+		self._srcNode = srcNode
+
+	def setDesNode(self, desNode):
+		self._desNode = desNode
+
+	def getSrcNode(self):
+		return self._srcNode
+
+	def getDesNode(self):
+		return self._desNode
+
+	def getEdgeItem(self):
+		return self._edgeItem
