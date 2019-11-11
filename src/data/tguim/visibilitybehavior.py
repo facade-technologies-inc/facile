@@ -1,5 +1,5 @@
 
-from data.tguim.entity import Entity
+from data.entity import Entity
 
 
 class VisibilityBehavior(Entity):
