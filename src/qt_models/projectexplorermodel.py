@@ -21,7 +21,7 @@ This is module contains the Qt model for the project explorer.
 
 """
 
-from PySide2.QtCore import QAbstractItemModel, QModelIndex, Qt, Signal, QItemSelection
+from PySide2.QtCore import QAbstractItemModel, QModelIndex, Qt, Signal, Slot, QItemSelection
 from data.tguim.component import Component
 from data.tguim.visibilitybehavior import VisibilityBehavior
 from data.apim.actionpipeline import ActionPipeline
@@ -444,7 +444,22 @@ class ProjectExplorerModel(QAbstractItemModel):
 		if orientation == Qt.Horizontal and role == Qt.DisplayRole:
 			return ["Name", "Description"][section]
 
-	def selectionChanged(self, selected: QItemSelection, deselected: QItemSelection):
+	@Slot()
+	def selectionChanged(self, selected: QItemSelection, deselected: QItemSelection) -> None:
+		"""
+		Run this slot when an index is selected. This slot will emit the following 3 signals depending on what was
+		selected:
+			- componentSelected
+			- behaviorSelected
+			- pipelineSelected
+			
+		:param selected: The new selection
+		:type selected: QItemSelection
+		:param deselected: The old selection
+		:type deselected: QItemSelection
+		:return: None
+		:rtype: NoneType
+		"""
 		listSelected = selected.indexes()
 
 		if len(listSelected) > 0:
