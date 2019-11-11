@@ -47,6 +47,15 @@ class TargetGuiModel:
         self._components = {}  # Note: Root Component not stored here.
         self._visibilityBehaviors = {}
 
+    def getRoot(self) -> Component:
+        """
+        Gets the root component of the component tree.
+
+        :return: The root component of the component tree.
+        :rtype: Component
+        """
+        return self._root
+
     # TODO: Type hint Ramos's scene class and add doc string.
     def getScene(self) -> :
         return self._scene
