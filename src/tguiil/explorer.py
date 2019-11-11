@@ -30,11 +30,15 @@ import tguiil.application as cApp
 
 class Explorer:
 
+    '''
+    The explorer class makes use of recursive functions to break down the target gui into its smallest components,
+    and then clicking on every clickable component as well as prompting the user for input on any textfields.
+    '''
+
     def __init__(self):
         self.run = 0  # Defines the state of the explorer. Will run if 1, else will stop
 
-    def ch_recurse(self, app, component):
-
+    def ch_recurse(self, app: Application, component):
         """
         Recursively called in order to find smallest components and click/expand them if possible.
 
@@ -45,7 +49,6 @@ class Explorer:
         :return: None
         :rtype: NoneType
         """
-
         if self.run == 1:
             try:
                 for child in component.children():
@@ -97,7 +100,7 @@ class Explorer:
             finally:
                 return
 
-    def traverseSubmenu(self, app, component):
+    def traverseSubmenu(self, app: Application, component):
 
         """
         Recursively called in order to find menus and menuitems and click/expand them if possible. Called only
@@ -148,10 +151,10 @@ class Explorer:
         finally:
             return
 
-    def search_new_win(self, app):
+    def search_new_win(self, app: Application):
         x = 1  # placeholder
 
-    def start(self, pLoc):
+    def start(self, pLoc: str):
 
         """
         Method that starts the target application then connects to it for exploration
@@ -163,7 +166,7 @@ class Explorer:
         pid = psutil.Popen([pLoc])
         self.connect(pid)
 
-    def connect(self, pid):
+    def connect(self, pid: int):
 
         """
         Method that starts the explorer while also connecting to the target application
