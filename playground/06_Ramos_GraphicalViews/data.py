@@ -1,8 +1,5 @@
-import weakref
-
-from PySide2.QtWidgets import QGraphicsScene
-import view
 from model import MyTreeModel
+import view
 
 class Tree:
 	def __init__(self, root):
@@ -101,6 +98,12 @@ class TreeNode:
 		self._isDeleted = False
 		self._edgeSrcList = []
 		self._edgeDesList = []
+
+	def getEdgeSrcListLen(self):
+		return len(self._edgeSrcList)
+
+	def getEdgeDesListLen(self):
+		return len(self._edgeDesList)
 
 	def addSourceEdge(self, edge):
 		self._edgeSrcList.append(edge)
