@@ -80,7 +80,7 @@ class Component(Entity):
 
 		return len(self._children)
 	
-	def getParent(self) -> Component:
+	def getParent(self) -> 'Component':
 		"""
 		Gets the component's parent component.
 
@@ -122,7 +122,7 @@ class Component(Entity):
 		"""
 		return self._graphicsItem
 
-	def getNthChild(self, n: int) -> Component:
+	def getNthChild(self, n: int) -> 'Component':
 		"""
 		Gets the Nth child component of the component.
 

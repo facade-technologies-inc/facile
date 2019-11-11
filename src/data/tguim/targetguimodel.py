@@ -57,7 +57,7 @@ class TargetGuiModel:
         return self._root
 
     # TODO: Type hint Ramos's scene class and add doc string.
-    def getScene(self) -> :
+    def getScene(self) -> 'TargetGuiScene':
         return self._scene
 
     def getComponents(self) -> dict:
@@ -85,7 +85,7 @@ class TargetGuiModel:
             return None
 
     # Slot function for when the Observer emits the "newSuperToken" signal.
-    def createComponent(self, superToken: SuperToken) -> None:
+    def createComponent(self, superToken: 'SuperToken') -> None:
         """
         The slot function which is called when the Observer emits the "newSuperToken" signal.
         Creates a new component using info from the SuperToken and adds it to the component tree.
