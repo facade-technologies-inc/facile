@@ -20,9 +20,12 @@
 
 This file contains the token class that weighs the importance of each attribute of a single token. 
 
+
+
+
+Token class initializes each attribute to check what changes were made of each state of the token. 
+
 """
-
-
 
 
 class Token:
@@ -74,5 +77,8 @@ class Token:
 			return 1
 		else:
 			return 0
+"""
+The isEqualTo function gives a weight of importance to each attribute. This is based on the tokens when its state is changed.
 
+"""
 

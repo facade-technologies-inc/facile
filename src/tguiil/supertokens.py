@@ -20,10 +20,10 @@
 
 This file contains the super tokens class that initializes tokens as a list and a function that iterates through the tokens in the token list
 
+
+SuperToken class initializes token1 with a unique identifier and checks to see if any tokens belong to a supertoken.
+
 """
-
-
-
 
 
 class SuperToken:
@@ -47,4 +47,9 @@ class SuperToken:
 				self.addToken(token2)
 				break
 
+""" 
 
+The addToken function adds a token to the supertoken.
+
+The shouldContain function iterates through the tokens in the token list to see if the token belongs to a supertoken.
+"""
