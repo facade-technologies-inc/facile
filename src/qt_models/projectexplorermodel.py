@@ -195,7 +195,7 @@ class ProjectExplorerModel(QAbstractItemModel):
 					return QModelIndex()
 	
 			elif parentData == ProjectExplorerModel.COMPONENT_LABEL:
-				if self._project.getTargetGUIModel().getRoot().getNumChildren() == 0:
+				if self._project.getTargetGUIModel().getRoot().childCount() == 0:
 					return self.createIndex(row, column, (ProjectExplorerModel.NO_COMPONENTS_LABEL, ProjectExplorerModel.COMPONENT_LABEL, 0))
 				
 				return self.createIndex(row, column, self._project.getTargetGUIModel().getRoot().getNthChild(row))
@@ -298,7 +298,7 @@ class ProjectExplorerModel(QAbstractItemModel):
 				return 2
 	
 			elif data == ProjectExplorerModel.COMPONENT_LABEL:
-				return max(1, self._project.getTargetGUIModel().getRoot().getNumChildren())
+				return max(1, self._project.getTargetGUIModel().getRoot().childCount())
 	
 			elif data == ProjectExplorerModel.BEHAVIOR_LABEL:
 				return max(1, len(self._project.getTargetGUIModel().getVisibilityBehaviors()))
@@ -308,7 +308,7 @@ class ProjectExplorerModel(QAbstractItemModel):
 				return 1
 			
 		elif isinstance(data, Component):
-			return data.getNumChildren()
+			return data.childCount()
 		
 		elif isinstance(data, VisibilityBehavior):
 			return 2
