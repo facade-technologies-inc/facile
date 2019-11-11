@@ -45,28 +45,40 @@ class Explorer:
         :return: None
         :rtype: NoneType
         """
+
         if self.run == 1:
             try:
                 for child in component.children():
                     print(child.texts()[0] + ': ' + child.friendly_class_name())
-                    # NOTE: All print statements are for verification and debugging purposes
+                    # TODO: NOTE: All print statements are for verification and debugging purposes. Remove at end.
 
-                    if child.children() != []:  # recurse until smallest component with no sub-components
+                    if child.children() != [] and child.friendly_class_name() != 'Menu':
                         # this is the only part that handles recursion, and it does so depth-first
                         print('------child------')
                         self.ch_recurse(app, child)
                         print('-----------------')
 
-                    if child.friendly_class_name() == 'MenuItem':
-                        child.set_focus()
-                        child.select()
-                        # self.ch_recurse(app, child) # TODO: Figure out how to click on items of submenu
+                    if child.friendly_class_name() == 'Menu' and child.texts()[0] != 'System':
+                        # TODO: Finish submenu traversal. After testing traverseSubmenu, uncomment below and
+                        #  modify connect function to call ch_recurse
+                        # Menus are handled differently due to their nature
+
+                        # for menuitem in child.items():
+                        #     menuitem.set_focus()
+                        #     menuitem.select()
+                        #     submenu = nApp.top_window()
+                        #     submenu.wait('ready')
+                        #     self.traverseSubmenu(app, submenu)
+                        #     # self.ch_recurse(app, submenu)
                         print('')
+                    elif child.friendly_class_name() == 'MenuItem':
+                        x = 1  # placeholder
                     else:
                         try:
                             if child.is_editable():
                                 # Pauses when editable textfield is found
-                                pyautogui.alert('Please enter necessary information, then press OK.')
+                                # TODO: Uncomment line below after testing
+                                # pyautogui.alert('Please enter necessary information, then press OK.')
                                 print(child.get_value())
 
                         except:
@@ -85,12 +97,64 @@ class Explorer:
             finally:
                 return
 
+    def traverseSubmenu(self, app, component):
+
+        """
+        Recursively called in order to find menus and menuitems and click/expand them if possible. Called only
+        within ch_recurse and is therefore providing additional functionality to it without as much cluttering.
+        (Basically a ch_recurse function specific to menus)
+
+        :param app: A handle to the application instance
+        :type app: pywinauto.application.Application
+        :param component: The component to be broken down
+        :type component: (variable type, usually stems from pywinauto.base_wrapper.BaseWrapper)
+        :return: None
+        :rtype: NoneType
+        """
+
+        try:
+            for child in component.children():
+                # Below handles breaking down menu
+                if child.friendly_class_name() == 'Menu' and child.texts()[0] != 'System':
+                    if child.texts()[0] != 'Application':
+                        print(child.texts()[0] + ': ' + child.friendly_class_name())
+                        print('------children------')
+                        self.traverseSubmenu(app, child)
+                        print('--------------------')
+
+                # Below handles menuitems themselves
+                elif child.friendly_class_name() == 'MenuItem':
+                    print(child.texts()[0] + ': ' + child.friendly_class_name())
+                    if child.is_enabled():
+                        try:
+                            child.set_focus()
+                            child.select()
+                            # TODO: Find way to reopen submenu
+                            submenuWin = app.top_window()
+                            submenuWin.wait('ready')
+                            # TODO: Items like New, New window, etc should probably be avoided because it will loop
+                            #  infinitely otherwise
+                            # self.ch_recurse(app, submenuWin)
+                            # pyautogui.alert(child.texts()[0] + ' was clicked')
+                        except:
+                            # Usually occurs after submenu is closed but item is being selected.
+                            print('exception2 for ' + child.texts()[0])
+                        finally:
+                            print('')
+                    else:
+                        print('(disabled)')
+        except:
+            print('exception1')  # Haven't seen any of these
+        finally:
+            return
+
     def search_new_win(self, app):
         x = 1  # placeholder
 
     def start(self, pLoc):
+
         """
-        Method that starts the explorer while also starting the target application
+        Method that starts the target application then connects to it for exploration
 
         :return: None
         :rtype: NoneType
@@ -100,12 +164,14 @@ class Explorer:
         self.connect(pid)
 
     def connect(self, pid):
+
         """
         Method that starts the explorer while also connecting to the target application
 
         :return: None
         :rtype: NoneType
         """
+
         app = cApp.Application(backend="uia")
         app.setProcess(pid)
         pids = app.getPIDs()
@@ -118,30 +184,47 @@ class Explorer:
         self.run = 1
         # TODO: Update every time a new window appears.
         for window in appWindows:
-            print('hello')
-            self.ch_recurse(app, window)
+            # self.ch_recurse(app, window)
+
+            # Below will be in ch_recurse, but put here just for simpler development/debugging
+            for child in window.children():
+                if child.friendly_class_name() == 'Menu' and child.texts()[0] != 'System':
+                    # TODO: Finish submenu traversal
+                    for menuitem in child.items():
+                        menuitem.set_focus()
+                        menuitem.select()
+                        submenu = nApp.top_window()
+                        submenu.wait('ready')
+                        # self.ch_recurse(nApp, submenu)
+                        self.traverseSubmenu(nApp, submenu)
+        nApp.kill()  # Only here so that I don't have tons of notepad instances open, TODO: Remove after testing
 
     def stop(self):
+
         """
         Method that stops the explorer
 
         :return: None
         :rtype: NoneType
         """
+
         self.run = 0  # This will have to be implemented by interrupting the thread I think, but this is the best alt rn
 
 
 def main():
+
+    # This section is here for standalone testing. TODO: Remove/modify when done
+
     expr = Explorer()
-    path = pyautogui.prompt('Please enter application path (Default is Notepad).')
+    path = pyautogui.prompt('Please enter application path (Default is Notepad).', default='Notepad.exe')
 
     if path == '':
-        path = 'Notepad.exe'
+        path = 'Notepad.exe'  # could prompt the user for valid path but that's gonna be handled elsewhere in project
 
     if path is None:
         pyautogui.alert('Cancelled')
     else:
-        expr.start(path)
+        expr.start(path)  # This + explorer instance are all that'll be necessary since path will be given to explorer
 
 
 if __name__ == "__main__":
