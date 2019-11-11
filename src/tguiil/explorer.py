@@ -29,11 +29,10 @@ import tguiil.application as cApp
 
 
 class Explorer:
-
-    '''
+    """
     The explorer class makes use of recursive functions to break down the target gui into its smallest components,
     and then clicking on every clickable component as well as prompting the user for input on any textfields.
-    '''
+    """
 
     def __init__(self):
         self.run = 0  # Defines the state of the explorer. Will run if 1, else will stop
@@ -49,6 +48,7 @@ class Explorer:
         :return: None
         :rtype: NoneType
         """
+
         if self.run == 1:
             try:
                 for child in component.children():
@@ -101,7 +101,6 @@ class Explorer:
                 return
 
     def traverseSubmenu(self, app: Application, component):
-
         """
         Recursively called in order to find menus and menuitems and click/expand them if possible. Called only
         within ch_recurse and is therefore providing additional functionality to it without as much cluttering.
@@ -155,7 +154,6 @@ class Explorer:
         x = 1  # placeholder
 
     def start(self, pLoc: str):
-
         """
         Method that starts the target application then connects to it for exploration
 
@@ -167,7 +165,6 @@ class Explorer:
         self.connect(pid)
 
     def connect(self, pid: int):
-
         """
         Method that starts the explorer while also connecting to the target application
 
@@ -203,7 +200,6 @@ class Explorer:
         nApp.kill()  # Only here so that I don't have tons of notepad instances open, TODO: Remove after testing
 
     def stop(self):
-
         """
         Method that stops the explorer
 
