@@ -21,27 +21,10 @@ This is module contains the Qt model for the project explorer.
 
 """
 
-from PySide2.QtGui import QStandardItem
 from PySide2.QtCore import QAbstractItemModel, QModelIndex, Qt, Signal, QItemSelection
-from data.project import Project
 from data.tguim.component import Component
 from data.tguim.visibilitybehavior import VisibilityBehavior
 from data.apim.actionpipeline import ActionPipeline
-
-# TODO: Remove this once we have the actual models from the target GUI model and the the api model
-
-
-def pop_standard_model(model):
-	for i in range(3):
-		parent1 = QStandardItem('Family {}. Some long status text for sp'.format(i))
-		parent2 = QStandardItem("Family details")
-		for j in range(3):
-			child1 = QStandardItem('Child {}'.format(i*3+j))
-			child2 = QStandardItem('Some details')
-			parent1.appendRow([child1, child2])
-		model.appendRow([parent1, parent2])
-
-# TODO: Update this file once Sean integrates his code.
 
 
 class ProjectExplorerModel(QAbstractItemModel):
@@ -161,7 +144,7 @@ class ProjectExplorerModel(QAbstractItemModel):
 	#           END EXCEPTION DEFINITIONS           #
 	#################################################
 
-	def __init__(self, project: Project) -> 'ProjectExplorerModel':
+	def __init__(self, project: 'Project') -> 'ProjectExplorerModel':
 		"""
 		Constructs a ProjectExplorerModel exception
 		
@@ -192,8 +175,10 @@ class ProjectExplorerModel(QAbstractItemModel):
 		if not parent.isValid():
 			if row == ProjectExplorerModel.TARGET_GUI_ROW:
 				return self.createIndex(row, column, ProjectExplorerModel.TARGET_GUI_LABEL)
+			
 			elif row == ProjectExplorerModel.PIPELINE_ROW:
 				return self.createIndex(row, column, ProjectExplorerModel.PIPELINE_LABEL)
+			
 			else:
 				return QModelIndex()
 
@@ -202,37 +187,40 @@ class ProjectExplorerModel(QAbstractItemModel):
 			if parentData == ProjectExplorerModel.TARGET_GUI_LABEL:
 				if row == ProjectExplorerModel.COMPONENT_ROW:
 					return self.createIndex(row, column, ProjectExplorerModel.COMPONENT_LABEL)
+				
 				elif row == ProjectExplorerModel.BEHAVIOR_ROW:
 					return self.createIndex(row, column, ProjectExplorerModel.BEHAVIOR_LABEL)
+				
 				else:
 					return QModelIndex()
 	
 			elif parentData == ProjectExplorerModel.COMPONENT_LABEL:
-				
 				if self._project.getTargetGUIModel().getRoot().getNumChildren() == 0:
 					return self.createIndex(row, column, (ProjectExplorerModel.NO_COMPONENTS_LABEL, ProjectExplorerModel.COMPONENT_LABEL, 0))
-				return self.createIndex(row, column, self._project.getTargetGUIModel().getRoot().getNthChild(row))
-			elif parentData == ProjectExplorerModel.BEHAVIOR_LABEL:
 				
+				return self.createIndex(row, column, self._project.getTargetGUIModel().getRoot().getNthChild(row))
+			
+			elif parentData == ProjectExplorerModel.BEHAVIOR_LABEL:
 				if self._project.getTargetGUIModel().getNumVisibilityBehaviors() == 0:
 					return self.createIndex(row, column, (ProjectExplorerModel.NO_BEHAVIORS_LABEL, ProjectExplorerModel.BEHAVIOR_LABEL, 0))
+				
 				return self.createIndex(row, column, self._project.getTargetGUIModel().getNthBehavior(row))
+			
 			elif parentData == ProjectExplorerModel.PIPELINE_LABEL:
 				# TODO: replace this once action pipelines are implemented
 				return self.createIndex(row, column, (ProjectExplorerModel.NO_PIPELINES_LABEL, parentData, 1))
+			
 			else:
 				raise ProjectExplorerModel.InvalidLabelException("Unsupported data string: {}".format(parentData))
 			
 		elif isinstance(parentData, Component):
-			
 			return self.createIndex(row, column, parentData.getNthChild(row))
 			
 		elif isinstance(parentData, VisibilityBehavior):
 			if row == 0:
-				
 				return self.createIndex(row, column, (parentData.getFromComponent(), parentData))
+			
 			if row == 1:
-				
 				return self.createIndex(row, column, (parentData.getToComponent(), parentData))
 			
 		elif isinstance(parentData, ActionPipeline):
@@ -267,17 +255,14 @@ class ProjectExplorerModel(QAbstractItemModel):
 				return self.createIndex(0, 0, ProjectExplorerModel.TARGET_GUI_LABEL)
 			
 		elif isinstance(data, Component):
-			
 			parentComponent = data.getParent()
-			
 			if parentComponent is self._project.getTargetGUIModel().getRoot():
 				return self.createIndex(0, 0, ProjectExplorerModel.COMPONENT_LABEL)
+			
 			else:
-				
 				return self.createIndex(parentComponent.getRow(), 0, parentComponent)
 			
 		elif isinstance(data, VisibilityBehavior):
-			
 			return self.createIndex(1, 0, ProjectExplorerModel.BEHAVIOR_LABEL)
 		
 		elif isinstance(data, ActionPipeline):
@@ -287,12 +272,10 @@ class ProjectExplorerModel(QAbstractItemModel):
 		elif isinstance(data, tuple):
 			innerData = data[0]
 			if isinstance(innerData, str):
-				return self.createIndex(innerData[2], 0, innerData[1])
+				return self.createIndex(data[2], 0, data[1])
 			
 			elif isinstance(innerData, Component):
-				# data[1] will be a visibility behavior
-				
-				return self.createIndex(innerData[1].getRow(), 0, innerData[1])
+				return self.createIndex(data[1].getRow(), 0, data[1])
 			
 		else:
 			raise ProjectExplorerModel.UnsupportedTypeException("Unsupported data type in index: {}".format(type(data)))
@@ -318,7 +301,7 @@ class ProjectExplorerModel(QAbstractItemModel):
 				return max(1, self._project.getTargetGUIModel().getRoot().getNumChildren())
 	
 			elif data == ProjectExplorerModel.BEHAVIOR_LABEL:
-				return max(1, self._project.getTargetGUIModel().getNumVisibilityBehaviors())
+				return max(1, len(self._project.getTargetGUIModel().getVisibilityBehaviors()))
 	
 			elif data == ProjectExplorerModel.PIPELINE_LABEL:
 				# TODO: replace this once action pipelines are implemented
