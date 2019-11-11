@@ -41,7 +41,10 @@ class Application(pywinauto.Desktop):
     #TODO: If the original process was just used to create other processes and then it disappears, the child processes
     # are called zombies. currently, this class does not work with applications that fit this description. This class
     # could be made more robust.
-    
+
+    # def __init__(self, backend):
+    #     super().__init__(backend=backend)
+
     def setProcess(self, process: psutil.Process) -> None:
         """
         Sets the application's process. This method should be called directly after the Application object is
@@ -87,7 +90,7 @@ if __name__ == "__main__":
     
     # Notepad++ doesn't use multiple processes, so I'm not completely testing this correctly. I should run with the
     # calculator app.
-    process = psutil.Popen(["C:\\Program Files (x86)\\Notepad++\\notepad++.exe"])
+    process = psutil.Popen(["C:\\Program Files\\Notepad++\\notepad++.exe"])
     app = Application(backend="uia")
     app.setProcess(process)
     time.sleep(2)
