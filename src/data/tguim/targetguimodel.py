@@ -43,7 +43,7 @@ class TargetGuiModel:
         :rtype: TargetGuiModel
         """
         self._root = Component()  # Note: remains constant. Represents the application.
-        self._scene = None  # TODO: Is this necessary? If so, use Ramos' class here. Maybe pass as param?
+        self._scene = None  # TODO: Use Ramos' class here. Maybe pass as param?
         self._components = {}  # Note: Root Component not stored here.
         self._visibilityBehaviors = {}
 
