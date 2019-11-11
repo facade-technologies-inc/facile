@@ -24,14 +24,14 @@ import os
 import json
 from copy import deepcopy
 from PySide2.QtWidgets import QMainWindow, QFileDialog, QMessageBox
-from PySide2.QtGui import QStandardItemModel
+from PySide2.QtGui import QStandardItemModel, QStandardItem, Qt
 from PySide2.QtCore import Signal, Slot
 from gui.ui.ui_facileview import Ui_MainWindow as Ui_FacileView
 from gui.newprojectdialog import NewProjectDialog
 from gui.copyprojectdialog import CopyProjectDialog
 from gui.manageprojectdialog import ManageProjectDialog
 from data.project import Project
-from qt_models.projectexplorermodel import ProjectExplorerModel, pop_standard_model
+from qt_models.projectexplorermodel import ProjectExplorerModel
 
 
 class FacileView(QMainWindow):
@@ -46,8 +46,8 @@ class FacileView(QMainWindow):
 		"""
 		Constructs a FacileView object.
 		
-		:return: The new project object
-		:rtype: Project
+		:return: The new FacileView object
+		:rtype: FacileView
 		"""
 		
 		super(FacileView, self).__init__()
@@ -56,34 +56,7 @@ class FacileView(QMainWindow):
 
 		self._setProject(None)
 		self._connectActions()
-		
-		# TODO: Move this somewhere else to localize the recent project stuff
-		# try to show recent projects
-		try:
-			with open(os.path.join(os.getcwd(), "temp/recentProjects.json"), "r") as recents:
-				recentProjects = json.loads(recents.read())
-		except Exception as e:
-			print(e)
-		else:
-			for proj in recentProjects[:10]:
-				if os.path.exists(proj):
-					action = self.ui.menuRecent_Projects.addAction(proj)
-					action.triggered.connect(self._onOpenRecentProject)
-		
-		# create model project explorer model and put it in view
-		model_1 = QStandardItemModel()
-		model_2 = QStandardItemModel()
-		model_3 = QStandardItemModel()
-		pop_standard_model(model_1)
-		pop_standard_model(model_2)
-		pop_standard_model(model_3)
-		projectExplorerModel = ProjectExplorerModel(model_1, model_2, model_3)
-		projectExplorerModel.componentSelected.connect(lambda o: print(o))
-		projectExplorerModel.behaviorSelected.connect(lambda o: print(o))
-		projectExplorerModel.pipelineSelected.connect(lambda o: print(o))
-		self.ui.projectExplorerView.setModel(projectExplorerModel)
-		selectionModel = self.ui.projectExplorerView.selectionModel()
-		selectionModel.selectionChanged.connect(projectExplorerModel.onSelectionChanged)
+		self._setEmptyModels()
 		
 	@Slot(Project)
 	def _setProject(self, project: Project) -> None:
@@ -103,24 +76,8 @@ class FacileView(QMainWindow):
 			print(self._project.getProjectDir())
 			self.projectChanged.emit(project)
 			self._project.save()
-			
-			# TODO: Move global Facile stuff like this to a better spot.
-			# add the new project to the recent projects file
-			cwd = os.getcwd()
-			tempDir = os.path.join(cwd, "temp")
-			recentsFile = os.path.join(tempDir, "recentProjects.json")
-			recentProjects = []
-			if not os.path.exists(tempDir):
-				os.mkdir(tempDir)
-			try:
-				with open(recentsFile, "r") as recents:
-					recentProjects = json.loads(recents.read())
-			except:
-				pass
-			if not project.getMainProjectFile() in recentProjects:
-				recentProjects.insert(0, project.getMainProjectFile())
-				with open(recentsFile, "w") as recents:
-					recents.write(json.dumps(recentProjects, indent=4))
+			self._project.addToRecents()
+			self.ui.projectExplorerView.setModel(self._project.getProjectExplorerModel())
 			
 	def _connectActions(self) -> None:
 		"""
@@ -131,12 +88,62 @@ class FacileView(QMainWindow):
 		:rtype: NoneType
 		"""
 		
+		self._populateRecents()
+		
 		self.ui.actionFrom_Scratch.triggered.connect(self._onNewProjectFromScratchTriggered)
 		self.ui.actionFrom_Existing_Project.triggered.connect(self._onNewProjectFromExistingTriggered)
 		self.ui.actionOpen_Project.triggered.connect(self._onOpenProjectTriggered)
 		self.ui.actionSave_Project.triggered.connect(self._onSaveProjectTriggered)
 		self.ui.actionSave_as.triggered.connect(self._onSaveProjectAsTriggered)
 		self.ui.actionManage_Project.triggered.connect(self._onManageProjectTriggered)
+		
+	def _setEmptyModels(self) -> None:
+		"""
+		Puts empty models in all of the model-based views in Facile's main window The empty models just contain a
+		message.
+
+		:return: None
+		:rtype: NoneType
+		"""
+		# create blank model to show that no project is open.
+		blankProjectExplorer = QStandardItemModel()
+		blankProjectExplorer.setHorizontalHeaderLabels([""])
+		label = QStandardItem("No project is open.")
+		label.setFlags(Qt.NoItemFlags)
+		blankProjectExplorer.appendRow([label])
+		self.ui.projectExplorerView.setModel(blankProjectExplorer)
+		
+		# create blank model to show that no item is selected.
+		blankPropertiesModel = QStandardItemModel()
+		blankPropertiesModel.setHorizontalHeaderLabels([""])
+		label = QStandardItem("No model item is selected.")
+		label.setFlags(Qt.NoItemFlags)
+		blankPropertiesModel.appendRow([label])
+		self.ui.propertyEditorView.setModel(blankPropertiesModel)
+		
+	def _populateRecents(self) -> None:
+		"""
+		Creates the recents dropdown menu by reading the recents file. If the recents file does not exist, the message
+		"No recent projects." is shown. If there was a problem decoding the file, the message "Error loading recent
+		projects." is shown.
+		
+		:return: None
+		:rtype: NoneType
+		"""
+		try:
+			recentProjects = Project.getRecents(limit=10)
+			
+		except json.JSONDecodeError as e:
+			self.ui.menuRecent_Projects.addAction("Error loading recent projects.")
+			
+		else:
+			if len(recentProjects) == 0:
+				self.ui.menuRecent_Projects.addAction("No recent projects.")
+			
+			else:
+				for proj in recentProjects[:10]:
+					action = self.ui.menuRecent_Projects.addAction(proj)
+					action.triggered.connect(self._onOpenRecentProject)
 	
 	@Slot()
 	def _onSaveProjectAsTriggered(self) -> None:
