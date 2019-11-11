@@ -20,7 +20,7 @@
 This module contains the Component class.
 """
 
-from data.tguim.entity import Entity
+from data.entity import Entity
 from data.tguim.visibilitybehavior import VisibilityBehavior
 
 class Component(Entity):
