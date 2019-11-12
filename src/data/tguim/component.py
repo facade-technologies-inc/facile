@@ -49,11 +49,20 @@ class Component(Entity):
 		self._children = []
 		self._toVisibilityBehaviors = []
 		self._fromVisibilityBehaviors = []
+		self._model = tguim
+		self._graphicsItem = ComponentGraphics(self, self.getParentGraphicsItem())
 		if parent is not None:
 			parent.addChild(self)
-			self._graphicsItem = ComponentGraphics(self, parent.getGraphicsItem())
-		else:
-			self._graphicsItem = ComponentGraphics(self, self.getModel().getScene())
+			
+	
+	def getModel(self) -> 'TargetGuiModel':
+		"""
+		Gets the target GUI model that this component belongs to.
+		
+		:return: the target GUI model that this component belongs to.
+		:rtype: TargetGuiModel
+		"""
+		return self._model
 	
 	def getChildren(self) -> list:
 		"""

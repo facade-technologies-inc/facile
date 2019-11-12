@@ -26,6 +26,8 @@ import psutil
 from subprocess import PIPE
 from qt_models.projectexplorermodel import ProjectExplorerModel
 from data.tguim.targetguimodel import TargetGuiModel
+from tguiil.explorer import Explorer
+from tguiil.observer import Observer
 
 
 class Project:
@@ -69,6 +71,8 @@ class Project:
 		self._targetGUIModel = TargetGuiModel()
 		self._APIModel = None
 		self._process = None
+		self._observer = None
+		self._explorer = None
 		
 		# project information
 		self.setProjectDir(os.path.abspath(projectDir))
@@ -79,6 +83,34 @@ class Project:
 		self.setExecutableFile(exe)
 		self.setBackend(backend)
 		self.setStartupTimeout(startupTimeout)
+		
+	def getObserver(self) -> 'Observer':
+		"""
+		Gets the project's observer
+		
+		:return: The project's observer
+		:rtype: Observer
+		"""
+		if self._process is None or not self._process.is_running():
+			return None
+		else:
+			if self._observer is None:
+				self._observer = Observer(self._process.pid, self._backend)
+			return self._observer
+	
+	def getExplorer(self) -> 'Explorer':
+		"""
+		Gets the project's explorer
+		
+		:return: The project's explorer
+		:rtype: Explorer
+		"""
+		if self._process is None or not self._process.isrunning():
+			return None
+		else:
+			if self._explorer is None:
+				self._explorer = Explorer(self._process.pid, self._backend)
+			return self._explorer
 
 	def getTargetGUIModel(self) -> 'TargetGuiModel':
 		"""

@@ -47,6 +47,9 @@ class ComponentGraphics(QGraphicsItem):
         """
 
         QGraphicsItem.__init__(self, parent)
+        if parent is None:
+            dataComponent.getModel().getScene().addItem(self)
+        
         self._dataComponent = dataComponent
         self.setFlag(QGraphicsItem.ItemIsMovable)
         self.setFlag(QGraphicsItem.ItemIsSelectable)
@@ -127,7 +130,12 @@ class ComponentGraphics(QGraphicsItem):
         height = int(boundingRect.height()) - ComponentGraphics.penWidth
         painter.drawRoundedRect(int(x+ComponentGraphics.leftMargin), int(y+ComponentGraphics.topMargin), int(width - ComponentGraphics.leftMargin - ComponentGraphics.rightMargin), int(height - ComponentGraphics.topMargin - ComponentGraphics.bottomMargin), 5, 5)
 
-        name = self._dataComponent.getProperties().getProperty("Name").getValue()
+        #TODO: Once properties are made correctly, remove the try/catch statement
+        try:
+            name = self._dataComponent.getProperties().getProperty("Name").getValue()
+        except:
+            name = ""
+        
         painter.drawText(int(x+ComponentGraphics.leftMargin*1.5), int(y+ComponentGraphics.topMargin+30), name)
 
     def mousePressEvent(self, event):
