@@ -1,5 +1,4 @@
-  
-"""
+ """
 /------------------------------------------------------------------------------\
 |                 -- FACADE TECHNOLOGIES INC.  CONFIDENTIAL --                 |
 |------------------------------------------------------------------------------|
@@ -19,20 +18,24 @@
 \------------------------------------------------------------------------------/
 
 This file contains the token class that weighs the importance of each attribute of a single token. 
-
-
-
-
-Token class initializes each attribute to check what changes were made of each state of the token. 
-
 """
 
 
 class Token:
+	"""
+	Token class sets parameters of a token for each state that changes.
+	"""
 
 	THRESHOLD = 0
 
 	def __init__(self = None,parentSuperToken = None,picture = None,title = None,typeOf = None,position = None,refs = None,cwTitle = None,cwControlType = None,autoID = None):
+		"""
+		Constructs parameters for each token. Checks if the tokens attribute changed based on a random variable.
+
+		:return: None
+		:rtype: NoneType
+		"""
+
 		self.parentst = parentSuperToken
 		self.pic = picture
 		self.t = title
@@ -45,6 +48,13 @@ class Token:
 
 
 	def isEqualTo(token2):
+		"""
+		The isEqualTo function gives a weight of importance to each attribute. This is based on the tokens when its state is changed.
+
+		:param: token
+		:return: int
+		:rtype: NoneType
+		"""
 		total = 0
 		if token2.parentst == self.parentst:
 			total += 10
@@ -77,8 +87,5 @@ class Token:
 			return 1
 		else:
 			return 0
-"""
-The isEqualTo function gives a weight of importance to each attribute. This is based on the tokens when its state is changed.
-
-"""
+	
 
