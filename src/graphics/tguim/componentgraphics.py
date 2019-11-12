@@ -39,7 +39,7 @@ class ComponentGraphics(QGraphicsItem):
     rightMargin = 10
     baseWidth = 400
 
-    def __init__(self, dataComponent: Component, parent = None):
+    def __init__(self, dataComponent: 'Component', parent = None):
         """
         Constructs a componentview object
 
@@ -58,10 +58,6 @@ class ComponentGraphics(QGraphicsItem):
 
         :return: QRectF
         """
-
-        if self._dataComponent.isDeleted():
-            # TODO: need _isDeleted & isDeleted() function in data class. e.g. set _isDeleted = true in remove() function
-            return QRectF(-1,-1,4,4)
 
         id = self._dataComponent.getId()
         numDescendants = self._dataComponent.getNumDescendants() # used to calculate height
@@ -136,8 +132,9 @@ class ComponentGraphics(QGraphicsItem):
         width = int(boundingRect.width()) - ComponentGraphics.penWidth
         height = int(boundingRect.height()) - ComponentGraphics.penWidth
         painter.drawRoundedRect(int(x+ComponentGraphics.leftMargin), int(y+ComponentGraphics.topMargin), int(width - ComponentGraphics.leftMargin - ComponentGraphics.rightMargin), int(height - ComponentGraphics.topMargin - ComponentGraphics.bottomMargin), 5, 5)
-        painter.drawText(int(x+ComponentGraphics.leftMargin*1.5), int(y+ComponentGraphics.topMargin+30), "Component {}: {}".format(self._dataComponent.getId(), self._dataComponent.getName()))
-        # TODO: _dataComponent.getProperties().getName? instead of _dataComponent.getName()
+        
+        name = self._dataComponent.getProperties().getProperty("Name").getValue()
+        painter.drawText(int(x+ComponentGraphics.leftMargin*1.5), int(y+ComponentGraphics.topMargin+30), name)
 
     def mousePressEvent(self, event):
         """

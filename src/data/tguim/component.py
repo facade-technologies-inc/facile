@@ -22,31 +22,38 @@ This module contains the Component class.
 
 from data.entity import Entity
 from data.tguim.visibilitybehavior import VisibilityBehavior
+from graphics.tguim.componentgraphics import ComponentGraphics
+
+# TODO: Move some of the graphics stuff to the Entity class?
 
 class Component(Entity):
 	"""
 	This class models an individual GUI component in the target gui.
 	Components are organized in a tree in the TargetGuiModel class.
 	"""
-	def __init__(self, parent=None):
+	def __init__(self, tguim: 'TargetGuiModel', parent: 'Component' = None, superToken: 'SuperToken' = None):
 		"""
 		Constructs a Component object.
 
+		:param tguim: The TargetGuiModel that the component belongs to.
+		:type tguim: TargetGuiModel
 		:param parent: The parent component in the component tree.
 		:type parent: Component
+		:param superToken: The SuperToken associated with the new Component
+		:type superToken: SuperToken
 		"""
 
 		super().__init__()
-		# self._properties 	-> See Entity class
-		# self._id 			-> See Entity class
-		self._superToken = None  # TODO: add SuperToken.
-		self._parent: Component = parent
+		self._superToken: 'SuperToken' = superToken
+		self._parent: 'Component' = parent
 		self._children = []
-		self._graphicsItem = None  # TODO: insert Ramos's class.
 		self._toVisibilityBehaviors = []
 		self._fromVisibilityBehaviors = []
 		if parent is not None:
 			parent.addChild(self)
+			self._graphicsItem = ComponentGraphics(self, parent.getGraphicsItem())
+		else:
+			self._graphicsItem = ComponentGraphics(self, self.getModel().getScene())
 	
 	def getChildren(self) -> list:
 		"""
@@ -89,8 +96,13 @@ class Component(Entity):
 		"""
 		return self._parent
 
-	# TODO: Possibly rename depending on Ramos' class.
 	def getParentGraphicsItem(self):
+		"""
+		Gets the parent component's graphics item if it exists.
+		
+		:return: The parent component's graphics item or None
+		:rtype: ComponentGraphics or None
+		"""
 		if self._parent is None:
 			return None
 		else:
@@ -112,13 +124,12 @@ class Component(Entity):
 			possibleRoot = possibleRoot.getParent()
 		return path
 
-	# TODO: possibly rename to match Ramos's class.
 	def getGraphicsItem(self):
 		"""
 		Gets the associated graphics item used to display the component.
 
 		:return: The graphics item used to display the component.
-		:rtype: TODO
+		:rtype: ComponentGraphics
 		"""
 		return self._graphicsItem
 

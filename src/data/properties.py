@@ -21,8 +21,8 @@ This module contains the Properties() class.
 """
 
 from collections import OrderedDict
-from propeditormodel import PropModel
-from property import Property
+from qt_models.propeditormodel import PropModel
+from data.property import Property
 
 
 class Properties:
@@ -202,29 +202,15 @@ class Properties:
         properties = self.getCategoryProperties(category)
         return len(properties)
 
-
-"""def __str__(self):
-        retStr = "/-------------------------------------------------------\n"
-        for category in self._categories.keys():
-            retStr += "| {} -> {}\n".format(category, self._categories[category])
-        retStr += "\\-------------------------------------------------------\n"
-        return retStr
-
-
-if __name__ == "__main__":
-
-    mainWindow = GUIComponentProperties()
-
-    print(mainWindow)
-
-    assert(mainWindow.getNumCategories()==3)
-
-    assert(mainWindow.getCategories()==["Base","Visual","GUI Component"])
-
-    print(mainWindow.getCategoryProperties("Base"))
-
-    assert(mainWindow.getPropertyCategory(mainWindow.getCategoryProperties("Base")[0]) == "Base")
-
-    assert(mainWindow.getCategoryIndex("Visual")==1)
-
-    assert(mainWindow.getNumPropertiesInCategory("Base")==3)"""
+    def getProperty(self, name: str) -> tuple[str, 'Property']:
+        """
+        Gets a property by name if it exists in the properties object
+        
+        :param name: the name of the property to get
+        :return: (A tuple containing the category name that the property is under and the property object) or None
+        :rtype: tuple[str, Property] or NoneType
+        """
+        for category in self._categories:
+            for property in self._categories[category]:
+                if property.getName() == name:
+                    return tuple(category, property)

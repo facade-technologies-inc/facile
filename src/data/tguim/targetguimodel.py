@@ -20,12 +20,13 @@
 This module contains the TargetGuiModel class.
 """
 
+from PySide2.QtCore import Slot
+
 from data.tguim.component import Component
 from data.tguim.visibilitybehavior import VisibilityBehavior
+from graphics.tguim.tscene import TScene
+from tguiil.supertokens import SuperToken
 
-# TODO: Import Ramos's QGraphicsScene class. ???
-# TODO: Import SuperToken class.
-# TODO: finish adding doc strings.
 
 class TargetGuiModel:
     """
@@ -35,19 +36,22 @@ class TargetGuiModel:
     the Observer.
     """
 
-    def __init__(self):
+    def __init__(self) -> 'TargetGuiModel':
         """
         Constructs a TargetGuiModel object.
 
         :return: The constructed TargetGuiModel object
         :rtype: TargetGuiModel
         """
-        self._root = Component()  # Note: remains constant. Represents the application.
-        self._scene = None  # TODO: Use Ramos' class here. Maybe pass as param?
+        self._root = Component(self)  # Note: remains constant. Represents the application.
+        self._scene = TScene()
         self._components = {}  # Note: Root Component not stored here.
         self._visibilityBehaviors = {}
 
-    def getRoot(self) -> Component:
+        # Allows easy lookup of components given a super token
+        self._superTokenToComponentMapping = {None: None}
+
+    def getRoot(self) -> 'Component':
         """
         Gets the root component of the component tree.
 
@@ -56,8 +60,13 @@ class TargetGuiModel:
         """
         return self._root
 
-    # TODO: Type hint Ramos's scene class and add doc string.
-    def getScene(self) -> 'TargetGuiScene':
+    def getScene(self) -> 'TScene':
+        """
+        Gets the associated graphics scene
+        
+        :return: The GraphicsScene associated with the TargetGuiModel
+        :rtype: TScene
+        """
         return self._scene
 
     def getComponents(self) -> dict:
@@ -69,7 +78,7 @@ class TargetGuiModel:
         """
         return self._components
 
-    def getComponent(self, iD: int) -> Component:
+    def getComponent(self, iD: int) -> 'Component':
         """
         Gets the component with the specified id.
 
@@ -84,18 +93,31 @@ class TargetGuiModel:
         else:
             return None
 
-    # Slot function for when the Observer emits the "newSuperToken" signal.
-    def createComponent(self, superToken: 'SuperToken') -> None:
+    @Slot()
+    def createComponent(self, newSuperToken: 'SuperToken', parentToken: 'SuperToken') -> 'Component':
         """
         The slot function which is called when the Observer emits the "newSuperToken" signal.
         Creates a new component using info from the SuperToken and adds it to the component tree.
 
-        :param superToken: The SuperToken associated with the component in the target GUI.
-        :type superToken: SuperToken
-        :return: None
-        :rtype: NoneType
+        :param newSuperToken: The SuperToken associated with the component in the target GUI.
+        :type newSuperToken: SuperToken
+        :param parentToken: The parent SuperToken of the new SuperToken
+        :type parentToken: SuperToken
+        :return: The component that was created
+        :rtype: 'Component'
         """
-        pass  # TODO: define this function. Remember to add the comp to the dict.
+        parentComponent = self._superTokenToComponentMapping[parentToken]
+        newComponent = Component(self, parentComponent, newSuperToken)
+        
+        #TODO: Create Properties object based on values from the SuperToken
+        # predefinedCategories = ["Base", ...]
+        # customCategories = .....
+        # properties = Properties.createPropertiesObject(predefinedCategories, customCategories)
+        # newComponent.setProperties(properties)
+        
+        self._superTokenToComponentMapping[newSuperToken] = newComponent
+        self._components[newComponent.getId()] = newComponent
+        return newComponent
 
     def getVisibilityBehaviors(self) -> dict:
         """
@@ -106,7 +128,7 @@ class TargetGuiModel:
         """
         return self._visibilityBehaviors
 
-    def getVisibilityBehavior(self, iD: int) -> VisibilityBehavior:
+    def getVisibilityBehavior(self, iD: int) -> 'VisibilityBehavior':
         """
         Gets the VisibilityBehavior with the specified id.
 
@@ -120,7 +142,7 @@ class TargetGuiModel:
         else:
             return None
 
-    def addVisibilityBehavior(self, newVisBehavior: VisibilityBehavior) -> None:
+    def addVisibilityBehavior(self, newVisBehavior: 'VisibilityBehavior') -> None:
         """
         Adds a given VisibilityBehavior to the dictionary of VisibilityBehaviors.
 
