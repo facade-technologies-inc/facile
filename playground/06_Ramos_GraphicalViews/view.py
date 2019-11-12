@@ -158,17 +158,16 @@ class EdgeItem(QGraphicsItem):
         x2 = self._dataEdge.destCenterPoint.x() + (self._dataEdge.destCenterPoint.x() - self._dataEdge.getDesNode().getNodeItem().boundingRect().x())
         y2 = self._dataEdge.getDesNode().getNodeItem().boundingRect().y() + (heightDesNode / (lengthDesNodeDesEdgeList + 1)) * desNodeIndex
 
-        painter.drawLine(x1,
-                         y1,
-                         x2,
-                         y2)
+        # painter.drawLine(x1, y1, x2, y2)
 
-        #ToDo: make the arrows distribute evenly on the edge.
-        #Realize that when it shows in the main.py, all the edges are added. So I know how many edges are there when I paint.
-        #It's not interactive yet - allowing user to add edge. So don't worry about that part. Just go static.
-        #Then I could simply use the length of the list, calculate where should I put the arrow.
-        #Paint it!
-
+        path = QPainterPath()
+        path.moveTo(x1, y1)
+        # path.lineTo(x1 - 200, y1)
+        # path.lineTo(x1 - 200, y2)
+        # path.lineTo(x2, y2)
+        # path.arcTo(x2, y2, 100, 100, 50, 100)
+        path.cubicTo(x1+100, y1+100, x2-100, y2-100, x2, y2)
+        painter.drawPath(path)
 
 ###########################################################
 class TwoViews(QSplitter):
