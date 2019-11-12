@@ -18,6 +18,7 @@
 \------------------------------------------------------------------------------/
 
 This module contains the Observer class, which watches the target GUI for changes.
+
 """
 
 import psutil
