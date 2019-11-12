@@ -28,6 +28,15 @@ class Token:
 	"""
 
 	THRESHOLD = 0
+	WEIGHT_PARENTST = 10
+	WEIGHT_PIC = 1
+	WEIGHT_TITLE = 1
+	WEIGHT_TYPE = 10
+	WEIGHT_POS = 5
+	WEIGHT_REFS = 1
+	WEIGHT_CWTITLE = 2
+	WEIGHT_CWCT = 6
+	WEIGHT_AUTOID = 10
 
 	def __init__(self = None,parentSuperToken = None,picture = None,title = None,typeOf = None,position
 	= None,refs = None,cwTitle = None,cwControlType = None,autoID = None): 
@@ -37,8 +46,15 @@ class Token:
 		Constructs parameters
 		for each token. Checks if the tokens attribute changed based on a random variable.
 
-		:return: None 
-		:rtype: NoneType 
+		:parentSuperToken: superToken 
+		:picture:
+		:title: str
+		:typeOf: str
+		:position: lists of str and ints
+		:refs: lists of str and ints
+		:cwTitle: str
+		:cwControlType: str
+		:autoID: str
 		"""
 
 		self.parentst = parentSuperToken
@@ -58,38 +74,36 @@ class Token:
 		The isEqualTo function gives a weight of importance to each attribute.
 		This is based on the tokens when its state is changed.
 
-		:param: token 
-		:return: int 
-		:rtype: NoneType 
+		:token2: Token
 		"""
 		total = 0 
 
 		if token2.parentst == self.parentst:
-			total += 10
+			total += WEIGHT_PARENTST
 			
 		if token2.pic == self.pic:
-			total += 1
+			total += WEIGHT_PIC
 	
 		if token2.t == self.t:
-			total += 1
+			total += WEIGHT_TITLE
 
 		if token2.type == self.type:
-			total += 10
+			total += WEIGHT_TYPE
 
 		if token2.pos == self.pos:
-			total += 5
+			total += WEIGHT_POS
 
 		if token2.reference == self.reference:
-			total += 1
+			total += WEIGHT_REFS
 
 		if token2.cwt == self.cwt:
-			total += 2
+			total += WEIGHT_CWTITLE
 
 		if token2.cwct == self.cwct:
-			total += 6
+			total += WEIGHT_CWCT
 
 		if token2.autoid == self.autoid:
-			total += 10
+			total += WEIGHT_AUTOID
 
 		if total >= Token.THRESHOLD():
 			return 1 

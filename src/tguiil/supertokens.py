@@ -34,8 +34,9 @@ class SuperToken:
 		Constructs paramters for each token to
 		check if it belongs to a supertoken.
 
-		:return: None 
-		:rtype: NoneType 
+		:token1: Token
+		:identifier: int
+		:ignoreFlag: Boolean
 		"""
 
 		self.tokens = [token1]
@@ -49,8 +50,7 @@ class SuperToken:
 
 		The addToken function adds a token to the supertoken.
 
-		:return: token 
-		:rtype: NoneType 
+		:tokenA: Token  
 		"""
 
 		self.tokens.append(tokenA)
@@ -61,8 +61,7 @@ class SuperToken:
 		The shouldContain function iterates through the tokens in the token list to see if the token
 		belongs to a supertoken.
 
-		:return: token 
-		:rtype: NoneType 
+		:tokenA: token 
 		"""
 
 		for token in self.tokens:
