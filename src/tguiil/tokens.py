@@ -1,5 +1,5 @@
- """
-/------------------------------------------------------------------------------\
+ """ 
+ /------------------------------------------------------------------------------\
 |                 -- FACADE TECHNOLOGIES INC.  CONFIDENTIAL --                 |
 |------------------------------------------------------------------------------|
 |                                                                              |
@@ -21,19 +21,24 @@ This file contains the token class that weighs the importance of each attribute 
 """
 
 
-class Token:
-	"""
-	Token class sets parameters of a token for each state that changes.
+class Token: 
+	""" 
+
+	Token class sets parameters of a token for each state that changes. 
 	"""
 
 	THRESHOLD = 0
 
-	def __init__(self = None,parentSuperToken = None,picture = None,title = None,typeOf = None,position = None,refs = None,cwTitle = None,cwControlType = None,autoID = None):
-		"""
-		Constructs parameters for each token. Checks if the tokens attribute changed based on a random variable.
+	def __init__(self = None,parentSuperToken = None,picture = None,title = None,typeOf = None,position
+	= None,refs = None,cwTitle = None,cwControlType = None,autoID = None): 
 
-		:return: None
-		:rtype: NoneType
+		""" 
+
+		Constructs parameters
+		for each token. Checks if the tokens attribute changed based on a random variable.
+
+		:return: None 
+		:rtype: NoneType 
 		"""
 
 		self.parentst = parentSuperToken
@@ -47,18 +52,21 @@ class Token:
 		self.autoid = autoID
 
 
-	def isEqualTo(token2):
-		"""
-		The isEqualTo function gives a weight of importance to each attribute. This is based on the tokens when its state is changed.
+	def isEqualTo(token2): 
+		""" 
 
-		:param: token
-		:return: int
-		:rtype: NoneType
+		The isEqualTo function gives a weight of importance to each attribute.
+		This is based on the tokens when its state is changed.
+
+		:param: token 
+		:return: int 
+		:rtype: NoneType 
 		"""
-		total = 0
+		total = 0 
+
 		if token2.parentst == self.parentst:
 			total += 10
-
+			
 		if token2.pic == self.pic:
 			total += 1
 	
@@ -84,8 +92,8 @@ class Token:
 			total += 10
 
 		if total >= Token.THRESHOLD():
-			return 1
-		else:
-			return 0
+			return 1 
+
+		else: return 0
 	
 

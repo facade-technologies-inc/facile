@@ -1,5 +1,4 @@
-  
-"""
+  """
 /------------------------------------------------------------------------------\
 |                 -- FACADE TECHNOLOGIES INC.  CONFIDENTIAL --                 |
 |------------------------------------------------------------------------------|
@@ -18,21 +17,25 @@
 |                                                                              |
 \------------------------------------------------------------------------------/
 
-This file contains the super tokens class that initializes tokens as a list and a function that iterates through the tokens in the token list
+This file contains the super tokens class that initializes tokens as a list and a function that
+iterates through the tokens in the token list 
 """
 
 
-class SuperToken:
-	"""
-	SuperToken class initializes token1 with a unique identifier and checks to see if any tokens belong to a supertoken.
+class SuperToken: 
+	""" 
+
+	SuperToken class initializes token1 with a unique identifier and checks to see
+	if any tokens belong to a supertoken. 
 	"""
 
-	def __init__(self, token1, identifier, ignoreFlag):
-		"""
-		Constructs paramters for each token to check if it belongs to a supertoken.
+	def __init__(self, token1, identifier, ignoreFlag): 
+		""" 
+		Constructs paramters for each token to
+		check if it belongs to a supertoken.
 
-		:return: None
-		:rtype: NoneType
+		:return: None 
+		:rtype: NoneType 
 		"""
 
 		self.tokens = [token1]
@@ -41,24 +44,25 @@ class SuperToken:
 
 
 
-	def addToken(tokenA):
+	def addToken(tokenA): 
 		"""
 
 		The addToken function adds a token to the supertoken.
 
-		:return: token
-		:rtype: NoneType
+		:return: token 
+		:rtype: NoneType 
 		"""
 
 		self.tokens.append(tokenA)
 
-	def shouldContain(token2):
+	def shouldContain(token2): 
 		"""
 
-		The shouldContain function iterates through the tokens in the token list to see if the token belongs to a supertoken.
+		The shouldContain function iterates through the tokens in the token list to see if the token
+		belongs to a supertoken.
 
-		:return: token
-		:rtype: NoneType
+		:return: token 
+		:rtype: NoneType 
 		"""
 
 		for token in self.tokens:
