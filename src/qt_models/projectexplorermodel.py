@@ -34,45 +34,21 @@ class ProjectExplorerModel(QAbstractItemModel):
 	
 	== Target GUI ==
 		== GUI Components ==
-			component-1
-				component-2
-				component-3
-					component-4
-					component-5
-				component-6
-					component-7
-			component-8
-				component-9
-			component-10
+			GUI COMPONENT TREE
 		== Visibility Behaviors ==
-			visibility-behavior-1
-				from-component
-				to-component
-			visibility-behavior-2
-				from-component
-				to-component
-			visibility-behavior-3
-				from-component
-				to-component
+			VISIBILITY BEHAVIOR LIST
 	== Action Pipelines ==
-		action-pipeline-1
-			action-pipeline-2
-				action-pipeline-3
-			action-pipeline-4
-		action-pipeline-5
-		action-pipeline-6
+		ACTION PIPELINE TREE
 		
 	The internal pointer of the model indexes can be
 		- str (for a label)
 		- Component
 		- Visibility Behavior
 		- Action Pipeline
-		- tuple (see below)
+		- LeafIndex (see below)
 		
-	If the internal pointer is a tuple, it will take the following format
-		- index 0 (required) contains the data to be shown in the index - either a str or Component
-		- index 1 (required) contains the parent data.
-		- index 2 (optional) contains the parent's row.
+	If an index in the Model has no children, it should hold a LeafIndex unless is is simply a leaf in one of the
+	underlying data structures.
 	"""
 	
 	componentSelected = Signal(Component)
@@ -96,6 +72,93 @@ class ProjectExplorerModel(QAbstractItemModel):
 	MODEL = 0
 	PATH = 1
 	
+	class LeafIndex:
+		"""
+		This class holds the information for a QModelIndex as well as its parent and the row of the parent.
+		If a QModelIndex holds this object as its internal pointer, the QModelIndex will have no children.
+		"""
+		
+		def __init__(self, me: object, parent: object, parentIndex: int = None) -> 'LeafIndex':
+			"""
+			Constructs a LeafIndex object.
+			
+			:param me: The data for a QModelIndex.
+			:type me: object
+			:param parent: The data for the parent QModelIndex.
+			:type parent: object
+			:param parentIndex: The row of the parent.
+			:type parentIndex: int
+			"""
+			self._data = me
+			self._parentData = parent
+			self._parentIndex = parentIndex
+		
+		def getData(self):
+			"""
+			Gets the internal data of the current index.
+			
+			:return: the data for the current index.
+			:rtype: object
+			"""
+			return self._data
+		
+		def getParent(self):
+			"""
+			Gets the internal data of the parent index.
+
+			:return: the data for the parent index.
+			:rtype: object
+			"""
+			return self._parentData
+		
+		def getParentIndex(self):
+			"""
+			Gets the row of the parent.
+			
+			:return: the row of the parent
+			:rtype: int
+			"""
+			return self._parentIndex
+		
+		def __eq__(self, other: 'LeafIndex') -> bool:
+			"""
+			Determine if 2 LeafIndex objects are equal.
+			2 LeafIndex objects are equal if they have all the same data.
+			
+			:param other: the other leaf index to compare to.
+			:type other: LeafIndex
+			:return: True if they're equal, False otherwise
+			:rtype: bool
+			"""
+			if self.getData() != other.getData():
+				return False
+			elif self.getParent() != other.getParent():
+				return False
+			elif self.getParentIndex() != other.getParentIndex():
+				return False
+			else:
+				return True
+			
+		def __ne__(self, other: 'LeafIndex') -> bool:
+			"""
+			Determine if 2 LeafIndex objects are not equal. This is the inverse of the __eq__ function
+			
+			:param other: the other leaf index to compare to.
+			:type other: LeafIndex
+			:return: False if they're equal, True otherwise
+			:rtype: bool
+			"""
+			return not self.__eq__(other)
+		
+		def __hash__(self) -> int:
+			"""
+			Get the Hash for a LeafIndex object. LeafIndex objects with all of the same data will have the same hash.
+			
+			:return: The hash of the LeafIndex object
+			:rtype: int
+			"""
+			return hash(frozenset((self._data, self._parentData, self._parentIndex)))
+
 	#################################################
 	#          BEGIN EXCEPTION DEFINITIONS          #
 	#################################################
@@ -143,7 +206,7 @@ class ProjectExplorerModel(QAbstractItemModel):
 	#################################################
 	#           END EXCEPTION DEFINITIONS           #
 	#################################################
-
+	
 	def __init__(self, project: 'Project') -> 'ProjectExplorerModel':
 		"""
 		Constructs a ProjectExplorerModel exception
@@ -153,6 +216,12 @@ class ProjectExplorerModel(QAbstractItemModel):
 		"""
 		QAbstractItemModel.__init__(self)
 		self._project = project
+		
+		# Data structures that let us efficiently store references to internal data without hogging exorbitant amounts
+		# of memory.
+		self._registryCounter = 0
+		self._forwardRegistry = {}
+		self._backwardRegistry = {}
 	
 	def index(self, row: int, column: int, parent: QModelIndex) -> QModelIndex:
 		"""
@@ -167,17 +236,17 @@ class ProjectExplorerModel(QAbstractItemModel):
 		:return: the model index with the given parent, row, and column.
 		:rtype: QModelIndex
 		"""
-		
+		print(len(self._forwardRegistry))
 		if not self.hasIndex(row, column, parent):
 			return QModelIndex()
 
 		# If the parent is the ghost root, return an index with the appropriate string.
 		if not parent.isValid():
 			if row == ProjectExplorerModel.TARGET_GUI_ROW:
-				return self.createIndex(row, column, ProjectExplorerModel.TARGET_GUI_LABEL)
+				return self.registerAndCreateIndex(row, column, ProjectExplorerModel.TARGET_GUI_LABEL)
 			
 			elif row == ProjectExplorerModel.PIPELINE_ROW:
-				return self.createIndex(row, column, ProjectExplorerModel.PIPELINE_LABEL)
+				return self.registerAndCreateIndex(row, column, ProjectExplorerModel.PIPELINE_LABEL)
 			
 			else:
 				return QModelIndex()
@@ -186,49 +255,49 @@ class ProjectExplorerModel(QAbstractItemModel):
 		if isinstance(parentData, str):
 			if parentData == ProjectExplorerModel.TARGET_GUI_LABEL:
 				if row == ProjectExplorerModel.COMPONENT_ROW:
-					return self.createIndex(row, column, ProjectExplorerModel.COMPONENT_LABEL)
+					return self.registerAndCreateIndex(row, column, ProjectExplorerModel.COMPONENT_LABEL)
 				
 				elif row == ProjectExplorerModel.BEHAVIOR_ROW:
-					return self.createIndex(row, column, ProjectExplorerModel.BEHAVIOR_LABEL)
+					return self.registerAndCreateIndex(row, column, ProjectExplorerModel.BEHAVIOR_LABEL)
 				
 				else:
 					return QModelIndex()
 	
 			elif parentData == ProjectExplorerModel.COMPONENT_LABEL:
 				if self._project.getTargetGUIModel().getRoot().childCount() == 0:
-					return self.createIndex(row, column, (ProjectExplorerModel.NO_COMPONENTS_LABEL, ProjectExplorerModel.COMPONENT_LABEL, 0))
+					return self.registerAndCreateIndex(row, column, ProjectExplorerModel.LeafIndex(ProjectExplorerModel.NO_COMPONENTS_LABEL, parentData, 0))
 				
-				return self.createIndex(row, column, self._project.getTargetGUIModel().getRoot().getNthChild(row))
+				return self.registerAndCreateIndex(row, column, self._project.getTargetGUIModel().getRoot().getNthChild(row))
 			
 			elif parentData == ProjectExplorerModel.BEHAVIOR_LABEL:
-				if self._project.getTargetGUIModel().getNumVisibilityBehaviors() == 0:
-					return self.createIndex(row, column, (ProjectExplorerModel.NO_BEHAVIORS_LABEL, ProjectExplorerModel.BEHAVIOR_LABEL, 0))
+				if len(self._project.getTargetGUIModel().getVisibilityBehaviors()) == 0:
+					return self.registerAndCreateIndex(row, column, ProjectExplorerModel.LeafIndex(ProjectExplorerModel.NO_BEHAVIORS_LABEL, parentData, 0))
 				
-				return self.createIndex(row, column, self._project.getTargetGUIModel().getNthBehavior(row))
+				return self.registerAndCreateIndex(row, column, self._project.getTargetGUIModel().getNthBehavior(row))
 			
 			elif parentData == ProjectExplorerModel.PIPELINE_LABEL:
 				# TODO: replace this once action pipelines are implemented
-				return self.createIndex(row, column, (ProjectExplorerModel.NO_PIPELINES_LABEL, parentData, 1))
+				return self.registerAndCreateIndex(row, column, ProjectExplorerModel.LeafIndex(ProjectExplorerModel.NO_PIPELINES_LABEL, parentData, 1))
 			
 			else:
 				raise ProjectExplorerModel.InvalidLabelException("Unsupported data string: {}".format(parentData))
 			
 		elif isinstance(parentData, Component):
-			return self.createIndex(row, column, parentData.getNthChild(row))
+			return self.registerAndCreateIndex(row, column, parentData.getNthChild(row))
 			
 		elif isinstance(parentData, VisibilityBehavior):
 			if row == 0:
-				return self.createIndex(row, column, (parentData.getFromComponent(), parentData))
+				return self.registerAndCreateIndex(row, column, ProjectExplorerModel.LeafIndex(parentData.getFromComponent(), parentData))
 			
 			if row == 1:
-				return self.createIndex(row, column, (parentData.getToComponent(), parentData))
+				return self.registerAndCreateIndex(row, column, ProjectExplorerModel.LeafIndex(parentData.getToComponent(), parentData))
 			
 		elif isinstance(parentData, ActionPipeline):
 			# TODO: replace this once action pipelines are implemented
 			pass
 			
-		elif isinstance(parentData, tuple):
-			# If the internal pointer is a tuple, it should have no children.
+		elif isinstance(parentData, ProjectExplorerModel.LeafIndex):
+			# Should never get into here
 			pass
 		
 		else:
@@ -252,30 +321,37 @@ class ProjectExplorerModel(QAbstractItemModel):
 				return QModelIndex()
 	
 			elif data in (ProjectExplorerModel.COMPONENT_LABEL, ProjectExplorerModel.BEHAVIOR_LABEL):
-				return self.createIndex(0, 0, ProjectExplorerModel.TARGET_GUI_LABEL)
+				return self.registerAndCreateIndex(0, 0, ProjectExplorerModel.TARGET_GUI_LABEL)
+			
+			else:
+				raise ProjectExplorerModel.InvalidLabelException("Unsupported label: {}".format(data))
 			
 		elif isinstance(data, Component):
 			parentComponent = data.getParent()
 			if parentComponent is self._project.getTargetGUIModel().getRoot():
-				return self.createIndex(0, 0, ProjectExplorerModel.COMPONENT_LABEL)
+				return self.registerAndCreateIndex(0, 0, ProjectExplorerModel.COMPONENT_LABEL)
 			
 			else:
-				return self.createIndex(parentComponent.getRow(), 0, parentComponent)
+				return self.registerAndCreateIndex(parentComponent.getPositionInSiblings(), 0, parentComponent)
 			
 		elif isinstance(data, VisibilityBehavior):
-			return self.createIndex(1, 0, ProjectExplorerModel.BEHAVIOR_LABEL)
+			return self.registerAndCreateIndex(1, 0, ProjectExplorerModel.BEHAVIOR_LABEL)
 		
 		elif isinstance(data, ActionPipeline):
 			# TODO: replace this once action pipelines are implemented
 			pass
 		
-		elif isinstance(data, tuple):
-			innerData = data[0]
+		elif isinstance(data, ProjectExplorerModel.LeafIndex):
+			innerData = data.getData()
+			parentData = data.getParent()
 			if isinstance(innerData, str):
-				return self.createIndex(data[2], 0, data[1])
+				return self.registerAndCreateIndex(data.getParentIndex(), 0, parentData)
 			
 			elif isinstance(innerData, Component):
-				return self.createIndex(data[1].getRow(), 0, data[1])
+				return self.registerAndCreateIndex(parentData.getPositionInSiblings(), 0, parentData)
+			
+			else:
+				raise ProjectExplorerModel.UnsupportedTypeException("Unsupported data type in LeafIndex: {}".format(innerData))
 			
 		else:
 			raise ProjectExplorerModel.UnsupportedTypeException("Unsupported data type in index: {}".format(type(data)))
@@ -313,7 +389,7 @@ class ProjectExplorerModel(QAbstractItemModel):
 		elif isinstance(data, VisibilityBehavior):
 			return 2
 		
-		elif isinstance(data, tuple):
+		elif isinstance(data, ProjectExplorerModel.LeafIndex):
 			return 0
 			
 		elif isinstance(data, ActionPipeline):
@@ -401,8 +477,8 @@ class ProjectExplorerModel(QAbstractItemModel):
 			else:
 				return None
 			
-		elif isinstance(data, tuple):
-			innerData = data[0]
+		elif isinstance(data, ProjectExplorerModel.LeafIndex):
+			innerData = data.getData()
 			if isinstance(innerData, str):
 				if col == 0:
 					return innerData
@@ -417,6 +493,7 @@ class ProjectExplorerModel(QAbstractItemModel):
 						return innerData.getName()
 					else:
 						return None
+					
 				if row == 1:
 					if col == 0:
 						return "To"
@@ -482,8 +559,36 @@ class ProjectExplorerModel(QAbstractItemModel):
 				elif isinstance(data, ActionPipeline):
 					self.pipelineSelected.emit(data)
 					
-				elif isinstance(data, tuple):
-					if isinstance(data[0], Component):
-						self.componentSelected.emit(data[0])
+				elif isinstance(data, ProjectExplorerModel.LeafIndex):
+					data = data.getData()
+					if isinstance(data, Component):
+						self.componentSelected.emit(data)
 			else:
 				raise ProjectExplorerModel.InvalidSelectionException("Multiple row selection is not supported")
+			
+	def registerAndCreateIndex(self, row, col, data):
+		"""
+		Keep a reference to the internal data of all QModelIndex objects. This allows us to avoid memory access errors.
+		Without storing a reference to the internal data, the python objects go out of scope and become garbage
+		collected.
+		
+		This method also creates a QModelIndex and returns it
+		
+		:param row: the row of the QModelIndex to create.
+		:type row: int
+		:param col: the column of the QModelIndex to create.
+		:type col: int
+		:param data: The object stored inside of the QModelIndex.
+		:type data: object
+		:return: The created QModelIndex
+		:rtype: QModelIndex
+		"""
+		if data in self._forwardRegistry.keys():
+			id = self._forwardRegistry[data]
+			data = self._backwardRegistry[id]
+		else:
+			self._registryCounter += 1
+			self._forwardRegistry[data] = self._registryCounter
+			self._backwardRegistry[self._registryCounter] = data
+		
+		return self.createIndex(row, col, data)
