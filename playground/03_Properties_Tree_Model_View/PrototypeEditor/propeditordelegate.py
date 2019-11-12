@@ -47,7 +47,7 @@ class PropertyEditorDelegate(QStyledItemDelegate):
         :param index: Index of the editor.
         :type index: object
         :return: Editor for PropModel
-        :rtype: object
+        :rtype: QObject
         """
         data = index.internalPointer()
 

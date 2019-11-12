@@ -36,7 +36,7 @@ class PropModel(QAbstractItemModel):
         :param propData: The data from the properties.
         :type propData: object
         :return: The constructed model.
-        :rtype: PropModel
+        :rtype: QObject
         """
         QAbstractItemModel.__init__(self)
         self._propData = propData
@@ -124,12 +124,12 @@ class PropModel(QAbstractItemModel):
 
     def data(self, index: QModelIndex, role: int) -> object:
         """
-        Purpose of this function is to retrieve data stored under the given role for the item reffered to by the
+        Purpose of this function is to retrieve data stored under the given role for the item referred to by the
         index
 
         :param index: Index that is provided.
         :type index: QModelIndex
-        :param role: The given role for item reffered.
+        :param role: The given role for item referred.
         :type role: int
         :return: Data of the given role from index.
         :rtype: object
@@ -171,7 +171,7 @@ class PropModel(QAbstractItemModel):
         :param section: Specific section for the header data.
         :type section: int
         :param orientation: Given orientation for the header data.
-        :type orientation: object
+        :type orientation: orientation
         :param role: The given role for the header data.
         :type role: int
         :return: Model of header data.
@@ -248,7 +248,7 @@ class PropModel(QAbstractItemModel):
         :param index: Index that is provided.
         :type index: QModelIndex
         :return: Returns the item flags for the given index.
-        :rtype: object
+        :rtype: ItemFlags
         """
         if not index.isValid():
             return Qt.NoItemFlags

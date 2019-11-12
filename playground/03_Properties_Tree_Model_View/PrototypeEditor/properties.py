@@ -131,7 +131,7 @@ class Properties:
         Gets the properties's objects model.
 
         :return: Model of properties object.
-        :rtype: PropModel
+        :rtype: QObject
         """
         return self._model
 
