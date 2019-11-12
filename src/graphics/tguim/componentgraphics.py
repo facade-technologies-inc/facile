@@ -17,20 +17,16 @@
 |                                                                              |
 \------------------------------------------------------------------------------/
 
-This module contains the componentView class.
+This module contains the ComponentGraphics class.
 """
 
-import math
-from PySide2.QtCore import QRectF, QPointF, QSizeF, QLineF
-from PySide2.QtGui import QPainterPath, QColor, QPen, Qt, QPainter
-from PySide2.QtWidgets import QSplitter, QTreeView
-from PySide2.QtWidgets import QGraphicsView, QGraphicsScene, QGraphicsItem
-from PySide2.QtWidgets import QHBoxLayout, QVBoxLayout, QWidget, QPushButton
-from PySide2.QtCore import Signal
-from PySide2.QtCore import QItemSelectionModel
+from PySide2.QtCore import QRectF
+from PySide2.QtGui import QPainterPath, QColor, QPen, Qt
+from PySide2.QtWidgets import QGraphicsScene, QGraphicsItem
 from data.tguim.component import Component
 
-class ComponentView(QGraphicsItem):
+
+class ComponentGraphics(QGraphicsItem):
     """
     This class displays an individual GUI component in the target gui,
     based on the component class.
@@ -70,30 +66,30 @@ class ComponentView(QGraphicsItem):
         id = self._dataComponent.getId()
         numDescendants = self._dataComponent.getNumDescendants() # used to calculate height
         maxDepth = self._dataComponent.getMaxDepth() # used to calculate width
-        offsetFromParentTop = ComponentView.topMargin + ComponentView.textHeight #used to calculate y offset from parent.
+        offsetFromParentTop = ComponentGraphics.topMargin + ComponentGraphics.textHeight #used to calculate y offset from parent.
         siblings = self._dataComponent.getSiblings()
         siblingDepths = [maxDepth]
         for sibling in siblings:
             if sibling is self._dataComponent:
                 break
-            offsetFromParentTop += (sibling.getNumDescendants()+1) * (ComponentView.topMargin + ComponentView.textHeight + ComponentView.bottomMargin)
+            offsetFromParentTop += (sibling.getNumDescendants()+1) * (ComponentGraphics.topMargin + ComponentGraphics.textHeight + ComponentGraphics.bottomMargin)
 
         for sibling in siblings:
             siblingDepths.append(sibling.getMaxDepth())
         maxDepth = max(siblingDepths)
 
-        totalHeight = (numDescendants + 1) * (ComponentView.textHeight + ComponentView.topMargin + ComponentView.bottomMargin)
-        totalWidth = ComponentView.baseWidth + maxDepth*(ComponentView.leftMargin + ComponentView.rightMargin)
+        totalHeight = (numDescendants + 1) * (ComponentGraphics.textHeight + ComponentGraphics.topMargin + ComponentGraphics.bottomMargin)
+        totalWidth = ComponentGraphics.baseWidth + maxDepth*(ComponentGraphics.leftMargin + ComponentGraphics.rightMargin)
 
-        yPos = -(totalHeight/2) - ComponentView.penWidth/2 + offsetFromParentTop
-        xPos = -(totalWidth / 2) - ComponentView.penWidth / 2
+        yPos = -(totalHeight/2) - ComponentGraphics.penWidth/2 + offsetFromParentTop
+        xPos = -(totalWidth / 2) - ComponentGraphics.penWidth / 2
 
         if self._dataComponent.getParent() is not None:
             parentBounding = self.parentItem().boundingRect()
-            yPos = parentBounding.y() + offsetFromParentTop - ComponentView.penWidth/2
-            xPos = parentBounding.x() + ComponentView.leftMargin - ComponentView.penWidth/2
+            yPos = parentBounding.y() + offsetFromParentTop - ComponentGraphics.penWidth/2
+            xPos = parentBounding.x() + ComponentGraphics.leftMargin - ComponentGraphics.penWidth/2
 
-        return QRectF(xPos, yPos, totalWidth + ComponentView.penWidth, totalHeight + ComponentView.penWidth)
+        return QRectF(xPos, yPos, totalWidth + ComponentGraphics.penWidth, totalHeight + ComponentGraphics.penWidth)
 
 
     def shape(self):
@@ -114,7 +110,6 @@ class ComponentView(QGraphicsItem):
         :param painter: QPainter
         :param option: QStyleOptionGraphicsItem
         :param widget: QWidget
-        :return: None
         """
 
         if self._dataComponent.isDeleted():
@@ -136,12 +131,12 @@ class ComponentView(QGraphicsItem):
 
         id = self._dataComponent.getId()
         boundingRect = self.boundingRect()
-        x = int(boundingRect.x()) + ComponentView.penWidth/2
-        y = int(boundingRect.y()) + ComponentView.penWidth/2
-        width = int(boundingRect.width()) - ComponentView.penWidth
-        height = int(boundingRect.height()) - ComponentView.penWidth
-        painter.drawRoundedRect(int(x+ComponentView.leftMargin), int(y+ComponentView.topMargin), int(width - ComponentView.leftMargin - ComponentView.rightMargin), int(height - ComponentView.topMargin - ComponentView.bottomMargin), 5, 5)
-        painter.drawText(int(x+ComponentView.leftMargin*1.5), int(y+ComponentView.topMargin+30), "Component {}: {}".format(self._dataComponent.getId(), self._dataComponent.getName()))
+        x = int(boundingRect.x()) + ComponentGraphics.penWidth/2
+        y = int(boundingRect.y()) + ComponentGraphics.penWidth/2
+        width = int(boundingRect.width()) - ComponentGraphics.penWidth
+        height = int(boundingRect.height()) - ComponentGraphics.penWidth
+        painter.drawRoundedRect(int(x+ComponentGraphics.leftMargin), int(y+ComponentGraphics.topMargin), int(width - ComponentGraphics.leftMargin - ComponentGraphics.rightMargin), int(height - ComponentGraphics.topMargin - ComponentGraphics.bottomMargin), 5, 5)
+        painter.drawText(int(x+ComponentGraphics.leftMargin*1.5), int(y+ComponentGraphics.topMargin+30), "Component {}: {}".format(self._dataComponent.getId(), self._dataComponent.getName()))
         # TODO: _dataComponent.getProperties().getName? instead of _dataComponent.getName()
 
     def mousePressEvent(self, event):
@@ -149,7 +144,6 @@ class ComponentView(QGraphicsItem):
         This event handler is implemented to receive mouse press events for this item.
 
         :param event: QGraphicsSceneMouseEvent
-        :return: None
         """
         self.setSelected(True)
         self.scene().emitItemSelected(self._dataComponent.getId())
@@ -158,7 +152,6 @@ class ComponentView(QGraphicsItem):
         """
         Update the scene.
 
-        :return: None
         """
         self.scene().invalidate(self.scene().sceneRect(), QGraphicsScene.ItemLayer)
 
