@@ -23,7 +23,6 @@ This module contains the ComponentGraphics class.
 from PySide2.QtCore import QRectF
 from PySide2.QtGui import QPainterPath, QColor, QPen, Qt
 from PySide2.QtWidgets import QGraphicsScene, QGraphicsItem
-from data.tguim.component import Component
 
 
 class ComponentGraphics(QGraphicsItem):
@@ -108,11 +107,6 @@ class ComponentGraphics(QGraphicsItem):
         :param widget: QWidget
         """
 
-        if self._dataComponent.isDeleted():
-            painter.setBrush(QColor(255,255,255,0))
-            painter.setPen(QColor(255,255,255,0))
-            return painter.drawRect(0,0,1,1)
-
         pen = QPen(QColor(100, 200, 255, int(255 / 10)))
         if self.isSelected():
             pen.setStyle(Qt.DashDotLine)
@@ -132,7 +126,7 @@ class ComponentGraphics(QGraphicsItem):
         width = int(boundingRect.width()) - ComponentGraphics.penWidth
         height = int(boundingRect.height()) - ComponentGraphics.penWidth
         painter.drawRoundedRect(int(x+ComponentGraphics.leftMargin), int(y+ComponentGraphics.topMargin), int(width - ComponentGraphics.leftMargin - ComponentGraphics.rightMargin), int(height - ComponentGraphics.topMargin - ComponentGraphics.bottomMargin), 5, 5)
-        
+
         name = self._dataComponent.getProperties().getProperty("Name").getValue()
         painter.drawText(int(x+ComponentGraphics.leftMargin*1.5), int(y+ComponentGraphics.topMargin+30), name)
 

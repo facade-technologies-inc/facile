@@ -24,6 +24,8 @@ from collections import OrderedDict
 from qt_models.propeditormodel import PropModel
 from data.property import Property
 
+# TODO: Don't use object in type hints when there is a more specific type you could put
+
 
 class Properties:
     """
@@ -116,6 +118,7 @@ class Properties:
                 newProperties.addProperty("Visibility Behavior", "From", 1, int, True)
                 newProperties.addProperty("Visibility Behavior", "To", 1, int, True)
 
+        # TODO: Fix this.
         for i in range(len(customCategories)):
             newProperties.newCategory(customCategories[i])
             if customCategories[i] == "Custom":
