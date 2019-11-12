@@ -99,12 +99,6 @@ class TreeNode:
 		self._edgeSrcList = []
 		self._edgeDesList = []
 
-	def getEdgeSrcListLen(self):
-		return len(self._edgeSrcList)
-
-	def getEdgeDesListLen(self):
-		return len(self._edgeDesList)
-
 	def addSourceEdge(self, edge):
 		self._edgeSrcList.append(edge)
 

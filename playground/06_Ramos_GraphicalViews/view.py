@@ -144,10 +144,30 @@ class EdgeItem(QGraphicsItem):
         return QRectF(leftCornerX, leftCornerY, width, height)
 
     def paint(self, painter:QPainter, option, widget):
-        painter.drawLine(self._dataEdge.getSrcNode().getNodeItem().boundingRect().x(),
-                         self._dataEdge.sourceCenterPoint.y(),
-                         self._dataEdge.destCenterPoint.x() + (self._dataEdge.destCenterPoint.x() - self._dataEdge.getDesNode().getNodeItem().boundingRect().x()),
-                         self._dataEdge.destCenterPoint.y())
+        lengthSrcNodeSrcEdgeList = len(self._dataEdge.getSrcNode().getSourceEdges())
+        lengthDesNodeDesEdgeList = len(self._dataEdge.getDesNode().getDestinationEdges())
+        heightSrcNode = 2 * abs(self._dataEdge.getSrcNode().getNodeItem().boundingRect().y() - self._dataEdge.sourceCenterPoint.y())
+        heightDesNode = 2 * abs(self._dataEdge.getDesNode().getNodeItem().boundingRect().y() - self._dataEdge.destCenterPoint.y())
+        # This is the index(+1 avoid 0 in calculation) of the edge at the SourceNode's edgeSrcList
+        srcNodeIndex = self._dataEdge.getSrcNode().getSourceEdges().index(self._dataEdge) + 1
+        # This is the index of the edge at the DesNode's _edgeDesList
+        desNodeIndex = self._dataEdge.getDesNode().getDestinationEdges().index(self._dataEdge) + 1
+
+        x1 = self._dataEdge.getSrcNode().getNodeItem().boundingRect().x() #x does not change, stay at the left most of the node
+        y1 = self._dataEdge.getSrcNode().getNodeItem().boundingRect().y() + (heightSrcNode / (lengthSrcNodeSrcEdgeList + 1)) * srcNodeIndex
+        x2 = self._dataEdge.destCenterPoint.x() + (self._dataEdge.destCenterPoint.x() - self._dataEdge.getDesNode().getNodeItem().boundingRect().x())
+        y2 = self._dataEdge.getDesNode().getNodeItem().boundingRect().y() + (heightDesNode / (lengthDesNodeDesEdgeList + 1)) * desNodeIndex
+
+        painter.drawLine(x1,
+                         y1,
+                         x2,
+                         y2)
+
+        #ToDo: make the arrows distribute evenly on the edge.
+        #Realize that when it shows in the main.py, all the edges are added. So I know how many edges are there when I paint.
+        #It's not interactive yet - allowing user to add edge. So don't worry about that part. Just go static.
+        #Then I could simply use the length of the list, calculate where should I put the arrow.
+        #Paint it!
 
 
 ###########################################################
