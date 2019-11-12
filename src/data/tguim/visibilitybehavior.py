@@ -20,7 +20,7 @@
 This module contains the VisibilityBehavior class.
 """
 
-#TODO add import of Condition class.
+from data.tguim.condition import Condition
 from data.entity import Entity
 
 
@@ -51,7 +51,7 @@ class VisibilityBehavior(Entity):
         super().__init__()
         self._toComponent = toComp
         self._fromComponent = fromComp
-        self._condition = None  # TODO: construct a condition object.
+        self._condition = Condition()
         self._reactionType = None
         self._graphicsItem = None  # TODO: Construct a graphicsItem from the class Ramos creates.
         # TODO: Add a "trigger action" data member?
