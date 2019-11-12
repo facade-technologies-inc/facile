@@ -159,14 +159,13 @@ class EdgeItem(QGraphicsItem):
         y2 = self._dataEdge.getDesNode().getNodeItem().boundingRect().y() + (heightDesNode / (lengthDesNodeDesEdgeList + 1)) * desNodeIndex
 
         # painter.drawLine(x1, y1, x2, y2)
-
         path = QPainterPath()
         path.moveTo(x1, y1)
         # path.lineTo(x1 - 200, y1)
         # path.lineTo(x1 - 200, y2)
         # path.lineTo(x2, y2)
         # path.arcTo(x2, y2, 100, 100, 50, 100)
-        path.cubicTo(x1+100, y1+100, x2-100, y2-100, x2, y2)
+        path.cubicTo(x1+100, y1+100, x2-200, y2-200, x2, y2)
         painter.drawPath(path)
 
 ###########################################################
