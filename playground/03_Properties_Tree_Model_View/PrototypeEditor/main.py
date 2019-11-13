@@ -26,9 +26,11 @@ from propeditordelegate import PropertyEditorDelegate
 if __name__ == "__main__":
 	
 	app = QApplication()
-	
+
 	# Instantiate Properties Object
-	properties = Properties.createPropertiesObject(["Base"], ["Custom"])
+	customCategories = {"NewCategory": [{"name": "someProperty", "default": False, "type": bool,  "readOnly": False}]}
+	predefinedCategories = ["Base", "Visual", "GUI Component"]
+	properties = Properties.createPropertiesObject(predefinedCategories, customCategories)
 
 	
 	# Get model object associated with Properties object

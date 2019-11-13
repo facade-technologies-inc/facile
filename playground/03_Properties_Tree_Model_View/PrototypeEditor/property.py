@@ -24,7 +24,7 @@ class Property:
 	"""
 	This class allows us to establish the data of our properties.
 	"""
-	def __init__(self, name:str, value:object, type:object, readOnly: object=False):
+	def __init__(self, name: str, value: object, type: object, readOnly: object=False):
 		"""
 		Constructs a Property Object
 

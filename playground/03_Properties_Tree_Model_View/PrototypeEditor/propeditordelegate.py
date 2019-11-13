@@ -35,19 +35,19 @@ class PropertyEditorDelegate(QStyledItemDelegate):
     # TODO: Support for Enums
     # TODO: Support for Lists
 
-    def createEditor(self, parent: object, option: object, index: object) -> object:
+    def createEditor(self, parent: 'QModelIndex', option: object, index: 'QModelIndex') -> 'QWidget':
         """
         Creates the widget used to change data from the model and can be
         reimplemented to customize editing behavior
 
         :param parent: Parent of the editor.
-        :type parent: object
+        :type parent: QModelIndex
         :param option: Option of the editor.
         :type option: object
         :param index: Index of the editor.
-        :type index: object
+        :type index: QModelIndex
         :return: Editor for PropModel
-        :rtype: QObject
+        :rtype: QWidget
         """
         data = index.internalPointer()
 
@@ -66,14 +66,14 @@ class PropertyEditorDelegate(QStyledItemDelegate):
                     pass
         return QStyledItemDelegate.createEditor(self, parent, option, index)
 
-    def setEditorData(self, editor: object, index: object) -> None:
+    def setEditorData(self, editor: 'QWidget', index: 'QModelIndex') -> None:
         """
         Provides the widget with data to manipulate.
 
         :param editor: Editor that will be set for certain data structures.
-        :type editor: object
+        :type editor: QWidget
         :param index: Index of the editor.
-        :type index: object
+        :type index: QModelIndex
         :return: None
         :rtype: NoneType
         """
@@ -94,16 +94,16 @@ class PropertyEditorDelegate(QStyledItemDelegate):
                 else:
                     pass
 
-    def setModelData(self, editor: object, PropModel: classmethod, index: object) -> None:
+    def setModelData(self, editor: 'QWidget', PropModel: 'QObject', index: 'QModelIndex') -> None:
         """
         Returns updated data to the model
 
         :param editor: Editor that will be set for certain data structures.
-        :type editor: object
+        :type editor: QWidget
         :param PropModel: The model that our delegate will render.
-        :type PropModel: class method
+        :type PropModel: QObject
         :param index: Index of the editor.
-        :type index: object
+        :type index: QModelIndex
         :return: None
         :rtype: NoneType
         """

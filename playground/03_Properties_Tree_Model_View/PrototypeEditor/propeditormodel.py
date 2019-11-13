@@ -41,7 +41,7 @@ class PropModel(QAbstractItemModel):
         QAbstractItemModel.__init__(self)
         self._propData = propData
 
-    def index(self, row: int, column: int, parent: object) -> QModelIndex:
+    def index(self, row: int, column: int, parent: QModelIndex) -> QModelIndex:
         """
         Purpose of this function is to return a QModelIndex that maps to the appropriate data
 
@@ -50,7 +50,7 @@ class PropModel(QAbstractItemModel):
         :param column: Column of the index.
         :type column: int
         :param parent: Parent of that row or column.
-        :type parent: object
+        :type parent: QModelIndex
         :return: The index for the data.
         :rtype: QModelIndex
         """
@@ -91,23 +91,23 @@ class PropModel(QAbstractItemModel):
 
         return self.createIndex(self._propData.getCategoryIndex(category),0,category)
 
-    def columnCount(self, parent: object) -> int:
+    def columnCount(self, parent: QModelIndex) -> int:
         """
         Purpose of this function is to return the number of columns for the children of a given parent
 
         :param parent: Parent will tell us our column count.
-        :type parent: object
+        :type parent: QModelIndex
         :return: Number of columns.
         :rtype: int
         """
         return 2
 
-    def rowCount(self, parent: object) -> int:
+    def rowCount(self, parent: QModelIndex) -> int:
         """
         Purpose of this function is to return the number of children of a given parent
 
         :param parent: Parent will tell us our column count.
-        :type parent: object
+        :type parent: QModelIndex
         :return: Number of rows.
         :rtype: int
         """
@@ -163,7 +163,7 @@ class PropModel(QAbstractItemModel):
                 shade = row%2 * 25
                 return QColor(100+shade, 150+shade, 200+shade)
 
-    def headerData(self, section: int, orientation: object, role: int) -> object:
+    def headerData(self, section: int, orientation: 'orientation', role: int) -> object:
         """
         This method is used for displaying the header data for the given role
         and orientation of that specific section.
