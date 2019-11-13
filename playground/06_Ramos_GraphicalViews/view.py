@@ -160,7 +160,7 @@ class EdgeItem(QGraphicsItem):
 
         # painter.drawLine(x1, y1, x2, y2)
         path = QPainterPath()
-        path.moveTo(x1, y1)
+        # path.moveTo(x1, y1)
         # path.lineTo(x1 - 200, y1)
         # path.lineTo(x1 - 200, y2)
         # path.lineTo(x2, y2)
