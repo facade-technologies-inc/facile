@@ -77,6 +77,41 @@ class Observer(QThread):
             work = app.windows()[:]
             while len(work) > 0:
                 curComponent = work.pop()
+                children = curComponent.children()
+                for child in children:
+                    work.append(child)
+                
+                # Information we can get about any element
+                id = curComponent.control_id()
+                isDialog = curComponent.is_dialog()
+                isEnabled = curComponent.is_enabled()
+                isVisible = curComponent.is_visible()
+                parent = curComponent.parent()
+                topLevelParent = curComponent.top_level_parent()
+                processID = curComponent.process_id()
+                rectangle = curComponent.rectangle()     # RECT structure
+                root = curComponent.root()  #wrapper for root element
+                texts = curComponent.texts()[1:]    # all texts in a control
+                title = curComponent.window_text()
+                numControls = curComponent.control_count()
+                image = curComponent.capture_as_image()
+                className = curComponent.friendly_class_name()
+                
+                # additional information we can get about uia elements
+                autoID = curComponent.automation_id()
+                childrenTexts = curComponent.children_texts()
+                expandState = curComponent.get_expand_state()
+                shownState = curComponent.get_show_state()
+                
+                # additional information we can get about menus
+                itemCount = curComponent.item_count()
+                
+                # additional information about menu items
+                item_id = curComponent.item_id()
+                
+                
+                
+                
                 
                 #TODO:
                 # 1. create token
@@ -85,6 +120,3 @@ class Observer(QThread):
                 #       b. if close match is found, add the token to the close super token
                 #       c. if no match is found, create a new super token and emit the newSuperToken signal
                 
-                children = curComponent.children()
-                for child in children:
-                    work.push(child)

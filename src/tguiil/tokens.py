@@ -52,7 +52,7 @@ class Token:
 		self.autoid = autoID
 
 
-	def isEqualTo(token2): 
+	def isEqualTo(token2):
 		""" 
 
 		The isEqualTo function gives a weight of importance to each attribute.
