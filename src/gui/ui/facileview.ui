@@ -258,27 +258,45 @@
    </property>
   </action>
   <action name="actionAutoExplore">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>Auto Explore</string>
    </property>
    <property name="toolTip">
     <string>Explore the target GUI autonomously (no user control)</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+Alt+A</string>
+   </property>
   </action>
   <action name="actionManualExplore">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>Manual Explore</string>
    </property>
    <property name="toolTip">
     <string>Watch for changes in the target GUI as the user interacts with it.</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+Alt+M</string>
+   </property>
   </action>
   <action name="actionIgnoreExplore">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>Ignore Explore</string>
    </property>
    <property name="toolTip">
     <string>The user can interact with the target GUI without changes being recognized.</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Alt+I</string>
    </property>
   </action>
   <action name="actionAPI_Modules">

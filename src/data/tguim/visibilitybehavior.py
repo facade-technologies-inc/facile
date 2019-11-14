@@ -22,7 +22,6 @@ This module contains the VisibilityBehavior class.
 
 from data.tguim.condition import Condition
 from data.entity import Entity
-from data.tguim.component import Component
 
 
 VALID_REACTION_TYPES = {"show", "hide"}

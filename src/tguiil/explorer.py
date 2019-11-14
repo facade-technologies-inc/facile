@@ -27,6 +27,7 @@ from pywinauto.application import Application
 
 import tguiil.application as cApp
 
+# TODO: Create play/pause methods
 
 class Explorer:
     """

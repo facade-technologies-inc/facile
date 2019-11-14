@@ -236,7 +236,6 @@ class ProjectExplorerModel(QAbstractItemModel):
 		:return: the model index with the given parent, row, and column.
 		:rtype: QModelIndex
 		"""
-		print(len(self._forwardRegistry))
 		if not self.hasIndex(row, column, parent):
 			return QModelIndex()
 

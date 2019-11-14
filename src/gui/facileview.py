@@ -23,6 +23,7 @@ Much of Facile is joined together here.
 import os
 import json
 from copy import deepcopy
+from enum import Enum, unique
 from PySide2.QtWidgets import QMainWindow, QFileDialog, QMessageBox
 from PySide2.QtGui import QStandardItemModel, QStandardItem, Qt
 from PySide2.QtCore import Signal, Slot
@@ -41,6 +42,13 @@ class FacileView(QMainWindow):
 	
 	# This signal will be emitted when the project changes to notify all components of Facile.
 	projectChanged = Signal(Project)
+	
+	@unique
+	class ExploreMode(Enum):
+		MANUAL = 1
+		AUTOMATIC = 2
+		IGNORE = 3
+	
 	
 	def __init__(self) -> 'FacileView':
 		"""
@@ -71,13 +79,21 @@ class FacileView(QMainWindow):
 		
 		self._project = project
 		
-		if not project is None:
+		if project is not None:
 			self.setWindowTitle("Facile - " + self._project.getMainProjectFile())
 			print(self._project.getProjectDir())
 			self.projectChanged.emit(project)
 			self._project.save()
 			self._project.addToRecents()
 			self.ui.projectExplorerView.setModel(self._project.getProjectExplorerModel())
+			self.ui.targetGUIModelView.setScene(self._project.getTargetGUIModel().getScene())
+			self._project.startTargetApplication()
+			
+			# TODO: Enable a lot of buttons
+			
+		else:
+			# TODO: Disable a lot of buttons
+			pass
 			
 	def _connectActions(self) -> None:
 		"""
@@ -96,6 +112,9 @@ class FacileView(QMainWindow):
 		self.ui.actionSave_Project.triggered.connect(self._onSaveProjectTriggered)
 		self.ui.actionSave_as.triggered.connect(self._onSaveProjectAsTriggered)
 		self.ui.actionManage_Project.triggered.connect(self._onManageProjectTriggered)
+		self.ui.actionAutoExplore.triggered.connect(self._onAutomaticExploration)
+		self.ui.actionManualExplore.triggered.connect(self._onManualExploration)
+		self.ui.actionIgnoreExplore.triggered.connect(self._onIgnoreExploration)
 		
 	def _setEmptyModels(self) -> None:
 		"""
@@ -267,3 +286,82 @@ class FacileView(QMainWindow):
 		manageProjectDialog = ManageProjectDialog(self._project)
 		manageProjectDialog.projectCreated.connect(self._setProject)
 		manageProjectDialog.exec_()
+		
+	@Slot(bool)
+	def _onManualExploration(self, checked: bool) -> None:
+		"""
+		Sets the exploration mode to be manual iff checked is True
+		
+		:param checked: if True, set the exploration mode to be manual. Else do nothing
+		:type checked: bool
+		:return: None
+		:rtype: NoneType
+		"""
+		if checked:
+			self._setExplorationMode(FacileView.ExploreMode.MANUAL)
+	
+	@Slot(bool)
+	def _onAutomaticExploration(self, checked: bool) -> None:
+		"""
+		Sets the exploration mode to be automatic iff checked is True
+
+		:param checked: if True, set the exploration mode to automatic. Else do nothing
+		:type checked: bool
+		:return: None
+		:rtype: NoneType
+		"""
+		if checked:
+			self._setExplorationMode(FacileView.ExploreMode.AUTOMATIC)
+	
+	@Slot(bool)
+	def _onIgnoreExploration(self, checked: bool) -> None:
+		"""
+		Sets the exploration mode to be ignore iff checked is True
+
+		:param checked: if True, set the exploration mode to be ignore. Else do nothing
+		:type checked: bool
+		:return: None
+		:rtype: NoneType
+		"""
+		if checked:
+			self._setExplorationMode(FacileView.ExploreMode.IGNORE)
+			
+	def _setExplorationMode(self, mode: 'FacileView.ExploreMode') -> None:
+		"""
+		Sets the exploration mode. If there is no project, or the target application is not running, nothing happens.
+		
+		:param mode: The mode to set exploration to.
+		:type mode: FacileView.ExploreMode
+		:return: None
+		:rtyp: NoneType
+		"""
+		if self._project is None:
+			return
+		if self._project.getProcess() is None:
+			return
+		
+		observer = self._project.getObserver()
+		explorer = self._project.getExplorer()
+		
+		if mode == FacileView.ExploreMode.AUTOMATIC:
+			self.ui.actionAutoExplore.setChecked(True)
+			self.ui.actionManualExplore.setChecked(False)
+			self.ui.actionIgnoreExplore.setChecked(False)
+			observer.newSuperToken.connect(self._project.getTargetGUIModel().createComponent)
+			observer.play()
+			explorer.play()
+			
+		elif mode == FacileView.ExploreMode.MANUAL:
+			self.ui.actionAutoExplore.setChecked(False)
+			self.ui.actionManualExplore.setChecked(True)
+			self.ui.actionIgnoreExplore.setChecked(False)
+			observer.newSuperToken.connect(self._project.getTargetGUIModel().createComponent)
+			observer.play()
+			explorer.pause()
+			
+		elif mode == FacileView.ExploreMode.IGNORE:
+			self.ui.actionAutoExplore.setChecked(False)
+			self.ui.actionManualExplore.setChecked(False)
+			self.ui.actionIgnoreExplore.setChecked(True)
+			observer.pause()
+			explorer.pause()

@@ -3,8 +3,8 @@
 # Form implementation generated from reading ui file 'facileview.ui',
 # licensing of 'facileview.ui' applies.
 #
-# Created: Wed Nov  6 18:44:42 2019
-#      by: pyside2-uic  running on PySide2 5.13.1
+# Created: Tue Nov 12 15:06:11 2019
+#      by: pyside2-uic  running on PySide2 5.13.0
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -126,10 +126,13 @@ class Ui_MainWindow(object):
         self.actionDetailed_View.setCheckable(True)
         self.actionDetailed_View.setObjectName("actionDetailed_View")
         self.actionAutoExplore = QtWidgets.QAction(MainWindow)
+        self.actionAutoExplore.setCheckable(True)
         self.actionAutoExplore.setObjectName("actionAutoExplore")
         self.actionManualExplore = QtWidgets.QAction(MainWindow)
+        self.actionManualExplore.setCheckable(True)
         self.actionManualExplore.setObjectName("actionManualExplore")
         self.actionIgnoreExplore = QtWidgets.QAction(MainWindow)
+        self.actionIgnoreExplore.setCheckable(True)
         self.actionIgnoreExplore.setObjectName("actionIgnoreExplore")
         self.actionAPI_Modules = QtWidgets.QAction(MainWindow)
         self.actionAPI_Modules.setObjectName("actionAPI_Modules")
@@ -196,10 +199,13 @@ class Ui_MainWindow(object):
         self.actionDetailed_View.setText(QtWidgets.QApplication.translate("MainWindow", "Detailed View", None, -1))
         self.actionAutoExplore.setText(QtWidgets.QApplication.translate("MainWindow", "Auto Explore", None, -1))
         self.actionAutoExplore.setToolTip(QtWidgets.QApplication.translate("MainWindow", "Explore the target GUI autonomously (no user control)", None, -1))
+        self.actionAutoExplore.setShortcut(QtWidgets.QApplication.translate("MainWindow", "Ctrl+Alt+A", None, -1))
         self.actionManualExplore.setText(QtWidgets.QApplication.translate("MainWindow", "Manual Explore", None, -1))
         self.actionManualExplore.setToolTip(QtWidgets.QApplication.translate("MainWindow", "Watch for changes in the target GUI as the user interacts with it.", None, -1))
+        self.actionManualExplore.setShortcut(QtWidgets.QApplication.translate("MainWindow", "Ctrl+Alt+M", None, -1))
         self.actionIgnoreExplore.setText(QtWidgets.QApplication.translate("MainWindow", "Ignore Explore", None, -1))
         self.actionIgnoreExplore.setToolTip(QtWidgets.QApplication.translate("MainWindow", "The user can interact with the target GUI without changes being recognized.", None, -1))
+        self.actionIgnoreExplore.setShortcut(QtWidgets.QApplication.translate("MainWindow", "Ctrl+Alt+I", None, -1))
         self.actionAPI_Modules.setText(QtWidgets.QApplication.translate("MainWindow", "API Modules", None, -1))
         self.actionManage_Project.setText(QtWidgets.QApplication.translate("MainWindow", "Project Settings", None, -1))
 

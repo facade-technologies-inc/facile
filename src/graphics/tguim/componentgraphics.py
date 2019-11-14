@@ -23,7 +23,6 @@ This module contains the ComponentGraphics class.
 from PySide2.QtCore import QRectF
 from PySide2.QtGui import QPainterPath, QColor, QPen, Qt
 from PySide2.QtWidgets import QGraphicsScene, QGraphicsItem
-from data.tguim.component import Component
 
 
 class ComponentGraphics(QGraphicsItem):
@@ -39,7 +38,7 @@ class ComponentGraphics(QGraphicsItem):
     rightMargin = 10
     baseWidth = 400
 
-    def __init__(self, dataComponent: Component, parent = None):
+    def __init__(self, dataComponent: 'Component', parent = None):
         """
         Constructs a componentview object
 
@@ -48,6 +47,9 @@ class ComponentGraphics(QGraphicsItem):
         """
 
         QGraphicsItem.__init__(self, parent)
+        if parent is None:
+            dataComponent.getModel().getScene().addItem(self)
+        
         self._dataComponent = dataComponent
         self.setFlag(QGraphicsItem.ItemIsMovable)
         self.setFlag(QGraphicsItem.ItemIsSelectable)
@@ -58,10 +60,6 @@ class ComponentGraphics(QGraphicsItem):
 
         :return: QRectF
         """
-
-        if self._dataComponent.isDeleted():
-            # TODO: need _isDeleted & isDeleted() function in data class. e.g. set _isDeleted = true in remove() function
-            return QRectF(-1,-1,4,4)
 
         id = self._dataComponent.getId()
         numDescendants = self._dataComponent.getNumDescendants() # used to calculate height
@@ -112,11 +110,6 @@ class ComponentGraphics(QGraphicsItem):
         :param widget: QWidget
         """
 
-        if self._dataComponent.isDeleted():
-            painter.setBrush(QColor(255,255,255,0))
-            painter.setPen(QColor(255,255,255,0))
-            return painter.drawRect(0,0,1,1)
-
         pen = QPen(QColor(100, 200, 255, int(255 / 10)))
         if self.isSelected():
             pen.setStyle(Qt.DashDotLine)
@@ -136,8 +129,14 @@ class ComponentGraphics(QGraphicsItem):
         width = int(boundingRect.width()) - ComponentGraphics.penWidth
         height = int(boundingRect.height()) - ComponentGraphics.penWidth
         painter.drawRoundedRect(int(x+ComponentGraphics.leftMargin), int(y+ComponentGraphics.topMargin), int(width - ComponentGraphics.leftMargin - ComponentGraphics.rightMargin), int(height - ComponentGraphics.topMargin - ComponentGraphics.bottomMargin), 5, 5)
-        painter.drawText(int(x+ComponentGraphics.leftMargin*1.5), int(y+ComponentGraphics.topMargin+30), "Component {}: {}".format(self._dataComponent.getId(), self._dataComponent.getName()))
-        # TODO: _dataComponent.getProperties().getName? instead of _dataComponent.getName()
+
+        #TODO: Once properties are made correctly, remove the try/catch statement
+        try:
+            name = self._dataComponent.getProperties().getProperty("Name").getValue()
+        except:
+            name = ""
+        
+        painter.drawText(int(x+ComponentGraphics.leftMargin*1.5), int(y+ComponentGraphics.topMargin+30), name)
 
     def mousePressEvent(self, event):
         """

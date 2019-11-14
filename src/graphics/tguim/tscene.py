@@ -28,15 +28,14 @@ class TScene(QGraphicsScene):
 
     itemSelected = Signal(int)
 
-    def __init__(self, data):
+    def __init__(self, targetGUIModel: 'TargetGuiModel'):
         """
         Construct the TScene class
 
         :param data:
         """
         QGraphicsScene.__init__(self)
-        self._data = data
-        # TODO: not sure what class should I import here as data
+        self._targetGuiModel = targetGUIModel
 
         # This line is important because it affects how the scene is updated.
         # The NoIndex index method tells the scene to traverse all items when drawing
@@ -44,19 +43,22 @@ class TScene(QGraphicsScene):
         # better for dynamic scenes because no items will be missed in the repaint.
         self.setItemIndexMethod(QGraphicsScene.NoIndex)
 
-    def getData(self):
+    def getTargetGUIModel(self) -> 'TargetGuiModel':
         """
-        Getter for _data
+        Gets the target GUI Model.
 
-        :return:
+        :return: The target GUI model
+        :rtype: data.tguim.targetguimodel.TargetGuiModel
         """
-        return self._data
+        return self._targetGuiModel
 
-    def emitItemSelected(self, id):
+    def emitItemSelected(self, id: int) -> None:
         """
-        Remove?
+        Emits a signal that carries the ID of the item that was selected
 
-        :param id:
-        :return:
+        :param id: The ID of the item that was selected.
+        :type id: int
+        :return: None
+        :rtype: NoneType
         """
         self.itemSelected.emit(id)

@@ -65,7 +65,7 @@ class Entity:
 
         return self._properties
 
-    def setProperties(self, propertiesObj: Properties) -> None:
+    def setProperties(self, propertiesObj: 'Properties') -> None:
         """
         Sets the Properties object for the entity.
 
