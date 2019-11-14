@@ -16,37 +16,10 @@
 | Technologies Inc.                                                            |
 |                                                                              |
 \------------------------------------------------------------------------------/
+
+This module contains the ActionPipeline class
 """
 
-import sys
-from PySide2.QtWidgets import QApplication, QTreeView
-from properties import Properties
-from propeditordelegate import PropertyEditorDelegate
 
-if __name__ == "__main__":
-	
-	app = QApplication()
-
-	# Instantiate Properties Object
-	customCategories = {"NewCategory": [{"name": "someProperty", "default": False, "type": bool,  "readOnly": False}]}
-	predefinedCategories = ["Base", "Visual", "GUI Component"]
-	properties = Properties.createPropertiesObject(predefinedCategories, customCategories)
-
-	
-	# Get model object associated with Properties object
-	model = properties.getModel()
-
-	# Instantiate custom delegate
-	delegate = PropertyEditorDelegate()
-
-	# Instantiate QTreeView object
-	view = QTreeView()
-	
-	# load model into view.
-	view.setModel(model)
-
-	#load delegate into view
-	view.setItemDelegate(delegate)
-
-	view.show()
-	sys.exit(app.exec_())
+class ActionPipeline:
+    pass

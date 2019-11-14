@@ -22,6 +22,12 @@ This module contains the Project class.
 
 import os
 import json
+import psutil
+from subprocess import PIPE
+from qt_models.projectexplorermodel import ProjectExplorerModel
+from data.tguim.targetguimodel import TargetGuiModel
+from tguiil.explorer import Explorer
+from tguiil.observer import Observer
 
 
 class Project:
@@ -36,7 +42,7 @@ class Project:
 	# TODO: Store backend as enum instead of string
 	
 	def __init__(self, name: str, description: str, exe: str, backend: str,
-				projectDir: str = "~/", startupTimeout: int = 10):
+				projectDir: str = "~/", startupTimeout: int = 10) -> 'Project':
 		"""
 		Constructs a Project object.
 		
@@ -62,8 +68,11 @@ class Project:
 		self._executable = None
 		self._backend = None
 		self._startupTimeout = None
-		self._targetGUIModel = None
+		self._targetGUIModel = TargetGuiModel()
 		self._APIModel = None
+		self._process = None
+		self._observer = None
+		self._explorer = None
 		
 		# project information
 		self.setProjectDir(os.path.abspath(projectDir))
@@ -74,6 +83,43 @@ class Project:
 		self.setExecutableFile(exe)
 		self.setBackend(backend)
 		self.setStartupTimeout(startupTimeout)
+		
+	def getObserver(self) -> 'Observer':
+		"""
+		Gets the project's observer
+		
+		:return: The project's observer
+		:rtype: Observer
+		"""
+		if self._process is None or not self._process.is_running():
+			return None
+		else:
+			if self._observer is None:
+				self._observer = Observer(self._process.pid, self._backend)
+			return self._observer
+	
+	def getExplorer(self) -> 'Explorer':
+		"""
+		Gets the project's explorer
+		
+		:return: The project's explorer
+		:rtype: Explorer
+		"""
+		if self._process is None or not self._process.is_running():
+			return None
+		else:
+			if self._explorer is None:
+				self._explorer = Explorer(self._process.pid, self._backend)
+			return self._explorer
+
+	def getTargetGUIModel(self) -> 'TargetGuiModel':
+		"""
+		Gets the the project's target GUI model.
+		
+		:return: The project's target GUI model.
+		:rtype: TargetGuiModel
+		"""
+		return self._targetGUIModel
 		
 	def setProjectDir(self, url: str) -> None:
 		"""
@@ -236,6 +282,35 @@ class Project:
 		"""
 		
 		return os.path.join(self._projectDir, self._name + ".apim")
+
+	def startTargetApplication(self) -> None:
+		"""
+		Starts the target application
+		
+		:return: None
+		:rtype: None
+		"""
+		self._process = psutil.Popen([self._executable], stdout=PIPE)
+		
+	def getProcess(self) -> psutil.Process:
+		"""
+		Gets the process of the target application iff it is running.
+		
+		:return: The process object if the target application is running. None if it is not running.
+		:rtype: psutil.Process or NoneType
+		"""
+		if (self._process is None) or (not self._process.is_running()):
+			return None
+		return self._process
+
+	def getProjectExplorerModel(self) -> ProjectExplorerModel:
+		"""
+		Gets a model that allows a Qt tree view to access the data in a limited manner.
+		
+		:return: The project explorer model
+		:rtype: ProjectExplorerModel
+		"""
+		return ProjectExplorerModel(self)
 	
 	@staticmethod
 	def load(mainFile: str) -> 'Project':
@@ -285,11 +360,63 @@ class Project:
 		projectDict["Application Information"]["Backend"] = self._backend
 		projectDict["Application Information"]["Startup Timeout"] = self._startupTimeout
 		projectDict["Model Files"] = {}
-		projectDict["Model Files"]["Target GUI Model"] = self._targetGUIModel
-		projectDict["Model Files"]["API Model"] = self._APIModel
+		
+		#projectDict["Model Files"]["Target GUI Model"] = self._targetGUIModel
+		#projectDict["Model Files"]["API Model"] = self._APIModel
 		
 		with open(self.getMainProjectFile(), "w") as file:
 			file.write(json.dumps(projectDict, indent=4))
 		
-		# TODO: save models as well.
+	def addToRecents(self) -> None:
+		"""
+		Adds the project to the recents file.
 		
+		:return: None
+		:rtype: NoneType
+		"""
+		cwd = os.getcwd()
+		tempDir = os.path.join(cwd, "temp")
+		recentsFile = os.path.join(tempDir, "recentProjects.json")
+		recentProjects = []
+		if not os.path.exists(tempDir):
+			os.mkdir(tempDir)
+		try:
+			with open(recentsFile, "r") as recents:
+				recentProjects = json.loads(recents.read())
+		except:
+			pass
+		if not self.getMainProjectFile() in recentProjects:
+			recentProjects.insert(0, self.getMainProjectFile())
+			with open(recentsFile, "w") as recents:
+				recents.write(json.dumps(recentProjects, indent=4))
+				
+	@staticmethod
+	def getRecents(limit: int = 0) -> list:
+		"""
+		Gets a list of project files that have recently been opened. The number of returned project locations will be
+		limited iff the limit is set to an integer greater than 0.
+		
+		:param limit: The maximum number of recent projects to return. If limit is less than or equal to zero, the list
+		will not be limited.
+		:type limit: int
+		:return: a list of all recent project file names
+		:rtype: list[str]
+		"""
+		try:
+			with open(os.path.join(os.getcwd(), "temp/recentProjects.json"), "r") as recents:
+				recentProjects = json.loads(recents.read())
+				
+		except FileNotFoundError:
+			recentProjects = []
+		
+		# limit the length of the list
+		if limit > 0:
+			recentProjects = recentProjects[:limit]
+			
+		# remove recent projects that don't exist
+		filteredProjects = []
+		for proj in recentProjects:
+			if os.path.exists(proj):
+				filteredProjects.append(proj)
+			
+		return filteredProjects
