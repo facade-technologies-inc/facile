@@ -20,43 +20,63 @@
 This file contains the token class that weighs the importance of each attribute of a single token. 
 """
 
+from enum import Enum, unique
 
 class Token: 
-	""" 
-
+	"""
 	Token class sets parameters of a token for each state that changes. 
 	"""
+	@unique
+	class Match(Enum):
+		EXACT = 1
+		CLOSE = 2
+		NO = 3
+
+	class Weight(Enum):
+		PARENTST = 10
+		PIC = 1
+		TITLE = 1
+		TYPE = 10
+		POS = 5
+		REFS = 1
+		CWTITLE = 2
+		CWCT = 6
+		AUTOID = 10
 
 	THRESHOLD = 0
-	WEIGHT_PARENTST = 10
-	WEIGHT_PIC = 1
-	WEIGHT_TITLE = 1
-	WEIGHT_TYPE = 10
-	WEIGHT_POS = 5
-	WEIGHT_REFS = 1
-	WEIGHT_CWTITLE = 2
-	WEIGHT_CWCT = 6
-	WEIGHT_AUTOID = 10
 
-	def __init__(self = None,parentSuperToken = None,picture = None,title = None,typeOf = None,position
-	= None,refs = None,cwTitle = None,cwControlType = None,autoID = None): 
-
-		""" 
-
-		Constructs parameters
-		for each token. Checks if the tokens attribute changed based on a random variable.
-
-		:parentSuperToken: superToken 
-		:picture:
-		:title: str
-		:typeOf: str
-		:position: lists of str and ints
-		:refs: lists of str and ints
-		:cwTitle: str
-		:cwControlType: str
-		:autoID: str
+	def __init__(self,parentSuperToken: SuperToken = None,picture: Picture = None,title,typeOf = None,position
+	= None,refs = None,cwTitle = None,cwControlType = None,autoID = None):
 		"""
+		Constructs token objects with given parameters.
+		Checks if the tokens attribute changed based on a random variable.
 
+		:param parentSuperToken: parent of tokens
+		:type parentSuperToken: superToken
+		:return parentSuperToken: None
+		:rtype parentSuperToken: NoneType
+
+		:param picture: 
+		:type picture:
+		:return picture:
+		:rtype NoneType:
+
+		:param title: str
+		:type title: 
+
+		:param typeOf: str
+
+		:param position: lists of str and ints
+
+		:param refs: lists of str and ints
+
+		:param cwTitle: str
+
+		:param cwControlType: str
+
+		:param autoID: str
+
+		"""
 		self.parentst = parentSuperToken
 		self.pic = picture
 		self.t = title
@@ -70,45 +90,57 @@ class Token:
 
 	def isEqualTo(token2): 
 		""" 
-
 		The isEqualTo function gives a weight of importance to each attribute.
 		This is based on the tokens when its state is changed.
 
 		:token2: Token
 		"""
+		#####################################################################
+		#	QUICK CHECK FOR EXACT MATCH
+		#####################################################################
+
+		# If all control identifiers and auto IDs match, return Token.Match.EXACT
+
+		#####################################################################
+		#	MORE IN DEPTH CHECK FOR CLOSE MATCH (WEIGHTING)
+		#####################################################################
 		total = 0 
 
 		if token2.parentst == self.parentst:
-			total += WEIGHT_PARENTST
+			total += Token.Weight.PARENTST
 			
 		if token2.pic == self.pic:
-			total += WEIGHT_PIC
+			total += Token.Weight.PIC
 	
 		if token2.t == self.t:
-			total += WEIGHT_TITLE
+			total += Token.Weight.TITLE
 
 		if token2.type == self.type:
-			total += WEIGHT_TYPE
+			total += Token.Weight.TYPE
 
 		if token2.pos == self.pos:
-			total += WEIGHT_POS
+			total += Token.Weight.POS
 
 		if token2.reference == self.reference:
-			total += WEIGHT_REFS
+			total += Token.Weight.REFS
 
 		if token2.cwt == self.cwt:
-			total += WEIGHT_CWTITLE
+			total += Token.Weight.CWTITLE
 
 		if token2.cwct == self.cwct:
-			total += WEIGHT_CWCT
+			total += Token.Weight.CWCT
 
 		if token2.autoid == self.autoid:
-			total += WEIGHT_AUTOID
+			total += Token.Weight.AUTOID
 
 		if total >= Token.THRESHOLD():
-			return 1 
+			return Token.Match.CLOSE
 
 		else: 
-			return 0
+			return Token.Match.NO
+
+
+
+
 	
 
