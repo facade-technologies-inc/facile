@@ -105,7 +105,7 @@ class Project:
 		:return: The project's explorer
 		:rtype: Explorer
 		"""
-		if self._process is None or not self._process.isrunning():
+		if self._process is None or not self._process.is_running():
 			return None
 		else:
 			if self._explorer is None:

@@ -22,6 +22,12 @@ user and never imported.
 
 """
 import sys
+import warnings
+
+# These lines are needed to integrate Qt and pywinauto
+warnings.simplefilter("ignore", UserWarning)
+sys.coinit_flags = 2
+
 from PySide2.QtWidgets import QApplication
 from PySide2.QtGui import QPalette, QColor, Qt
 
