@@ -44,38 +44,29 @@ class Token:
 
 	THRESHOLD = 0
 
-	def __init__(self,parentSuperToken: SuperToken = None,picture: tuple = None,title: str,typeOf: str = None,position: list
+	def __init__(self,parentSuperToken: SuperToken = None,picture: PIL.Image = None,title: str,typeOf: str = None,position: list
 	= None,refs: list = None,cwTitle: str = None,cwControlType: str = None,autoID: int = None):
 		"""
 		Checks if the tokens component state changed based on a random variable.
 
 		:param parentSuperToken: the parent of the token
 		:type parentSuperToken: SuperToken
-
 		:param picture: the image of the component
-		:type picture: tuple
-
+		:type picture: PIL.Image
 		:param title: the title of the component
 		:type title: str
-
 		:param typeOf: the characteristics of the component
 		:type typeOf: str
-
 		:param position: the coordinates of the component
 		:type position: list
-
 		:param refs: the reference of the component
 		:type refs: list
-
 		:param cwTitle: the child window title of the component
 		:type cwTitle: str
-
 		:param cwControlType: the child window control type of the component
 		:type cwControlType: str
-
 		:param autoID: the unique identifier of the component
 		:type autoID: int
-
 		:return: None
 		:rtype: NoneType
 		"""

@@ -31,10 +31,8 @@ class SuperToken:
 
 		:param identifier: returns the correct super token match
 		:type identifier: int
-
 		:param ignoreFlag: Allows the user to ignore specific components
 		:type ignoreFlag: boolean
-
 		:return: None
 		:rtype: NoneType
 		"""
