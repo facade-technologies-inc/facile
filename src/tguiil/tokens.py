@@ -67,6 +67,7 @@ class Token:
 		:type cwControlType: str
 		:param autoID: the unique identifier of the component
 		:type autoID: int
+		...
 		:return: None
 		:rtype: NoneType
 		"""

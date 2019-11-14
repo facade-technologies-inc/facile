@@ -33,6 +33,7 @@ class SuperToken:
 		:type identifier: int
 		:param ignoreFlag: Allows the user to ignore specific components
 		:type ignoreFlag: boolean
+		...
 		:return: None
 		:rtype: NoneType
 		"""
