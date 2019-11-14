@@ -19,7 +19,6 @@
 
 This file contains the token class that weighs the importance of each attribute of a single token. 
 """
-
 from enum import Enum, unique
 
 class Token: 
@@ -50,32 +49,35 @@ class Token:
 		"""
 		Constructs token objects with given parameters.
 		Checks if the tokens attribute changed based on a random variable.
+		:return: None
+		:rtype: NoneType
 
-		:param parentSuperToken: parent of tokens
+		:param parentSuperToken: the parent of the token
 		:type parentSuperToken: superToken
-		:return parentSuperToken: None
-		:rtype parentSuperToken: NoneType
 
-		:param picture: 
-		:type picture:
-		:return picture:
-		:rtype NoneType:
+		:param picture: the image of the component
+		:type picture: picture
 
-		:param title: str
-		:type title: 
+		:param title: the title of the component
+		:type title: str
 
-		:param typeOf: str
+		:param typeOf: the characteristics of the component
+		:type typeOf: str
 
-		:param position: lists of str and ints
+		:param position: the coordinates of the component
+		:type position: lists of str and ints
 
-		:param refs: lists of str and ints
+		:param refs: the reference of the component
+		:type refs: lists of str and ints
 
-		:param cwTitle: str
+		:param cwTitle: the child window title of the component
+		:type cwTitle: str
 
-		:param cwControlType: str
+		:param cwControlType: the child window control type of the component
+		:type cwControlType: str
 
-		:param autoID: str
-
+		:param autoID: the unique identifier of the component
+		:type autoID: str
 		"""
 		self.parentst = parentSuperToken
 		self.pic = picture
@@ -87,13 +89,15 @@ class Token:
 		self.cwct = cwControlType
 		self.autoid = autoID
 
-
 	def isEqualTo(token2): 
 		""" 
 		The isEqualTo function gives a weight of importance to each attribute.
 		This is based on the tokens when its state is changed.
 
-		:token2: Token
+		:param token2: returns how similar of a match the given token is to the current token
+		:type token2: int
+		:return: None
+		:rtype: NoneType
 		"""
 		#####################################################################
 		#	QUICK CHECK FOR EXACT MATCH
@@ -133,7 +137,10 @@ class Token:
 		if token2.autoid == self.autoid:
 			total += Token.Weight.AUTOID
 
-		if total >= Token.THRESHOLD():
+		if total == max(total):
+			return Token.Match.EXACT
+
+		elif total >= Token.THRESHOLD():
 			return Token.Match.CLOSE
 
 		else: 
