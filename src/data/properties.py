@@ -205,7 +205,7 @@ class Properties:
         properties = self.getCategoryProperties(category)
         return len(properties)
 
-    def getProperty(self, name: str) -> tuple[str, 'Property']:
+    def getProperty(self, name: str) -> tuple:
         """
         Gets a property by name if it exists in the properties object
         
