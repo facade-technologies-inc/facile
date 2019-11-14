@@ -35,7 +35,7 @@ class PropertyEditorDelegate(QStyledItemDelegate):
     # TODO: Support for Enums
     # TODO: Support for Lists
 
-    def createEditor(self, parent: 'QModelIndex', option: object, index: 'QModelIndex') -> 'QWidget':
+    def createEditor(self, parent: 'QModelIndex', option: object, index: 'QModelIndex'):
         """
         Creates the widget used to change data from the model and can be
         reimplemented to customize editing behavior
@@ -94,14 +94,14 @@ class PropertyEditorDelegate(QStyledItemDelegate):
                 else:
                     pass
 
-    def setModelData(self, editor: 'QWidget', PropModel: 'QObject', index: 'QModelIndex') -> None:
+    def setModelData(self, editor: 'QWidget', propModel: 'PropModel', index: 'QModelIndex') -> None:
         """
         Returns updated data to the model
 
         :param editor: Editor that will be set for certain data structures.
         :type editor: QWidget
-        :param PropModel: The model that our delegate will render.
-        :type PropModel: QObject
+        :param propModel: The model that our delegate will render.
+        :type propModel: PropModel
         :param index: Index of the editor.
         :type index: QModelIndex
         :return: None

@@ -24,7 +24,7 @@ class Property:
 	"""
 	This class allows us to establish the data of our properties.
 	"""
-	def __init__(self, name: str, value: object, type: object, readOnly: object=False):
+	def __init__(self, name: str, value: object, type: object, readOnly: bool=False):
 		"""
 		Constructs a Property Object
 
@@ -35,7 +35,7 @@ class Property:
 		:param type: The type of the property.
 		:type type: object
 		:param readOnly: The type of data structure.
-		:type readOnly: object
+		:type readOnly: bool
 		:return: The constructed property.
 		:rtype: Property
 		"""
@@ -44,12 +44,12 @@ class Property:
 		self._type = type
 		self._readOnly = readOnly
 
-	def isReadOnly(self) -> object:
+	def isReadOnly(self) -> bool:
 		"""
 		Shows the property's data structure.
 
 		:return: The property's data structure.
-		:rtype: object
+		:rtype: bool
 		"""
 		return self._readOnly
 

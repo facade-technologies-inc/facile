@@ -41,9 +41,9 @@ class Properties:
 
     def newCategory(self, category: str) -> None:
         """
-        Adds a new category to the list of categories.
+        Adds a new category to the dict of categories.
 
-        :param category: The category that will be added to the list.
+        :param category: The category that will be added to the dict.
         :type category: str
         :return: None
         :rtype: NoneType
@@ -73,16 +73,16 @@ class Properties:
         self._categories[category].append(Property(name, value, type, readOnly))
 
     @staticmethod
-    def createPropertiesObject(predefinedCategories: list, customCategories: list) -> 'properties':
+    def createPropertiesObject(predefinedCategories: list, customCategories: list) -> 'Properties':
         """
         Property Factory, that is a static method, that createes properties objects for predefined and custom categories.
 
         :param predefinedCategories: Category that was already defined from a list.
         :type predefinedCategories: list
         :param customCategories: Categories that can be made from a list.
-        :type customCategories: list
+        :type customCategories: dict
         :return: Properties objects.
-        :rtype: properties
+        :rtype: Properties
         """
         newProperties = Properties()
 
@@ -140,12 +140,12 @@ class Properties:
         """
         return len(self._categories)
 
-    def getCategories(self) -> dict:
+    def getCategories(self) -> list:
         """
         Gets the categories from the list of categories.
 
         :return: The categories from the list.
-        :rtype: dict
+        :rtype: list
         """
         return list(self._categories.keys())
 
@@ -165,7 +165,7 @@ class Properties:
         Gets the category of that property.
 
         :param property: Property of a particular category.
-        :type property: property
+        :type property: Property
         :return: The category of a particular property.
         :rtype: str
         """
@@ -174,14 +174,14 @@ class Properties:
             if property in props:
                 return category
 
-    def getCategoryIndex(self, category: str) -> 'index':
+    def getCategoryIndex(self, category: str) -> int:
         """
         Gets the index of a category.
 
         :param category: Category from list of categories.
         :type category: object
         :return: Index of the category.
-        :rtype: index
+        :rtype: int
         """
         categories = self.getCategories()
         return categories.index(category)

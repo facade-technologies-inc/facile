@@ -163,7 +163,7 @@ class PropModel(QAbstractItemModel):
                 shade = row%2 * 25
                 return QColor(100+shade, 150+shade, 200+shade)
 
-    def headerData(self, section: int, orientation: 'orientation', role: int) -> object:
+    def headerData(self, section: int, orientation: 'Qt.Orientation', role: int) -> object:
         """
         This method is used for displaying the header data for the given role
         and orientation of that specific section.
@@ -171,7 +171,7 @@ class PropModel(QAbstractItemModel):
         :param section: Specific section for the header data.
         :type section: int
         :param orientation: Given orientation for the header data.
-        :type orientation: orientation
+        :type orientation: Qt.Orientation
         :param role: The given role for the header data.
         :type role: int
         :return: Model of header data.
