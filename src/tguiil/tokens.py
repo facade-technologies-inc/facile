@@ -44,13 +44,11 @@ class Token:
 
 	THRESHOLD = 0
 
-	def __init__(self,parentSuperToken: SuperToken = None,picture: PIL.Image = None,title: str,typeOf: str = None,position: list
+	def __init__(self,picture: PIL.Image = None,title: str,typeOf: str = None,position: win32structures.RECT
 	= None,refs: list = None,cwTitle: str = None,cwControlType: str = None,autoID: int = None):
 		"""
 		Checks if the tokens component state changed based on a random variable.
 
-		:param parentSuperToken: the parent of the token
-		:type parentSuperToken: SuperToken
 		:param picture: the image of the component
 		:type picture: PIL.Image
 		:param title: the title of the component
@@ -58,7 +56,7 @@ class Token:
 		:param typeOf: the characteristics of the component
 		:type typeOf: str
 		:param position: the coordinates of the component
-		:type position: list
+		:type position: win32structures.RECT
 		:param refs: the reference of the component
 		:type refs: list
 		:param cwTitle: the child window title of the component
@@ -71,7 +69,6 @@ class Token:
 		:return: None
 		:rtype: NoneType
 		"""
-		self.parentst = parentSuperToken
 		self.pic = picture
 		self.title = title
 		self.type = typeOf
@@ -102,9 +99,6 @@ class Token:
 		#####################################################################
 		total = 0 
 
-		if token2.parentst == self.parentst:
-			total += Token.Weight.PARENTST
-			
 		if token2.pic == self.pic:
 			total += Token.Weight.PIC
 	
