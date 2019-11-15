@@ -32,51 +32,101 @@ class Token:
 		NO = 3
 
 	class Weight(Enum):
-		PARENTST = 10
+		IDENTIFIER = 10
+		ISDIALOG = 1
+		ISENABLED = 1
+		ISVISIBLE = 1
+		PARENTTITLE = 10
+		PARENTTYPE = 10
+		TOPPARENTTITLE = 1
+		TOPPARENTTYPE = 1
+		PROCESSID = 10
+		TEXTS = 3
+		NUMCONTROLS = 3
 		PIC = 1
-		TITLE = 1
+		TITLE = 10
 		TYPE = 10
-		RECT = 5
-		REFS = 1
-		CWTITLE = 2
-		CWCT = 6
+		RECTANGLE = 10
+		CONTROLID = 10
 		AUTOID = 10
+		CHILDRENTEXTS = 1
+		EXPANDSTATE = 1
+		SHOWNSTATE = 1
 
-	THRESHOLD = 0
+	WEIGHT_SUM = sum(list(map(int,Weight)))
+	THRESH_PERCENT = 90
+	THRESHOLD = (WEIGHT_SUM * THRESH_PERCENT)/100
+	PRIMARY_WEIGHT_SUM = 90
+	SECONDARY_WEIGHT_SUM = 105
 
-	def __init__(self,picture: PIL.Image = None,title: str,typeOf: str = None,rectangle: win32structures.RECT
-	= None,refs: list = None,cwTitle: str = None,cwControlType: str = None,autoID: int = None):
+	def __init__(self,identifier: int, isDialog: bool, isEnabled: bool, isVisible: bool, parentTitle: str = None, parentType: str = None, topLevelParentTitle: str = None, topLevelParentType: str = None, processID: int, rectangle: win32structures.RECT, texts: list[str], title: str, numControls: int, picture: PIL.Image = None,typeOf: str, controlID: str, autoID: int = None, childrenTexts: list[str] = None, expandState: int = None, shownState: int = None):
 		"""
 		Checks if the tokens component state changed based on a random variable.
-
-		:param picture: the image of the component
-		:type picture: PIL.Image
-		:param title: the title of the component
-		:type title: str
-		:param typeOf: the characteristics of the component
-		:type typeOf: str
-		:param rectangle: the coordinates of the component
+		
+		:param identifier: stores the unique id number of the component
+		:type identifier: int
+		:param isDialog: stores if the component has dialog contained in it
+		:type isDialog: bool
+		:param isEnabled: stores if the component is enabled
+		:type isEnabled: bool
+		:param isVisible: stores if the component is visible
+		:type isVisible: bool
+		:param parentTitle: stores the components parents title
+		:type parentTitle: str
+		:param parentType: stores the components parents type
+		:type parentType: str
+		:param topLevelParentTitle: stores the components top level parents title
+		:type topLevelParentTitle: str
+		:param topLevelParentType: stores the components top level parents type
+		:type topLevelParentType: str
+		:param processID: stores the processing id of the component
+		:type processID: int
+		:param rectangle: stores the position of the component
 		:type rectangle: win32structures.RECT
-		:param refs: the reference of the component
-		:type refs: list
-		:param cwTitle: the child window title of the component
-		:type cwTitle: str
-		:param cwControlType: the child window control type of the component
-		:type cwControlType: str
-		:param autoID: the unique identifier of the component
-		:type autoID: int
-		...
+		:param texts: stores the text in the component
+		:type texts: list[str]
+		:param title: stores the title of the component
+		:type title: str
+		:param numControls: stores the number of controls of the component
+		:type numControls: int
+		:param picture: stores the image of the component
+		:type picture: PIL.Image
+		:param typeOf: stores the characteristics of the component
+		:type typeOf: str
+		:param controlID: stores the control identifiers. The four possible controls are title, typeOf, title + typeOf, and the closest text
+		:type controlID: str
+		:param autoID: stores the unique identifier of the component
+		:type autoID: str
+		:param childrenTexts: stores the text contained in the children of the component
+		:type childrenTexts: list[str]
+		:param expandState: stores if the components state is expanded
+		:type expandState: int
+		:param shownState: stores the state in which the component is in
+		:type shownState: int
+		
 		:return: None
 		:rtype: NoneType
 		"""
-		self.pic = picture
-		self.title = title
-		self.type = typeOf
+		self.identifier = identifier
+		self.isDialog = isDialog
+		self.isEnabled = isEnabled
+		self.isVisible = isVisible
+		self.parentTitle = parentTitle
+		self.parentType = parentType
+		self.topLevelParentTitle = topLevelParentTitle
+		self.topLevelParentType = topLevelParentType
+		self.processID = processID
 		self.rectangle = rectangle
-		self.reference = refs
-		self.cwt = cwTitle
-		self.cwct = cwControlType
+		self.texts = texts
+		self.title = title
+		self.numControls = numControls
+		self.pic = picture
+		self.type = typeOf
+		self.controlID = controlID
 		self.autoid = autoID
+		self.childrenTexts = childrenTexts
+		self.expandState = expandState
+		self.shownState = shownState
 
 	def isEqualTo(self, token2):
 		""" 
@@ -91,42 +141,73 @@ class Token:
 		#####################################################################
 		#	QUICK CHECK FOR EXACT MATCH
 		#####################################################################
-
+		# most important: id, autoID, typeOf, title, controlID, rectangle, parentTitle, parentType,processID
 		# If all control identifiers and auto IDs match, return Token.Match.EXACT
-
+		
+		# make an important weight sum for what is most important
 		#####################################################################
 		#	MORE IN DEPTH CHECK FOR CLOSE MATCH (WEIGHTING)
 		#####################################################################
 		total = 0 
 
-		if token2.pic == self.pic:
-			total += Token.Weight.PIC
+		if token2.identifier == self.identifier:
+			total += Token.Weight.IDENTIFIER
 	
-		if token2.t == self.title:
-			total += Token.Weight.TITLE
+		if token2.isDialog == self.isDialog:
+			total += Token.Weight.ISDIALOG
 
-		if token2.type == self.type:
-			total += Token.Weight.TYPE
+		if token2.isEnabled == self.isEnabled:
+			total += Token.Weight.ISENABLED
+
+		if token2.isVisible == self.isVisible:
+			total += Token.Weight.ISVISIBLE
+
+		if token2.parentTitle == self.parentTitle:
+			total += Token.Weight.PARENTTITLE
+
+		if token2.parentType == self.parentType:
+			total += Token.Weight.PARENTTYPE
+	
+		if token2.processID == self.processID:
+			total += Token.Weight.PROCESSID
 
 		if token2.rectangle == self.rectangle:
+			total += Token.Weight.RECTANGLE
+
+		if token2.texts == self.texts:
+			total += Token.Weight.TEXTS
+
+		if token2.title == self.title:
+			total += Token.Weight.TITLE
+	
+		if token2.numControls == self.numControls:
+			total += Token.Weight.NUMCONTROLS
+
+		if token2.picture == self.picture:
+			total += Token.Weight.PIC
+
+		if token2.typeOf == self.typeOf:
 			total += Token.Weight.RECT
 
-		if token2.reference == self.reference:
-			total += Token.Weight.REFS
-
-		if token2.cwt == self.cwt:
-			total += Token.Weight.CWTITLE
-
-		if token2.cwct == self.cwct:
-			total += Token.Weight.CWCT
+		if token2.controlID == self.controlID:
+			total += Token.Weight.CONTROLID
 
 		if token2.autoid == self.autoid:
 			total += Token.Weight.AUTOID
 
-		if total == max(total):
+		if token2.childrenTexts == self.childrenTexts:
+			total += Token.Weight.CHILDRENTEXTS
+	
+		if token2.expandState == self.expandState:
+			total += Token.Weight.EXPANDSTATE
+
+		if token2.shownState == self.shownState:
+			total += Token.Weight.SHOWNSTATE
+
+		if total == PRIMARY_WEIGHT_SUM:
 			return Token.Match.EXACT
 
-		elif total >= Token.THRESHOLD():
+		if total == SECONDARY_WEIGHT_SUM:
 			return Token.Match.CLOSE
 
 		else: 
