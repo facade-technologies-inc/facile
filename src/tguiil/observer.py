@@ -82,29 +82,29 @@ class Observer(QThread):
                     work.append(child)
                 
                 # Information we can get about any element
-                id = curComponent.control_id()  ####store this, required
-                isDialog = curComponent.is_dialog()  ####store this, required
-                isEnabled = curComponent.is_enabled()  ####store this, required
-                isVisible = curComponent.is_visible()  ####store this, required
+                id = curComponent.control_id()  ####store this, required, int
+                isDialog = curComponent.is_dialog()  ####store this, required, bool
+                isEnabled = curComponent.is_enabled()  ####store this, required, bool
+                isVisible = curComponent.is_visible()  ####store this, required, bool
                 parent = curComponent.parent()
-                parentTitle = parent.window_text()  ####store this, optional
-                parentType = parent.friendly_class_name()  ####store this, optional
+                parentTitle = parent.window_text()  ####store this, optional, str
+                parentType = parent.friendly_class_name()  ####store this, optional, str
                 topLevelParent = curComponent.top_level_parent()
-                topLevelParentTitle = topLevelParent.window_text()  ####store this, optional
-                topLevelParentType = topLevelParent.friendly_class_name()  ####store this, optional
-                processID = curComponent.process_id()  ####store this, required
-                rectangle = curComponent.rectangle()  ####store this, required
-                texts = curComponent.texts()[1:]  ####store this, required
-                title = curComponent.window_text()  ####store this, required
-                numControls = curComponent.control_count()  ####store this, required
-                image = curComponent.capture_as_image()  ####store this, optional
-                className = curComponent.friendly_class_name()  ####store this, required
+                topLevelParentTitle = topLevelParent.window_text()  ####store this, optional, str
+                topLevelParentType = topLevelParent.friendly_class_name()  ####store this, optional, str
+                processID = curComponent.process_id()  ####store this, required, int
+                rectangle = curComponent.rectangle()  ####store this, required, win32structures.RECT
+                texts = curComponent.texts()[1:]  ####store this, required, list[str]
+                title = curComponent.window_text()  ####store this, required, str
+                numControls = curComponent.control_count()  ####store this, required, int
+                image = curComponent.capture_as_image()  ####store this, optional, PIL.Image
+                className = curComponent.friendly_class_name()  ####store this, required, str
                 
                 # additional information we can get about uia elements
-                autoID = curComponent.automation_id()  ####store this, optional
-                childrenTexts = curComponent.children_texts()  ####store this, optional
-                expandState = curComponent.get_expand_state()  ####store this, optional
-                shownState = curComponent.get_show_state()  ####store this, optional
+                autoID = curComponent.automation_id()  ####store this, optional, int
+                childrenTexts = curComponent.children_texts()  ####store this, optional, list[str]
+                expandState = curComponent.get_expand_state()  ####store this, optional, int
+                shownState = curComponent.get_show_state()  ####store this, optional, int
                 
                 
                 
