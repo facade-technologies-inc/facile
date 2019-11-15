@@ -21,21 +21,37 @@ This module contains the Explorer class, which explores the target GUI.
 """
 
 import psutil
-import pyautogui
-import time
-from pywinauto.application import Application
+from PySide2.QtCore import QThread
 
+import pyautogui
+import time, sys
+
+from psutil import Process
+from pywinauto.application import Application
 import tguiil.application as cApp
 
 
-class Explorer:
+class Explorer(QThread):
     """
     The explorer class makes use of recursive functions to break down the target gui into its smallest components,
     and then clicking on every clickable component as well as prompting the user for input on any textfields.
     """
 
-    def __init__(self):
-        self.run = 0  # Defines the state of the explorer. Will run if 1, else will stop
+    def __init__(self, processLoc: str, backend: str = "uia"):
+        """
+        Constructs an Explorer.
+
+        :raises: NoSuchProcess
+        :raises: AccessDenied
+        :param processLoc: The path to the process executable
+        :type processLoc: string
+        :param backend: The type of backend to use, defaulted to uia
+        :type backend: string
+        """
+
+        super().__init__()
+        self._pLoc = processLoc
+        self._backend = backend
 
     def ch_recurse(self, app: Application, component):
         """
@@ -49,7 +65,7 @@ class Explorer:
         :rtype: NoneType
         """
 
-        if self.run == 1:
+        if self.play == 1:
             try:
                 for child in component.children():
                     print(child.texts()[0] + ': ' + child.friendly_class_name())
@@ -71,7 +87,7 @@ class Explorer:
                         #     menuitem.select()
                         #     submenu = nApp.top_window()
                         #     submenu.wait('ready')
-                        #     self.traverseSubmenu(app, submenu)
+                        #     self.traverse_submenu(app, submenu)
                         #     # self.ch_recurse(app, submenu)
                         print('')
                     elif child.friendly_class_name() == 'MenuItem':
@@ -100,7 +116,7 @@ class Explorer:
             finally:
                 return
 
-    def traverseSubmenu(self, app: Application, component):
+    def traverse_submenu(self, app: Application, component):
         """
         Recursively called in order to find menus and menuitems and click/expand them if possible. Called only
         within ch_recurse and is therefore providing additional functionality to it without as much cluttering.
@@ -121,7 +137,7 @@ class Explorer:
                     if child.texts()[0] != 'Application':
                         print(child.texts()[0] + ': ' + child.friendly_class_name())
                         print('------children------')
-                        self.traverseSubmenu(app, child)
+                        self.traverse_submenu(app, child)
                         print('--------------------')
 
                 # Below handles menuitems themselves
@@ -131,12 +147,17 @@ class Explorer:
                         try:
                             child.set_focus()
                             child.select()
-                            # TODO: Find way to reopen submenu
                             submenuWin = app.top_window()
                             submenuWin.wait('ready')
+
+                            print(submenuWin.descendants())
+                            # Reopens the submenu
+                            component.set_focus()
+                            component.select()
+
                             # TODO: Items like New, New window, etc should probably be avoided because it will loop
                             #  infinitely otherwise
-                            # self.ch_recurse(app, submenuWin)
+                            # self.traverse_submenu(app, submenuWin)
                             # pyautogui.alert(child.texts()[0] + ' was clicked')
                         except:
                             # Usually occurs after submenu is closed but item is being selected.
@@ -153,7 +174,17 @@ class Explorer:
     def search_new_win(self, app: Application):
         x = 1  # placeholder
 
-    def start(self, pLoc: str):
+    def run(self):
+        """
+        Method that overrides QThread's run function
+
+        :return: None
+        :rtype: NoneType
+        """
+
+        self.start_process()
+
+    def start_process(self):
         """
         Method that starts the target application then connects to it for exploration
 
@@ -161,10 +192,10 @@ class Explorer:
         :rtype: NoneType
         """
 
-        pid = psutil.Popen([pLoc])
-        self.connect(pid)
+        pid = psutil.Popen([self._pLoc])
+        self.my_connect_to(pid)
 
-    def connect(self, pid: int):
+    def connect_to(self, pid: 'Process'):
         """
         Method that starts the explorer while also connecting to the target application
 
@@ -181,7 +212,6 @@ class Explorer:
         nApp = Application(backend='uia').connect(process=pids[0])
         appWindows = nApp.windows()
 
-        self.run = 1
         # TODO: Update every time a new window appears.
         for window in appWindows:
             # self.ch_recurse(app, window)
@@ -196,25 +226,11 @@ class Explorer:
                         submenu = nApp.top_window()
                         submenu.wait('ready')
                         # self.ch_recurse(nApp, submenu)
-                        self.traverseSubmenu(nApp, submenu)
+                        self.traverse_submenu(nApp, submenu)
         nApp.kill()  # Only here so that I don't have tons of notepad instances open, TODO: Remove after testing
 
-    def stop(self):
-        """
-        Method that stops the explorer
 
-        :return: None
-        :rtype: NoneType
-        """
-
-        self.run = 0  # This will have to be implemented by interrupting the thread I think, but this is the best alt rn
-
-
-def main():
-
-    # This section is here for standalone testing. TODO: Remove/modify when done
-
-    expr = Explorer()
+if __name__ == '__main__':
     path = pyautogui.prompt('Please enter application path (Default is Notepad).', default='Notepad.exe')
 
     if path == '':
@@ -223,8 +239,6 @@ def main():
     if path is None:
         pyautogui.alert('Cancelled')
     else:
-        expr.start(path)  # This + explorer instance are all that'll be necessary since path will be given to explorer
-
-
-if __name__ == "__main__":
-    main()
+        expr = Explorer(processLoc=path)
+        expr.start()
+        pyautogui.alert('press ok to end')
