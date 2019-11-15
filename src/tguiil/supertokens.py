@@ -31,13 +31,13 @@ class SuperToken:
 		Constructs a unique identifier and a way to hide certain components
 
 		:param ignoreFlag: Allows the user to ignore specific components
-		:type ignoreFlag: boolean
+		:type ignoreFlag: bool
 		
 		:return: None
 		:rtype: NoneType
 		"""
 		self.tokens = [token1]
-		self.id = identifier
+		#self.id = identifier
 		self.flag = ignoreFlag
 
 	def addToken(self, tokenA): 
