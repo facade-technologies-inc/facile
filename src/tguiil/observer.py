@@ -80,7 +80,7 @@ class Observer(QThread):
             while len(work) > 0:
                 curComponent, parentSuperToken = work.pop()
                 token = self.createToken(curComponent)
-                matchedSuperToken = self.matchToSuperToken(token)
+                matchedSuperToken = self.matchToSuperToken(token, parentSuperToken)
 
                 children = curComponent.children()
                 for child in children:
@@ -181,7 +181,7 @@ class Observer(QThread):
                     selectedSuperToken = superToken
     
         # No match was found
-        if selectedSuperToken == None and bestMatch != 1:
+        if selectedSuperToken == None:
             newSuperToken = SuperToken(token)
             self._childMapping[parentSuperToken].append(newSuperToken)
             self._childMapping[newSuperToken] = []
@@ -191,8 +191,7 @@ class Observer(QThread):
         # a close match was found
         else:
             selectedSuperToken.addToken(token)
-    
-        return selectedSuperToken
+            return selectedSuperToken
     
     def play(self):
         """
