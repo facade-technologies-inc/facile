@@ -158,6 +158,7 @@ class Observer(QThread):
         :return: The SuperToken that gets matched to the provided token.
         :rtype: SuperToken
         """
+        
         # determine if the new token matches any super tokens and how well it matches if it does.
         bestMatch = 0
         bestDecision = Token.Match.NO
