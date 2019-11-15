@@ -23,6 +23,7 @@ This module contains the PropModel() class.
 from PySide2.QtGui import QColor
 from PySide2.QtCore import QAbstractItemModel, QModelIndex, Qt
 
+
 class PropModel(QAbstractItemModel):
     """
     A subclass that allows us to show the Data through QTreeView.
@@ -36,12 +37,12 @@ class PropModel(QAbstractItemModel):
         :param propData: The data from the properties.
         :type propData: object
         :return: The constructed model.
-        :rtype: PropModel
+        :rtype: QObject
         """
         QAbstractItemModel.__init__(self)
         self._propData = propData
 
-    def index(self, row: int, column: int, parent: object) -> QModelIndex:
+    def index(self, row: int, column: int, parent: QModelIndex) -> QModelIndex:
         """
         Purpose of this function is to return a QModelIndex that maps to the appropriate data
 
@@ -50,14 +51,14 @@ class PropModel(QAbstractItemModel):
         :param column: Column of the index.
         :type column: int
         :param parent: Parent of that row or column.
-        :type parent: object
+        :type parent: QModelIndex
         :return: The index for the data.
         :rtype: QModelIndex
         """
         if not self.hasIndex(row, column, parent):
             return QModelIndex()
 
-        #referencing category
+        # referencing category
         if not parent.isValid():
             internalData = self._propData.getCategories()[row]
         else:
@@ -89,25 +90,25 @@ class PropModel(QAbstractItemModel):
 
         category = self._propData.getPropertyCategory(data)
 
-        return self.createIndex(self._propData.getCategoryIndex(category),0,category)
+        return self.createIndex(self._propData.getCategoryIndex(category), 0, category)
 
-    def columnCount(self, parent: object) -> int:
+    def columnCount(self, parent: QModelIndex) -> int:
         """
         Purpose of this function is to return the number of columns for the children of a given parent
 
         :param parent: Parent will tell us our column count.
-        :type parent: object
+        :type parent: QModelIndex
         :return: Number of columns.
         :rtype: int
         """
         return 2
 
-    def rowCount(self, parent: object) -> int:
+    def rowCount(self, parent: QModelIndex) -> int:
         """
         Purpose of this function is to return the number of children of a given parent
 
         :param parent: Parent will tell us our column count.
-        :type parent: object
+        :type parent: QModelIndex
         :return: Number of rows.
         :rtype: int
         """
@@ -124,12 +125,12 @@ class PropModel(QAbstractItemModel):
 
     def data(self, index: QModelIndex, role: int) -> object:
         """
-        Purpose of this function is to retrieve data stored under the given role for the item reffered to by the
+        Purpose of this function is to retrieve data stored under the given role for the item referred to by the
         index
 
         :param index: Index that is provided.
         :type index: QModelIndex
-        :param role: The given role for item reffered.
+        :param role: The given role for item referred.
         :type role: int
         :return: Data of the given role from index.
         :rtype: object
@@ -155,15 +156,15 @@ class PropModel(QAbstractItemModel):
                     return str(data.getValue())
                 else:
                     return None
-                
+
         elif role == Qt.BackgroundRole:
             if data in self._propData.getCategories():
                 return QColor(Qt.yellow)
             else:
-                shade = row%2 * 25
-                return QColor(100+shade, 150+shade, 200+shade)
+                shade = row % 2 * 25
+                return QColor(100 + shade, 150 + shade, 200 + shade)
 
-    def headerData(self, section: int, orientation: object, role: int) -> object:
+    def headerData(self, section: int, orientation: 'Qt.Orientation', role: int) -> object:
         """
         This method is used for displaying the header data for the given role
         and orientation of that specific section.
@@ -171,7 +172,7 @@ class PropModel(QAbstractItemModel):
         :param section: Specific section for the header data.
         :type section: int
         :param orientation: Given orientation for the header data.
-        :type orientation: object
+        :type orientation: Qt.Orientation
         :param role: The given role for the header data.
         :type role: int
         :return: Model of header data.
@@ -179,7 +180,7 @@ class PropModel(QAbstractItemModel):
         """
 
         if orientation == Qt.Horizontal and role == Qt.DisplayRole:
-            return ["Name","Value"][section]
+            return ["Name", "Value"][section]
         return None
 
     def traverse(self) -> None:
@@ -191,17 +192,17 @@ class PropModel(QAbstractItemModel):
         """
         parent = QModelIndex()
         work = [parent]
-        
+
         while len(work) > 0:
             cur = work.pop()
-            
+
             curRow = cur.row()
             curCol = cur.column()
             curData = self.data(cur, Qt.DisplayRole)
             if cur.isValid():
                 print(curRow, curCol, curData)
                 pass
-                
+
             rows = self.rowCount(cur)
             cols = self.columnCount(cur)
             for r in range(rows):
@@ -248,7 +249,7 @@ class PropModel(QAbstractItemModel):
         :param index: Index that is provided.
         :type index: QModelIndex
         :return: Returns the item flags for the given index.
-        :rtype: object
+        :rtype: ItemFlags
         """
         if not index.isValid():
             return Qt.NoItemFlags
