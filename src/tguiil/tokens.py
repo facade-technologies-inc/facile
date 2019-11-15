@@ -36,7 +36,7 @@ class Token:
 		PIC = 1
 		TITLE = 1
 		TYPE = 10
-		POS = 5
+		RECT = 5
 		REFS = 1
 		CWTITLE = 2
 		CWCT = 6
@@ -44,7 +44,7 @@ class Token:
 
 	THRESHOLD = 0
 
-	def __init__(self,picture: PIL.Image = None,title: str,typeOf: str = None,position: win32structures.RECT
+	def __init__(self,picture: PIL.Image = None,title: str,typeOf: str = None,rectangle: win32structures.RECT
 	= None,refs: list = None,cwTitle: str = None,cwControlType: str = None,autoID: int = None):
 		"""
 		Checks if the tokens component state changed based on a random variable.
@@ -55,8 +55,8 @@ class Token:
 		:type title: str
 		:param typeOf: the characteristics of the component
 		:type typeOf: str
-		:param position: the coordinates of the component
-		:type position: win32structures.RECT
+		:param rectangle: the coordinates of the component
+		:type rectangle: win32structures.RECT
 		:param refs: the reference of the component
 		:type refs: list
 		:param cwTitle: the child window title of the component
@@ -72,7 +72,7 @@ class Token:
 		self.pic = picture
 		self.title = title
 		self.type = typeOf
-		self.pos = position
+		self.rectangle = rectangle
 		self.reference = refs
 		self.cwt = cwTitle
 		self.cwct = cwControlType
@@ -108,8 +108,8 @@ class Token:
 		if token2.type == self.type:
 			total += Token.Weight.TYPE
 
-		if token2.pos == self.pos:
-			total += Token.Weight.POS
+		if token2.rectangle == self.rectangle:
+			total += Token.Weight.RECT
 
 		if token2.reference == self.reference:
 			total += Token.Weight.REFS
