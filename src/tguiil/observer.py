@@ -82,32 +82,29 @@ class Observer(QThread):
                     work.append(child)
                 
                 # Information we can get about any element
-                id = curComponent.control_id()
-                isDialog = curComponent.is_dialog()
-                isEnabled = curComponent.is_enabled()
-                isVisible = curComponent.is_visible()
+                id = curComponent.control_id()  ####store this
+                isDialog = curComponent.is_dialog()  ####store this
+                isEnabled = curComponent.is_enabled()  ####store this
+                isVisible = curComponent.is_visible()  ####store this
                 parent = curComponent.parent()
+                parentTitle = parent.window_text()  ####store this
+                parentType = parent.friendly_class_name()  ####store this
                 topLevelParent = curComponent.top_level_parent()
-                processID = curComponent.process_id()
-                rectangle = curComponent.rectangle()     # RECT structure
-                root = curComponent.root()  #wrapper for root element
-                texts = curComponent.texts()[1:]    # all texts in a control
-                title = curComponent.window_text()
-                numControls = curComponent.control_count()
-                image = curComponent.capture_as_image()
-                className = curComponent.friendly_class_name()
+                topLevelParentTitle = topLevelParent.window_text()  ####store this
+                topLevelParentType = topLevelParent.friendly_class_name()  ####store this
+                processID = curComponent.process_id()  ####store this
+                rectangle = curComponent.rectangle()  ####store this   # RECT structure
+                texts = curComponent.texts()[1:]  ####store this  # all texts in a control
+                title = curComponent.window_text()  ####store this
+                numControls = curComponent.control_count()  ####store this
+                image = curComponent.capture_as_image()  ####store this
+                className = curComponent.friendly_class_name()  ####store this
                 
                 # additional information we can get about uia elements
-                autoID = curComponent.automation_id()
-                childrenTexts = curComponent.children_texts()
-                expandState = curComponent.get_expand_state()
-                shownState = curComponent.get_show_state()
-                
-                # additional information we can get about menus
-                itemCount = curComponent.item_count()
-                
-                # additional information about menu items
-                item_id = curComponent.item_id()
+                autoID = curComponent.automation_id()  ####store this
+                childrenTexts = curComponent.children_texts()  ####store this
+                expandState = curComponent.get_expand_state()  ####store this
+                shownState = curComponent.get_show_state()  ####store this
                 
                 
                 
