@@ -22,6 +22,7 @@ This module contains the PropModel() class.
 
 from PySide2.QtGui import QColor
 from PySide2.QtCore import QAbstractItemModel, QModelIndex, Qt
+from enum import Enum
 
 class PropModel(QAbstractItemModel):
     """
@@ -152,6 +153,9 @@ class PropModel(QAbstractItemModel):
                 if col == 0:
                     return data.getName()
                 elif col == 1:
+                    t = data.getType()
+                    if issubclass(t, Enum):
+                        return data.getValue().name
                     return str(data.getValue())
                 else:
                     return None

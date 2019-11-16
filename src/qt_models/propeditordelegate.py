@@ -20,8 +20,9 @@
 This module contains the PropertyEditorDelegate() Class.
 """
 
-from PySide2.QtWidgets import QItemDelegate, QStyledItemDelegate, QStyle, QLineEdit, QSpinBox, QCheckBox, QDoubleSpinBox
+from PySide2.QtWidgets import QItemDelegate, QStyledItemDelegate, QStyle, QLineEdit, QSpinBox, QCheckBox, QDoubleSpinBox, QComboBox
 from data.property import Property
+from enum import Enum
 
 
 class PropertyEditorDelegate(QStyledItemDelegate):
@@ -60,6 +61,8 @@ class PropertyEditorDelegate(QStyledItemDelegate):
                     return QCheckBox(parent)
                 elif t == float:
                     return QDoubleSpinBox(parent)
+                elif issubclass(t, Enum):
+                    return QComboBox(parent)
                 else:
                     pass
         return QStyledItemDelegate.createEditor(self, parent, option, index)
@@ -89,6 +92,9 @@ class PropertyEditorDelegate(QStyledItemDelegate):
                     editor.setChecked(value)
                 elif t == float:
                     editor.setValue(value)
+                elif issubclass(t, Enum):
+                    for i, option in enumerate(t):
+                        editor.setItemData(i, option)
                 else:
                     pass
 
@@ -119,5 +125,7 @@ class PropertyEditorDelegate(QStyledItemDelegate):
                     Property.setValue(editor.isChecked())
                 elif t == float:
                     Property.setValue(editor.value())
+                elif issubclass(t, Enum):
+                    Property.setValue(editor.currentData())
                 else:
                     pass
