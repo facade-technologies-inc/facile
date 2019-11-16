@@ -129,7 +129,7 @@ class Properties:
         Gets the properties's objects model.
 
         :return: Model of properties object.
-        :rtype: QObject
+        :rtype: PropModel
         """
         return self._model
 
@@ -162,7 +162,7 @@ class Properties:
         """
         return self._categories[category]
 
-    def getPropertyCategory(self, property: 'property') -> str:
+    def getPropertyCategory(self, property: 'Property') -> str:
         """
         Gets the category of that property.
 
@@ -181,7 +181,7 @@ class Properties:
         Gets the index of a category.
 
         :param category: Category from list of categories.
-        :type category: object
+        :type category: str
         :return: Index of the category.
         :rtype: int
         """

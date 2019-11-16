@@ -20,9 +20,10 @@
 This module contains the PropertyEditorDelegate() Class.
 """
 
-from PySide2.QtWidgets import QItemDelegate, QStyledItemDelegate, QStyle, QLineEdit, QSpinBox, QCheckBox, QDoubleSpinBox
-from property import Property
-from propeditormodel import PropModel
+from PySide2.QtWidgets import QItemDelegate, QStyledItemDelegate, QStyle, QLineEdit, QSpinBox, QCheckBox, QDoubleSpinBox, QWidget
+from PySide2.QtCore import QAbstractItemModel, QModelIndex
+from data.property import Property
+from qt_models.propeditormodel import PropModel
 
 
 class PropertyEditorDelegate(QStyledItemDelegate):
@@ -34,7 +35,7 @@ class PropertyEditorDelegate(QStyledItemDelegate):
     # TODO: Support for Enums
     # TODO: Support for Lists
 
-    def createEditor(self, parent: 'QModelIndex', option: object, index: 'QModelIndex'):
+    def createEditor(self, parent: QModelIndex, option: object, index: QModelIndex) -> QWidget:
         """
         Creates the widget used to change data from the model and can be
         reimplemented to customize editing behavior
@@ -65,7 +66,7 @@ class PropertyEditorDelegate(QStyledItemDelegate):
                     pass
         return QStyledItemDelegate.createEditor(self, parent, option, index)
 
-    def setEditorData(self, editor: 'QWidget', index: 'QModelIndex') -> None:
+    def setEditorData(self, editor: QWidget, index: QModelIndex) -> None:
         """
         Provides the widget with data to manipulate.
 
@@ -93,7 +94,7 @@ class PropertyEditorDelegate(QStyledItemDelegate):
                 else:
                     pass
 
-    def setModelData(self, editor: 'QWidget', model: 'PropModel', index: 'QModelIndex') -> None:
+    def setModelData(self, editor: QWidget, model: 'PropModel', index: QModelIndex) -> None:
         """
         Returns updated data to the model
 
