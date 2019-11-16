@@ -153,6 +153,9 @@ class PropModel(QAbstractItemModel):
                 if col == 0:
                     return data.getName()
                 elif col == 1:
+                    t = data.getType()
+                    if t == bool:
+                        return None
                     return str(data.getValue())
                 else:
                     return None
