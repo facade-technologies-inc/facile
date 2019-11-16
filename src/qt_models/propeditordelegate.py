@@ -20,8 +20,10 @@
 This module contains the PropertyEditorDelegate() Class.
 """
 
-from PySide2.QtWidgets import QItemDelegate, QStyledItemDelegate, QStyle, QLineEdit, QSpinBox, QCheckBox, QDoubleSpinBox
+from PySide2.QtWidgets import QItemDelegate, QStyledItemDelegate, QStyle, QLineEdit, QSpinBox, QCheckBox, QDoubleSpinBox, QWidget
+from PySide2.QtCore import QAbstractItemModel, QModelIndex
 from data.property import Property
+from qt_models.propeditormodel import PropModel
 
 
 class PropertyEditorDelegate(QStyledItemDelegate):
@@ -33,25 +35,25 @@ class PropertyEditorDelegate(QStyledItemDelegate):
     # TODO: Support for Enums
     # TODO: Support for Lists
 
-    def createEditor(self, parent: object, option: object, index: object) -> object:
+    def createEditor(self, parent: QModelIndex, option: object, index: QModelIndex) -> QWidget:
         """
         Creates the widget used to change data from the model and can be
         reimplemented to customize editing behavior
 
         :param parent: Parent of the editor.
-        :type parent: object
+        :type parent: QModelIndex
         :param option: Option of the editor.
         :type option: object
         :param index: Index of the editor.
-        :type index: object
+        :type index: QModelIndex
         :return: Editor for PropModel
-        :rtype: object
+        :rtype: QWidget
         """
         data = index.internalPointer()
 
         if type(data) == Property:
             if index.column() == 1:
-                t = Property.getType()
+                t = data.getType()
                 if t == str:
                     return QLineEdit(parent)
                 elif t == int:
@@ -64,23 +66,23 @@ class PropertyEditorDelegate(QStyledItemDelegate):
                     pass
         return QStyledItemDelegate.createEditor(self, parent, option, index)
 
-    def setEditorData(self, editor: object, index: object) -> None:
+    def setEditorData(self, editor: QWidget, index: QModelIndex) -> None:
         """
         Provides the widget with data to manipulate.
 
         :param editor: Editor that will be set for certain data structures.
-        :type editor: object
+        :type editor: QWidget
         :param index: Index of the editor.
-        :type index: object
+        :type index: QModelIndex
         :return: None
         :rtype: NoneType
         """
         data = index.internalPointer()
 
         if type(data) == Property:
-            value = Property.getValue()
+            value = data.getValue()
             if index.column() == 1:
-                t = Property.getType()
+                t = data.getType()
                 if t == str:
                     editor.setText(value)
                 elif t == int:
@@ -92,16 +94,16 @@ class PropertyEditorDelegate(QStyledItemDelegate):
                 else:
                     pass
 
-    def setModelData(self, editor: object, PropModel: classmethod, index: object) -> None:
+    def setModelData(self, editor: QWidget, model: 'PropModel', index: QModelIndex) -> None:
         """
         Returns updated data to the model
 
         :param editor: Editor that will be set for certain data structures.
-        :type editor: object
-        :param PropModel: The model that our delegate will render.
-        :type PropModel: class method
+        :type editor: QWidget
+        :param propModel: The model that our delegate will render.
+        :type propModel: PropModel
         :param index: Index of the editor.
-        :type index: object
+        :type index: QModelIndex
         :return: None
         :rtype: NoneType
         """
@@ -110,14 +112,14 @@ class PropertyEditorDelegate(QStyledItemDelegate):
         if type(data) == Property:
 
             if index.column() == 1:
-                t = Property.getType()
+                t = data.getType()
                 if t == str:
-                    Property.setValue(editor.text())
+                    data.setValue(editor.text())
                 elif t == int:
-                    Property.setValue(editor.value())
+                    data.setValue(editor.value())
                 elif t == bool:
-                    Property.setValue(editor.isChecked())
+                    data.setValue(editor.isChecked())
                 elif t == float:
-                    Property.setValue(editor.value())
+                    data.setValue(editor.value())
                 else:
                     pass
