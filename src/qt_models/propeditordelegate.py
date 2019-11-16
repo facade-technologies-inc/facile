@@ -22,7 +22,6 @@ This module contains the PropertyEditorDelegate() Class.
 
 from PySide2.QtWidgets import QItemDelegate, QStyledItemDelegate, QStyle, QLineEdit, QSpinBox, QCheckBox, QDoubleSpinBox
 from property import Property
-from PySide2.QtCore import QRect
 from propeditormodel import PropModel
 
 
@@ -53,7 +52,7 @@ class PropertyEditorDelegate(QStyledItemDelegate):
 
         if type(data) == Property:
             if index.column() == 1:
-                t = Property.getType()
+                t = data.getType()
                 if t == str:
                     return QLineEdit(parent)
                 elif t == int:
@@ -80,9 +79,9 @@ class PropertyEditorDelegate(QStyledItemDelegate):
         data = index.internalPointer()
 
         if type(data) == Property:
-            value = Property.getValue()
+            value = data.getValue()
             if index.column() == 1:
-                t = Property.getType()
+                t = data.getType()
                 if t == str:
                     editor.setText(value)
                 elif t == int:
@@ -94,7 +93,7 @@ class PropertyEditorDelegate(QStyledItemDelegate):
                 else:
                     pass
 
-    def setModelData(self, editor: 'QWidget', propModel: 'PropModel', index: 'QModelIndex') -> None:
+    def setModelData(self, editor: 'QWidget', model: 'PropModel', index: 'QModelIndex') -> None:
         """
         Returns updated data to the model
 
@@ -112,14 +111,14 @@ class PropertyEditorDelegate(QStyledItemDelegate):
         if type(data) == Property:
 
             if index.column() == 1:
-                t = Property.getType()
+                t = data.getType()
                 if t == str:
-                    Property.setValue(editor.text())
+                    data.setValue(editor.text())
                 elif t == int:
-                    Property.setValue(editor.value())
+                    data.setValue(editor.value())
                 elif t == bool:
-                    Property.setValue(editor.isChecked())
+                    data.setValue(editor.isChecked())
                 elif t == float:
-                    Property.setValue(editor.value())
+                    data.setValue(editor.value())
                 else:
                     pass

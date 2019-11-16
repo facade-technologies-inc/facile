@@ -21,8 +21,10 @@ This module contains the Properties() class.
 """
 
 from collections import OrderedDict
-from propeditormodel import PropModel
-from property import Property
+from qt_models.propeditormodel import PropModel
+from data.property import Property
+
+# TODO: Don't use object in type hints when there is a more specific type you could put
 
 
 class Properties:
@@ -93,7 +95,7 @@ class Properties:
                 newProperties.addProperty("Base", "Name", "default", str)
                 newProperties.addProperty("Base", "Type", "Push Button", str)
                 newProperties.addProperty("Base", "Annotation", "", str)
-                newProperties.addProperty("Base", "Read-Only", "", bool)
+                newProperties.addProperty("Base", "Read-Only", True, bool)
                 newProperties.addProperty("Base", "Size", 3.45, float)
             elif predefinedCategories[i] == "Visual":
                 newProperties.addProperty("Visual", "BoxColor", "black", str)
@@ -119,7 +121,6 @@ class Properties:
                 default = property["default"]
                 readOnly = property["readOnly"]
                 newProperties.addProperty(category, name, default, type, readOnly)
-
 
         return newProperties
 
@@ -198,3 +199,16 @@ class Properties:
         """
         properties = self.getCategoryProperties(category)
         return len(properties)
+
+    def getProperty(self, name: str) -> tuple:
+        """
+        Gets a property by name if it exists in the properties object
+        
+        :param name: the name of the property to get
+        :return: (A tuple containing the category name that the property is under and the property object) or None
+        :rtype: tuple[str, Property] or NoneType
+        """
+        for category in self._categories:
+            for property in self._categories[category]:
+                if property.getName() == name:
+                    return tuple(category, property)

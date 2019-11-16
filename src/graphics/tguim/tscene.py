@@ -17,64 +17,48 @@
 |                                                                              |
 \------------------------------------------------------------------------------/
 
-This module contains the Entity class.
+This module contains the TScene class.
 """
 
-# TODO: Import properties class for type hint purposes???
+from PySide2.QtCore import Signal
+from PySide2.QtWidgets import QGraphicsScene
 
 
-class Entity:
-    """
-    This class is the abstract super class for the Component and VisibilityBehavior classes.
-    It defines a unique id for entities that are created, and has a properties object.
-    """
-    count: int = 0  # Class variable used to uniquely identify every entity created.
+class TScene(QGraphicsScene):
 
-    # TODO: Take a Properties object as an input parameter???
+    itemSelected = Signal(int)
 
-    def __init__(self):
+    def __init__(self, targetGUIModel: 'TargetGuiModel'):
         """
-        Constructs an Entity object.  Note: This is an abstract class, so this constructor is used
-        only by the constructors of Entity's sub-classes.
+        Construct the TScene class
 
-        :return: The constructed Entity
-        :rtype: Entity
+        :param data:
         """
+        QGraphicsScene.__init__(self)
+        self._targetGuiModel = targetGUIModel
 
-        Entity.count += 1
-        self._id: int = Entity.count
-        self._properties = None
+        # This line is important because it affects how the scene is updated.
+        # The NoIndex index method tells the scene to traverse all items when drawing
+        # which is less efficient than using a binary space partitioning tree, but is
+        # better for dynamic scenes because no items will be missed in the repaint.
+        self.setItemIndexMethod(QGraphicsScene.NoIndex)
 
-    def getId(self) -> None:
+    def getTargetGUIModel(self) -> 'TargetGuiModel':
         """
-        Gets the unique id for the entity.
+        Gets the target GUI Model.
 
-        :return: The id for entity.
-        :rtype: int
+        :return: The target GUI model
+        :rtype: data.tguim.targetguimodel.TargetGuiModel
         """
+        return self._targetGuiModel
 
-        return self._id
-
-    def getProperties(self) -> None:
+    def emitItemSelected(self, id: int) -> None:
         """
-        Gets the entity's Properties object.
+        Emits a signal that carries the ID of the item that was selected
 
-        :return: The entity's Properties object.
-        :rtype: Properties
-        """
-
-        return self._properties
-
-    def setProperties(self, propertiesObj: 'Properties') -> None:
-        """
-        Sets the Properties object for the entity.
-
-        :param propertiesObj: The properties object to be associated with the entity.
-        :type propertiesObj: Properties
+        :param id: The ID of the item that was selected.
+        :type id: int
         :return: None
         :rtype: NoneType
         """
-
-        self._properties = propertiesObj
-
-
+        self.itemSelected.emit(id)
