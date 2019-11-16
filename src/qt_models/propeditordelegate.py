@@ -19,12 +19,12 @@
 
 This module contains the PropertyEditorDelegate() Class.
 """
+
 from PySide2 import QtGui, QtCore, QtWidgets
 from PySide2.QtWidgets import QItemDelegate, QStyledItemDelegate, QStyle, QLineEdit, QSpinBox, QCheckBox, QDoubleSpinBox, QWidget
 from PySide2.QtCore import QAbstractItemModel, QModelIndex
 from data.property import Property
 from qt_models.propeditormodel import PropModel
-
 
 
 class PropertyEditorDelegate(QStyledItemDelegate):
@@ -76,7 +76,6 @@ class PropertyEditorDelegate(QStyledItemDelegate):
             QtWidgets.QApplication.style().drawControl(QtWidgets.QStyle.CE_CheckBox, check_box_style_option, painter)
         else:
             QStyledItemDelegate.paint(self, painter, option, index)
-
 
     def createEditor(self, parent: QModelIndex, option: object, index: QModelIndex) -> QWidget:
         """
