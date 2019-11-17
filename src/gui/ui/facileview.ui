@@ -23,8 +23,8 @@
       <property name="orientation">
        <enum>Qt::Horizontal</enum>
       </property>
-      <widget class="QGraphicsView" name="graphicsView_2"/>
-      <widget class="QGraphicsView" name="graphicsView"/>
+      <widget class="QGraphicsView" name="targetGUIModelView"/>
+      <widget class="QGraphicsView" name="apiModelView"/>
      </widget>
     </item>
    </layout>
@@ -100,18 +100,7 @@
    <widget class="QWidget" name="dockWidgetContents_2">
     <layout class="QVBoxLayout" name="verticalLayout">
      <item>
-      <widget class="QTreeWidget" name="treeWidget">
-       <column>
-        <property name="text">
-         <string>Thing</string>
-        </property>
-       </column>
-       <column>
-        <property name="text">
-         <string>Description</string>
-        </property>
-       </column>
-      </widget>
+      <widget class="QTreeView" name="projectExplorerView"/>
      </item>
     </layout>
    </widget>
@@ -129,7 +118,7 @@
    <widget class="QWidget" name="dockWidgetContents_4">
     <layout class="QVBoxLayout" name="verticalLayout_3">
      <item>
-      <widget class="QListView" name="listView"/>
+      <widget class="QListView" name="validatorView"/>
      </item>
     </layout>
    </widget>
@@ -144,18 +133,7 @@
    <widget class="QWidget" name="dockWidgetContents_5">
     <layout class="QVBoxLayout" name="verticalLayout_2">
      <item>
-      <widget class="QTreeWidget" name="treeWidget_2">
-       <column>
-        <property name="text">
-         <string>Property</string>
-        </property>
-       </column>
-       <column>
-        <property name="text">
-         <string>Value</string>
-        </property>
-       </column>
-      </widget>
+      <widget class="QTreeView" name="propertyEditorView"/>
      </item>
     </layout>
    </widget>
@@ -170,7 +148,7 @@
    <widget class="QWidget" name="dockWidgetContents_6">
     <layout class="QVBoxLayout" name="verticalLayout_4">
      <item>
-      <widget class="QTreeWidget" name="treeWidget_3">
+      <widget class="QTreeWidget" name="modulesView">
        <column>
         <property name="text">
          <string>Module</string>
@@ -280,27 +258,45 @@
    </property>
   </action>
   <action name="actionAutoExplore">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>Auto Explore</string>
    </property>
    <property name="toolTip">
     <string>Explore the target GUI autonomously (no user control)</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+Alt+A</string>
+   </property>
   </action>
   <action name="actionManualExplore">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>Manual Explore</string>
    </property>
    <property name="toolTip">
     <string>Watch for changes in the target GUI as the user interacts with it.</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+Alt+M</string>
+   </property>
   </action>
   <action name="actionIgnoreExplore">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>Ignore Explore</string>
    </property>
    <property name="toolTip">
     <string>The user can interact with the target GUI without changes being recognized.</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Alt+I</string>
    </property>
   </action>
   <action name="actionAPI_Modules">
