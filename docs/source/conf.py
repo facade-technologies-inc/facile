@@ -33,7 +33,7 @@ extensions = [
     'sphinx.ext.todo',
     'sphinx.ext.autodoc',
     'sphinx.ext.inheritance_diagram',
-    'autoapi.sphinx',
+    'autoapi.extension',
     'sphinx.ext.autosummary',
     'sphinx.ext.intersphinx',
     'sphinx.ext.mathjax',
@@ -49,39 +49,21 @@ templates_path = ['_templates']
 # This pattern also affects html_static_path and html_extra_path.
 exclude_patterns = []
 
-# -- Options for AutoAPI -----------------------------------------------------
-mods = {
-    'gui': ['copyprojectdialog',
-            'newprojectdialog',
-            'manageprojectdialog',
-            'facileview'],
-    'libs': ['bitness'],
-    'qt_models': ['projectexplorermodel',
-                  'propeditormodel',
-                  'propeditordelegate'],
-    'tguiil': ['application',
-               'explorer',
-               'observer',
-               'supertokens',
-               'tokens'],
-    'graphics/tguim': ['componentgraphics',
-                       'tscene',
-                       'visibilitybehaviorgraphics'],
-    'data': ['entity',
-             'project',
-             'properties',
-             'property'],
-    'data/tguim': ['component',
-                   'condition',
-                   'targetguimodel',
-                   'visibilitybehavior']
-}
+# An RST string that will be included at the end of every page.
+rst_epilog = """
+.. note::
+    The contents of this document are proprietary.
+"""
 
-autoapi_modules = {}
-for dir in mods:
-    for mod in mods[dir]:
-        modName = dir.replace("/", ".") + "." + mod
-        autoapi_modules[modName] = {'override': True, 'output': "auto/" + dir}
+# An RST string that will be included at the beginning of every page.
+rst_prolog = """
+.. note::
+    The contents of this document are proprietary.
+"""
+
+# -- Options for AutoAPI -----------------------------------------------------
+autoapi_add_toctree_entry = True
+autoapi_dirs = ['../../src']
 
 # -- Options for HTML output -------------------------------------------------
 

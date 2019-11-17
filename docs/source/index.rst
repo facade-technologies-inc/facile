@@ -6,11 +6,12 @@
 Welcome to Facile's documentation!
 ==================================
 
+Facile is a tool for generating APIs that control existing graphical user interfaces.
+It uses and builds upon popular GUI automation frameworks such as pywinauto and pyautogui.
+
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
-
-   auto/data/data.project
+   :caption: Table of Contents:
 
 
 
