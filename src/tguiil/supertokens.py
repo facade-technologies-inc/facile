@@ -25,7 +25,7 @@ class SuperToken:
 	A super token is used to identify a component in multiple states. They can be ignored if the user
 	does not care about specific components.
 	"""
-	IDENTIFIER = 
+	IDENTIFIER = 1
 	def __init__(self, ignoreFlag = False):
 		""" 
 		Constructs a unique identifier and a way to hide certain components
@@ -37,7 +37,8 @@ class SuperToken:
 		:rtype: NoneType
 		"""
 		self.tokens = [token1]
-		#self.id = identifier
+		self.id = SuperToken.IDENTIFIER
+		SuperToken.IDENTIFIER += 1
 		self.flag = ignoreFlag
 
 	def addToken(self, tokenA): 
