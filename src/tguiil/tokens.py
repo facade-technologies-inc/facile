@@ -240,7 +240,6 @@ class Token:
             total += Token.Weight["CONTROL_ID"]
             
             # compare pictures
-            # TODO: Determine if pictures should be compared based on their visibility on the screen
             if self.pic != None and token2.pic != None:
                 if self.pic.size == token2.pic.size:
                     try:
