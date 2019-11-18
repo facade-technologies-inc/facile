@@ -30,6 +30,10 @@ class ComponentGraphics(QGraphicsItem):
     This class displays an individual GUI component in the target gui,
     based on the component class.
     """
+    
+    MIN_WIDTH = 50
+    MIN_HEIGHT = 50
+    
     penWidth = 1.0
     textHeight = 30
     topMargin = 10
@@ -55,8 +59,34 @@ class ComponentGraphics(QGraphicsItem):
         
         self._dataComponent = dataComponent
         self.setFlag(QGraphicsItem.ItemIsSelectable)
+        self.rect = list(rect)
+        self.adjustPositioning()
         
-        self.rect = rect
+    def adjustPositioning(self) -> None:
+        """
+        Places component using the following criteria:
+        1. Try to place it where it really is relative to parent.
+        2. If it collides with edge of parent, move it inside parent.
+        3. If it collides with siblings, try moving it to a space that fits
+        4. If it doesn't fit in parent, expand parent.
+        5. Repeat steps 2-5 with parent until everything fits.
+        
+        :return: None
+        :rtype: NoneType
+        """
+        
+        # force components to have minimum size
+        self.rect[2] = max(self.rect[2], ComponentGraphics.MIN_WIDTH)
+        self.rect[3] = max(self.rect[3], ComponentGraphics.MIN_HEIGHT)
+        
+        #TODO:
+        # Modify locations of elements based on collisions.
+        #   1. If the component doesn't fit inside the parent window, move it inside.
+        #   2. If there is a collision with a sibling, move the component wherever there is the most room
+        #   3. If there isn't enough room for the new component, expand the parent.
+        #   4. recursively make room for component
+        
+        pass
 
     def boundingRect(self):
         """

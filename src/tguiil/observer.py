@@ -46,6 +46,12 @@ class Observer(QThread):
     
     # This signal is emitted when a new component is detected.
     newSuperToken = Signal(SuperToken, SuperToken)  # (new SuperToken, new SuperToken's parent SuperToken)
+    
+    ignoreTypes = set()
+    ignoreTypes.add("wxWindowNR")
+    ignoreTypes.add("wxWindow")
+    ignoreTypes.add("SysShadow")
+    ignoreTypes.add("ToolTips")
 
     def __init__(self, processID: int, backend: str = "uia"):
         """
@@ -82,22 +88,28 @@ class Observer(QThread):
                 componentCount += 1
                 curComponent, parentSuperToken = work.pop()
                 
-                try:
-                    token = self.createToken(curComponent)
-                except Token.CreationException:
-                    continue
+                if curComponent.friendly_class_name() not in Observer.ignoreTypes:
+                    try:
+                        token = self.createToken(curComponent)
+                    except Token.CreationException:
+                        continue
+                        
+                    nextParentSuperToken = self.matchToSuperToken(token, parentSuperToken)
+                else:
+                    nextParentSuperToken = parentSuperToken
                     
-                matchedSuperToken = self.matchToSuperToken(token, parentSuperToken)
 
                 children = curComponent.children()
                 for child in children:
-                    work.append((child, matchedSuperToken))
+                    work.append((child, nextParentSuperToken))
                     
             print("{} components were found in the GUI.".format(componentCount))
     
     def createToken(self, component: pywinauto.base_wrapper.BaseWrapper) -> Token:
         """
         Create a token from a pywinauto control.
+        
+        :raises: Token.CreationException
         
         :param component: A pywinauto control from the target GUI.
         :type component: pywinauto.base_wrapper

@@ -114,14 +114,6 @@ class TargetGuiModel(QObject):
         else:
             parentComponent = self._superTokenToComponentMapping[parentToken]
             
-            
-        #TODO:
-        # Modify locations of elements based on collisions.
-        #   1. If the component doesn't fit inside the parent window, move it inside.
-        #   2. If there is a collision with a sibling, move the component wherever there is the most room
-        #   3. If there isn't enough room for the new component, expand the parent.
-        #   4. recursively make room for component
-        
         newComponent = Component(self, parentComponent, newSuperToken)
         
         #TODO: Create Properties object based on values from the SuperToken
