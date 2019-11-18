@@ -66,7 +66,10 @@ class PropertyEditorDelegate(QStyledItemDelegate):
                 elif t == float:
                     return QDoubleSpinBox(parent)
                 elif issubclass(t, Enum):
-                    return QComboBox(parent)
+                    editor = QComboBox(parent)
+                    for i, option in enumerate(t):
+                        editor.addItem(option.name, option)
+                    return editor
                 else:
                     pass
         return QStyledItemDelegate.createEditor(self, parent, option, index)
@@ -97,8 +100,7 @@ class PropertyEditorDelegate(QStyledItemDelegate):
                 elif t == float:
                     editor.setValue(value)
                 elif issubclass(t, Enum):
-                    for i, option in enumerate(t):
-                        editor.setItemData(i, option)
+                    pass #TODO: set combo box default data
                 else:
                     pass
 
