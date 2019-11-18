@@ -212,7 +212,8 @@ class Observer(QThread):
     
         # No match was found
         if selectedSuperToken == None:
-            newSuperToken = SuperToken(token)
+            newSuperToken = SuperToken(token, parentSuperToken)
+            
             self._childMapping[parentSuperToken].append(newSuperToken)
             self._childMapping[newSuperToken] = []
             self.newSuperToken.emit(newSuperToken, parentSuperToken)

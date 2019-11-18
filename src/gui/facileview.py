@@ -85,6 +85,8 @@ class FacileView(QMainWindow):
 			self.projectChanged.emit(project)
 			self._project.save()
 			self._project.addToRecents()
+			self._project.getTargetGUIModel().getScene().itemSelected.connect(self._onItemSelected)
+			self._project.getTargetGUIModel().dataChanged.connect(lambda: self.ui.projectExplorerView.update())
 			self.ui.projectExplorerView.setModel(self._project.getProjectExplorerModel())
 			self.ui.targetGUIModelView.setScene(self._project.getTargetGUIModel().getScene())
 			self._project.startTargetApplication()
@@ -286,6 +288,17 @@ class FacileView(QMainWindow):
 		manageProjectDialog = ManageProjectDialog(self._project)
 		manageProjectDialog.projectCreated.connect(self._setProject)
 		manageProjectDialog.exec_()
+		
+	@Slot(int)
+	def _onItemSelected(self, id: int):
+		"""
+		This slot will update the view when an item is selected.
+		
+		:return: None
+		"""
+		# TODO: Change to get any entity instead of just component
+		properties = self._project.getTargetGUIModel().getComponent(id).getProperties()
+		self.ui.propertyEditorView.setModel(properties.getModel())
 		
 	@Slot(bool)
 	def _onManualExploration(self, checked: bool) -> None:

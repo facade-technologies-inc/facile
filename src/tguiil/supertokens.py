@@ -29,13 +29,14 @@ class SuperToken:
 	does not care about specific components.
 	"""
 	id_counter = 1
-	def __init__(self, token):
+	def __init__(self, token, parent: 'SuperToken'):
 		""" 
 		Constructs a unique identifier and a way to hide certain components
 
 		:param token: The first token to be added to the SuperToken that's being created.
 		:type token: Token
-		
+		:param parent: The parent of the SuperToken being created.
+		:type parent: SuperToken or NoneType
 		:return: None
 		:rtype: NoneType
 		"""
@@ -43,6 +44,16 @@ class SuperToken:
 		self.id = SuperToken.id_counter
 		SuperToken.id_counter += 1
 		self.ignoreFlag = False
+		
+		width = token.rectangle.width()
+		height = token.rectangle.height()
+		if parent is None:
+			px = 0
+			py = 0
+		else:
+			px = parent.tokens[0].rectangle.left
+			py = parent.tokens[0].rectangle.top
+		self.posRelativeToParent = (token.rectangle.left - px, token.rectangle.top - py, width, height)
 
 	def addToken(self, tokenA): 
 		"""
