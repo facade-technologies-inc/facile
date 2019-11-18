@@ -26,12 +26,11 @@ import psutil
 import pywinauto
 
 from PySide2.QtCore import QThread, Signal
-
+from pywinauto.controls.uiawrapper import UIAWrapper
 from tguiil.application import Application
 from tguiil.tokens import Token
 from tguiil.supertokens import SuperToken
 
-#TODO: Create play/pause methods
 
 class Observer(QThread):
     """
@@ -59,6 +58,7 @@ class Observer(QThread):
         :return: None
         :rtype: NoneType
         """
+        QThread.__init__(self)
         self._process = psutil.Process(processID)
         self._backend = backend
         self._childMapping = {None: []}  # maps each super token to its list of children.
@@ -70,23 +70,32 @@ class Observer(QThread):
         :return: the exit code of the thread which should be 0.
         :rtype: int
         """
+        print("Running the observer")
         app = Application(backend=self._backend)
         app.setProcess(self._process)
         while self._process.is_running():
-            
+            componentCount = 0
             # work acts as a stack. Each element is a 2-tuple where the first element
             # is a GUI component and the second element is the parent super token.
             work = [(win, None) for win in app.windows()]
             while len(work) > 0:
+                componentCount += 1
                 curComponent, parentSuperToken = work.pop()
-                token = self.createToken(curComponent)
+                
+                try:
+                    token = self.createToken(curComponent)
+                except Token.CreationException:
+                    continue
+                    
                 matchedSuperToken = self.matchToSuperToken(token, parentSuperToken)
 
                 children = curComponent.children()
                 for child in children:
                     work.append((child, matchedSuperToken))
+                    
+            print("{} components were found in the GUI.".format(componentCount))
     
-    def createToken(self, component: pywinauto.base_wrapper) -> Token:
+    def createToken(self, component: pywinauto.base_wrapper.BaseWrapper) -> Token:
         """
         Create a token from a pywinauto control.
         
@@ -95,49 +104,63 @@ class Observer(QThread):
         :return: The token that was created from the pywinauto control.
         :rtype: Token
         """
+        try:
+            parent = component.parent()
+            if parent:
+                parentTitle = parent.window_text()
+                parentType = parent.friendly_class_name()
+            else:
+                parentTitle = ""
+                parentType = ""
+    
+            topLevelParent = component.top_level_parent()
+            topLevelParentTitle = topLevelParent.window_text()
+            topLevelParentType = topLevelParent.friendly_class_name()
+            
+            # Information we can get about any element
+            id = component.control_id()
+            isEnabled = component.is_enabled()
+            isVisible = component.is_visible()
+            processID = component.process_id()
+            rectangle = component.rectangle()
+            texts = component.texts()[1:]
+            title = component.window_text()
+            numControls = component.control_count()
+            image = component.capture_as_image()
+            typeOf = component.friendly_class_name()
+    
+            # additional information we can get about uia elements
+            if isinstance(component, UIAWrapper):
+                autoID = component.automation_id()
+                childrenTexts = component.children_texts()
+                expandState = component.get_expand_state()
+                shownState = component.get_show_state()
+            else:
+                autoID = None
+                expandState = None
+                shownState = None
+                childrenTexts = [child.window_text() for child in component.children()]
+                
+            # construct control identifiers
+            # There are 4 possible control identifiers:
+            #   - title
+            #   - friendly class
+            #   - title + friendly class
+            #   - closest text + friendly class (only if the title is empty)
+            
+            if title is None:
+                title = ""
+            
+            controlIdentifiers = [title, typeOf, title + typeOf]
+        
+            # create a new token
+            token = Token(id, isEnabled, isVisible, processID, typeOf, rectangle, texts, title,
+                          numControls, controlIdentifiers, parentTitle, parentType,
+                          topLevelParentTitle, topLevelParentType, childrenTexts, image, autoID,
+                          expandState, shownState)
+        except Exception as e:
+            raise Token.CreationException(str(e))
 
-        parent = component.parent()
-        topLevelParent = component.top_level_parent()
-        
-        # Information we can get about any element
-        id = component.control_id()  ####store this, required, int
-        isDialog = component.is_dialog()  ####store this, required, bool
-        isEnabled = component.is_enabled()  ####store this, required, bool
-        isVisible = component.is_visible()  ####store this, required, bool
-        parentTitle = parent.window_text()  ####store this, optional, str
-        parentType = parent.friendly_class_name()  ####store this, optional, str
-        topLevelParentTitle = topLevelParent.window_text()  ####store this, optional, str
-        topLevelParentType = topLevelParent.friendly_class_name()  ####store this, optional, str
-        processID = component.process_id()  ####store this, required, int
-        rectangle = component.rectangle()  ####store this, required, win32structures.RECT
-        texts = component.texts()[1:]  ####store this, required, list[str]
-        title = component.window_text()  ####store this, required, str
-        numControls = component.control_count()  ####store this, required, int
-        image = component.capture_as_image()  ####store this, optional, PIL.Image
-        typeOf = component.friendly_class_name()  ####store this, required, str
-    
-        # construct control identifiers
-        # There are 4 possible control identifiers:
-        #   - title
-        #   - friendly class
-        #   - title + friendly class
-        #   - closest text + friendly class (only if the title is empty)
-        controlIdentifiers = [title, typeOf, title + typeOf]  # TODO: Get last control identifier
-    
-        # additional information we can get about uia elements
-        if isinstance(component, pywinauto.controls.uiawrapper):
-            autoID = component.automation_id()  ####store this, optional, int
-            childrenTexts = component.children_texts()  ####store this, optional, list[str]
-            expandState = component.get_expand_state()  ####store this, optional, int
-            shownState = component.get_show_state()  ####store this, optional, int
-    
-        # create a new token
-        # TODO: Reorder parameters to fit Token constructor
-        token = Token(controlIdentifiers, id, isDialog, isEnabled, isVisible, processID, rectangle,
-                      texts, title, numControls, typeOf, autoID, childrenTexts,
-                      expandState, shownState, image, parentTitle, parentType,
-                      topLevelParentTitle, topLevelParentType)
-        
         return token
 
     def matchToSuperToken(self, token: Token, parentSuperToken: SuperToken) -> SuperToken:
@@ -161,11 +184,18 @@ class Observer(QThread):
         
         # determine if the new token matches any super tokens and how well it matches if it does.
         bestMatch = 0
-        bestDecision = Token.Match.NO
+        bestDecision = Token.Match.NO.value
         selectedSuperToken = None
-        for superToken in self._childMapping[parentSuperToken]:
+        potentialMatches = self._childMapping[parentSuperToken]
+        
+        if len(potentialMatches) > 0:
+            print("====================================================================================")
+            print("Parent:\n{}".format(parentSuperToken))
+            print("Searching for match for Token:\n\t{}\nIn SuperTokens:\n\t{}\n".format(token, "\n\t".join([str(x) for x in potentialMatches])))
+            
+        for superToken in potentialMatches:
             decision, matchVal = superToken.shouldContain(token)
-            bestDecision = min(bestDecision, decision)
+            bestDecision = min(bestDecision, decision.value)
         
             if decision == Token.Match.NO:
                 continue
