@@ -18,55 +18,54 @@
 \------------------------------------------------------------------------------/
 
 This file contains the super tokens class that initializes tokens as a list and a function that
-iterates through the tokens in the token list 
+iterates through the tokens in the token list.
 """
-
-
 class SuperToken: 
-	""" 
-
-	SuperToken class initializes token1 with a unique identifier and checks to see
-	if any tokens belong to a supertoken. 
 	"""
-
-	def __init__(self, token1, identifier, ignoreFlag): 
+	A super token is used to identify a component in multiple states. They can be ignored if the user
+	does not care about specific components.
+	"""
+	IDENTIFIER = 1
+	def __init__(self, ignoreFlag = False):
 		""" 
-		Constructs paramters for each token to
-		check if it belongs to a supertoken.
+		Constructs a unique identifier and a way to hide certain components
 
-		:return: None 
-		:rtype: NoneType 
+		:param ignoreFlag: Allows the user to ignore specific components
+		:type ignoreFlag: bool
+		
+		:return: None
+		:rtype: NoneType
 		"""
-
 		self.tokens = [token1]
-		self.id = identifier
+		self.id = SuperToken.IDENTIFIER
+		SuperToken.IDENTIFIER += 1
 		self.flag = ignoreFlag
 
-
-
-	def addToken(tokenA): 
+	def addToken(self, tokenA): 
 		"""
-
 		The addToken function adds a token to the supertoken.
 
-		:return: token 
-		:rtype: NoneType 
+		:param tokenA: Returns the super token of the token to which the component belongs to
+		:type tokenA: Token
+		:return: None
+		:rtype: SuperToken
 		"""
-
 		self.tokens.append(tokenA)
 
 	def shouldContain(token2): 
 		"""
-
-		The shouldContain function iterates through the tokens in the token list to see if the token
+		The shouldContain function iterates through the tokens in a list to see if the token
 		belongs to a supertoken.
 
-		:return: token 
-		:rtype: NoneType 
+		:param token2: Adds the tokens together if they are equal
+		:type token2: Token
+		:return: Token
+		:rtype: Token
 		"""
-
 		for token in self.tokens:
 			if token.isEqualTo(token2):
-				self.addToken(token2)
-				break
+				return Token.Match.EXACT
+
+
+				######### Return if exact match no match or close match, user will be able to add
 
