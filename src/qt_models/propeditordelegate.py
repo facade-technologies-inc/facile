@@ -31,7 +31,7 @@ class PropertyEditorDelegate(QStyledItemDelegate):
     """
     A subclass that allows us to render our QTreeView and editing the Model
     """
-
+    
     def getCheckBoxRect(self, option: QStyleOptionViewItem) -> QRect:
         """
         Get rect for checkbox centered in option.rect.
