@@ -25,6 +25,7 @@ from data.tguim.visibilitybehavior import VisibilityBehavior
 from graphics.tguim.componentgraphics import ComponentGraphics
 
 # TODO: Move some of the graphics stuff to the Entity class?
+# TODO: IMPORTANT. Change all the from -> src, all the to -> dest. Change variables, function names and docstrings.
 
 class Component(Entity):
 	"""
@@ -47,7 +48,7 @@ class Component(Entity):
 		self._superToken: 'SuperToken' = superToken
 		self._parent: 'Component' = parent
 		self._children = []
-		self._toVisibilityBehaviors = []
+		self._destVisibilityBehaviors = []
 		self._fromVisibilityBehaviors = []
 		self._model = tguim
 		self._graphicsItem = ComponentGraphics(self, self.getParentGraphicsItem())
@@ -232,7 +233,7 @@ class Component(Entity):
 			if oldParent:
 				oldParent.getGraphicsItem().triggerSceneUpdate()
 
-	def addToVisibilityBehavior(self, newVisBehavior: VisibilityBehavior) -> None:
+	def addDestVisibilityBehavior(self, newVisBehavior: VisibilityBehavior) -> None:
 		"""
 		Adds a given visibility behavior (VB) to the list of "to" visibility behaviors.
 		"to" VBs are VBs triggered by this component.
@@ -243,12 +244,12 @@ class Component(Entity):
 		:rtype: NoneType
 		"""
 
-		if newVisBehavior not in self._toVisibilityBehaviors:
-			self._toVisibilityBehaviors.append(newVisBehavior)
+		if newVisBehavior not in self._destVisibilityBehaviors:
+			self._destVisibilityBehaviors.append(newVisBehavior)
 
-	def removeToVisibilityBehavior(self, visBehavior: VisibilityBehavior) -> None:
+	def removeDestVisibilityBehavior(self, visBehavior: VisibilityBehavior) -> None:
 		"""
-		Removes a given visibility behavior (VB) from the list of "to" visibility behaviors.
+		Removes a given visibility behavior (VB) from the list of "destination" visibility behaviors.
 		"to" VBs are VBs triggered by this component.
 
 		:param visBehavior: The VisibilityBehavior object which is triggered by this component.
@@ -257,8 +258,8 @@ class Component(Entity):
 		:rtype: NoneType
 		"""
 
-		if visBehavior in self._toVisibilityBehaviors:
-			self._toVisibilityBehaviors.remove(visBehavior)
+		if visBehavior in self._destVisibilityBehaviors:
+			self._destVisibilityBehaviors.remove(visBehavior)
 
 	def addFromVisibilityBehavior(self, newVisBehavior: VisibilityBehavior) -> None:
 		"""

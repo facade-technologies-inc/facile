@@ -39,9 +39,9 @@ class VisibilityBehavior(Entity):
         """
          Constructs a VisibilityBehavior object.
 
-        :param fromComp: The "from" component. The one triggering the vis behavior.
+        :param fromComp: The "from/source" component. The one triggering the vis behavior.
         :type fromComp: Component
-        :param toComp: The "to" component. The one whose visibility is affected by the vis behavior.
+        :param toComp: The "to/destination" component. The one whose visibility is affected by the vis behavior.
         :type toComp: Component
         :param reactionType: "show" or "hide".
         :return: A constructed VisibilityBehavior
