@@ -27,6 +27,9 @@ from enum import Enum
 
 # TODO: temporary class - delete later
 class Color(Enum):
+    """
+    This class allows us to create a enumeration for color.
+    """
     RED = 1
     GREEN = 2
     BLUE = 3

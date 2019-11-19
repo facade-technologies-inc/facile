@@ -110,8 +110,8 @@ class PropertyEditorDelegate(QStyledItemDelegate):
 
         :param editor: Editor that will be set for certain data structures.
         :type editor: QWidget
-        :param propModel: The model that our delegate will render.
-        :type propModel: PropModel
+        :param PropModel: The model that our delegate will render.
+        :type PropModel: PropModel
         :param index: Index of the editor.
         :type index: QModelIndex
         :return: None
