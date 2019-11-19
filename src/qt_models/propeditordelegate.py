@@ -31,10 +31,6 @@ class PropertyEditorDelegate(QStyledItemDelegate):
     A subclass that allows us to render our QTreeView and editing the Model
     """
 
-    # TODO: Make the bool character more optimal by only showing the check box without "true/false" strings
-    # TODO: Support for Enums
-    # TODO: Support for Lists
-
     def createEditor(self, parent: QModelIndex, option: object, index: QModelIndex) -> QWidget:
         """
         Creates the widget used to change data from the model and can be

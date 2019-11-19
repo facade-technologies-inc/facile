@@ -76,7 +76,15 @@ class Application(pywinauto.Desktop):
         :return: list of windows that belong to the target application and it's children processes
         :type: list[pywinauto.application.WindowSpecification]
         """
-        wins = pywinauto.Desktop.windows(self)
+        
+        while True:
+            try:
+                wins = pywinauto.Desktop.windows(self)
+            except pywinauto.controls.hwndwrapper.InvalidWindowHandle:
+                continue
+            else:
+                break
+                
         appWins = []
         pids = self.getPIDs()
         for win in wins:
