@@ -30,6 +30,10 @@ class ComponentGraphics(QGraphicsItem):
     This class displays an individual GUI component in the target gui,
     based on the component class.
     """
+    
+    MIN_WIDTH = 50
+    MIN_HEIGHT = 50
+    
     penWidth = 1.0
     textHeight = 30
     topMargin = 10
@@ -38,7 +42,7 @@ class ComponentGraphics(QGraphicsItem):
     rightMargin = 10
     baseWidth = 400
 
-    def __init__(self, dataComponent: 'Component', parent = None):
+    def __init__(self, dataComponent: 'Component', rect: tuple = (), parent = None):
         """
         Constructs a componentview object
 
@@ -49,10 +53,40 @@ class ComponentGraphics(QGraphicsItem):
         QGraphicsItem.__init__(self, parent)
         if parent is None:
             dataComponent.getModel().getScene().addItem(self)
+            self.isRoot = True
+        else:
+            self.isRoot = False
         
         self._dataComponent = dataComponent
-        self.setFlag(QGraphicsItem.ItemIsMovable)
         self.setFlag(QGraphicsItem.ItemIsSelectable)
+        self.rect = list(rect)
+        self.adjustPositioning()
+        
+    def adjustPositioning(self) -> None:
+        """
+        Places component using the following criteria:
+        1. Try to place it where it really is relative to parent.
+        2. If it collides with edge of parent, move it inside parent.
+        3. If it collides with siblings, try moving it to a space that fits
+        4. If it doesn't fit in parent, expand parent.
+        5. Repeat steps 2-5 with parent until everything fits.
+        
+        :return: None
+        :rtype: NoneType
+        """
+        
+        # force components to have minimum size
+        self.rect[2] = max(self.rect[2], ComponentGraphics.MIN_WIDTH)
+        self.rect[3] = max(self.rect[3], ComponentGraphics.MIN_HEIGHT)
+        
+        #TODO:
+        # Modify locations of elements based on collisions.
+        #   1. If the component doesn't fit inside the parent window, move it inside.
+        #   2. If there is a collision with a sibling, move the component wherever there is the most room
+        #   3. If there isn't enough room for the new component, expand the parent.
+        #   4. recursively make room for component
+        
+        pass
 
     def boundingRect(self):
         """
@@ -60,35 +94,7 @@ class ComponentGraphics(QGraphicsItem):
 
         :return: QRectF
         """
-
-        id = self._dataComponent.getId()
-        numDescendants = self._dataComponent.getNumDescendants() # used to calculate height
-        maxDepth = self._dataComponent.getMaxDepth() # used to calculate width
-        offsetFromParentTop = ComponentGraphics.topMargin + ComponentGraphics.textHeight #used to calculate y offset from parent.
-        siblings = self._dataComponent.getSiblings()
-        siblingDepths = [maxDepth]
-        for sibling in siblings:
-            if sibling is self._dataComponent:
-                break
-            offsetFromParentTop += (sibling.getNumDescendants()+1) * (ComponentGraphics.topMargin + ComponentGraphics.textHeight + ComponentGraphics.bottomMargin)
-
-        for sibling in siblings:
-            siblingDepths.append(sibling.getMaxDepth())
-        maxDepth = max(siblingDepths)
-
-        totalHeight = (numDescendants + 1) * (ComponentGraphics.textHeight + ComponentGraphics.topMargin + ComponentGraphics.bottomMargin)
-        totalWidth = ComponentGraphics.baseWidth + maxDepth*(ComponentGraphics.leftMargin + ComponentGraphics.rightMargin)
-
-        yPos = -(totalHeight/2) - ComponentGraphics.penWidth/2 + offsetFromParentTop
-        xPos = -(totalWidth / 2) - ComponentGraphics.penWidth / 2
-
-        if self._dataComponent.getParent() is not None:
-            parentBounding = self.parentItem().boundingRect()
-            yPos = parentBounding.y() + offsetFromParentTop - ComponentGraphics.penWidth/2
-            xPos = parentBounding.x() + ComponentGraphics.leftMargin - ComponentGraphics.penWidth/2
-
-        return QRectF(xPos, yPos, totalWidth + ComponentGraphics.penWidth, totalHeight + ComponentGraphics.penWidth)
-
+        return QRectF(self.rect[0], self.rect[1], self.rect[2] + ComponentGraphics.penWidth, self.rect[3] + ComponentGraphics.penWidth)
 
     def shape(self):
         """
@@ -96,7 +102,6 @@ class ComponentGraphics(QGraphicsItem):
 
         :return: QPainterPath
         """
-
         path = QPainterPath()
         path.addRect(self.boundingRect())
         return path
@@ -109,7 +114,11 @@ class ComponentGraphics(QGraphicsItem):
         :param option: QStyleOptionGraphicsItem
         :param widget: QWidget
         """
-
+        if self.isRoot or self.rect[2] == 0 and self.rect[3] == 0:
+            painter.setPen(QPen(QColor(Qt.transparent)))
+            painter.setBrush(QColor(Qt.transparent))
+            return
+        
         pen = QPen(QColor(100, 200, 255, int(255 / 10)))
         if self.isSelected():
             pen.setStyle(Qt.DashDotLine)
@@ -130,13 +139,8 @@ class ComponentGraphics(QGraphicsItem):
         height = int(boundingRect.height()) - ComponentGraphics.penWidth
         painter.drawRoundedRect(int(x+ComponentGraphics.leftMargin), int(y+ComponentGraphics.topMargin), int(width - ComponentGraphics.leftMargin - ComponentGraphics.rightMargin), int(height - ComponentGraphics.topMargin - ComponentGraphics.bottomMargin), 5, 5)
 
-        #TODO: Once properties are made correctly, remove the try/catch statement
-        try:
-            name = self._dataComponent.getProperties().getProperty("Name").getValue()
-        except:
-            name = ""
-        
-        painter.drawText(int(x+ComponentGraphics.leftMargin*1.5), int(y+ComponentGraphics.topMargin+30), name)
+        category, name = self._dataComponent.getProperties().getProperty("Name")
+        painter.drawText(int(x+ComponentGraphics.leftMargin*1.5), int(y+ComponentGraphics.topMargin+30), name.getValue())
 
     def mousePressEvent(self, event):
         """

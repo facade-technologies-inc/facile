@@ -20,21 +20,23 @@
 This module contains the TargetGuiModel class.
 """
 
-from PySide2.QtCore import Slot
+from PySide2.QtCore import QObject, Slot, Signal
 
 from data.tguim.component import Component
 from data.tguim.visibilitybehavior import VisibilityBehavior
 from graphics.tguim.tscene import TScene
 from tguiil.supertokens import SuperToken
+from data.properties import Properties
 
 
-class TargetGuiModel:
+class TargetGuiModel(QObject):
     """
     This class models the structure and behavior of the target gui.
     It contains Components organized in a tree structure, and stores the VisibilityBehaviors.
     New components are constructed and added to the tree when it receives new SuperTokens from
     the Observer.
     """
+    dataChanged = Signal(int)
 
     def __init__(self) -> 'TargetGuiModel':
         """
@@ -43,6 +45,7 @@ class TargetGuiModel:
         :return: The constructed TargetGuiModel object
         :rtype: TargetGuiModel
         """
+        QObject.__init__(self)
         self._scene = TScene(self)
         self._root = Component(self)  # Note: remains constant. Represents the application.
         self._components = {}  # Note: Root Component not stored here.
@@ -106,17 +109,30 @@ class TargetGuiModel:
         :return: The component that was created
         :rtype: 'Component'
         """
-        parentComponent = self._superTokenToComponentMapping[parentToken]
+        if parentToken is None:
+            parentComponent = self._root
+        else:
+            parentComponent = self._superTokenToComponentMapping[parentToken]
+            
         newComponent = Component(self, parentComponent, newSuperToken)
         
         #TODO: Create Properties object based on values from the SuperToken
-        # predefinedCategories = ["Base", ...]
-        # customCategories = .....
-        # properties = Properties.createPropertiesObject(predefinedCategories, customCategories)
-        # newComponent.setProperties(properties)
+        predefinedCategories = []
+        customCategories = {"Temporary":[{"name":     "Name",
+                                          "type":     str,
+                                          "default":  newSuperToken.tokens[-1].controlIDs[-1],
+                                          "readOnly": False},
+                                         {"name": "Type",
+                                          "type": str,
+                                          "default": newSuperToken.tokens[-1].type,
+                                          "readOnly": True}
+                                         ]}
+        properties = Properties.createPropertiesObject(predefinedCategories, customCategories)
+        newComponent.setProperties(properties)
         
         self._superTokenToComponentMapping[newSuperToken] = newComponent
         self._components[newComponent.getId()] = newComponent
+        self.dataChanged.emit(newComponent.getId())
         return newComponent
 
     def getVisibilityBehaviors(self) -> dict:
