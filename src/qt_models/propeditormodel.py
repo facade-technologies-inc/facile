@@ -29,7 +29,6 @@ class PropModel(QAbstractItemModel):
     A subclass that allows us to show the Data through QTreeView.
     """
 
-    # TODO: Create slot for changing properties model that's show in the view
     def __init__(self, propData: object):
         """
         Constructs a model for the Property Editor.
