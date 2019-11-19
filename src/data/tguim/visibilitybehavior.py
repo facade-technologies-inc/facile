@@ -22,6 +22,7 @@ This module contains the VisibilityBehavior class.
 
 from data.tguim.condition import Condition
 from data.entity import Entity
+from graphics.tguim.visibilitybehaviorgraphics import VBGraphics
 
 
 VALID_REACTION_TYPES = {"show", "hide"}
@@ -53,7 +54,7 @@ class VisibilityBehavior(Entity):
         self._srcComponent = srcComp
         self._condition = Condition()
         self._reactionType = None
-        self._graphicsItem = None  # TODO: Construct a graphicsItem from the class Ramos creates.
+        self._graphicsItem = VBGraphics(self)  # TODO: Construct a graphicsItem from the class Ramos creates. Ramos added it :)
         # TODO: Add a "trigger action" data member?
 
         if reactionType in VALID_REACTION_TYPES:
