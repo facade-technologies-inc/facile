@@ -76,7 +76,7 @@ class Properties:
         self._categories[category].append(Property(name, value, type, readOnly))
 
     @staticmethod
-    def createPropertiesObject(predefinedCategories: list, customCategories: list) -> 'Properties':
+    def createPropertiesObject(predefinedCategories: list, customCategories: dict) -> 'Properties':
         """
         Property Factory, that is a static method, that createes properties objects for predefined and custom categories.
 
@@ -211,4 +211,4 @@ class Properties:
         for category in self._categories:
             for property in self._categories[category]:
                 if property.getName() == name:
-                    return tuple(category, property)
+                    return category, property

@@ -453,10 +453,12 @@ class ProjectExplorerModel(QAbstractItemModel):
 				return None
 		
 		elif isinstance(data, Component):
+			category, name = data.getProperties().getProperty("Name")
+			category, typeOf = data.getProperties().getProperty("Type")
 			if col == 0:
-				return data.getName()
+				return name.getValue()
 			elif col == 1:
-				return data.getType()
+				return typeOf.getValue()
 			else:
 				return None
 		
