@@ -19,12 +19,12 @@
 
 This module contains the PropertyEditorDelegate() Class.
 """
+
 from PySide2 import QtGui, QtCore, QtWidgets
 from PySide2.QtWidgets import QItemDelegate, QStyledItemDelegate, QStyle, QLineEdit, QSpinBox, QCheckBox, QDoubleSpinBox, QWidget, QStyleOptionViewItem, QStylePainter
 from PySide2.QtCore import QAbstractItemModel, QModelIndex, QRect, QEvent
 from data.property import Property
 from qt_models.propeditormodel import PropModel
-
 
 
 class PropertyEditorDelegate(QStyledItemDelegate):
