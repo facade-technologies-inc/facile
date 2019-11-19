@@ -48,8 +48,8 @@ class Component(Entity):
 		self._superToken: 'SuperToken' = superToken
 		self._parent: 'Component' = parent
 		self._children = []
+		self._srcVisibilityBehaviors = []
 		self._destVisibilityBehaviors = []
-		self._fromVisibilityBehaviors = []
 		self._model = tguim
 		if superToken is None:
 			self._graphicsItem = ComponentGraphics(self, (0,0,0,0), self.getParentGraphicsItem())
@@ -58,7 +58,12 @@ class Component(Entity):
 		if parent is not None:
 			parent.addChild(self)
 			
-	
+	def getSrcVisibilityBehaviors(self):
+		return self._srcVisibilityBehaviors
+
+	def getDestVisibilityBehaviors(self):
+		return self._destVisibilityBehaviors
+
 	def getModel(self) -> 'TargetGuiModel':
 		"""
 		Gets the target GUI model that this component belongs to.
@@ -238,8 +243,8 @@ class Component(Entity):
 
 	def addDestVisibilityBehavior(self, newVisBehavior: VisibilityBehavior) -> None:
 		"""
-		Adds a given visibility behavior (VB) to the list of "to" visibility behaviors.
-		"to" VBs are VBs triggered by this component.
+		Adds a given visibility behavior (VB) to the list of "Destination" visibility behaviors.
+		This component is the destination for the VB.
 
 		:param newVisBehavior: The VisibilityBehavior object which is triggered by this component.
 		:type newVisBehavior: VisibilityBehavior
@@ -252,8 +257,8 @@ class Component(Entity):
 
 	def removeDestVisibilityBehavior(self, visBehavior: VisibilityBehavior) -> None:
 		"""
-		Removes a given visibility behavior (VB) from the list of "destination" visibility behaviors.
-		"to" VBs are VBs triggered by this component.
+		Removes a given visibility behavior (VB) from the list of "Destination" visibility behaviors.
+		This component is the destination for the VB.
 
 		:param visBehavior: The VisibilityBehavior object which is triggered by this component.
 		:type visBehavior: VisibilityBehavior
@@ -264,10 +269,10 @@ class Component(Entity):
 		if visBehavior in self._destVisibilityBehaviors:
 			self._destVisibilityBehaviors.remove(visBehavior)
 
-	def addFromVisibilityBehavior(self, newVisBehavior: VisibilityBehavior) -> None:
+	def addSrcVisibilityBehavior(self, newVisBehavior: VisibilityBehavior) -> None:
 		"""
-		Adds a given visibility behavior (VB) to the list of "from" visibility behaviors.
-		"from" VBs are VBs that result in this component becoming visible in the target GUI.
+		Adds a given visibility behavior (VB) to the list of "Source" visibility behaviors.
+		"Source" VBs are VBs coming out from this component.
 
 		:param newVisBehavior: The VisibilityBehavior object which affects this component.
 		:type newVisBehavior: VisibilityBehavior
@@ -275,13 +280,13 @@ class Component(Entity):
 		:rtype: NoneType
 		"""
 
-		if newVisBehavior not in self._fromVisibilityBehaviors:
-			self._fromVisibilityBehaviors.append(newVisBehavior)
+		if newVisBehavior not in self._srcVisibilityBehaviors:
+			self._srcVisibilityBehaviors.append(newVisBehavior)
 
-	def removeFromVisibilityBehavior(self, visBehavior: VisibilityBehavior) -> None:
+	def removeSrcVisibilityBehavior(self, visBehavior: VisibilityBehavior) -> None:
 		"""
-		removes a given visibility behavior (VB) from the list of "from" visibility behaviors.
-		"from" VBs are VBs that result in this component becoming visible in the target GUI.
+		removes a given visibility behavior (VB) from the list of "Source" visibility behaviors.
+		"Source" VBs are VBs coming out from this component.
 
 		:param visBehavior: The VisibilityBehavior object which affects this component.
 		:type visBehavior: VisibilityBehavior
@@ -289,8 +294,8 @@ class Component(Entity):
 		:rtype: NoneType
 		"""
 
-		if visBehavior in self._fromVisibilityBehaviors:
-			self._fromVisibilityBehaviors.remove(visBehavior)
+		if visBehavior in self._srcVisibilityBehaviors:
+			self._srcVisibilityBehaviors.remove(visBehavior)
 
 	def __repr__(self) -> str:
 		"""

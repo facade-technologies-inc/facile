@@ -34,23 +34,23 @@ class VisibilityBehavior(Entity):
      to be shown.
     """
 
-    def __init__(self, fromComp: 'Component'=None, toComp: 'Component'=None,
+    def __init__(self, srcComp: 'Component'=None, destComp: 'Component'=None,
                  reactionType: str="show") -> 'VisibilityBehavior':
         """
          Constructs a VisibilityBehavior object.
 
-        :param fromComp: The "from/source" component. The one triggering the vis behavior.
-        :type fromComp: Component
-        :param toComp: The "to/destination" component. The one whose visibility is affected by the vis behavior.
-        :type toComp: Component
+        :param srcComp: The "from/source" component. The one triggering the vis behavior.
+        :type srcComp: Component
+        :param destComp: The "to/destination" component. The one whose visibility is affected by the vis behavior.
+        :type destComp: Component
         :param reactionType: "show" or "hide".
         :return: A constructed VisibilityBehavior
         :rtype: VisibilityBehavior
         """
 
         super().__init__()
-        self._toComponent = toComp
-        self._fromComponent = fromComp
+        self._destComponent = destComp
+        self._srcComponent = srcComp
         self._condition = Condition()
         self._reactionType = None
         self._graphicsItem = None  # TODO: Construct a graphicsItem from the class Ramos creates.
@@ -62,25 +62,25 @@ class VisibilityBehavior(Entity):
             self._reactionType = "show"
             raise ValueError("VisibilityBehavior(): reactionType must be one of %r." % VALID_REACTION_TYPES)
 
-    def getToComponent(self) -> 'Component':
+    def getDestComponent(self) -> 'Component':
         """
-        Gets the "to" component of the visibility behavior - the component whose visibility is affected.
+        Gets the "Destination" component of the visibility behavior - the component whose visibility is affected.
 
-        :return: The "to" component of the visibility behavior
+        :return: The "Destination" component of the visibility behavior
         :rtype: Component
         """
 
-        return self._toComponent
+        return self._destComponent
 
-    def getFromComponent(self) -> 'Component':
+    def getSrcComponent(self) -> 'Component':
         """
-        Gets the "from" component of the visibility behavior - the component that triggers the vis behavior.
+        Gets the "source" component of the visibility behavior - the component that triggers the vis behavior.
 
-        :return: The "from" component of the visibility behavior
+        :return: The "source" component of the visibility behavior
         :rtype: Component
         """
 
-        return self._fromComponent
+        return self._srcComponent
 
     def getCondition(self) -> 'Condition':
         """
@@ -110,28 +110,28 @@ class VisibilityBehavior(Entity):
         """
         return self._graphicsItem
 
-    def setToComponent(self, toComp: 'Component') -> None:
+    def setDestComponent(self, destComp: 'Component') -> None:
         """
-        Sets the "to" component of the visibility behavior - the component whose visibility is affected.
+        Sets the "Destination" component of the visibility behavior - the component whose visibility is affected.
 
-        :param toComp: The desired "to" component of the visibility behavior
-        :type toComp: Component
+        :param destComp: The desired "to" component of the visibility behavior
+        :type destComp: Component
         :return: None
         :rtype: NoneType
         """
-        self._toComponent = toComp
+        self._destComponent = destComp
 
-    def setFromComponent(self, fromComp: 'Component') -> None:
+    def setSrcComponent(self, srcComp: 'Component') -> None:
         """
         Sets the "from" component of the visibility behavior - the component that triggers the vis behavior.
 
-        :param fromComp: The desired "from" component of the visibility behavior
-        :type fromComp: Component
+        :param srcComp: The desired "from" component of the visibility behavior
+        :type srcComp: Component
         :return: None
         :rtype: NoneType
         """
 
-        self._fromComponent = fromComp
+        self._srcComponent = srcComp
 
     def setReactionType(self, reactType: str) -> None:
         """

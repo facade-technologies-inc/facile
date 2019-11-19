@@ -286,10 +286,10 @@ class ProjectExplorerModel(QAbstractItemModel):
 			
 		elif isinstance(parentData, VisibilityBehavior):
 			if row == 0:
-				return self.registerAndCreateIndex(row, column, ProjectExplorerModel.LeafIndex(parentData.getFromComponent(), parentData))
+				return self.registerAndCreateIndex(row, column, ProjectExplorerModel.LeafIndex(parentData.getSrcComponent(), parentData))
 			
 			if row == 1:
-				return self.registerAndCreateIndex(row, column, ProjectExplorerModel.LeafIndex(parentData.getToComponent(), parentData))
+				return self.registerAndCreateIndex(row, column, ProjectExplorerModel.LeafIndex(parentData.getDestComponent(), parentData))
 			
 		elif isinstance(parentData, ActionPipeline):
 			# TODO: replace this once action pipelines are implemented

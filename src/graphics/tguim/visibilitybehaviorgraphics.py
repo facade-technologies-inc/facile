@@ -41,8 +41,8 @@ class VBGraphics(QGraphicsItem):
         self._dataVB = dataVisibilityBehavior
         self.setFlag(QGraphicsItem.ItemIsMovable)
         self.setFlag(QGraphicsItem.ItemIsSelectable)
-        self._fromComponentCenterPoint = self._dataVB.getFromComponent().getGraphicsItem().boundingRect().center()
-        self._toComponentCenterPoint = self._dataVB.getToComponent().getGraphicsItem().boundingRect().center()
+        self._srcComponentCenterPoint = self._dataVB.getSrcComponent().getGraphicsItem().boundingRect().center()
+        self._destComponentCenterPoint = self._dataVB.getDestComponent().getGraphicsItem().boundingRect().center()
         # TODO: the last two declarations will work after Sean define _graphicsItem in his classes
 
     def boundingRect(self):
@@ -52,10 +52,10 @@ class VBGraphics(QGraphicsItem):
         :return: create the bounding of the item
         :rtype: QRectF
         """
-        leftCornerX = min(self._fromComponentCenterPoint.x(), self._toComponentCenterPoint.x())
-        leftCornerY = min(self._fromComponentCenterPoint.y(), self._toComponentCenterPoint.y())
-        width = abs(self._fromComponentCenterPoint.x() - self._toComponentCenterPoint.x())
-        height = abs(self._fromComponentCenterPoint.y() - self._toComponentCenterPoint.y())
+        leftCornerX = min(self._srcComponentCenterPoint.x(), self._destComponentCenterPoint.x())
+        leftCornerY = min(self._srcComponentCenterPoint.y(), self._destComponentCenterPoint.y())
+        width = abs(self._srcComponentCenterPoint.x() - self._destComponentCenterPoint.x())
+        height = abs(self._srcComponentCenterPoint.y() - self._destComponentCenterPoint.y())
         return QRectF(leftCornerX, leftCornerY, width, height)
 
     def paint(self, painter:QPainter, option, widget):
@@ -63,7 +63,6 @@ class VBGraphics(QGraphicsItem):
         Paints the contents of the component. Override the parent paint function
         Src = From, maybe change it later
         Des = To, maybe change it later
-        TODO: ask Sean about his opinion on Src/From and Dest/To
 
         :param painter: QPainter
         :param option: QStyleOptionGraphicsItem
@@ -71,21 +70,20 @@ class VBGraphics(QGraphicsItem):
         :return : None
         """
 
-        # TODO: need getter of _fromVisibilityBehaviors and _toVisibilityBehaviors in Sean's class, so I can calculate the length of the list
-        lengthSrcNodeSrcEdgeList = len(self._dataVB.getFromComponent().getFromVisibilityBehaviors())
-        lengthDesNodeDesEdgeList = len(self._dataVB.getToComponent().getToVisibilityBehaviors())
-        # TODO: still, need Sean to define _graphicsItem in his classes
-        heightSrcNode = 2 * abs(self._dataVB.getFromComponent().getGraphicsItem().boundingRect().y() - self._fromComponentCenterPoint.y())
-        heightDesNode = 2 * abs(self._dataVB.getToComponent().getGraphicsItem().boundingRect().y() - self._toComponentCenterPoint.y())
+        lengthSrcNodeSrcEdgeList = len(self._dataVB.getSrcComponent().getSrcVisibilityBehaviors())
+        lengthDesNodeDesEdgeList = len(self._dataVB.getDestComponent().getDestVisibilityBehaviors())
+        # TODO: need Sean to define _graphicsItem in his classes
+        heightSrcNode = 2 * abs(self._dataVB.getSrcComponent().getGraphicsItem().boundingRect().y() - self._srcComponentCenterPoint.y())
+        heightDesNode = 2 * abs(self._dataVB.getDestComponent().getGraphicsItem().boundingRect().y() - self._destComponentCenterPoint.y())
         # This is the index(+1 avoid 0 in calculation) of the edge at the SourceNode's edgeSrcList
-        srcNodeIndex = self._dataVB.getFromComponent().getFromVisibilityBehaviors().index(self._dataVB) + 1
+        srcNodeIndex = self._dataVB.getSrcComponent().getSrcVisibilityBehaviors().index(self._dataVB) + 1
         # This is the index of the edge at the DesNode's _edgeDesList
-        desNodeIndex = self._dataVB.getToComponent().getToVisibilityBehaviors().index(self._dataEdge) + 1
+        desNodeIndex = self._dataVB.getDestComponent().getDestVisibilityBehaviors().index(self._dataEdge) + 1
 
-        x1 = self._dataVB.getFromComponent().getGraphicsItem().boundingRect().x() #x does not change, stay at the left most of the node
-        y1 = self._dataVB.getFromComponent().getGraphicsItem().boundingRect().y() + (heightSrcNode / (lengthSrcNodeSrcEdgeList + 1)) * srcNodeIndex
-        x2 = self._toComponentCenterPoint.x() + (self._toComponentCenterPoint.x() - self._dataVB.getToComponent().getGraphicsItem().boundingRect().x())
-        y2 = self._dataVB.getToComponent().getGraphicsItem().boundingRect().y() + (heightDesNode / (lengthDesNodeDesEdgeList + 1)) * desNodeIndex
+        x1 = self._dataVB.getSrcComponent().getGraphicsItem().boundingRect().x() #x does not change, stay at the left most of the node
+        y1 = self._dataVB.getSrcComponent().getGraphicsItem().boundingRect().y() + (heightSrcNode / (lengthSrcNodeSrcEdgeList + 1)) * srcNodeIndex
+        x2 = self._destComponentCenterPoint.x() + (self._destComponentCenterPoint.x() - self._dataVB.getDestComponent().getGraphicsItem().boundingRect().x())
+        y2 = self._dataVB.getDestComponent().getGraphicsItem().boundingRect().y() + (heightDesNode / (lengthDesNodeDesEdgeList + 1)) * desNodeIndex
 
         # painter.drawLine(x1, y1, x2, y2)
         path = QPainterPath()
