@@ -23,11 +23,10 @@ This module contains the VBGraphics class.
 from PySide2.QtCore import QRectF
 from PySide2.QtGui import QPainterPath, QPainter
 from PySide2.QtWidgets import QGraphicsItem
-from data.tguim.visibilitybehavior import VisibilityBehavior
 
 
 class VBGraphics(QGraphicsItem):
-    def __init__(self, dataVisibilityBehavior: VisibilityBehavior):
+    def __init__(self, dataVisibilityBehavior: 'VisibilityBehavior'):
         """
         Construct the VBGraphics class.
         'src' means the source component, the one triggering the vb.
@@ -35,6 +34,8 @@ class VBGraphics(QGraphicsItem):
 
         :param dataVisibilityBehavior: get the data of a VisibilityBehavior
         :type dataVisibilityBehavior: VisibilityBehavior
+        :return None
+        :rtype NoneType
         """
         QGraphicsItem.__init__(self)
         self._dataVB = dataVisibilityBehavior
@@ -47,8 +48,8 @@ class VBGraphics(QGraphicsItem):
         """
         This pure virtual function defines the outer bounds of the item as a rectangle.
 
-        :return: create the bounding of the item
-        :rtype: QRectF
+        :return create the bounding of the item
+        :rtype QRectF
         """
         leftCornerX = min(self._srcComponentCenterPoint.x(), self._destComponentCenterPoint.x())
         leftCornerY = min(self._srcComponentCenterPoint.y(), self._destComponentCenterPoint.y())
@@ -58,15 +59,16 @@ class VBGraphics(QGraphicsItem):
 
     def paint(self, painter:QPainter, option, widget):
         """
-        Paints the contents of the component. Override the parent paint function
+        Paints the contents of the visibilitybehavior. Override the parent paint function
 
-        :param painter: QPainter
+        :param painter: Use a Qpainter object.
         :type painter: QPainter
-        :param option: QStyleOptionGraphicsItem
+        :param option: It provides style options for the item.
         :type option: QStyleOptionGraphicsItem
         :param widget: QWidget
-        :type widget: QWidget
-        :return : None
+        :type widget: It points to the widget that is being painted on; or make it = None.
+        :return None
+        :rtype NoneType
         """
 
         lengthSrcNodeSrcEdgeList = len(self._dataVB.getSrcComponent().getSrcVisibilityBehaviors())
