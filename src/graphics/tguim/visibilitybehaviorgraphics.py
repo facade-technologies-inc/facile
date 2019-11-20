@@ -23,16 +23,15 @@ This module contains the VBGraphics class.
 from PySide2.QtCore import QRectF
 from PySide2.QtGui import QPainterPath, QPainter
 from PySide2.QtWidgets import QGraphicsItem
-
-from data.tguim.component import VisibilityBehavior
+from data.tguim.visibilitybehavior import VisibilityBehavior
 
 
 class VBGraphics(QGraphicsItem):
     def __init__(self, dataVisibilityBehavior: VisibilityBehavior):
         """
         Construct the VBGraphics class.
-        'from' means the source component, the one triggering the vb.
-        'to' means the destination component, the one receiving and affected by the vb.
+        'src' means the source component, the one triggering the vb.
+        'dest' means the destination component, the one receiving and affected by the vb.
 
         :param dataVisibilityBehavior: get the data of a VisibilityBehavior
         :type dataVisibilityBehavior: VisibilityBehavior
@@ -43,7 +42,6 @@ class VBGraphics(QGraphicsItem):
         self.setFlag(QGraphicsItem.ItemIsSelectable)
         self._srcComponentCenterPoint = self._dataVB.getSrcComponent().getGraphicsItem().boundingRect().center()
         self._destComponentCenterPoint = self._dataVB.getDestComponent().getGraphicsItem().boundingRect().center()
-        # TODO: the last two declarations will work after Sean define _graphicsItem in his classes
 
     def boundingRect(self):
         """
@@ -61,18 +59,18 @@ class VBGraphics(QGraphicsItem):
     def paint(self, painter:QPainter, option, widget):
         """
         Paints the contents of the component. Override the parent paint function
-        Src = From, maybe change it later
-        Des = To, maybe change it later
 
         :param painter: QPainter
+        :type painter: QPainter
         :param option: QStyleOptionGraphicsItem
+        :type option: QStyleOptionGraphicsItem
         :param widget: QWidget
+        :type widget: QWidget
         :return : None
         """
 
         lengthSrcNodeSrcEdgeList = len(self._dataVB.getSrcComponent().getSrcVisibilityBehaviors())
         lengthDesNodeDesEdgeList = len(self._dataVB.getDestComponent().getDestVisibilityBehaviors())
-        # TODO: need Sean to define _graphicsItem in his classes
         heightSrcNode = 2 * abs(self._dataVB.getSrcComponent().getGraphicsItem().boundingRect().y() - self._srcComponentCenterPoint.y())
         heightDesNode = 2 * abs(self._dataVB.getDestComponent().getGraphicsItem().boundingRect().y() - self._destComponentCenterPoint.y())
         # This is the index(+1 avoid 0 in calculation) of the edge at the SourceNode's edgeSrcList

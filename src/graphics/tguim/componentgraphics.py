@@ -46,8 +46,10 @@ class ComponentGraphics(QGraphicsItem):
         """
         Constructs a componentview object
 
-        :param dataComponent: Component
-        :param parent: parent ComponentView
+        :param dataComponent: get the data of a Component
+        :type dataComponent: Component
+        :param parent: parent ComponentGraphics
+        :type parent: ComponentGraphics
         """
 
         QGraphicsItem.__init__(self, parent)
