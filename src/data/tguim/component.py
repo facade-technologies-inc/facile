@@ -50,7 +50,10 @@ class Component(Entity):
 		self._toVisibilityBehaviors = []
 		self._fromVisibilityBehaviors = []
 		self._model = tguim
-		self._graphicsItem = ComponentGraphics(self, self.getParentGraphicsItem())
+		if superToken is None:
+			self._graphicsItem = ComponentGraphics(self, (0,0,0,0), self.getParentGraphicsItem())
+		else:
+			self._graphicsItem = ComponentGraphics(self, superToken.posRelativeToParent, self.getParentGraphicsItem())
 		if parent is not None:
 			parent.addChild(self)
 			
