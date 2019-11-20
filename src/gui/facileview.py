@@ -32,6 +32,8 @@ from gui.newprojectdialog import NewProjectDialog
 from gui.copyprojectdialog import CopyProjectDialog
 from gui.manageprojectdialog import ManageProjectDialog
 from data.project import Project
+from data.properties import Properties
+from qt_models.propeditordelegate import PropertyEditorDelegate
 from qt_models.projectexplorermodel import ProjectExplorerModel
 
 
@@ -65,6 +67,13 @@ class FacileView(QMainWindow):
 		self._setProject(None)
 		self._connectActions()
 		self._setEmptyModels()
+
+		#TODO: Delete this
+		prop = Properties.createPropertiesObject(["Base"],{})
+		model = prop.getModel()
+		delegate = PropertyEditorDelegate()
+		self.ui.propertyEditorView.setItemDelegate(delegate)
+		self.ui.propertyEditorView.setModel(model)
 		
 	@Slot(Project)
 	def _setProject(self, project: Project) -> None:
