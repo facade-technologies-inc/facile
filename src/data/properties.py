@@ -25,6 +25,7 @@ from qt_models.propeditormodel import PropModel
 from data.property import Property
 from enum import Enum
 
+
 # TODO: temporary class - delete later
 class Color(Enum):
     """
@@ -33,10 +34,6 @@ class Color(Enum):
     RED = 1
     GREEN = 2
     BLUE = 3
-
-
-# TODO: Don't use object in type hints when there is a more specific type you could put
-
 
 class Properties:
     """
