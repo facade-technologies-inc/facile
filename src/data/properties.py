@@ -24,8 +24,6 @@ from collections import OrderedDict
 from qt_models.propeditormodel import PropModel
 from data.property import Property
 
-# TODO: Don't use object in type hints when there is a more specific type you could put
-
 
 class Properties:
     """
