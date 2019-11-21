@@ -67,13 +67,6 @@ class FacileView(QMainWindow):
 		self._setProject(None)
 		self._connectActions()
 		self._setEmptyModels()
-
-		#TODO: Delete this
-		prop = Properties.createPropertiesObject(["Base"],{})
-		model = prop.getModel()
-		delegate = PropertyEditorDelegate()
-		self.ui.propertyEditorView.setItemDelegate(delegate)
-		self.ui.propertyEditorView.setModel(model)
 		
 	@Slot(Project)
 	def _setProject(self, project: Project) -> None:

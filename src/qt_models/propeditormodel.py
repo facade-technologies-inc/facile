@@ -22,13 +22,15 @@ This module contains the PropModel() class.
 
 from PySide2.QtGui import QColor
 from PySide2.QtCore import QAbstractItemModel, QModelIndex, Qt
+from enum import Enum
+
 
 
 class PropModel(QAbstractItemModel):
     """
     A subclass that allows us to show the Data through QTreeView.
     """
-
+    
     def __init__(self, propData: object):
         """
         Constructs a model for the Property Editor.
@@ -153,6 +155,8 @@ class PropModel(QAbstractItemModel):
                     return data.getName()
                 elif col == 1:
                     t = data.getType()
+                    if issubclass(t, Enum):
+                        return data.getValue().name
                     if t == bool:
                         return None
                     return str(data.getValue())
