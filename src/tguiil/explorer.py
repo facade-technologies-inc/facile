@@ -94,3 +94,33 @@ class Explorer(QThread):
                 #     window.menu_select(menupath[1])
         finally:
             return 0
+
+    def play(self):
+        """
+        Runs the Explorer.
+
+        :return: True if the observer is running, False otherwise.
+        :rtype: bool
+        """
+
+        if not self._process.is_running():
+            return False
+
+        if self.isRunning():
+            return True
+
+        self.start()
+        return self.isRunning()
+
+    def pause(self):
+        """
+        Stops the Explorer.
+
+        :return: True if the observer is running, False otherwise.
+        :rtype: bool
+        """
+
+        if self.isRunning():
+            self.quit()
+            return True
+        return False
