@@ -121,7 +121,21 @@ class ComponentGraphics(QGraphicsItem):
                     parent.adjustPositioning()
     
     def dumbCollisionResolution(self, maxX: float, maxY: float, closest=True) -> None:
+        """
+        This is a simple collision resolution function. It will move the component to
+        either the far right or far bottom of it's siblings.
         
+        :param maxX: The maximum x coordinate of all siblings.
+        :type maxX: float
+        :param maxY: The maximum y coordinate of all siblings
+        :type maxY: float
+        :param closest: If True, the component will be moved either down or right depending
+        on what's closer. If False, the component will be moved depending on proportions of
+        the parent (we try to keep even proportions).
+        :type closest: bool
+        :return: None
+        :rtype: NoneType
+        """
         if closest:
             if maxX - self.x() <= maxY - self.y():
                 self.setPos(self.x(), maxY)
@@ -136,12 +150,35 @@ class ComponentGraphics(QGraphicsItem):
             # or we'll move all the way to the right
             else:
                 self.setPos(maxX, self.y())
+                
+    def smartCollisionResolution(self, colliding: list) -> None:
+        """
+        This is an algorithm that resolves collisions in a smart way by always pushing one of
+        two colliding elements in a right/downward direction.
         
-    def getCollidingComponents(self, siblings):
+        unlike the dumbCollisionResolution, this algorithm can push items diagonally. This algorithm
+        is much less efficient than the dumbCollisionDetection.
+        
+        :param colliding: All of the elements colliding with our element.
+        :type colliding: list[ComponentGraphics]
+        :return: None
+        :rtype: NoneType
+        """
+        raise NotImplemented("This function is not yet implemented")
+    
+    def getCollidingComponents(self, components: list) -> tuple:
+        """
+        Gets all of the components from a list that collide with this component.
+        
+        :param components: The components to detect collisions with
+        :type components: list[ComponentGraphics]
+        :return: All of the components that actually collide with this component and the maximum sibling x and y positions.
+        :rtype: list[ConponentGraphics], float, float
+        """
         collidingSiblings = []
         maxSibX = 0
         maxSibY = 0
-        for sibling in siblings:
+        for sibling in components:
             sibBound = sibling.boundingRect()
             maxSibX = max(maxSibX, sibling.x() + sibBound.width())
             maxSibY = max(maxSibY, sibling.y() + sibBound.height())
@@ -150,7 +187,12 @@ class ComponentGraphics(QGraphicsItem):
         return collidingSiblings, maxSibX, maxSibY
     
     
-    def getLabel(self):
+    def getLabel(self) -> str:
+        """
+        Gets the label from this component.
+        :return: The label for this component.
+        :rtype: str
+        """
         try:
             category, name = self._dataComponent.getProperties().getProperty("Name")
             return name.value()

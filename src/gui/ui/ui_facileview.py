@@ -3,7 +3,7 @@
 # Form implementation generated from reading ui file 'facileview.ui',
 # licensing of 'facileview.ui' applies.
 #
-# Created: Wed Nov 20 22:53:20 2019
+# Created: Thu Nov 21 01:42:31 2019
 #      by: pyside2-uic  running on PySide2 5.13.0
 #
 # WARNING! All changes made in this file will be lost!
