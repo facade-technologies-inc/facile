@@ -221,18 +221,11 @@ class ComponentGraphics(QGraphicsItem):
         sibx = sibling.scenePos().x() + sibBound.x()
         siby = sibling.scenePos().y() + sibBound.y()
 
-        print("==========================================================")
-        print("SELF:    ", selfx, selfy, selfBound.width(), selfBound.height())
-        print("SIBLING: ", sibx, siby, sibBound.width(), sibBound.height())
         if (sibx < selfx + selfBound.width() and
             sibx + sibBound.width() > selfx and
             siby < selfy + selfBound.height() and
             siby + sibBound.height() > selfy):
-            print("Overlap")
-            print("==========================================================\n")
             return True
-        print("Do Not Overlap")
-        print("==========================================================\n")
         return False
     
     def contains(self, child: 'ComponentGraphics') -> bool:
