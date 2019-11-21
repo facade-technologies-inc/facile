@@ -3,7 +3,7 @@
 # Form implementation generated from reading ui file 'facileview.ui',
 # licensing of 'facileview.ui' applies.
 #
-# Created: Tue Nov 12 15:06:11 2019
+# Created: Wed Nov 20 22:53:20 2019
 #      by: pyside2-uic  running on PySide2 5.13.0
 #
 # WARNING! All changes made in this file will be lost!
@@ -19,14 +19,12 @@ class Ui_MainWindow(object):
         self.centralwidget.setObjectName("centralwidget")
         self.horizontalLayout = QtWidgets.QHBoxLayout(self.centralwidget)
         self.horizontalLayout.setObjectName("horizontalLayout")
-        self.splitter = QtWidgets.QSplitter(self.centralwidget)
-        self.splitter.setOrientation(QtCore.Qt.Horizontal)
-        self.splitter.setObjectName("splitter")
-        self.targetGUIModelView = QtWidgets.QGraphicsView(self.splitter)
-        self.targetGUIModelView.setObjectName("targetGUIModelView")
-        self.apiModelView = QtWidgets.QGraphicsView(self.splitter)
-        self.apiModelView.setObjectName("apiModelView")
-        self.horizontalLayout.addWidget(self.splitter)
+        self.viewSplitter = QtWidgets.QSplitter(self.centralwidget)
+        self.viewSplitter.setOrientation(QtCore.Qt.Horizontal)
+        self.viewSplitter.setObjectName("viewSplitter")
+        self.tempView = QtWidgets.QGraphicsView(self.viewSplitter)
+        self.tempView.setObjectName("tempView")
+        self.horizontalLayout.addWidget(self.viewSplitter)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 872, 19))
