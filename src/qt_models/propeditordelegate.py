@@ -21,8 +21,9 @@ This module contains the PropertyEditorDelegate() Class.
 """
 
 from PySide2 import QtGui, QtCore, QtWidgets
-from PySide2.QtWidgets import QItemDelegate, QStyledItemDelegate, QStyle, QLineEdit, QSpinBox, QCheckBox, QDoubleSpinBox, QWidget, QStyleOptionViewItem, QStylePainter
 from PySide2.QtCore import QAbstractItemModel, QModelIndex, QRect, QEvent
+from PySide2.QtWidgets import QItemDelegate, QStyledItemDelegate, QStyle, QLineEdit, QSpinBox, QCheckBox, QDoubleSpinBox, QWidget, QStyleOptionViewItem, QStylePainter
+from PySide2.QtWidgets import QItemDelegate, QStyledItemDelegate, QStyle, QLineEdit, QSpinBox, QCheckBox, QDoubleSpinBox, QWidget, QComboBox
 from data.property import Property
 from qt_models.propeditormodel import PropModel
 
@@ -115,6 +116,11 @@ class PropertyEditorDelegate(QStyledItemDelegate):
                     return QCheckBox(parent)
                 elif t == float:
                     return QDoubleSpinBox(parent)
+                elif issubclass(t, Enum):
+                    editor = QComboBox(parent)
+                    for i, option in enumerate(t):
+                        editor.addItem(option.name, option)
+                    return editor
                 else:
                     pass
         return QStyledItemDelegate.createEditor(self, parent, option, index)
@@ -190,6 +196,8 @@ class PropertyEditorDelegate(QStyledItemDelegate):
                     editor.setChecked(value)
                 elif t == float:
                     editor.setValue(value)
+                elif issubclass(t, Enum):
+                    pass #TODO: set combo box default data
                 else:
                     pass
 
@@ -220,5 +228,7 @@ class PropertyEditorDelegate(QStyledItemDelegate):
                     data.setValue(editor.isChecked())
                 elif t == float:
                     data.setValue(editor.value())
+                elif issubclass(t, Enum):
+                    data.setValue(editor.currentData())
                 else:
                     pass

@@ -23,6 +23,7 @@ This module contains the Properties() class.
 from collections import OrderedDict
 from qt_models.propeditormodel import PropModel
 from data.property import Property
+from enum import Enum
 
 
 class Properties:
@@ -96,7 +97,7 @@ class Properties:
                 newProperties.addProperty("Base", "Read-Only", True, bool)
                 newProperties.addProperty("Base", "Size", 3.45, float)
             elif predefinedCategories[i] == "Visual":
-                newProperties.addProperty("Visual", "BoxColor", "black", str)
+                newProperties.addProperty("Visual", "BoxColor", Color.GREEN, Color)
                 newProperties.addProperty("Visual", "TextColor", "black", str)
                 newProperties.addProperty("Visual", "BorderWidth", 1, int)
                 newProperties.addProperty("Visual", "X", 0, int)
