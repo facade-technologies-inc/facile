@@ -67,7 +67,7 @@ class VisibilityBehavior(Entity):
         """
         Gets the "Destination" component of the visibility behavior - the component whose visibility is affected.
 
-        :return: The "Destination" component of the visibility behavior
+        :return: The "Destination" component of the visibility behavior.
         :rtype: Component
         """
 
@@ -106,8 +106,8 @@ class VisibilityBehavior(Entity):
         """
         Gets the graphics item associated with the visibility behavior.
 
-        :return:
-        :rtype:
+        :return: return the visibilitybehavior graphics item
+        :rtype: VBGraphics
         """
         return self._graphicsItem
 
@@ -115,7 +115,7 @@ class VisibilityBehavior(Entity):
         """
         Sets the "Destination" component of the visibility behavior - the component whose visibility is affected.
 
-        :param destComp: The desired "to" component of the visibility behavior
+        :param destComp: The desired "to/destination" component of the visibility behavior
         :type destComp: Component
         :return: None
         :rtype: NoneType
@@ -126,7 +126,7 @@ class VisibilityBehavior(Entity):
         """
         Sets the "from" component of the visibility behavior - the component that triggers the vis behavior.
 
-        :param srcComp: The desired "from" component of the visibility behavior
+        :param srcComp: The desired "from/source" component of the visibility behavior
         :type srcComp: Component
         :return: None
         :rtype: NoneType
