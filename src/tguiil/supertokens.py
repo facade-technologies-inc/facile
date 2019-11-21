@@ -76,7 +76,7 @@ class SuperToken:
 		:return: Token
 		:rtype: Token
 		"""
-		DEBUG_TOKEN_COMPARISON = True
+		DEBUG_TOKEN_COMPARISON = False
 		
 		bestCloseScore = 0
 		for token in self.tokens:
