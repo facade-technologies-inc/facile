@@ -32,23 +32,19 @@ class TScene(QGraphicsScene):
         """
         Construct the TScene class
 
-        :param data:
+        :param targetGUIModel: get the TargetGuiModel of the project
+        :type targetGUIModel: TargetGuiModel
         """
         QGraphicsScene.__init__(self)
         self._targetGuiModel = targetGUIModel
 
-        # This line is important because it affects how the scene is updated.
-        # The NoIndex index method tells the scene to traverse all items when drawing
-        # which is less efficient than using a binary space partitioning tree, but is
-        # better for dynamic scenes because no items will be missed in the repaint.
-        self.setItemIndexMethod(QGraphicsScene.NoIndex)
 
     def getTargetGUIModel(self) -> 'TargetGuiModel':
         """
         Gets the target GUI Model.
 
-        :return: The target GUI model
-        :rtype: data.tguim.targetguimodel.TargetGuiModel
+        :return The target GUI model
+        :rtype data.tguim.targetguimodel.TargetGuiModel
         """
         return self._targetGuiModel
 
