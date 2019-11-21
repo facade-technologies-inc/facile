@@ -48,10 +48,13 @@ class Observer(QThread):
     newSuperToken = Signal(SuperToken, SuperToken)  # (new SuperToken, new SuperToken's parent SuperToken)
     
     ignoreTypes = set()
-    ignoreTypes.add("wxWindowNR")
-    ignoreTypes.add("wxWindow")
     ignoreTypes.add("SysShadow")
     ignoreTypes.add("ToolTips")
+    ignoreTypes.add("MSCTFIME UI")
+    ignoreTypes.add("IME")
+
+    #ignoreTypes.add("wxWindowNR")
+    #ignoreTypes.add("wxWindow")
 
     def __init__(self, processID: int, backend: str = "uia"):
         """
@@ -103,7 +106,7 @@ class Observer(QThread):
                 for child in children:
                     work.append((child, nextParentSuperToken))
                     
-            print("{} components were found in the GUI.".format(componentCount))
+            #print("{} components were found in the GUI.".format(componentCount))
     
     def createToken(self, component: pywinauto.base_wrapper.BaseWrapper) -> Token:
         """
@@ -131,6 +134,7 @@ class Observer(QThread):
             
             # Information we can get about any element
             id = component.control_id()
+            isDialog = component.is_dialog()
             isEnabled = component.is_enabled()
             isVisible = component.is_visible()
             processID = component.process_id()
@@ -166,7 +170,7 @@ class Observer(QThread):
             controlIdentifiers = [title, typeOf, title + typeOf]
         
             # create a new token
-            token = Token(id, isEnabled, isVisible, processID, typeOf, rectangle, texts, title,
+            token = Token(id, isDialog, isEnabled, isVisible, processID, typeOf, rectangle, texts, title,
                           numControls, controlIdentifiers, parentTitle, parentType,
                           topLevelParentTitle, topLevelParentType, childrenTexts, image, autoID,
                           expandState, shownState)
@@ -200,10 +204,10 @@ class Observer(QThread):
         selectedSuperToken = None
         potentialMatches = self._childMapping[parentSuperToken]
         
-        if len(potentialMatches) > 0:
-            print("====================================================================================")
-            print("Parent:\n{}".format(parentSuperToken))
-            print("Searching for match for Token:\n\t{}\nIn SuperTokens:\n\t{}\n".format(token, "\n\t".join([str(x) for x in potentialMatches])))
+        # if len(potentialMatches) > 0:
+        #     print("====================================================================================")
+        #     print("Parent:\n{}".format(parentSuperToken))
+        #     print("Searching for match for Token:\n\t{}\nIn SuperTokens:\n\t{}\n".format(token, "\n\t".join([str(x) for x in potentialMatches])))
             
         for superToken in potentialMatches:
             decision, matchVal = superToken.shouldContain(token)
