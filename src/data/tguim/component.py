@@ -51,12 +51,20 @@ class Component(Entity):
 		self._fromVisibilityBehaviors = []
 		self._model = tguim
 		if superToken is None:
-			self._graphicsItem = ComponentGraphics(self, (0,0,0,0), self.getParentGraphicsItem())
+			self._graphicsItem = ComponentGraphics(self, (0, 0, 0, 0), self.getParentGraphicsItem())
 		else:
 			self._graphicsItem = ComponentGraphics(self, superToken.posRelativeToParent, self.getParentGraphicsItem())
 		if parent is not None:
 			parent.addChild(self)
 			
+	def getSuperToken(self) -> 'SuperToken':
+		"""
+		Gets the component's SuperToken
+		
+		:return: The component's SuperToken
+		:rtype: SuperToken
+		"""
+		return self._superToken
 	
 	def getModel(self) -> 'TargetGuiModel':
 		"""

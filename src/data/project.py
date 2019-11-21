@@ -171,17 +171,21 @@ class Project:
 		
 		self._executable = exe
 		
-	def setBackend(self, backend: str) -> None:
+	def setBackend(self, backend: str = "uia") -> None:
 		"""
 		Sets the accessibility technology (backend) used to control the target application.
+		
+		Defaults to uia.
 		
 		:param backend: The accessibility technology used to control the target application
 		:type backend: str
 		:return: None
 		:rtype: NoneType
 		"""
-		
-		self._backend = backend
+		if backend.lower() != "win32" and backend.lower() != "uia":
+			self._backend = "uia"
+		else:
+			self._backend = backend.lower()
 		
 	def setStartupTimeout(self, timeout: int) -> None:
 		"""

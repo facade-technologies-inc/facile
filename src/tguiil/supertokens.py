@@ -22,6 +22,7 @@ iterates through the tokens in the token list.
 """
 
 from tguiil.tokens import Token
+from threading import Lock
 
 class SuperToken: 
 	"""
@@ -40,6 +41,7 @@ class SuperToken:
 		:return: None
 		:rtype: NoneType
 		"""
+		self._tokenListLock = Lock()
 		self.tokens = [token]
 		self.id = SuperToken.id_counter
 		SuperToken.id_counter += 1
@@ -64,17 +66,38 @@ class SuperToken:
 		:return: None
 		:rtype: SuperToken
 		"""
-		self.tokens.append(tokenA)
+		self._tokenListLock.acquire()
+		try:
+			self.tokens.append(tokenA)
+		finally:
+			self._tokenListLock.release()
+		
+	def getTokens(self) -> list:
+		"""
+		Gets a copy of the token list. It's important that this is a copy because 2 threads may access token
+		data at a time.
+		
+		This function shares a common mutex with the addToken function.
+		
+		:return: list of tokens
+		:rtype: list[Token]
+		"""
+		copy = []
+		self._tokenListLock.acquire()
+		try:
+			copy = self.tokens[:]
+		finally:
+			self._tokenListLock.release()
+			return copy
 
 	def shouldContain(self, token2):
 		"""
-		The shouldContain function iterates through the tokens in a list to see if the token
-		belongs to a supertoken.
+		determines if this SuperToken should contain the token provided
 
-		:param token2: Adds the tokens together if they are equal
+		:param token2: The token that we would like to add to the super token
 		:type token2: Token
-		:return: Token
-		:rtype: Token
+		:return: The decision about whether it should be contained or not and the certainty
+		:rtype: Token.Match, float
 		"""
 		DEBUG_TOKEN_COMPARISON = False
 		

@@ -33,6 +33,8 @@ from gui.copyprojectdialog import CopyProjectDialog
 from gui.manageprojectdialog import ManageProjectDialog
 from gui.facilegraphicsview import FacileGraphicsView
 from data.project import Project
+from data.tguim.component import Component
+from tguiil.blinker import Blinker
 from data.properties import Properties
 from qt_models.propeditordelegate import PropertyEditorDelegate
 from qt_models.projectexplorermodel import ProjectExplorerModel
@@ -70,7 +72,8 @@ class FacileView(QMainWindow):
 		self.ui.viewSplitter.addWidget(self.ui.targetGUIModelView)
 		self.ui.viewSplitter.addWidget(self.ui.apiModelView)
 		
-
+		self._blinker = None
+		
 		self._setProject(None)
 		self._connectActions()
 		self._setEmptyModels()
@@ -306,8 +309,14 @@ class FacileView(QMainWindow):
 		:return: None
 		"""
 		# TODO: Change to get any entity instead of just component
-		properties = self._project.getTargetGUIModel().getComponent(id).getProperties()
+		entity = self._project.getTargetGUIModel().getComponent(id)
+		properties = entity.getProperties()
 		self.ui.propertyEditorView.setModel(properties.getModel())
+		if type(entity) == Component:
+			if self._blinker:
+				self._blinker.stop()
+			self._blinker = Blinker( self._project.getProcess().pid, self._project.getBackend(), entity.getSuperToken())
+			self._blinker.start()
 		
 	@Slot(bool)
 	def _onManualExploration(self, checked: bool) -> None:
