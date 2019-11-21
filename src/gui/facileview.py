@@ -31,6 +31,7 @@ from gui.ui.ui_facileview import Ui_MainWindow as Ui_FacileView
 from gui.newprojectdialog import NewProjectDialog
 from gui.copyprojectdialog import CopyProjectDialog
 from gui.manageprojectdialog import ManageProjectDialog
+from gui.facilegraphicsview import FacileGraphicsView
 from data.project import Project
 from data.properties import Properties
 from qt_models.propeditordelegate import PropertyEditorDelegate
@@ -63,6 +64,12 @@ class FacileView(QMainWindow):
 		super(FacileView, self).__init__()
 		self.ui = Ui_FacileView()
 		self.ui.setupUi(self)
+		self.ui.tempView.hide()
+		self.ui.targetGUIModelView = FacileGraphicsView()
+		self.ui.apiModelView = FacileGraphicsView()
+		self.ui.viewSplitter.addWidget(self.ui.targetGUIModelView)
+		self.ui.viewSplitter.addWidget(self.ui.apiModelView)
+		
 
 		self._setProject(None)
 		self._connectActions()

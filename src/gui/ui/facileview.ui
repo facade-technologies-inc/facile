@@ -19,12 +19,11 @@
   <widget class="QWidget" name="centralwidget">
    <layout class="QHBoxLayout" name="horizontalLayout">
     <item>
-     <widget class="QSplitter" name="splitter">
+     <widget class="QSplitter" name="viewSplitter">
       <property name="orientation">
        <enum>Qt::Horizontal</enum>
       </property>
-      <widget class="QGraphicsView" name="targetGUIModelView"/>
-      <widget class="QGraphicsView" name="apiModelView"/>
+      <widget class="QGraphicsView" name="tempView"/>
      </widget>
     </item>
    </layout>

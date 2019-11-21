@@ -50,7 +50,7 @@ class Token:
         "CHILDREN_TEXTS": 10,
         "CONTROL_ID": 10,
         "AUTO_ID": 10,
-        "RECTANGLE": 5,
+        "RECTANGLE": 10,
         "NUM_CONTROLS": 3,
         "EXPAND_STATE": 1,
         "SHOWN_STATE": 1,
@@ -63,7 +63,7 @@ class Token:
     MAX_WEIGHTS = sum(Weight.values())
     THRESH_PERCENT = 50
 
-    def __init__(self, identifier: int, isEnabled: bool, isVisible: bool, processID: int,  typeOf: str,
+    def __init__(self, identifier: int, isDialog: bool, isEnabled: bool, isVisible: bool, processID: int,  typeOf: str,
                  rectangle: RECT, texts: list, title: str, numControls: int, controlIDs: list,
                  parentTitle: str, parentType: str, topLevelParentTitle: str, topLevelParentType: str,
                  childrenTexts: list,picture: Image = None, autoID: int = None,
@@ -73,6 +73,8 @@ class Token:
         
         :param identifier: stores the unique id number of the component
         :type identifier: int
+        :param isDialog: stores if the component is a dialog
+        :type isDialog: bool
         :param isEnabled: stores if the component is enabled
         :type isEnabled: bool
         :param isVisible: stores if the component is visible
@@ -114,6 +116,7 @@ class Token:
         :rtype: NoneType
         """
         self.identifier = identifier
+        self.isDialog = isDialog
         self.isEnabled = isEnabled
         self.isVisible = isVisible
         self.parentTitle = parentTitle
@@ -226,7 +229,13 @@ class Token:
         #   - Visible State
         #   - Expand State
         #   - Shown State
-        #   -
+        #   - rectangle size
+        #
+        # If the component is a dialog, we heavily much more heavily on these
+        # fields:
+        #   - Number Of Children
+        #   - Children Text
+        #   - Rectangle Size
         #####################################################################
         else:
             
@@ -271,7 +280,11 @@ class Token:
             childTexts1 = " ".join(self.childrenTexts)
             childTexts2 = " ".join(token2.childrenTexts)
             childTextsSimilarity = SequenceMatcher(None, childTexts1, childTexts2).ratio()
-            total += childTextsSimilarity * Token.Weight["CHILDREN_TEXTS"]
+            if self.isDialog:
+                max += 25
+                total += childTextsSimilarity * (Token.Weight["CHILDREN_TEXTS"] + 25)
+            else:
+                total += childTextsSimilarity * Token.Weight["CHILDREN_TEXTS"]
             
             # compare number of children
             if self.numControls == token2.numControls:
@@ -280,7 +293,24 @@ class Token:
                 numChildrenDiff = min(self.numControls/token2.numControls, token2.numControls/self.numControls)
             else:
                 numChildrenDiff = 0
-            total += numChildrenDiff * Token.Weight["NUM_CONTROLS"]
+            # if self.isDialog:
+            #     max += 15
+            #     total += numChildrenDiff * (Token.Weight["NUM_CONTROLS"] + 15)
+            # else:
+                total += numChildrenDiff * Token.Weight["NUM_CONTROLS"]
+                
+            # compare rectangles
+            # diffWidth = abs(self.rectangle.width() - token2.rectangle.width())
+            # diffHeight = abs(self.rectangle.height() - token2.rectangle.height())
+            # widthScore = diffWidth / token2.rectangle.width()
+            # heightScore = diffHeight / token2.rectangle.height()
+            # shapeScore = widthScore * heightScore
+            # if self.isDialog:
+            #     max += 5
+            #     total += shapeScore * (Token.Weight["RECTANGLE"] + 5)
+            # else:
+            #     total += shapeScore * Token.Weight["RECTANGLE"]
+            
             
             if token2.isEnabled == self.isEnabled:
                 total += Token.Weight["IS_ENABLED"]
