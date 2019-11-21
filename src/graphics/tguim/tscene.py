@@ -32,7 +32,8 @@ class TScene(QGraphicsScene):
         """
         Construct the TScene class
 
-        :param data:
+        :param targetGUIModel: get the TargetGuiModel of the project
+        :type targetGUIModel: TargetGuiModel
         """
         QGraphicsScene.__init__(self)
         self._targetGuiModel = targetGUIModel
@@ -47,8 +48,8 @@ class TScene(QGraphicsScene):
         """
         Gets the target GUI Model.
 
-        :return: The target GUI model
-        :rtype: data.tguim.targetguimodel.TargetGuiModel
+        :return The target GUI model
+        :rtype data.tguim.targetguimodel.TargetGuiModel
         """
         return self._targetGuiModel
 

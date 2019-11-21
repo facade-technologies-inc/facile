@@ -46,8 +46,10 @@ class ComponentGraphics(QGraphicsItem):
         """
         Constructs a componentview object
 
-        :param dataComponent: Component
-        :param parent: parent ComponentView
+        :param dataComponent: get the data of a Component
+        :type dataComponent: Component
+        :param parent: parent ComponentGraphics
+        :type parent: ComponentGraphics
         """
 
         QGraphicsItem.__init__(self, parent)
@@ -92,15 +94,18 @@ class ComponentGraphics(QGraphicsItem):
         """
         This pure virtual function defines the outer bounds of the item as a rectangle.
 
-        :return: QRectF
+        :return create the bounding of the item
+        :rtype QRectF
         """
         return QRectF(self.rect[0], self.rect[1], self.rect[2] + ComponentGraphics.penWidth, self.rect[3] + ComponentGraphics.penWidth)
 
     def shape(self):
         """
-        Determine the shape of the graphics item
+       Returns the shape of this item as a QPainterPath in local coordinates.
+       The shape could be used for many things, like collision detection.
 
-        :return: QPainterPath
+        :return Returns the shape of this item as a QPainterPath in local coordinates.
+        :rtype QPainterPath
         """
         path = QPainterPath()
         path.addRect(self.boundingRect())
@@ -110,9 +115,14 @@ class ComponentGraphics(QGraphicsItem):
         """
         Paints the contents of the component. Override the parent paint function
 
-        :param painter: QPainter
-        :param option: QStyleOptionGraphicsItem
+        :param painter: Use a Qpainter object.
+        :type painter: QPainter
+        :param option: It provides style options for the item.
+        :type option: QStyleOptionGraphicsItem
         :param widget: QWidget
+        :type widget: It points to the widget that is being painted on; or make it = None.
+        :return None
+        :rtype NoneType
         """
         if self.isRoot or self.rect[2] == 0 and self.rect[3] == 0:
             painter.setPen(QPen(QColor(Qt.transparent)))
@@ -146,7 +156,8 @@ class ComponentGraphics(QGraphicsItem):
         """
         This event handler is implemented to receive mouse press events for this item.
 
-        :param event: QGraphicsSceneMouseEvent
+        :param event: a mouse press event
+        :type event: QGraphicsSceneMouseEvent
         """
         self.setSelected(True)
         self.scene().emitItemSelected(self._dataComponent.getId())
@@ -162,6 +173,7 @@ class ComponentGraphics(QGraphicsItem):
         """
         Returns the componentView id as a string.
 
-        :return: str
+        :return Returns the componentView id as a string.
+        :rtype str
         """
         return "Component: {}".format(self._dataComponent.getId())
