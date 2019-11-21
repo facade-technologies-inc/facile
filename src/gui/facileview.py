@@ -23,13 +23,16 @@ Much of Facile is joined together here.
 import os
 import json
 from copy import deepcopy
+from enum import Enum, unique
 from PySide2.QtWidgets import QMainWindow, QFileDialog, QMessageBox
+from PySide2.QtGui import QStandardItemModel, QStandardItem, Qt
 from PySide2.QtCore import Signal, Slot
 from gui.ui.ui_facileview import Ui_MainWindow as Ui_FacileView
 from gui.newprojectdialog import NewProjectDialog
 from gui.copyprojectdialog import CopyProjectDialog
 from gui.manageprojectdialog import ManageProjectDialog
 from data.project import Project
+from qt_models.projectexplorermodel import ProjectExplorerModel
 
 
 class FacileView(QMainWindow):
@@ -40,12 +43,19 @@ class FacileView(QMainWindow):
 	# This signal will be emitted when the project changes to notify all components of Facile.
 	projectChanged = Signal(Project)
 	
+	@unique
+	class ExploreMode(Enum):
+		MANUAL = 1
+		AUTOMATIC = 2
+		IGNORE = 3
+	
+	
 	def __init__(self) -> 'FacileView':
 		"""
 		Constructs a FacileView object.
 		
-		:return: The new project object
-		:rtype: Project
+		:return: The new FacileView object
+		:rtype: FacileView
 		"""
 		
 		super(FacileView, self).__init__()
@@ -54,19 +64,7 @@ class FacileView(QMainWindow):
 
 		self._setProject(None)
 		self._connectActions()
-		
-		# TODO: Move this somewhere else to localize the recent project stuff
-		# try to show recent projects
-		try:
-			with open(os.path.join(os.getcwd(), "temp/recentProjects.json"), "r") as recents:
-				recentProjects = json.loads(recents.read())
-		except Exception as e:
-			print(e)
-		else:
-			for proj in recentProjects[:10]:
-				if os.path.exists(proj):
-					action = self.ui.menuRecent_Projects.addAction(proj)
-					action.triggered.connect(self._onOpenRecentProject)
+		self._setEmptyModels()
 		
 	@Slot(Project)
 	def _setProject(self, project: Project) -> None:
@@ -81,29 +79,21 @@ class FacileView(QMainWindow):
 		
 		self._project = project
 		
-		if not project is None:
+		if project is not None:
 			self.setWindowTitle("Facile - " + self._project.getMainProjectFile())
 			print(self._project.getProjectDir())
 			self.projectChanged.emit(project)
 			self._project.save()
+			self._project.addToRecents()
+			self.ui.projectExplorerView.setModel(self._project.getProjectExplorerModel())
+			self.ui.targetGUIModelView.setScene(self._project.getTargetGUIModel().getScene())
+			self._project.startTargetApplication()
 			
-			# TODO: Move global Facile stuff like this to a better spot.
-			# add the new project to the recent projects file
-			cwd = os.getcwd()
-			tempDir = os.path.join(cwd, "temp")
-			recentsFile = os.path.join(tempDir, "recentProjects.json")
-			recentProjects = []
-			if not os.path.exists(tempDir):
-				os.mkdir(tempDir)
-			try:
-				with open(recentsFile, "r") as recents:
-					recentProjects = json.loads(recents.read())
-			except:
-				pass
-			if not project.getMainProjectFile() in recentProjects:
-				recentProjects.insert(0, project.getMainProjectFile())
-				with open(recentsFile, "w") as recents:
-					recents.write(json.dumps(recentProjects, indent=4))
+			# TODO: Enable a lot of buttons
+			
+		else:
+			# TODO: Disable a lot of buttons
+			pass
 			
 	def _connectActions(self) -> None:
 		"""
@@ -114,12 +104,65 @@ class FacileView(QMainWindow):
 		:rtype: NoneType
 		"""
 		
+		self._populateRecents()
+		
 		self.ui.actionFrom_Scratch.triggered.connect(self._onNewProjectFromScratchTriggered)
 		self.ui.actionFrom_Existing_Project.triggered.connect(self._onNewProjectFromExistingTriggered)
 		self.ui.actionOpen_Project.triggered.connect(self._onOpenProjectTriggered)
 		self.ui.actionSave_Project.triggered.connect(self._onSaveProjectTriggered)
 		self.ui.actionSave_as.triggered.connect(self._onSaveProjectAsTriggered)
 		self.ui.actionManage_Project.triggered.connect(self._onManageProjectTriggered)
+		self.ui.actionAutoExplore.triggered.connect(self._onAutomaticExploration)
+		self.ui.actionManualExplore.triggered.connect(self._onManualExploration)
+		self.ui.actionIgnoreExplore.triggered.connect(self._onIgnoreExploration)
+		
+	def _setEmptyModels(self) -> None:
+		"""
+		Puts empty models in all of the model-based views in Facile's main window The empty models just contain a
+		message.
+
+		:return: None
+		:rtype: NoneType
+		"""
+		# create blank model to show that no project is open.
+		blankProjectExplorer = QStandardItemModel()
+		blankProjectExplorer.setHorizontalHeaderLabels([""])
+		label = QStandardItem("No project is open.")
+		label.setFlags(Qt.NoItemFlags)
+		blankProjectExplorer.appendRow([label])
+		self.ui.projectExplorerView.setModel(blankProjectExplorer)
+		
+		# create blank model to show that no item is selected.
+		blankPropertiesModel = QStandardItemModel()
+		blankPropertiesModel.setHorizontalHeaderLabels([""])
+		label = QStandardItem("No model item is selected.")
+		label.setFlags(Qt.NoItemFlags)
+		blankPropertiesModel.appendRow([label])
+		self.ui.propertyEditorView.setModel(blankPropertiesModel)
+		
+	def _populateRecents(self) -> None:
+		"""
+		Creates the recents dropdown menu by reading the recents file. If the recents file does not exist, the message
+		"No recent projects." is shown. If there was a problem decoding the file, the message "Error loading recent
+		projects." is shown.
+		
+		:return: None
+		:rtype: NoneType
+		"""
+		try:
+			recentProjects = Project.getRecents(limit=10)
+			
+		except json.JSONDecodeError as e:
+			self.ui.menuRecent_Projects.addAction("Error loading recent projects.")
+			
+		else:
+			if len(recentProjects) == 0:
+				self.ui.menuRecent_Projects.addAction("No recent projects.")
+			
+			else:
+				for proj in recentProjects[:10]:
+					action = self.ui.menuRecent_Projects.addAction(proj)
+					action.triggered.connect(self._onOpenRecentProject)
 	
 	@Slot()
 	def _onSaveProjectAsTriggered(self) -> None:
@@ -243,3 +286,82 @@ class FacileView(QMainWindow):
 		manageProjectDialog = ManageProjectDialog(self._project)
 		manageProjectDialog.projectCreated.connect(self._setProject)
 		manageProjectDialog.exec_()
+		
+	@Slot(bool)
+	def _onManualExploration(self, checked: bool) -> None:
+		"""
+		Sets the exploration mode to be manual iff checked is True
+		
+		:param checked: if True, set the exploration mode to be manual. Else do nothing
+		:type checked: bool
+		:return: None
+		:rtype: NoneType
+		"""
+		if checked:
+			self._setExplorationMode(FacileView.ExploreMode.MANUAL)
+	
+	@Slot(bool)
+	def _onAutomaticExploration(self, checked: bool) -> None:
+		"""
+		Sets the exploration mode to be automatic iff checked is True
+
+		:param checked: if True, set the exploration mode to automatic. Else do nothing
+		:type checked: bool
+		:return: None
+		:rtype: NoneType
+		"""
+		if checked:
+			self._setExplorationMode(FacileView.ExploreMode.AUTOMATIC)
+	
+	@Slot(bool)
+	def _onIgnoreExploration(self, checked: bool) -> None:
+		"""
+		Sets the exploration mode to be ignore iff checked is True
+
+		:param checked: if True, set the exploration mode to be ignore. Else do nothing
+		:type checked: bool
+		:return: None
+		:rtype: NoneType
+		"""
+		if checked:
+			self._setExplorationMode(FacileView.ExploreMode.IGNORE)
+			
+	def _setExplorationMode(self, mode: 'FacileView.ExploreMode') -> None:
+		"""
+		Sets the exploration mode. If there is no project, or the target application is not running, nothing happens.
+		
+		:param mode: The mode to set exploration to.
+		:type mode: FacileView.ExploreMode
+		:return: None
+		:rtyp: NoneType
+		"""
+		if self._project is None:
+			return
+		if self._project.getProcess() is None:
+			return
+		
+		observer = self._project.getObserver()
+		explorer = self._project.getExplorer()
+		
+		if mode == FacileView.ExploreMode.AUTOMATIC:
+			self.ui.actionAutoExplore.setChecked(True)
+			self.ui.actionManualExplore.setChecked(False)
+			self.ui.actionIgnoreExplore.setChecked(False)
+			observer.newSuperToken.connect(self._project.getTargetGUIModel().createComponent)
+			observer.play()
+			explorer.play()
+			
+		elif mode == FacileView.ExploreMode.MANUAL:
+			self.ui.actionAutoExplore.setChecked(False)
+			self.ui.actionManualExplore.setChecked(True)
+			self.ui.actionIgnoreExplore.setChecked(False)
+			observer.newSuperToken.connect(self._project.getTargetGUIModel().createComponent)
+			observer.play()
+			explorer.pause()
+			
+		elif mode == FacileView.ExploreMode.IGNORE:
+			self.ui.actionAutoExplore.setChecked(False)
+			self.ui.actionManualExplore.setChecked(False)
+			self.ui.actionIgnoreExplore.setChecked(True)
+			observer.pause()
+			explorer.pause()

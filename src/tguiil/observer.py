@@ -25,8 +25,10 @@ import psutil
 from PySide2.QtCore import QThread, Signal
 
 from tguiil.application import Application
-from tguiil.token import Token
-from tguiil.supertoken import SuperToken
+from tguiil.tokens import Token
+from tguiil.supertokens import SuperToken
+
+#TODO: Create play/pause methods
 
 class Observer(QThread):
     """
@@ -35,7 +37,7 @@ class Observer(QThread):
     
     To use:
         process = psutil.Popen(["C:\\Program Files\\Notepad++\\notepad++.exe"])
-        observer = Observer(process.pid)
+        observer = Observer(process.pid, 'uia')
         observer.newSuperToken.connect(targetGUIModel.addSuperToken)
         observer.start()
     """
