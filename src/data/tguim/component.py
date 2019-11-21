@@ -246,7 +246,7 @@ class Component(Entity):
 		Adds a given visibility behavior (VB) to the list of "Destination" visibility behaviors.
 		This component is the destination for the VB.
 
-		:param newVisBehavior: The VisibilityBehavior object which is triggered by this component.
+		:param newVisBehavior: The VisibilityBehavior that affects the visibility of this component.
 		:type newVisBehavior: VisibilityBehavior
 		:return: None
 		:rtype: NoneType
@@ -260,7 +260,7 @@ class Component(Entity):
 		Removes a given visibility behavior (VB) from the list of "Destination" visibility behaviors.
 		This component is the destination for the VB.
 
-		:param visBehavior: The VisibilityBehavior object which is triggered by this component.
+		:param visBehavior: The VisibilityBehavior that affects the visibility of this component.
 		:type visBehavior: VisibilityBehavior
 		:return: None
 		:rtype: NoneType
@@ -274,7 +274,7 @@ class Component(Entity):
 		Adds a given visibility behavior (VB) to the list of "Source" visibility behaviors.
 		"Source" VBs are VBs coming out from this component.
 
-		:param newVisBehavior: The VisibilityBehavior object which affects this component.
+		:param newVisBehavior: The VisibilityBehavior that is triggered by ('coming out from') this component.
 		:type newVisBehavior: VisibilityBehavior
 		:return: None
 		:rtype: NoneType
@@ -288,7 +288,7 @@ class Component(Entity):
 		removes a given visibility behavior (VB) from the list of "Source" visibility behaviors.
 		"Source" VBs are VBs coming out from this component.
 
-		:param visBehavior: The VisibilityBehavior object which affects this component.
+		:param visBehavior: The VisibilityBehavior that is triggered by ('coming out from') this component.
 		:type visBehavior: VisibilityBehavior
 		:return: None
 		:rtype: NoneType
