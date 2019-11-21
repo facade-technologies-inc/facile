@@ -57,6 +57,9 @@ class Component(Entity):
 			self._graphicsItem = ComponentGraphics(self, superToken.posRelativeToParent, self.getParentGraphicsItem())
 		if parent is not None:
 			parent.addChild(self)
+
+	def getSuperToken(self):
+		return self._superToken
 			
 	def getSrcVisibilityBehaviors(self):
 		return self._srcVisibilityBehaviors

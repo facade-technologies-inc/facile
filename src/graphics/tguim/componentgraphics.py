@@ -59,10 +59,14 @@ class ComponentGraphics(QGraphicsItem):
         else:
             self.isRoot = False
         
-        self._dataComponent = dataComponent
+        self._dataComponent: 'Component' = dataComponent
         self.setFlag(QGraphicsItem.ItemIsSelectable)
         self.rect = list(rect)
         self.adjustPositioning()
+
+    def getNumberOfTokens(self):
+        #TODO: getSuperToken function from Sean's model
+        tokensCount = len(self._dataComponent.getSuperToken().tokens)
         
     def adjustPositioning(self) -> None:
         """
