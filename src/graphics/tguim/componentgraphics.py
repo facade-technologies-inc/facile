@@ -40,7 +40,7 @@ class ComponentGraphics(QGraphicsItem):
     
     def __init__(self, dataComponent: 'Component', rect: tuple = (), parent = None):
         """
-        Constructs a componentview object
+        Constructs a ComponentGraphics object
 
         :param dataComponent: Component
         :param parent: parent ComponentView

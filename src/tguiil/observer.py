@@ -144,18 +144,26 @@ class Observer(QThread):
             numControls = component.control_count()
             image = component.capture_as_image()
             typeOf = component.friendly_class_name()
+            
+            # get text of all children that are not editable.
+            childrenTexts = []
+            for child in component.children():
+                if type(child) != pywinauto.controls.win32_controls.EditWrapper:
+                    print("found editor")
+                    try:
+                        childrenTexts.append(child.text())
+                    except:
+                        childrenTexts.append(child.window_text())
     
             # additional information we can get about uia elements
             if isinstance(component, UIAWrapper):
                 autoID = component.automation_id()
-                childrenTexts = component.children_texts()
                 expandState = component.get_expand_state()
                 shownState = component.get_show_state()
             else:
                 autoID = None
                 expandState = None
                 shownState = None
-                childrenTexts = [child.window_text() for child in component.children()]
                 
             # construct control identifiers
             # There are 4 possible control identifiers:

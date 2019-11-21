@@ -159,8 +159,6 @@ class Token:
         :rtype: NoneType
         """
 
-        # TODO: Disregard text in text fields that are enabled because user input would throw off scoring
-
         #####################################################################
         # DECISION 1 - QUICK CHECK FOR NO MATCH
         #
@@ -283,8 +281,8 @@ class Token:
             childTexts2 = " ".join(token2.childrenTexts)
             childTextsSimilarity = SequenceMatcher(None, childTexts1, childTexts2).ratio()
             if self.isDialog:
-                max += 10
-                total += childTextsSimilarity * (Token.Weight["CHILDREN_TEXTS"] + 10)
+                max += 25
+                total += childTextsSimilarity * (Token.Weight["CHILDREN_TEXTS"] + 25)
             else:
                 total += childTextsSimilarity * Token.Weight["CHILDREN_TEXTS"]
             
@@ -295,23 +293,23 @@ class Token:
                 numChildrenDiff = min(self.numControls/token2.numControls, token2.numControls/self.numControls)
             else:
                 numChildrenDiff = 0
-            if self.isDialog:
-                max += 15
-                total += numChildrenDiff * (Token.Weight["NUM_CONTROLS"] + 15)
-            else:
+            # if self.isDialog:
+            #     max += 15
+            #     total += numChildrenDiff * (Token.Weight["NUM_CONTROLS"] + 15)
+            # else:
                 total += numChildrenDiff * Token.Weight["NUM_CONTROLS"]
                 
             # compare rectangles
-            diffWidth = abs(self.rectangle.width() - token2.rectangle.width())
-            diffHeight = abs(self.rectangle.height() - token2.rectangle.height())
-            widthScore = diffWidth / token2.rectangle.width()
-            heightScore = diffHeight / token2.rectangle.height()
-            shapeScore = widthScore * heightScore
-            if self.isDialog:
-                max += 5
-                total += shapeScore * (Token.Weight["RECTANGLE"] + 5)
-            else:
-                total += shapeScore * Token.Weight["RECTANGLE"]
+            # diffWidth = abs(self.rectangle.width() - token2.rectangle.width())
+            # diffHeight = abs(self.rectangle.height() - token2.rectangle.height())
+            # widthScore = diffWidth / token2.rectangle.width()
+            # heightScore = diffHeight / token2.rectangle.height()
+            # shapeScore = widthScore * heightScore
+            # if self.isDialog:
+            #     max += 5
+            #     total += shapeScore * (Token.Weight["RECTANGLE"] + 5)
+            # else:
+            #     total += shapeScore * Token.Weight["RECTANGLE"]
             
             
             if token2.isEnabled == self.isEnabled:
