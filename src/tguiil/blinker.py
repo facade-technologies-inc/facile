@@ -36,8 +36,6 @@ class Blinker(QThread):
     amount of time. Because the box sometimes disappears on its own, this can cause a blinking affect.
     """
     
-    #TODO: Find way to make blinking more consistent.
-    
     INTERVAL_MILLIS = 250
     DURATION_MILLIS = 10_000
     
@@ -143,6 +141,7 @@ class Blinker(QThread):
     def stop(self) -> None:
         """
         Stops the blinker regardless of whether it was running or not.
+        
         :return: None
         :rtype: NoneType
         """
