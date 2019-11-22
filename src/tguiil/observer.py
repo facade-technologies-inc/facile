@@ -118,7 +118,7 @@ class Observer(QThread):
         :return: The token that was created from the pywinauto control.
         :rtype: Token
         """
-        #try:
+
         parent = component.parent()
         if parent:
             parentTitle = parent.window_text()
@@ -185,8 +185,6 @@ class Observer(QThread):
                       numControls, controlIdentifiers, parentTitle, parentType,
                       topLevelParentTitle, topLevelParentType, childrenTexts, image, autoID,
                       expandState, shownState)
-        # except Exception as e:
-        #     raise Token.CreationException(str(e))
 
         return token
 

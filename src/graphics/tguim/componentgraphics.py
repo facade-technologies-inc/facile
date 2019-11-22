@@ -42,8 +42,10 @@ class ComponentGraphics(QGraphicsItem):
         """
         Constructs a ComponentGraphics object
 
-        :param dataComponent: Component
-        :param parent: parent ComponentView
+        :param dataComponent: get the data of a Component
+        :type dataComponent: Component
+        :param parent: parent ComponentGraphics
+        :type parent: ComponentGraphics
         """
 
         QGraphicsItem.__init__(self, parent)
@@ -82,7 +84,7 @@ class ComponentGraphics(QGraphicsItem):
         # We're dealing with the root that should never be drawn.
         if self._dataComponent.getParent() is None:
             return
-        
+
         # We're dealing with a top-level component
         elif self._dataComponent.getParent().getParent() is None:
             parent = self.scene()
@@ -211,8 +213,7 @@ class ComponentGraphics(QGraphicsItem):
         :return: True if components overlap, False otherwise.
         :rtype: bool
         """
-        
-        
+
         selfBound = self.boundingRect(withMargins=False)
         selfx = self.scenePos().x() + selfBound.x()
         selfy = self.scenePos().y() + selfBound.y()
@@ -260,7 +261,8 @@ class ComponentGraphics(QGraphicsItem):
         """
         This pure virtual function defines the outer bounds of the item as a rectangle.
 
-        :return: QRectF
+        :return create the bounding of the item
+        :rtype QRectF
         """
         halfWidth = ComponentGraphics.PEN_WIDTH / 2
         if withMargins:
@@ -278,9 +280,11 @@ class ComponentGraphics(QGraphicsItem):
 
     def shape(self):
         """
-        Determine the shape of the graphics item
+       Returns the shape of this item as a QPainterPath in local coordinates.
+       The shape could be used for many things, like collision detection.
 
-        :return: QPainterPath
+        :return Returns the shape of this item as a QPainterPath in local coordinates.
+        :rtype QPainterPath
         """
         path = QPainterPath()
         path.addRect(self.boundingRect(withMargins=True))
@@ -290,9 +294,14 @@ class ComponentGraphics(QGraphicsItem):
         """
         Paints the contents of the component. Override the parent paint function
 
-        :param painter: QPainter
-        :param option: QStyleOptionGraphicsItem
+        :param painter: Use a Qpainter object.
+        :type painter: QPainter
+        :param option: It provides style options for the item.
+        :type option: QStyleOptionGraphicsItem
         :param widget: QWidget
+        :type widget: It points to the widget that is being painted on; or make it = None.
+        :return None
+        :rtype NoneType
         """
         boundingRect = self.boundingRect(withMargins=False)
         
@@ -324,7 +333,8 @@ class ComponentGraphics(QGraphicsItem):
         """
         This event handler is implemented to receive mouse press events for this item.
 
-        :param event: QGraphicsSceneMouseEvent
+        :param event: a mouse press event
+        :type event: QGraphicsSceneMouseEvent
         """
         self.setSelected(True)
         self.scene().emitItemSelected(self._dataComponent.getId())
@@ -340,6 +350,7 @@ class ComponentGraphics(QGraphicsItem):
         """
         Returns the componentView id as a string.
 
-        :return: str
+        :return Returns the componentView id as a string.
+        :rtype str
         """
         return "Component: {}".format(self._dataComponent.getId())
