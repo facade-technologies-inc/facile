@@ -31,7 +31,10 @@ from gui.ui.ui_facileview import Ui_MainWindow as Ui_FacileView
 from gui.newprojectdialog import NewProjectDialog
 from gui.copyprojectdialog import CopyProjectDialog
 from gui.manageprojectdialog import ManageProjectDialog
+from gui.facilegraphicsview import FacileGraphicsView
 from data.project import Project
+from data.properties import Properties
+from qt_models.propeditordelegate import PropertyEditorDelegate
 from qt_models.projectexplorermodel import ProjectExplorerModel
 
 
@@ -61,6 +64,12 @@ class FacileView(QMainWindow):
 		super(FacileView, self).__init__()
 		self.ui = Ui_FacileView()
 		self.ui.setupUi(self)
+		self.ui.tempView.hide()
+		self.ui.targetGUIModelView = FacileGraphicsView()
+		self.ui.apiModelView = FacileGraphicsView()
+		self.ui.viewSplitter.addWidget(self.ui.targetGUIModelView)
+		self.ui.viewSplitter.addWidget(self.ui.apiModelView)
+		
 
 		self._setProject(None)
 		self._connectActions()
@@ -85,6 +94,8 @@ class FacileView(QMainWindow):
 			self.projectChanged.emit(project)
 			self._project.save()
 			self._project.addToRecents()
+			self._project.getTargetGUIModel().getScene().itemSelected.connect(self._onItemSelected)
+			self._project.getTargetGUIModel().dataChanged.connect(lambda: self.ui.projectExplorerView.update())
 			self.ui.projectExplorerView.setModel(self._project.getProjectExplorerModel())
 			self.ui.targetGUIModelView.setScene(self._project.getTargetGUIModel().getScene())
 			self._project.startTargetApplication()
@@ -287,6 +298,17 @@ class FacileView(QMainWindow):
 		manageProjectDialog.projectCreated.connect(self._setProject)
 		manageProjectDialog.exec_()
 		
+	@Slot(int)
+	def _onItemSelected(self, id: int):
+		"""
+		This slot will update the view when an item is selected.
+		
+		:return: None
+		"""
+		# TODO: Change to get any entity instead of just component
+		properties = self._project.getTargetGUIModel().getComponent(id).getProperties()
+		self.ui.propertyEditorView.setModel(properties.getModel())
+		
 	@Slot(bool)
 	def _onManualExploration(self, checked: bool) -> None:
 		"""
@@ -341,7 +363,7 @@ class FacileView(QMainWindow):
 			return
 		
 		observer = self._project.getObserver()
-		explorer = self._project.getExplorer()
+		#explorer = self._project.getExplorer() # TODO: Put this in once the explorer is finished
 		
 		if mode == FacileView.ExploreMode.AUTOMATIC:
 			self.ui.actionAutoExplore.setChecked(True)
@@ -349,7 +371,7 @@ class FacileView(QMainWindow):
 			self.ui.actionIgnoreExplore.setChecked(False)
 			observer.newSuperToken.connect(self._project.getTargetGUIModel().createComponent)
 			observer.play()
-			explorer.play()
+			#explorer.play()
 			
 		elif mode == FacileView.ExploreMode.MANUAL:
 			self.ui.actionAutoExplore.setChecked(False)
@@ -357,11 +379,11 @@ class FacileView(QMainWindow):
 			self.ui.actionIgnoreExplore.setChecked(False)
 			observer.newSuperToken.connect(self._project.getTargetGUIModel().createComponent)
 			observer.play()
-			explorer.pause()
+			#explorer.pause()
 			
 		elif mode == FacileView.ExploreMode.IGNORE:
 			self.ui.actionAutoExplore.setChecked(False)
 			self.ui.actionManualExplore.setChecked(False)
 			self.ui.actionIgnoreExplore.setChecked(True)
 			observer.pause()
-			explorer.pause()
+			#explorer.pause()
