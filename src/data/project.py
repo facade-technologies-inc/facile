@@ -109,9 +109,7 @@ class Project:
 			return None
 		else:
 			if self._explorer is None:
-				pass
-				# TODO: Fix explorer constructor
-				#self._explorer = Explorer(self._process.pid, self._backend)
+				self._explorer = Explorer(self._process.pid, self._backend)
 			return self._explorer
 
 	def getTargetGUIModel(self) -> 'TargetGuiModel':

@@ -33,6 +33,12 @@ class Explorer(QThread):
     and then clicking on every clickable component as well as prompting the user for input on any textfields.
     """
 
+    ignoreTypes = set()
+    ignoreTypes.add("SysShadow")
+    ignoreTypes.add("ToolTips")
+    ignoreTypes.add("MSCTFIME UI")
+    ignoreTypes.add("IME")
+
     def __init__(self, processID: int, backend: str = 'uia'):
         """
         Initializes explorer.
@@ -43,10 +49,9 @@ class Explorer(QThread):
         :type backend: str
         """
 
-        super().__init__()
+        QThread.__init__(self)
         self._process = psutil.Process(processID)
         self._backend = backend
-        self._isRunning = False
 
     def run(self) -> int:
         """
@@ -57,41 +62,46 @@ class Explorer(QThread):
         """
 
         # NOTE: Commented lines are for implementation of menu traversal, which needs work.
+        print("Running the explorer")
         app = Application(backend=self._backend)
         app.setProcess(self._process)
 
         try:
-            if self._process.is_running():
+            while self._process.is_running():
                 work = [win for win in app.windows()]
                 # menu_paths = []
 
                 while len(work) > 0:
                     component = work.pop()
+                    if component.friendly_class_name() not in Explorer.ignoreTypes:
+                        print('explorer: found ' + component.friendly_class_name())
 
-                    for child in component.children():
-                        work.append(child)
+                        for child in component.children():
+                            work.append(child)
 
-                    # if component.friendly_class_name() == 'MenuItem':
-                    #     menu_paths.append((component.top_level_parent(), component.get_menu_path()))
+                        # if component.friendly_class_name() == 'MenuItem':
+                        #     menu_paths.append((component.top_level_parent(), component.get_menu_path()))
 
-                    try:
-                        if component.is_editable():  # Editable textfields
-                            pyautogui.alert('Please enter necessary information, then press OK.')
-                    except:
-                        pass
-                    finally:
                         try:
-                            if component.is_clickable() and component.window_text() != 'Cancel':  # Buttons
-                                component.set_focus()
-                                component.click()
+                            if component.is_editable():  # Editable textfields
+                                print('explorer: found textfield')
+                                pyautogui.alert('Please enter necessary information, then press OK.')
                         except:
                             pass
                         finally:
-                            pass
+                            try:
+                                if component.is_clickable() and component.window_text() != 'Cancel':  # Buttons
+                                    print('explorer: found button')
+                                    component.set_focus()
+                                    component.click()
+                            except:
+                                pass
+                            finally:
+                                pass
 
-                # for menupath in menu_paths:
-                #     window = menupath[0]
-                #     window.menu_select(menupath[1])
+                    # for menupath in menu_paths:
+                    #     window = menupath[0]
+                    #     window.menu_select(menupath[1])
         finally:
             return 0
 
