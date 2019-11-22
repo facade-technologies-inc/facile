@@ -46,7 +46,7 @@ class Blinker(QThread):
     
     def __init__(self, pid: int, backend: str, superToken: 'SuperToken') -> None:
         """
-        Creates a blinker that will draw a box around the component represented by SuperToken peridically
+        Creates a blinker that will draw a box around the component represented by SuperToken periodically
         if the component can be found.
         
         :param pid: The id of the target application's process.
@@ -64,13 +64,14 @@ class Blinker(QThread):
         self._color = Blinker.colors[Blinker.curColorIdx%len(Blinker.colors)]
         Blinker.curColorIdx += 1
         
-    def run(self):
+    def run(self) -> None:
         """
         DO NOT CALL THIS METHOD!
         This method is called automatically when the start() method is called.
         
         This method searches for a Component in the target GUI by traversing
-        :return:
+        :return: None
+        :rtype: NoneType
         """
         print("Starting blinker")
         self._process = psutil.Process(self._pid)
@@ -99,7 +100,7 @@ class Blinker(QThread):
                         self._timer.start(Blinker.INTERVAL_MILLIS)
                         self._stopWatch.start()
                         self.exec_()
-                        break
+                        return
                     elif decision == Token.Match.CLOSE:
                         if certainty > bestCertainty:
                             closestComponent = curComponent
@@ -117,9 +118,7 @@ class Blinker(QThread):
                 self._timer.start(Blinker.INTERVAL_MILLIS)
                 self._stopWatch.start()
                 self.exec_()
-                
-        else:
-            print("Blinker couldn't run - target application not running.")
+                return
                 
     def tick(self) -> None:
         """
@@ -128,12 +127,10 @@ class Blinker(QThread):
         :return: None
         :rtype: NoneType
         """
-        print("tick")
         try:
             self._component.draw_outline(colour=self._color, thickness=5)
         except Exception as e:
-            print(e)
-            print("Blinker could not draw outline around component.")
+            pass
             
         if self._stopWatch.hasExpired(Blinker.DURATION_MILLIS):
             self.stop()
@@ -149,7 +146,6 @@ class Blinker(QThread):
         :return: None
         :rtype: NoneType
         """
-        print("Stopping Blinker")
         try:
             self._timer.stop()
         except:
