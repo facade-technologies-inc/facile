@@ -36,8 +36,6 @@ class Blinker(QThread):
     amount of time. Because the box sometimes disappears on its own, this can cause a blinking affect.
     """
     
-    #TODO: Find way to make blinking more consistent.
-    
     INTERVAL_MILLIS = 250
     DURATION_MILLIS = 10_000
     
