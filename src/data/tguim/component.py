@@ -59,6 +59,12 @@ class Component(Entity):
 			parent.addChild(self)
 
 	def getSuperToken(self):
+		"""
+		Gets the supertoken.
+
+		:return Gets the supertoken
+		:rtype SuperToken
+		"""
 		return self._superToken
 			
 	def getSrcVisibilityBehaviors(self):
