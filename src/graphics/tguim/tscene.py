@@ -38,11 +38,6 @@ class TScene(QGraphicsScene):
         QGraphicsScene.__init__(self)
         self._targetGuiModel = targetGUIModel
 
-        # This line is important because it affects how the scene is updated.
-        # The NoIndex index method tells the scene to traverse all items when drawing
-        # which is less efficient than using a binary space partitioning tree, but is
-        # better for dynamic scenes because no items will be missed in the repaint.
-        self.setItemIndexMethod(QGraphicsScene.NoIndex)
 
     def getTargetGUIModel(self) -> 'TargetGuiModel':
         """

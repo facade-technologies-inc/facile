@@ -21,7 +21,7 @@ This module contains the ComponentGraphics class.
 """
 
 from PySide2.QtCore import QRectF
-from PySide2.QtGui import QPainterPath, QColor, QPen, Qt
+from PySide2.QtGui import QPainterPath, QColor, QPen, Qt, QFont, QFontMetrics
 from PySide2.QtWidgets import QGraphicsScene, QGraphicsItem
 
 
@@ -31,20 +31,16 @@ class ComponentGraphics(QGraphicsItem):
     based on the component class.
     """
     
-    MIN_WIDTH = 50
-    MIN_HEIGHT = 50
+    MIN_WIDTH = 0
+    MIN_HEIGHT = 0
+    MARGIN = 20
+    PEN_WIDTH = 1.0
     
-    penWidth = 1.0
-    textHeight = 30
-    topMargin = 10
-    bottomMargin = 10
-    leftMargin = 10
-    rightMargin = 10
-    baseWidth = 400
-
+    TRIM = 1
+    
     def __init__(self, dataComponent: 'Component', rect: tuple = (), parent = None):
         """
-        Constructs a componentview object
+        Constructs a ComponentGraphics object
 
         :param dataComponent: get the data of a Component
         :type dataComponent: Component
@@ -53,15 +49,22 @@ class ComponentGraphics(QGraphicsItem):
         """
 
         QGraphicsItem.__init__(self, parent)
+        self.setFlag(QGraphicsItem.ItemIsSelectable)
+        
         if parent is None:
             dataComponent.getModel().getScene().addItem(self)
             self.isRoot = True
         else:
             self.isRoot = False
+
+        self._dataComponent = dataComponent
         
-        self._dataComponent: 'Component' = dataComponent
-        self.setFlag(QGraphicsItem.ItemIsSelectable)
-        self.rect = list(rect)
+        # force components to have at least the minimum size
+        self._x = rect[0]
+        self._y = rect[1]
+        self._width = max(rect[2], ComponentGraphics.MIN_WIDTH)
+        self._height = max(rect[3], ComponentGraphics.MIN_HEIGHT)
+        self.setPos(max(0, rect[0]), max(0, rect[1]))
         self.adjustPositioning()
 
     def getNumberOfTokens(self):
@@ -71,37 +74,214 @@ class ComponentGraphics(QGraphicsItem):
     def adjustPositioning(self) -> None:
         """
         Places component using the following criteria:
-        1. Try to place it where it really is relative to parent.
-        2. If it collides with edge of parent, move it inside parent.
-        3. If it collides with siblings, try moving it to a space that fits
-        4. If it doesn't fit in parent, expand parent.
-        5. Repeat steps 2-5 with parent until everything fits.
+        1. Place teh component where it actually is in the GUI.
+        2. If there is a collision with a sibling, the one that is on the bottom and/or right has to move.
+        3. Once all sibling collisions are resolved, the parent may need to expand to fit all children inside.
+        4. Once the parent is expanded, start at step 2 again, but his time with the parent.
+        
+        NOTE: This is a recursive algorithm.
         
         :return: None
         :rtype: NoneType
         """
         
-        # force components to have minimum size
-        self.rect[2] = max(self.rect[2], ComponentGraphics.MIN_WIDTH)
-        self.rect[3] = max(self.rect[3], ComponentGraphics.MIN_HEIGHT)
+        # We're dealing with the root that should never be drawn.
+        if self._dataComponent.getParent() is None:
+            return
         
-        #TODO:
-        # Modify locations of elements based on collisions.
-        #   1. If the component doesn't fit inside the parent window, move it inside.
-        #   2. If there is a collision with a sibling, move the component wherever there is the most room
-        #   3. If there isn't enough room for the new component, expand the parent.
-        #   4. recursively make room for component
+        # We're dealing with a top-level component
+        elif self._dataComponent.getParent().getParent() is None:
+            parent = self.scene()
+            parentRect = parent.sceneRect()
+            parentIsScene = True
+        else:
+            parent = self._dataComponent.getParent().getGraphicsItem()
+            parentRect = parent.boundingRect()
+            parentIsScene = False
+            
+        siblings = [sibling.getGraphicsItem() for sibling in self._dataComponent.getSiblings()]
+        if self in siblings:
+            siblings.remove(self)
         
-        pass
+        # Resolve collisions with siblings
+        while True:
+            collidingSiblings, maxSibX, maxSibY = self.getCollidingComponents(siblings)
+            if collidingSiblings:
+                self.dumbCollisionResolution(maxSibX, maxSibY, closest=False)
+                #self.smartCollisionResolution(collidingSiblings)
+            else:
+                break
+            
+        # If component isn't placed inside the parent, expand the parent
+        if not parentIsScene and not parent.contains(self):
+            width = max(maxSibX, self.x() + self._width)
+            height = max(maxSibY, self.y() + self._height)
+            parent.prepareGeometryChange()
+            if parentIsScene:
+                parent.setSceneRect(self.scene.x(), self.scene.y(), width + ComponentGraphics.MARGIN, height + ComponentGraphics.MARGIN)
+            else:
+                parent._width = width
+                parent._height = height
+                
+                if isinstance(parent, ComponentGraphics):
+                    parent.adjustPositioning()
+    
+    def dumbCollisionResolution(self, maxX: float, maxY: float, closest=True) -> None:
+        """
+        This is a simple collision resolution function. It will move the component to
+        either the far right or far bottom of it's siblings.
+        
+        :param maxX: The maximum x coordinate of all siblings.
+        :type maxX: float
+        :param maxY: The maximum y coordinate of all siblings
+        :type maxY: float
+        :param closest: If True, the component will be moved either down or right depending
+        on what's closer. If False, the component will be moved depending on proportions of
+        the parent (we try to keep even proportions).
+        :type closest: bool
+        :return: None
+        :rtype: NoneType
+        """
+        if closest:
+            if maxX - self.x() <= maxY - self.y():
+                self.setPos(self.x(), maxY)
+            else:
+                self.setPos(maxX, self.y())
+        else:
+            moveRightSize = maxX + self._width
+            moveDownSize = maxY + self._height
+            # we'll move all the way to the bottom
+            if moveRightSize >= moveDownSize:
+                self.setPos(self.x(), maxY)
+            # or we'll move all the way to the right
+            else:
+                self.setPos(maxX, self.y())
+                
+    def smartCollisionResolution(self, colliding: list) -> None:
+        """
+        This is an algorithm that resolves collisions in a smart way by always pushing one of
+        two colliding elements in a right/downward direction.
+        
+        unlike the dumbCollisionResolution, this algorithm can push items diagonally. This algorithm
+        is much less efficient than the dumbCollisionDetection.
+        
+        :param colliding: All of the elements colliding with our element.
+        :type colliding: list[ComponentGraphics]
+        :return: None
+        :rtype: NoneType
+        """
+        raise NotImplemented("This function is not yet implemented")
+    
+    def getCollidingComponents(self, components: list) -> tuple:
+        """
+        Gets all of the components from a list that collide with this component.
+        
+        :param components: The components to detect collisions with
+        :type components: list[ComponentGraphics]
+        :return: All of the components that actually collide with this component and the maximum sibling x and y positions.
+        :rtype: list[ConponentGraphics], float, float
+        """
+        collidingSiblings = []
+        maxSibX = 0
+        maxSibY = 0
+        for sibling in components:
+            sibBound = sibling.boundingRect()
+            maxSibX = max(maxSibX, sibling.x() + sibBound.width())
+            maxSibY = max(maxSibY, sibling.y() + sibBound.height())
+            if self.overlapsWith(sibling):
+                collidingSiblings.append(sibling)
+        return collidingSiblings, maxSibX, maxSibY
+    
+    
+    def getLabel(self) -> str:
+        """
+        Gets the label from this component.
+        :return: The label for this component.
+        :rtype: str
+        """
+        try:
+            category, name = self._dataComponent.getProperties().getProperty("Name")
+            return name.value()
+        except:
+            return ""
+    
+    def overlapsWith(self, sibling: 'ComponentGraphics') -> bool:
+        """
+        Determines if this ComponentGraphics is overlapping with another one.
+        
+        Components that share an edge are not necessarily considered to be overlapping.
+        This method differs from collidesWithItem because of this.
+        
+        :param sibling: The other component to check collision with.
+        :type sibling: ComponentGraphics
+        :return: True if components overlap, False otherwise.
+        :rtype: bool
+        """
+        
+        
+        selfBound = self.boundingRect(withMargins=False)
+        selfx = self.scenePos().x() + selfBound.x()
+        selfy = self.scenePos().y() + selfBound.y()
+    
+        sibBound = sibling.boundingRect(withMargins=False)
+        sibx = sibling.scenePos().x() + sibBound.x()
+        siby = sibling.scenePos().y() + sibBound.y()
 
-    def boundingRect(self):
+        if (sibx < selfx + selfBound.width() and
+            sibx + sibBound.width() > selfx and
+            siby < selfy + selfBound.height() and
+            siby + sibBound.height() > selfy):
+            return True
+        return False
+    
+    def contains(self, child: 'ComponentGraphics') -> bool:
+        """
+        Determines if one ComponentGraphics item completely contains another one visually.
+        rectangles that match exactly are considered to be "containing" each other.
+        
+        This method is mostly used to determine if a parent component needs to be "grown" to fit its children
+        inside.
+        
+        :param child: The component that we would like to determine if it's in the current component.
+        :type child: ComponentGraphics
+        :return: True if child is visually in the current component
+        :rtype: bool
+        """
+        pBound = self.boundingRect()
+        px = self.scenePos().x() + pBound.x()
+        py = self.scenePos().y() + pBound.y()
+        
+        cBound = child.boundingRect()
+        cx = child.scenePos().x() + cBound.x()
+        cy = child.scenePos().y() + cBound.y()
+        
+        if (px <= cx and
+            py <= cy and
+            px + pBound.width() >= cx + cBound.width() and
+            py + pBound.height() >= cy + cBound.height()):
+            return True
+        return False
+
+    def boundingRect(self, withMargins: bool = True):
         """
         This pure virtual function defines the outer bounds of the item as a rectangle.
 
         :return create the bounding of the item
         :rtype QRectF
         """
-        return QRectF(self.rect[0], self.rect[1], self.rect[2] + ComponentGraphics.penWidth, self.rect[3] + ComponentGraphics.penWidth)
+        halfWidth = ComponentGraphics.PEN_WIDTH / 2
+        if withMargins:
+            marginAdjustment = -ComponentGraphics.TRIM + ComponentGraphics.MARGIN * 2 + ComponentGraphics.PEN_WIDTH
+            return QRectF(-halfWidth,
+                          -halfWidth,
+                          self._width + marginAdjustment,
+                          self._height + marginAdjustment)
+        else:
+            noMarginAdjustment = -ComponentGraphics.TRIM + ComponentGraphics.PEN_WIDTH
+            return QRectF(ComponentGraphics.MARGIN - halfWidth,
+                          ComponentGraphics.MARGIN - halfWidth,
+                          self._width + noMarginAdjustment,
+                          self._height + noMarginAdjustment)
 
     def shape(self):
         """
@@ -112,7 +292,7 @@ class ComponentGraphics(QGraphicsItem):
         :rtype QPainterPath
         """
         path = QPainterPath()
-        path.addRect(self.boundingRect())
+        path.addRect(self.boundingRect(withMargins=True))
         return path
 
     def paint(self, painter, option, widget):
@@ -128,33 +308,31 @@ class ComponentGraphics(QGraphicsItem):
         :return None
         :rtype NoneType
         """
-        if self.isRoot or self.rect[2] == 0 and self.rect[3] == 0:
+        boundingRect = self.boundingRect(withMargins=False)
+        
+        if self.isRoot or boundingRect.width() == 0 and boundingRect.height() == 0:
             painter.setPen(QPen(QColor(Qt.transparent)))
             painter.setBrush(QColor(Qt.transparent))
             return
         
-        pen = QPen(QColor(100, 200, 255, int(255 / 10)))
+        pen = QPen(QColor(100, 200, 255))
         if self.isSelected():
             pen.setStyle(Qt.DashDotLine)
-            pen.setColor(QColor(255,0,0))
+            pen.setColor(QColor(255, 0, 0))
         else:
             pen.setStyle(Qt.SolidLine)
-            pen.setColor(QColor(0,0,0))
+            pen.setColor(QColor(0, 0, 0))
         painter.setPen(pen)
 
         # set background color:
-        painter.setBrush(QColor(100, 200, 255, int(255/10)))
+        painter.setBrush(QColor(100, 200, 255))
 
         id = self._dataComponent.getId()
-        boundingRect = self.boundingRect()
-        x = int(boundingRect.x()) + ComponentGraphics.penWidth/2
-        y = int(boundingRect.y()) + ComponentGraphics.penWidth/2
-        width = int(boundingRect.width()) - ComponentGraphics.penWidth
-        height = int(boundingRect.height()) - ComponentGraphics.penWidth
-        painter.drawRoundedRect(int(x+ComponentGraphics.leftMargin), int(y+ComponentGraphics.topMargin), int(width - ComponentGraphics.leftMargin - ComponentGraphics.rightMargin), int(height - ComponentGraphics.topMargin - ComponentGraphics.bottomMargin), 5, 5)
-
-        category, name = self._dataComponent.getProperties().getProperty("Name")
-        painter.drawText(int(x+ComponentGraphics.leftMargin*1.5), int(y+ComponentGraphics.topMargin+30), name.getValue())
+        
+        painter.drawRoundedRect(boundingRect, 5, 5)
+        
+        name = self.getLabel()
+        painter.drawText(int(ComponentGraphics.MARGIN*1.5), int(ComponentGraphics.MARGIN+30), name)
 
     def mousePressEvent(self, event):
         """
