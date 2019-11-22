@@ -141,7 +141,7 @@ class Observer(QThread):
         texts = component.texts()[1:]
         title = component.window_text()
         numControls = component.control_count()
-        image = component.capture_as_image()
+        image = None  #component.capture_as_image()
         typeOf = component.friendly_class_name()
         
         # get text of all children that are not editable.

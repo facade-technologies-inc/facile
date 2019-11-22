@@ -22,7 +22,8 @@ This module contains the blinker class which is used to relate the target GUI mo
 to the actual target GUI.
 """
 
-from PySide2.QtCore import QObject, QElapsedTimer, QTimer, QThread
+from PySide2.QtCore import QElapsedTimer, QTimer, QThread, Signal
+from PySide2.QtWidgets import QMessageBox
 from tguiil.application import Application
 from tguiil.observer import Observer
 from tguiil.tokens import Token
@@ -35,6 +36,8 @@ class Blinker(QThread):
     The Blinker class is used to draw a box around a given element at a specified frequency for a small
     amount of time. Because the box sometimes disappears on its own, this can cause a blinking affect.
     """
+    
+    componentNotFound = Signal(str, str)  # carries title and information
     
     INTERVAL_MILLIS = 250
     DURATION_MILLIS = 10_000
@@ -71,7 +74,6 @@ class Blinker(QThread):
         :return: None
         :rtype: NoneType
         """
-        print("Starting blinker")
         self._process = psutil.Process(self._pid)
         app = Application(backend=self._backend)
         app.setProcess(self._process)
@@ -91,13 +93,7 @@ class Blinker(QThread):
                 else:
                     decision, certainty = self._superToken.shouldContain(token)
                     if decision == Token.Match.EXACT:
-                        self._component = curComponent
-                        self._timer = QTimer(self)
-                        self._timer.timeout.connect(lambda: self.tick())
-                        self._stopWatch = QElapsedTimer()
-                        self._timer.start(Blinker.INTERVAL_MILLIS)
-                        self._stopWatch.start()
-                        self.exec_()
+                        self.initiateBlinkSequence(curComponent)
                         return
                     elif decision == Token.Match.CLOSE:
                         if certainty > bestCertainty:
@@ -109,15 +105,32 @@ class Blinker(QThread):
                     work.append(child)
                     
             if closestComponent:
-                self._component = closestComponent
-                self._timer = QTimer(self)
-                self._timer.timeout.connect(lambda: self.tick())
-                self._stopWatch = QElapsedTimer()
-                self._timer.start(Blinker.INTERVAL_MILLIS)
-                self._stopWatch.start()
-                self.exec_()
+                self.initiateBlinkSequence(closestComponent)
                 return
+            else:
+                title = "Component Not Found"
+                info = "The selected component could not be found in the target GUI."
+                self.componentNotFound.emit(title, info)
                 
+    def initiateBlinkSequence(self, component: 'Component') -> None:
+        """
+        Starts the blink sequence by setting timers and executing an event loop.
+        
+        NOTE: Because this function executes an event loop, it is blocking.
+        
+        :param component: The component to select.
+        :type component: Component
+        :return: None
+        :rtype: NoneType
+        """
+        self._component = component
+        self._timer = QTimer(self)
+        self._timer.timeout.connect(lambda: self.tick())
+        self._stopWatch = QElapsedTimer()
+        self._timer.start(Blinker.INTERVAL_MILLIS)
+        self._stopWatch.start()
+        self.exec_()
+        
     def tick(self) -> None:
         """
         Draws an outline around the component of interest.
@@ -132,11 +145,6 @@ class Blinker(QThread):
             
         if self._stopWatch.hasExpired(Blinker.DURATION_MILLIS):
             self.stop()
-        
-        try:
-            self._component.set_focus()
-        except:
-            pass
             
     def stop(self) -> None:
         """

@@ -22,7 +22,7 @@ This module contains the ComponentGraphics class.
 
 from PySide2.QtCore import QRectF
 from PySide2.QtGui import QPainterPath, QColor, QPen, Qt, QFont, QFontMetrics
-from PySide2.QtWidgets import QGraphicsScene, QGraphicsItem
+from PySide2.QtWidgets import QGraphicsScene, QGraphicsItem, QGraphicsSceneContextMenuEvent, QMenu
 
 
 class ComponentGraphics(QGraphicsItem):
@@ -66,6 +66,10 @@ class ComponentGraphics(QGraphicsItem):
         self._height = max(rect[3], ComponentGraphics.MIN_HEIGHT)
         self.setPos(max(0, rect[0]), max(0, rect[1]))
         self.adjustPositioning()
+
+        self.menu = QMenu()
+        showInGui = self.menu.addAction("Show in target GUI")
+        showInGui.triggered.connect(lambda: self.scene().blinkComponent(self._dataComponent.getId()))
         
     def adjustPositioning(self) -> None:
         """
@@ -338,6 +342,19 @@ class ComponentGraphics(QGraphicsItem):
         """
         self.setSelected(True)
         self.scene().emitItemSelected(self._dataComponent.getId())
+        
+    def contextMenuEvent(self, event: QGraphicsSceneContextMenuEvent) -> None:
+        """
+        Opens a context menu (right click menu) for the component.
+        
+        :param event: The event that was generated when the user right-clicked on this item.
+        :type event: QGraphicsSceneContextMenuEvent
+        :return: None
+        :rtype: NoneType
+        """
+        self.mousePressEvent(event)
+        selectedAction = self.menu.exec_(event.screenPos())
+        
 
     def triggerSceneUpdate(self):
         """

@@ -98,16 +98,12 @@ class FacileView(QMainWindow):
             self._project.save()
             self._project.addToRecents()
             self._project.getTargetGUIModel().getScene().itemSelected.connect(self._onItemSelected)
+            self._project.getTargetGUIModel().getScene().itemBlink.connect(self._onItemBlink)
             self._project.getTargetGUIModel().dataChanged.connect(lambda: self.ui.projectExplorerView.update())
             self.ui.projectExplorerView.setModel(self._project.getProjectExplorerModel())
             self.ui.targetGUIModelView.setScene(self._project.getTargetGUIModel().getScene())
             self._project.startTargetApplication()
             
-            # TODO: Enable a lot of buttons
-            
-        else:
-            # TODO: Disable a lot of buttons
-            pass
             
     def _connectActions(self) -> None:
         """
@@ -313,11 +309,27 @@ class FacileView(QMainWindow):
         entity = self._project.getTargetGUIModel().getComponent(id)
         properties = entity.getProperties()
         self.ui.propertyEditorView.setModel(properties.getModel())
-        if type(entity) == Component:
-            if self._blinker:
-                self._blinker.stop()
-            self._blinker = Blinker( self._project.getProcess().pid, self._project.getBackend(), entity.getSuperToken())
-            self._blinker.start()
+        
+        
+    @Slot(int)
+    def _onItemBlink(self, id: int) -> None:
+        """
+        Attempt to show an item in the GUI. Can only do this if the item is currently shown in
+        the GUI.
+        
+        :param id: The ID of the component to show.
+        :type id: int
+        :return: None
+        :rtype: NoneType
+        """
+        component = self._project.getTargetGUIModel().getComponent(id)
+        if self._blinker:
+            self._blinker.stop()
+        self._blinker = Blinker(self._project.getProcess().pid,
+                                self._project.getBackend(),
+                                component.getSuperToken())
+        self._blinker.componentNotFound.connect(self.info)
+        self._blinker.start()
         
     @Slot(bool)
     def _onManualExploration(self, checked: bool) -> None:
@@ -397,3 +409,17 @@ class FacileView(QMainWindow):
             self.ui.actionIgnoreExplore.setChecked(True)
             observer.pause()
             #explorer.pause()
+
+    @Slot(str, str)
+    def info(self, title: str, message: str) -> None:
+        """
+        This function displays an information message box. with the FacileView as the parent.
+        
+        :param title: The title of the window to show.
+        :type title: str
+        :param message: The message to show inside of the window
+        :type message: str
+        :return: None
+        :rtype: NoneType
+        """
+        QMessageBox.information(self, title, message)
