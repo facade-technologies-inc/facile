@@ -369,48 +369,48 @@ class FacileView(QMainWindow):
         """
         if checked:
             self._setExplorationMode(FacileView.ExploreMode.IGNORE)
-            
-    def _setExplorationMode(self, mode: 'FacileView.ExploreMode') -> None:
-        """
-        Sets the exploration mode. If there is no project, or the target application is not running, nothing happens.
-        
-        :param mode: The mode to set exploration to.
-        :type mode: FacileView.ExploreMode
-        :return: None
-        :rtyp: NoneType
-        """
-        if self._project is None:
-            return
-        if self._project.getProcess() is None:
-            return
-        
-        observer = self._project.getObserver()
-        #explorer = self._project.getExplorer() # TODO: Put this in once the explorer is finished
-        
-        if mode == FacileView.ExploreMode.AUTOMATIC:
-            self.ui.actionAutoExplore.setChecked(True)
-            self.ui.actionManualExplore.setChecked(False)
-            self.ui.actionIgnoreExplore.setChecked(False)
-            observer.newSuperToken.connect(self._project.getTargetGUIModel().createComponent)
-            observer.play()
-            #explorer.play()
-            
-        elif mode == FacileView.ExploreMode.MANUAL:
-            self.ui.actionAutoExplore.setChecked(False)
-            self.ui.actionManualExplore.setChecked(True)
-            self.ui.actionIgnoreExplore.setChecked(False)
-            observer.newSuperToken.connect(self._project.getTargetGUIModel().createComponent)
-            observer.play()
-            #explorer.pause()
-            
-        elif mode == FacileView.ExploreMode.IGNORE:
-            self.ui.actionAutoExplore.setChecked(False)
-            self.ui.actionManualExplore.setChecked(False)
-            self.ui.actionIgnoreExplore.setChecked(True)
-            observer.pause()
-            #explorer.pause()
 
-    @Slot(str, str)
+	def _setExplorationMode(self, mode: 'FacileView.ExploreMode') -> None:
+		"""
+		Sets the exploration mode. If there is no project, or the target application is not running, nothing happens.
+		
+		:param mode: The mode to set exploration to.
+		:type mode: FacileView.ExploreMode
+		:return: None
+		:rtyp: NoneType
+		"""
+		if self._project is None:
+			return
+		if self._project.getProcess() is None:
+			return
+		
+		observer = self._project.getObserver()
+		explorer = self._project.getExplorer()
+		
+		if mode == FacileView.ExploreMode.AUTOMATIC:
+			self.ui.actionAutoExplore.setChecked(True)
+			self.ui.actionManualExplore.setChecked(False)
+			self.ui.actionIgnoreExplore.setChecked(False)
+			observer.newSuperToken.connect(self._project.getTargetGUIModel().createComponent)
+			observer.play()
+			explorer.play()
+			
+		elif mode == FacileView.ExploreMode.MANUAL:
+			self.ui.actionAutoExplore.setChecked(False)
+			self.ui.actionManualExplore.setChecked(True)
+			self.ui.actionIgnoreExplore.setChecked(False)
+			observer.newSuperToken.connect(self._project.getTargetGUIModel().createComponent)
+			observer.play()
+			explorer.pause()
+			
+		elif mode == FacileView.ExploreMode.IGNORE:
+			self.ui.actionAutoExplore.setChecked(False)
+			self.ui.actionManualExplore.setChecked(False)
+			self.ui.actionIgnoreExplore.setChecked(True)
+			observer.pause()
+			explorer.pause()
+
+@Slot(str, str)
     def info(self, title: str, message: str) -> None:
         """
         This function displays an information message box. with the FacileView as the parent.
