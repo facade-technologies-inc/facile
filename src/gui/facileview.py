@@ -23,7 +23,7 @@ Much of Facile is joined together here.
 import os
 from copy import deepcopy
 from PySide2.QtWidgets import QMainWindow, QFileDialog, QMessageBox
-from PySide2.QtCore import Signal, Slot
+from PySide2.QtCore import Signal, Slot, QTimer
 from gui.ui.ui_facileview import Ui_MainWindow as Ui_FacileView
 from gui.newprojectdialog import NewProjectDialog
 from gui.copyprojectdialog import CopyProjectDialog
@@ -206,6 +206,28 @@ class FacileView(QMainWindow):
         :rtype: NoneType
         """
         self._stateMachine.addBehaviorClicked()
+        
+    @Slot()
+    def onStartAppTriggered(self):
+        """
+        This slot is run when the user selects "Start App"
+        
+        :return: None
+        :rtype: NoneType
+        """
+        self._project.startTargetApplication()
+        self._stateMachine.startApp()
+        
+    @Slot()
+    def onStopAppTriggered(self):
+        """
+        This slot is run when the user selects "Stop App"
+
+        :return: None
+        :rtype: NoneType
+        """
+        self._project.stopTargetApplication()
+        self._stateMachine.stopApp()
         
     @Slot(int)
     def onItemSelected(self, id: int):

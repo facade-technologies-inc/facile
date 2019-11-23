@@ -23,7 +23,7 @@ be done in Facile at any given time.
 """
 
 from enum import Enum, auto
-from PySide2.QtCore import Slot
+from PySide2.QtCore import Slot, QTimer
 from PySide2.QtGui import QStandardItem, QStandardItemModel, Qt
 from PySide2.QtWidgets import QMessageBox
 from gui.facilegraphicsview import FacileGraphicsView
@@ -50,12 +50,15 @@ class StateMachine:
         EXPLORATION = auto()
         
     class Event(Enum):
+        UPDATE = auto()
         FACILE_OPENED = auto()
         PROJECT_OPENED = auto()
         START_EXPLORATION = auto()
         STOP_EXPLORATION = auto()
         ADD_VB_CLICKED = auto()
         COMPONENT_CLICKED = auto()
+        START_APP = auto()
+        STOP_APP = auto()
         
     class ExplorationMode(Enum):
         AUTO = auto()
@@ -115,8 +118,33 @@ class StateMachine:
         """
         nextState = None
         
+        # If an update event takes place, we just force the state handler to run again.
+        if event == StateMachine.Event.UPDATE:
+            nextState = self.curState
+            
+        # If the app was just started, we don't want to change the state, but we do want to
+        # enable/disable the controls.
+        elif event == StateMachine.Event.START_APP:
+            self.view.ui.actionStart_App.setEnabled(False)
+            self.view.ui.actionStop_App.setEnabled(True)
+            self.view.appWatcher.start()
+            if self.curState == StateMachine.State.MODEL_MANIPULATION:
+                self.view.ui.actionManualExplore.setEnabled(True)
+                self.view.ui.actionAutoExplore.setEnabled(True)
+        
+        # If the app was just terminated, we must leave the exploration state if we're in it and
+        # we will toggle the app controls
+        elif event == StateMachine.Event.STOP_APP:
+            self.view.ui.actionStart_App.setEnabled(True)
+            self.view.ui.actionStop_App.setEnabled(False)
+            self.view.ui.actionManualExplore.setEnabled(False)
+            self.view.ui.actionAutoExplore.setEnabled(False)
+            if self.curState == StateMachine.State.EXPLORATION:
+                nextState = StateMachine.State.MODEL_MANIPULATION
+                
+        
         # When Facile is opened, wait for a project to be opened
-        if event == StateMachine.Event.FACILE_OPENED:
+        elif event == StateMachine.Event.FACILE_OPENED:
             nextState = StateMachine.State.WAIT_FOR_PROJECT
         
         # When a propject is opened, allow the user to manipulate the models.
@@ -224,6 +252,16 @@ class StateMachine:
         blankPropertiesModel.appendRow([label])
         ui.propertyEditorView.setModel(blankPropertiesModel)
         
+        # Create Timer for detecting app termination
+        def tick() -> None:
+            if not self._project.getProcess():
+                self.view.appWatcher.stop()
+                self.view.ui.actionStop_App.trigger()
+
+        self.view.appWatcher = QTimer(self.view)
+        self.view.appWatcher.timeout.connect(tick)
+        self.view.appWatcher.setInterval(500)
+        
         # Create actions for recent projects
         try:
             recentProjects = Project.getRecents(limit=10)
@@ -247,6 +285,8 @@ class StateMachine:
         ui.actionAutoExplore.triggered.connect(v.onAutomaticExploration)
         ui.actionManualExplore.triggered.connect(v.onManualExploration)
         ui.actionAdd_Behavior.triggered.connect(v.onAddBehaviorTriggered)
+        ui.actionStart_App.triggered.connect(v.onStartAppTriggered)
+        ui.actionStop_App.triggered.connect(v.onStopAppTriggered)
         
         # Disable actions
         ui.actionSave_Project.setEnabled(False)
@@ -256,6 +296,8 @@ class StateMachine:
         ui.actionDetailed_View.setEnabled(False)
         ui.actionShow_Behaviors.setEnabled(False)
         ui.actionAdd_Behavior.setEnabled(False)
+        ui.actionStart_App.setEnabled(False)
+        ui.actionStop_App.setEnabled(False)
     
     def _state_MODEL_MANIPULATION(self, event: Event, previousState: State, *args, **kwargs) -> None:
         """
@@ -277,6 +319,20 @@ class StateMachine:
         ui = self.view.ui
         p = self.view._project
         
+        if previousState == StateMachine.State.EXPLORATION:
+            self._project.getObserver().pause()
+            self._project.getExplorer().pause()
+        
+        ui.actionSave_Project.setEnabled(True)
+        ui.actionSave_as.setEnabled(True)
+        ui.actionDetailed_View.setEnabled(True)
+        ui.actionShow_Behaviors.setEnabled(True)
+        ui.actionAdd_Behavior.setEnabled(True)
+        ui.actionStart_App.setEnabled(True)
+        ui.actionStop_App.setEnabled(True)
+        ui.actionAutoExplore.setEnabled(True)
+        ui.actionManualExplore.setEnabled(True)
+        
         if event == StateMachine.Event.PROJECT_OPENED:
             v.setWindowTitle("Facile - " + self._project.getMainProjectFile())
             p.save()
@@ -286,19 +342,11 @@ class StateMachine:
             p.getTargetGUIModel().dataChanged.connect(lambda: ui.projectExplorerView.update())
             ui.projectExplorerView.setModel(v._project.getProjectExplorerModel())
             ui.targetGUIModelView.setScene(v._project.getTargetGUIModel().getScene())
-            p.startTargetApplication()  # TODO: Remove this once application controls exist
+            ui.actionStop_App.setEnabled(False)
+            ui.actionManualExplore.setEnabled(False)
+            ui.actionAutoExplore.setEnabled(False)
             
-        if previousState == StateMachine.State.EXPLORATION:
-            self._project.getObserver().pause()
-            self._project.getExplorer().pause()
-        
-        ui.actionSave_Project.setEnabled(True)
-        ui.actionSave_as.setEnabled(True)
-        ui.actionAutoExplore.setEnabled(True)
-        ui.actionManualExplore.setEnabled(True)
-        ui.actionDetailed_View.setEnabled(True)
-        ui.actionShow_Behaviors.setEnabled(True)
-        ui.actionAdd_Behavior.setEnabled(True)
+            
     
     def _state_ADDING_VB(self, event: Event, previousState: State, *args, **kwargs) -> None:
         """
@@ -320,6 +368,8 @@ class StateMachine:
         self.view.ui.actionDetailed_View.setEnabled(True)
         self.view.ui.actionShow_Behaviors.setEnabled(True)
         self.view.ui.actionAdd_Behavior.setEnabled(True)
+        self.view.ui.actionStart_App.setEnabled(True)
+        self.view.ui.actionStop_App.setEnabled(True)
     
     def _state_EXPLORATION(self, event: Event, previousState: State, *args, **kwargs) -> None:
         """
@@ -352,7 +402,8 @@ class StateMachine:
         self.view.ui.actionDetailed_View.setEnabled(True)
         self.view.ui.actionShow_Behaviors.setEnabled(True)
         self.view.ui.actionAdd_Behavior.setEnabled(False)
-        
+        self.view.ui.actionStart_App.setEnabled(True)
+        self.view.ui.actionStop_App.setEnabled(True)
         
     ############################################################################
     # Slots (Entry points for other parts of Facile)
@@ -419,3 +470,33 @@ class StateMachine:
         :rtype: NoneType
         """
         self.tick(StateMachine.Event.STOP_EXPLORATION)
+        
+    @Slot()
+    def startApp(self):
+        """
+        This method triggers the STOP_EXPLORATION event in the state machine
+
+        :return: None
+        :rtype: NoneType
+        """
+        self.tick(StateMachine.Event.START_APP)
+
+    @Slot()
+    def stopApp(self):
+        """
+        This method triggers the STOP_EXPLORATION event in the state machine
+
+        :return: None
+        :rtype: NoneType
+        """
+        self.tick(StateMachine.Event.STOP_APP)
+
+    @Slot()
+    def update(self):
+        """
+        This method triggers the UPDATE event in the state machine
+
+        :return: None
+        :rtype: NoneType
+        """
+        self.tick(StateMachine.Event.UPDATE)
