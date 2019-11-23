@@ -363,7 +363,7 @@ class FacileView(QMainWindow):
 			return
 		
 		observer = self._project.getObserver()
-		#explorer = self._project.getExplorer() # TODO: Put this in once the explorer is finished
+		explorer = self._project.getExplorer()
 		
 		if mode == FacileView.ExploreMode.AUTOMATIC:
 			self.ui.actionAutoExplore.setChecked(True)
@@ -371,7 +371,7 @@ class FacileView(QMainWindow):
 			self.ui.actionIgnoreExplore.setChecked(False)
 			observer.newSuperToken.connect(self._project.getTargetGUIModel().createComponent)
 			observer.play()
-			#explorer.play()
+			explorer.play()
 			
 		elif mode == FacileView.ExploreMode.MANUAL:
 			self.ui.actionAutoExplore.setChecked(False)
@@ -379,11 +379,11 @@ class FacileView(QMainWindow):
 			self.ui.actionIgnoreExplore.setChecked(False)
 			observer.newSuperToken.connect(self._project.getTargetGUIModel().createComponent)
 			observer.play()
-			#explorer.pause()
+			explorer.pause()
 			
 		elif mode == FacileView.ExploreMode.IGNORE:
 			self.ui.actionAutoExplore.setChecked(False)
 			self.ui.actionManualExplore.setChecked(False)
 			self.ui.actionIgnoreExplore.setChecked(True)
 			observer.pause()
-			#explorer.pause()
+			explorer.pause()
