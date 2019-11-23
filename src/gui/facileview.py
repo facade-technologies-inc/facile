@@ -31,27 +31,14 @@ from gui.ui.ui_facileview import Ui_MainWindow as Ui_FacileView
 from gui.newprojectdialog import NewProjectDialog
 from gui.copyprojectdialog import CopyProjectDialog
 from gui.manageprojectdialog import ManageProjectDialog
-from gui.facilegraphicsview import FacileGraphicsView
 from data.project import Project
-from data.properties import Properties
-from qt_models.propeditordelegate import PropertyEditorDelegate
-from qt_models.projectexplorermodel import ProjectExplorerModel
+from data.statemachine import StateMachine
 
 
 class FacileView(QMainWindow):
 	"""
 	FacileView is the main window for Facile.
 	"""
-	
-	# This signal will be emitted when the project changes to notify all components of Facile.
-	projectChanged = Signal(Project)
-	
-	@unique
-	class ExploreMode(Enum):
-		MANUAL = 1
-		AUTOMATIC = 2
-		IGNORE = 3
-	
 	
 	def __init__(self) -> 'FacileView':
 		"""
@@ -60,23 +47,18 @@ class FacileView(QMainWindow):
 		:return: The new FacileView object
 		:rtype: FacileView
 		"""
-		
 		super(FacileView, self).__init__()
+		
+		# UI Initialization
 		self.ui = Ui_FacileView()
 		self.ui.setupUi(self)
-		self.ui.tempView.hide()
-		self.ui.targetGUIModelView = FacileGraphicsView()
-		self.ui.apiModelView = FacileGraphicsView()
-		self.ui.viewSplitter.addWidget(self.ui.targetGUIModelView)
-		self.ui.viewSplitter.addWidget(self.ui.apiModelView)
 		
-
-		self._setProject(None)
-		self._connectActions()
-		self._setEmptyModels()
+		# State Machine Initialization
+		self._stateMachine = StateMachine(self)
+		self._stateMachine.facileOpened()
 		
 	@Slot(Project)
-	def _setProject(self, project: Project) -> None:
+	def setProject(self, project: Project) -> None:
 		"""
 		Sets the project object.
 		
@@ -89,94 +71,10 @@ class FacileView(QMainWindow):
 		self._project = project
 		
 		if project is not None:
-			self.setWindowTitle("Facile - " + self._project.getMainProjectFile())
-			print(self._project.getProjectDir())
-			self.projectChanged.emit(project)
-			self._project.save()
-			self._project.addToRecents()
-			self._project.getTargetGUIModel().getScene().itemSelected.connect(self._onItemSelected)
-			self._project.getTargetGUIModel().dataChanged.connect(lambda: self.ui.projectExplorerView.update())
-			self.ui.projectExplorerView.setModel(self._project.getProjectExplorerModel())
-			self.ui.targetGUIModelView.setScene(self._project.getTargetGUIModel().getScene())
-			self._project.startTargetApplication()
-			
-			# TODO: Enable a lot of buttons
-			
-		else:
-			# TODO: Disable a lot of buttons
-			pass
-			
-	def _connectActions(self) -> None:
-		"""
-		Connects actions in Facile's GUI to business logic. Actions may be triggered by
-		clicking on the toolbar, menu bar, or something else.
-		
-		:return: None
-		:rtype: NoneType
-		"""
-		
-		self._populateRecents()
-		
-		self.ui.actionFrom_Scratch.triggered.connect(self._onNewProjectFromScratchTriggered)
-		self.ui.actionFrom_Existing_Project.triggered.connect(self._onNewProjectFromExistingTriggered)
-		self.ui.actionOpen_Project.triggered.connect(self._onOpenProjectTriggered)
-		self.ui.actionSave_Project.triggered.connect(self._onSaveProjectTriggered)
-		self.ui.actionSave_as.triggered.connect(self._onSaveProjectAsTriggered)
-		self.ui.actionManage_Project.triggered.connect(self._onManageProjectTriggered)
-		self.ui.actionAutoExplore.triggered.connect(self._onAutomaticExploration)
-		self.ui.actionManualExplore.triggered.connect(self._onManualExploration)
-		self.ui.actionIgnoreExplore.triggered.connect(self._onIgnoreExploration)
-		
-	def _setEmptyModels(self) -> None:
-		"""
-		Puts empty models in all of the model-based views in Facile's main window The empty models just contain a
-		message.
-
-		:return: None
-		:rtype: NoneType
-		"""
-		# create blank model to show that no project is open.
-		blankProjectExplorer = QStandardItemModel()
-		blankProjectExplorer.setHorizontalHeaderLabels([""])
-		label = QStandardItem("No project is open.")
-		label.setFlags(Qt.NoItemFlags)
-		blankProjectExplorer.appendRow([label])
-		self.ui.projectExplorerView.setModel(blankProjectExplorer)
-		
-		# create blank model to show that no item is selected.
-		blankPropertiesModel = QStandardItemModel()
-		blankPropertiesModel.setHorizontalHeaderLabels([""])
-		label = QStandardItem("No model item is selected.")
-		label.setFlags(Qt.NoItemFlags)
-		blankPropertiesModel.appendRow([label])
-		self.ui.propertyEditorView.setModel(blankPropertiesModel)
-		
-	def _populateRecents(self) -> None:
-		"""
-		Creates the recents dropdown menu by reading the recents file. If the recents file does not exist, the message
-		"No recent projects." is shown. If there was a problem decoding the file, the message "Error loading recent
-		projects." is shown.
-		
-		:return: None
-		:rtype: NoneType
-		"""
-		try:
-			recentProjects = Project.getRecents(limit=10)
-			
-		except json.JSONDecodeError as e:
-			self.ui.menuRecent_Projects.addAction("Error loading recent projects.")
-			
-		else:
-			if len(recentProjects) == 0:
-				self.ui.menuRecent_Projects.addAction("No recent projects.")
-			
-			else:
-				for proj in recentProjects[:10]:
-					action = self.ui.menuRecent_Projects.addAction(proj)
-					action.triggered.connect(self._onOpenRecentProject)
+			self._stateMachine.projectOpened(project)
 	
 	@Slot()
-	def _onSaveProjectAsTriggered(self) -> None:
+	def onSaveProjectAsTriggered(self) -> None:
 		"""
 		This slot is run when the user clicks "File -> Save As..."
 		
@@ -205,8 +103,8 @@ class FacileView(QMainWindow):
 			
 			newProject = deepcopy(self._project)
 			newProject.setProjectDir(url)
-			self._setProject(newProject)
-			self._onSaveProjectTriggered()
+			self.setProject(newProject)
+			self.onSaveProjectTriggered()
 		
 		fileDialog = QFileDialog()
 		fileDialog.setFileMode(QFileDialog.Directory)
@@ -215,7 +113,7 @@ class FacileView(QMainWindow):
 		fileDialog.exec_()
 	
 	@Slot()
-	def _onSaveProjectTriggered(self) -> None:
+	def onSaveProjectTriggered(self) -> None:
 		"""
 		This slot is run when the user saves the current project in Facile
 		
@@ -227,7 +125,7 @@ class FacileView(QMainWindow):
 			self._project.save()
 			
 	@Slot()
-	def _onNewProjectFromScratchTriggered(self) -> None:
+	def onNewProjectFromScratchTriggered(self) -> None:
 		"""
 		This slot is run when the user elects to create a new project from scratch.
 		
@@ -239,11 +137,11 @@ class FacileView(QMainWindow):
 		"""
 		
 		newProjectDialog = NewProjectDialog()
-		newProjectDialog.projectCreated.connect(self._setProject)
+		newProjectDialog.projectCreated.connect(self.setProject)
 		newProjectDialog.exec_()
 
 	@Slot()
-	def _onNewProjectFromExistingTriggered(self) -> None:
+	def onNewProjectFromExistingTriggered(self) -> None:
 		"""
 		This slot is run when the user elects to create a new project from an existing one.
 		A CopyProjectDialog is opened that allows the user to specify the new location, name, and description.
@@ -253,11 +151,11 @@ class FacileView(QMainWindow):
 		"""
 		
 		copyProjectDialog = CopyProjectDialog()
-		copyProjectDialog.projectCreated.connect(self._setProject)
+		copyProjectDialog.projectCreated.connect(self.setProject)
 		copyProjectDialog.exec_()
 	
 	@Slot()
-	def _onOpenRecentProject(self) -> None:
+	def onOpenRecentProject(self) -> None:
 		"""
 		This slot is run when the user selects to open a recent project.
 		
@@ -265,10 +163,10 @@ class FacileView(QMainWindow):
 		:rtype: NoneType
 		"""
 		
-		self._setProject(Project.load(self.sender().text()))
+		self.setProject(Project.load(self.sender().text()))
 	
 	@Slot()
-	def _onOpenProjectTriggered(self) -> None:
+	def onOpenProjectTriggered(self) -> None:
 		"""
 		This slot is run when the user elects to open an existing project.
 		
@@ -282,11 +180,11 @@ class FacileView(QMainWindow):
 		fileDialog.setFileMode(QFileDialog.ExistingFile)
 		fileDialog.setDirectory(os.path.expanduser("~"))
 		fileDialog.setNameFilter("Facile Project File (*.fcl)")
-		fileDialog.fileSelected.connect(lambda url: self._setProject(Project.load(url)))
+		fileDialog.fileSelected.connect(lambda url: self.setProject(Project.load(url)))
 		fileDialog.exec_()
 		
 	@Slot()
-	def _onManageProjectTriggered(self) -> None:
+	def onManageProjectTriggered(self) -> None:
 		"""
 		This slot is run when a the user selects "file -> project settings"
 		
@@ -295,11 +193,11 @@ class FacileView(QMainWindow):
 		"""
 		
 		manageProjectDialog = ManageProjectDialog(self._project)
-		manageProjectDialog.projectCreated.connect(self._setProject)
+		manageProjectDialog.projectCreated.connect(self.setProject)
 		manageProjectDialog.exec_()
 		
 	@Slot(int)
-	def _onItemSelected(self, id: int):
+	def onItemSelected(self, id: int):
 		"""
 		This slot will update the view when an item is selected.
 		
@@ -310,45 +208,36 @@ class FacileView(QMainWindow):
 		self.ui.propertyEditorView.setModel(properties.getModel())
 		
 	@Slot(bool)
-	def _onManualExploration(self, checked: bool) -> None:
+	def onManualExploration(self, checked: bool) -> None:
 		"""
 		Sets the exploration mode to be manual iff checked is True
 		
-		:param checked: if True, set the exploration mode to be manual. Else do nothing
+		:param checked: if True, set the exploration mode to be manual. Else leave exploration.
 		:type checked: bool
 		:return: None
 		:rtype: NoneType
 		"""
 		if checked:
-			self._setExplorationMode(FacileView.ExploreMode.MANUAL)
+			self._stateMachine.startExploration(StateMachine.ExplorationMode.MANUAL)
+		else:
+			self._stateMachine.stopExploration()
 	
 	@Slot(bool)
-	def _onAutomaticExploration(self, checked: bool) -> None:
+	def onAutomaticExploration(self, checked: bool) -> None:
 		"""
 		Sets the exploration mode to be automatic iff checked is True
 
-		:param checked: if True, set the exploration mode to automatic. Else do nothing
+		:param checked: if True, set the exploration mode to automatic. Else leave exploration.
 		:type checked: bool
 		:return: None
 		:rtype: NoneType
 		"""
 		if checked:
-			self._setExplorationMode(FacileView.ExploreMode.AUTOMATIC)
-	
-	@Slot(bool)
-	def _onIgnoreExploration(self, checked: bool) -> None:
-		"""
-		Sets the exploration mode to be ignore iff checked is True
-
-		:param checked: if True, set the exploration mode to be ignore. Else do nothing
-		:type checked: bool
-		:return: None
-		:rtype: NoneType
-		"""
-		if checked:
-			self._setExplorationMode(FacileView.ExploreMode.IGNORE)
+			self._stateMachine.startExploration(StateMachine.ExplorationMode.AUTOMATIC)
+		else:
+			self._stateMachine.stopExploration()
 			
-	def _setExplorationMode(self, mode: 'FacileView.ExploreMode') -> None:
+	def setExplorationMode(self, mode: StateMachine.ExplorationMode) -> None:
 		"""
 		Sets the exploration mode. If there is no project, or the target application is not running, nothing happens.
 		
@@ -359,13 +248,13 @@ class FacileView(QMainWindow):
 		"""
 		if self._project is None:
 			return
-		if self._project.getProcess() is None:
-			return
+		
 		
 		observer = self._project.getObserver()
 		#explorer = self._project.getExplorer() # TODO: Put this in once the explorer is finished
 		
 		if mode == FacileView.ExploreMode.AUTOMATIC:
+			self._stateMachine.startExploration()
 			self.ui.actionAutoExplore.setChecked(True)
 			self.ui.actionManualExplore.setChecked(False)
 			self.ui.actionIgnoreExplore.setChecked(False)
