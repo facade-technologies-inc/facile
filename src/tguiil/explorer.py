@@ -16,14 +16,13 @@
 | Technologies Inc.                                                            |
 |                                                                              |
 \------------------------------------------------------------------------------/
-
 This module contains the Explorer class, which explores the target GUI.
 """
 
 import psutil
 import pyautogui
 from PySide2.QtCore import QThread
-
+from threading import Lock
 from tguiil.application import Application
 
 
@@ -42,7 +41,6 @@ class Explorer(QThread):
     def __init__(self, processID: int, backend: str = 'uia'):
         """
         Initializes explorer.
-
         :param processID: process ID of target application
         :type processID: int
         :param backend: type of backend to use: either uia or win32
@@ -52,11 +50,13 @@ class Explorer(QThread):
         QThread.__init__(self)
         self._process = psutil.Process(processID)
         self._backend = backend
+        
+        self._playing = False
+        self._playingLock = Lock()
 
     def run(self) -> int:
         """
         Called when thread is started
-
         :return: the exit code
         :rtype: int
         """
@@ -68,10 +68,16 @@ class Explorer(QThread):
 
         try:
             while self._process.is_running():
+                
+                if not self.isPlaying(): return 0
+                
                 work = [win for win in app.windows()]
                 # menu_paths = []
 
                 while len(work) > 0:
+    
+                    if not self.isPlaying(): return 0
+                    
                     component = work.pop()
                     if component.friendly_class_name() not in Explorer.ignoreTypes:
                         print('explorer: found ' + component.friendly_class_name())
@@ -105,10 +111,32 @@ class Explorer(QThread):
         finally:
             return 0
 
+    def setPlaying(self, status: bool) -> None:
+        """
+        Sets the running flag.
+        :param status: True if running, False if not.
+        :type status: bool
+        :return: None
+        :rtype: NoneType
+        """
+        self._playingLock.acquire()
+        self._playing = status
+        self._playingLock.release()
+
+    def isPlaying(self) -> bool:
+        """
+        Gets the running status.
+        :return: True if running, False if not.
+        :rtype: bool
+        """
+        self._playingLock.acquire()
+        running = self._playing
+        self._playingLock.release()
+        return running
+
     def play(self):
         """
         Runs the Explorer.
-
         :return: True if the observer is running, False otherwise.
         :rtype: bool
         """
@@ -118,17 +146,19 @@ class Explorer(QThread):
 
         if self.isRunning():
             return True
-
+        
+        self.setPlaying(True)
         self.start()
         return self.isRunning()
 
     def pause(self):
         """
         Stops the Explorer.
-
         :return: True if the observer is running, False otherwise.
         :rtype: bool
         """
+
+        self.setPlaying(False)
 
         if self.isRunning():
             self.quit()
