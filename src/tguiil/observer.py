@@ -71,6 +71,10 @@ class Observer(QThread):
         self._process = psutil.Process(processID)
         self._backend = backend
         self._childMapping = {None: []}  # maps each super token to its list of children.
+
+        # maps each super token to the laster iteration it was matched on.
+        self._lastSuperTokenIterations = {}
+        self._iteration = 0
         
     def run(self) -> int:
         """
@@ -79,9 +83,12 @@ class Observer(QThread):
         :return: the exit code of the thread which should be 0.
         :rtype: int
         """
+        self._iteration = 0
         app = Application(backend=self._backend)
         app.setProcess(self._process)
         while self._process.is_running():
+            self._iteration += 1
+            print("{}\nInteration {}\n{}".format("="*50, self._iteration, "="*50))
             componentCount = 0
             # work acts as a stack. Each element is a 2-tuple where the first element
             # is a GUI component and the second element is the parent super token.
@@ -91,13 +98,14 @@ class Observer(QThread):
                 if curComponent.friendly_class_name() not in Observer.ignoreTypes:
                     try:
                         token = Observer.createToken(curComponent)
-                        if token.type == "ListBox": #TODO: Make this more formal (ignore other similar types without checking firendly class name)
-                            continue
+                        # if token.type == "ListBox": #TODO: Make this more formal (ignore other similar types without checking firendly class name)
+                        #     continue
                         
                     except Token.CreationException as e:
                         print(str(e))
                         
                     nextParentSuperToken = self.matchToSuperToken(token, parentSuperToken)
+                    self._lastSuperTokenIterations[nextParentSuperToken] = self._iteration
                 else:
                     nextParentSuperToken = parentSuperToken
                     
@@ -214,6 +222,13 @@ class Observer(QThread):
         potentialMatches = self._childMapping[parentSuperToken]
         
         for superToken in potentialMatches:
+            
+            if self._lastSuperTokenIterations[superToken] == self._iteration:
+                #print("Skipping", superToken)
+                continue
+            else:
+                print("Not Skipped", superToken)
+            
             decision, matchVal = superToken.shouldContain(token)
             bestDecision = min(bestDecision, decision.value)
         
