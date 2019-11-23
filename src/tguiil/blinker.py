@@ -124,6 +124,7 @@ class Blinker(QThread):
         :rtype: NoneType
         """
         self._component = component
+        self._component.top_level_parent().set_focus()
         self._timer = QTimer(self)
         self._timer.timeout.connect(lambda: self.tick())
         self._stopWatch = QElapsedTimer()
@@ -140,9 +141,10 @@ class Blinker(QThread):
         """
         try:
             self._component.draw_outline(colour=self._color, thickness=5)
-        except Exception as e:
+            self._component.top_level_parent().set_focus()
+        except:
             pass
-            
+        
         if self._stopWatch.hasExpired(Blinker.DURATION_MILLIS):
             self.stop()
             
