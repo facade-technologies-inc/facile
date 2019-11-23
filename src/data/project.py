@@ -96,6 +96,7 @@ class Project:
 		else:
 			if self._observer is None:
 				self._observer = Observer(self._process.pid, self._backend)
+				self._observer.newSuperToken.connect(self._targetGUIModel.createComponent)
 			return self._observer
 	
 	def getExplorer(self) -> 'Explorer':

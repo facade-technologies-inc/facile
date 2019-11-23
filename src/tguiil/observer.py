@@ -88,9 +88,8 @@ class Observer(QThread):
             # is a GUI component and the second element is the parent super token.
             work = [(win, None) for win in app.windows()]
             while len(work) > 0:
-                componentCount += 1
                 curComponent, parentSuperToken = work.pop()
-                
+                print(curComponent)
                 if curComponent.friendly_class_name() not in Observer.ignoreTypes:
                     try:
                         token = self.createToken(curComponent)
@@ -105,8 +104,6 @@ class Observer(QThread):
                 children = curComponent.children()
                 for child in children:
                     work.append((child, nextParentSuperToken))
-                    
-            #print("{} components were found in the GUI.".format(componentCount))
     
     def createToken(self, component: pywinauto.base_wrapper.BaseWrapper) -> Token:
         """
@@ -149,7 +146,6 @@ class Observer(QThread):
             childrenTexts = []
             for child in component.children():
                 if type(child) != pywinauto.controls.win32_controls.EditWrapper:
-                    print("found editor")
                     try:
                         childrenTexts.append(child.text())
                     except:
@@ -241,6 +237,7 @@ class Observer(QThread):
             self._childMapping[parentSuperToken].append(newSuperToken)
             self._childMapping[newSuperToken] = []
             self.newSuperToken.emit(newSuperToken, parentSuperToken)
+            print("New Super Token")
             return newSuperToken
     
         # a close match was found
