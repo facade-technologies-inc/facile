@@ -21,11 +21,8 @@ This module contains the FacileView class which is the main window of Facile.
 Much of Facile is joined together here.
 """
 import os
-import json
 from copy import deepcopy
-from enum import Enum, unique
 from PySide2.QtWidgets import QMainWindow, QFileDialog, QMessageBox
-from PySide2.QtGui import QStandardItemModel, QStandardItem, Qt
 from PySide2.QtCore import Signal, Slot
 from gui.ui.ui_facileview import Ui_MainWindow as Ui_FacileView
 from gui.newprojectdialog import NewProjectDialog
@@ -236,3 +233,17 @@ class FacileView(QMainWindow):
 			self._stateMachine.startExploration(StateMachine.ExplorationMode.AUTOMATIC)
 		else:
 			self._stateMachine.stopExploration()
+	
+	@Slot(str, str)
+	def info(self, title: str, message: str) -> None:
+		"""
+        This function displays an information message box. with the FacileView as the parent.
+
+        :param title: The title of the window to show.
+        :type title: str
+        :param message: The message to show inside of the window
+        :type message: str
+        :return: None
+        :rtype: NoneType
+        """
+		QMessageBox.information(self, title, message)
