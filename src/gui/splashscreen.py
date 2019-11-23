@@ -18,25 +18,36 @@
 |                                                                              |
 \------------------------------------------------------------------------------/
 
-This file contains the 
+This file contains the FacileSplashScreen class which creates a loading window before the application
+is started up.
+
 """
-from PySide2 import QSplashScreen
-import time
+from PySide2.QtWidgets import QSplashScreen
+from PySide2.QtCore import QTimer
+from PySide2.QtGui import QPixmap
 
 class FacileSplashScreen(QSplashScreen):
-
+	"""
+	FacileSplashScreen class sets the logo picture to display on the splash screen
+	"""
 	def __init__(self):
-		self.setWindowTitle('Facile')
+		QSplashScreen.__init__(self)
+		splash_pix = QPixmap('C:/Users/Brandi/Desktop/Facade/facile/resources/facade_logo.png')
 
-	def setPixmap(QPixmap):
-		splash_pix = QPixmap('facade_logo.png'')
-		splash = QSplashScreen(splash_pix)
+		self.setPixmap(splash_pix)
+
+
+"""
 		progress_bar = QProgressBar(splash)
 		progress_bar.setMaximum(10)
 		progress_bar.setGeometry(0,splash_pix.height() - 50, splash_pix.width(), 20)
 		splash.show()
 		splash.showMessage()
 
-
-
+if __name__ == "__main__":
+	app = QApplication([])
+	FacileSplashScreen = fSS
+	fSS.show()
+	QTimer.singleShot(2500,fSS,SLOT(close()))
+"""
 

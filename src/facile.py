@@ -30,6 +30,7 @@ sys.coinit_flags = 2
 
 from PySide2.QtWidgets import QApplication
 from PySide2.QtGui import QPalette, QColor, Qt
+from PySide2.QtCore import QTimer
 
 from gui.facileview import FacileView
 
@@ -59,7 +60,14 @@ if __name__ == "__main__":
         
     app = QApplication([])
     stylize(app)
+
+    splash = QSplashScreen()
+    splash.setPixmap(QPixmap('C:/Users/Brandi/Desktop/Facade/facile/resources/facade_logo.png'))
+    splash.show()
+
     window = FacileView()
-    window.show()
-    window.showMaximized()
+
+    QTimer.singleShot(2500, splash.close)
+    QTimer.singleShot(2500, window.show)
+    QTimer.singleShot(2501, window.showMaximized)
     sys.exit(app.exec_())
