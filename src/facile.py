@@ -62,7 +62,7 @@ if __name__ == "__main__":
     stylize(app)
 
     splash = QSplashScreen()
-    splash.setPixmap(QPixmap('C:/Users/Brandi/Desktop/Facade/facile/resources/facade_logo.png'))
+    splash.setPixmap(QPixmap('../resources/facade_logo.png'))
     splash.show()
 
     window = FacileView()
