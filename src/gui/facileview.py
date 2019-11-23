@@ -30,6 +30,8 @@ from gui.copyprojectdialog import CopyProjectDialog
 from gui.manageprojectdialog import ManageProjectDialog
 from data.project import Project
 from data.statemachine import StateMachine
+from data.tguim.component import Component
+from tguiil.blinker import Blinker
 
 
 class FacileView(QMainWindow):
@@ -49,6 +51,8 @@ class FacileView(QMainWindow):
 		# UI Initialization
 		self.ui = Ui_FacileView()
 		self.ui.setupUi(self)
+		
+		self._blinker = None
 		
 		# State Machine Initialization
 		self._stateMachine = StateMachine(self)
@@ -183,7 +187,7 @@ class FacileView(QMainWindow):
 	@Slot()
 	def onManageProjectTriggered(self) -> None:
 		"""
-		This slot is run when a the user selects "file -> project settings"
+		This slot is run when the user selects "file -> project settings"
 		
 		:return: None
 		:rtype: NoneType
@@ -193,6 +197,16 @@ class FacileView(QMainWindow):
 		manageProjectDialog.projectCreated.connect(self.setProject)
 		manageProjectDialog.exec_()
 		
+	@Slot()
+	def onAddBehaviorTriggered(self) -> None:
+		"""
+		This slot is run when the user selects "Add Behavior"
+		
+		:return: None
+		:rtype: NoneType
+		"""
+		self._stateMachine.addBehaviorClicked()
+		
 	@Slot(int)
 	def onItemSelected(self, id: int):
 		"""
@@ -201,8 +215,32 @@ class FacileView(QMainWindow):
 		:return: None
 		"""
 		# TODO: Change to get any entity instead of just component
-		properties = self._project.getTargetGUIModel().getComponent(id).getProperties()
+		entity = self._project.getTargetGUIModel().getComponent(id)
+		properties = entity.getProperties()
 		self.ui.propertyEditorView.setModel(properties.getModel())
+		
+		if type(entity) == Component:
+			self._stateMachine.componentClicked(entity)
+	
+	@Slot(int)
+	def onItemBlink(self, id: int) -> None:
+		"""
+        Attempt to show an item in the GUI. Can only do this if the item is currently shown in
+        the GUI.
+
+        :param id: The ID of the component to show.
+        :type id: int
+        :return: None
+        :rtype: NoneType
+        """
+		component = self._project.getTargetGUIModel().getComponent(id)
+		if self._blinker:
+			self._blinker.stop()
+		self._blinker = Blinker(self._project.getProcess().pid,
+		                        self._project.getBackend(),
+		                        component.getSuperToken())
+		self._blinker.componentNotFound.connect(self.info)
+		self._blinker.start()
 		
 	@Slot(bool)
 	def onManualExploration(self, checked: bool) -> None:
@@ -230,7 +268,7 @@ class FacileView(QMainWindow):
 		:rtype: NoneType
 		"""
 		if checked:
-			self._stateMachine.startExploration(StateMachine.ExplorationMode.AUTOMATIC)
+			self._stateMachine.startExploration(StateMachine.ExplorationMode.AUTO)
 		else:
 			self._stateMachine.stopExploration()
 	

@@ -272,7 +272,7 @@ class ProjectExplorerModel(QAbstractItemModel):
 				if len(self._project.getTargetGUIModel().getVisibilityBehaviors()) == 0:
 					return self.registerAndCreateIndex(row, column, ProjectExplorerModel.LeafIndex(ProjectExplorerModel.NO_BEHAVIORS_LABEL, parentData, 0))
 				
-				return self.registerAndCreateIndex(row, column, self._project.getTargetGUIModel().getNthBehavior(row))
+				return self.registerAndCreateIndex(row, column, self._project.getTargetGUIModel().getNthVisibilityBehavior(row))
 			
 			elif parentData == ProjectExplorerModel.PIPELINE_LABEL:
 				# TODO: replace this once action pipelines are implemented
@@ -464,9 +464,9 @@ class ProjectExplorerModel(QAbstractItemModel):
 		
 		elif isinstance(data, VisibilityBehavior):
 			if col == 0:
-				return data.getName()
+				return data.getProperties().getProperty("Name")[1].getValue()
 			elif col == 1:
-				return data.getType()
+				return data.getReactionType()
 			else:
 				return None
 		

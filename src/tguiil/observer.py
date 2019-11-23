@@ -237,7 +237,6 @@ class Observer(QThread):
             self._childMapping[parentSuperToken].append(newSuperToken)
             self._childMapping[newSuperToken] = []
             self.newSuperToken.emit(newSuperToken, parentSuperToken)
-            print("New Super Token")
             return newSuperToken
     
         # a close match was found

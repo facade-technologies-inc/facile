@@ -26,7 +26,7 @@ from PySide2.QtWidgets import QGraphicsItem
 
 
 class VBGraphics(QGraphicsItem):
-    def __init__(self, dataVisibilityBehavior: 'VisibilityBehavior'):
+    def __init__(self, dataVisibilityBehavior: 'VisibilityBehavior', parent: 'TScene'):
         """
         Construct the VBGraphics class.
         'src' means the source component, the one triggering the vb.
@@ -34,15 +34,17 @@ class VBGraphics(QGraphicsItem):
 
         :param dataVisibilityBehavior: get the data of a VisibilityBehavior
         :type dataVisibilityBehavior: VisibilityBehavior
+        :param parent: The parent of the visibility behavior (This will always be the scene)
+        :type parent: TScene
         :return None
         :rtype NoneType
         """
         QGraphicsItem.__init__(self)
         self._dataVB = dataVisibilityBehavior
-        self.setFlag(QGraphicsItem.ItemIsMovable)
         self.setFlag(QGraphicsItem.ItemIsSelectable)
         self._srcComponentCenterPoint = self._dataVB.getSrcComponent().getGraphicsItem().boundingRect().center()
         self._destComponentCenterPoint = self._dataVB.getDestComponent().getGraphicsItem().boundingRect().center()
+        parent.addItem(self)
 
     def boundingRect(self):
         """

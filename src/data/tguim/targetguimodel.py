@@ -109,7 +109,6 @@ class TargetGuiModel(QObject):
         :return: The component that was created
         :rtype: 'Component'
         """
-        print("Added")
         if parentToken is None:
             parentComponent = self._root
         else:
@@ -144,6 +143,19 @@ class TargetGuiModel(QObject):
         :rtype: dict
         """
         return self._visibilityBehaviors
+
+    def getNthVisibilityBehavior(self, n: int) -> 'VisibilityBehavior':
+        """
+        Gets the visibility behavior at a specific position.
+        :param n: the index of the visiblity behavior to get
+        :type n: int
+        :return: The visiblity behavior at index n
+        :rtype: VisiblityBehavior
+        """
+        
+        keys = list(self._visibilityBehaviors.keys())
+        keys.sort()
+        return self._visibilityBehaviors[keys[n]]
 
     def getVisibilityBehavior(self, iD: int) -> 'VisibilityBehavior':
         """

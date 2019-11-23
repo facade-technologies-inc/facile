@@ -1,21 +1,22 @@
 """
-/------------------------------------------------------------------------------\
-|                 -- FACADE TECHNOLOGIES INC.  CONFIDENTIAL --                 |
-|------------------------------------------------------------------------------|
-|                                                                              |
-|    Copyright [2019] Facade Technologies Inc.                                 |
-|    All Rights Reserved.                                                      |
-|                                                                              |
-| NOTICE:  All information contained herein is, and remains the property of    |
-| Facade Technologies Inc. and its suppliers if any.  The intellectual and     |
-| and technical concepts contained herein are proprietary to Facade            |
-| Technologies Inc. and its suppliers and may be covered by U.S. and Foreign   |
-| Patents, patents in process, and are protected by trade secret or copyright  |
-| law.  Dissemination of this information or reproduction of this material is  |
-| strictly forbidden unless prior written permission is obtained from Facade   |
-| Technologies Inc.                                                            |
-|                                                                              |
-\------------------------------------------------------------------------------/
+..
+    /------------------------------------------------------------------------------\
+    |                 -- FACADE TECHNOLOGIES INC.  CONFIDENTIAL --                 |
+    |------------------------------------------------------------------------------|
+    |                                                                              |
+    |    Copyright [2019] Facade Technologies Inc.                                 |
+    |    All Rights Reserved.                                                      |
+    |                                                                              |
+    | NOTICE:  All information contained herein is, and remains the property of    |
+    | Facade Technologies Inc. and its suppliers if any.  The intellectual and     |
+    | and technical concepts contained herein are proprietary to Facade            |
+    | Technologies Inc. and its suppliers and may be covered by U.S. and Foreign   |
+    | Patents, patents in process, and are protected by trade secret or copyright  |
+    | law.  Dissemination of this information or reproduction of this material is  |
+    | strictly forbidden unless prior written permission is obtained from Facade   |
+    | Technologies Inc.                                                            |
+    |                                                                              |
+    \------------------------------------------------------------------------------/
 
 This module contains the StateMachine class which dictates which operations can
 be done in Facile at any given time.
@@ -24,19 +25,22 @@ be done in Facile at any given time.
 from enum import Enum, auto
 from PySide2.QtCore import Slot
 from PySide2.QtGui import QStandardItem, QStandardItemModel, Qt
+from PySide2.QtWidgets import QMessageBox
 from gui.facilegraphicsview import FacileGraphicsView
+from data.tguim.visibilitybehavior import VisibilityBehavior
 from data.project import Project
 import json
 
 
 class StateMachine:
     """
-    This is an event-driven state machine. The statemachine has a "tick" method
+    This is an event-driven state machine. The state machine has a "tick" method
     which takes in an event. Depending on the current state and the event, the
     next event is decided. and some code associated with that state is executed.
     
-    NOTE: As Facile grows, this class will too, so it's important to keep the
-    code clean and modular as much as possible.
+    .. note::
+        As Facile grows, this class will too, so it's important to keep the
+        code clean and modular as much as possible.
     """
     
     class State(Enum):
@@ -58,6 +62,14 @@ class StateMachine:
         MANUAL = auto()
         
     def __init__(self, facileView, curState: State = State.WAIT_FOR_PROJECT):
+        """
+        Constructs a State Machine object.
+        
+        :param facileView: The main GUI of Facile.
+        :type facileView: FacileView
+        :param curState: The initial state to start out at. Default to waiting for project.
+        :type curState: State
+        """
         
         # used to enable/disable parts of GUI and access project and models.
         self.view = facileView
@@ -81,52 +93,85 @@ class StateMachine:
         """
         This function is responsible for determining the next state of Facile when
         an event takes place. If the state of Facile changes in response to the
-        event,
-        :param event:
-        :return:
+        event, the state handler of the new state will be called.
+        
+        .. note::
+            The state doesn't have to be changed to something different for the
+            state handler to be called. The next state can be set to the current
+            state to call the state handler again.
+            
+        .. note::
+            This method mostly handles state transitions. It's best to keep the
+            work of the state in the state handlers to maintain code modularity.
+        
+        :param event: The event that triggered the tick to occur
+        :type event: StateMachine.Event
+        :param args: Any arguments that should be passied into this method.
+        :type args: list
+        :param kwargs: Any keyword arguments that should be passed into this method.
+        :type kwargs: dict
+        :return: None
+        :rtype: NoneType
         """
         nextState = None
         
+        # When Facile is opened, wait for a project to be opened
         if event == StateMachine.Event.FACILE_OPENED:
             nextState = StateMachine.State.WAIT_FOR_PROJECT
         
-        
+        # When a propject is opened, allow the user to manipulate the models.
         elif event == StateMachine.Event.PROJECT_OPENED:
             nextState = StateMachine.State.MODEL_MANIPULATION
         
-        
+        # When the "Add Behavior" button is clicked, only go into the ADDING_VB state if we're
+        # currently in the MODEL_MANIPULATION state.
         elif event == StateMachine.Event.ADD_VB_CLICKED:
             if self.curState == StateMachine.State.MODEL_MANIPULATION:
+                self.vbComponents = []
                 nextState = StateMachine.State.ADDING_VB
                 
-                
+        # When a component is clicked, if we are in the ADDING_VB state, record the click. Once two
+        # clicked components have been detected, create a visibility behavior and go to the
+        # MODEL_MANIPULATION state.
         elif event == StateMachine.Event.COMPONENT_CLICKED:
             if self.curState == StateMachine.State.ADDING_VB:
                 self.vbComponents.append(args[0])
+                print(self.vbComponents)
                 if len(self.vbComponents) == 1:
                     nextState = StateMachine.State.ADDING_VB
                 elif len(self.vbComponents) == 2:
-                    #TODO: add visibility behavior
-                    # self.view._project.getTargetGUIModel().addVisibilityBehavior()
-                    self.vbComponents = []
+                    srcComp = self.vbComponents[0]
+                    destComp = self.vbComponents[1]
+                    tguim = self._project.getTargetGUIModel()
+                    newVB = VisibilityBehavior(tguim, srcComp, destComp)
+                    self.view._project.getTargetGUIModel().addVisibilityBehavior(newVB)
+                    self.view.ui.projectExplorerView.update()
                     nextState = StateMachine.State.MODEL_MANIPULATION
               
                     
+        # If the user has initiated exploration and the target application is running, go into the
+        # EXPLORATION
         elif event == StateMachine.Event.START_EXPLORATION:
             if (self.curState == StateMachine.State.MODEL_MANIPULATION or
                 self.curState == StateMachine.State.EXPLORATION):
                 if self._project.getProcess():
                     nextState = StateMachine.State.EXPLORATION
                 else:
-                    # TODO: warn that target app is not running
-                    pass
+                    QMessageBox.critical(self.view,
+                                         "Not Available",
+                                         "To Start exploration, you must first be running the "
+                                         "target application.")
                 
+        # If we've been requested to stop exploration and we're in the exploration state, go to the
+        # MODEL_MANIPULATION state
         elif event == StateMachine.Event.STOP_EXPLORATION:
-            nextState = StateMachine.State.MODEL_MANIPULATION
+            if self.curState == StateMachine.State.EXPLORATION:
+                nextState = StateMachine.State.MODEL_MANIPULATION
                 
-        
+        # Advance to the next state
         if nextState is not None:
             self.stateHandlers[nextState](event, self.curState, *args, **kwargs)
+            print("State Change:", self.curState.name, "->", nextState.name)
             self.curState = nextState
         
 
@@ -134,9 +179,27 @@ class StateMachine:
     # State Handlers - 1 for each state. Called when entering state.
     ############################################################################
     def _state_WAIT_FOR_PROJECT(self, event: Event, previousState: State, *args, **kwargs) -> None:
+        """
+        This is the state handler for the WAIT_FOR_PROJECT state.
+        
+        This method is responsible for completing the GUI setup. It should only be called once ever.
+        
+        :param event: The event that caused entrance to this state
+        :type event: Event
+        :param previousState: The state visited prior to entering this state.
+        :type previousState: State
+        :param args: Any additional arguments needed for this state.
+        :type args: list
+        :param kwargs: Any additional keyword arguments needed for this state.
+        :type kwargs: dict
+        :return: None
+        :rtype: NoneType
+        """
         # Just for simpler code in this function.
         v = self.view
         ui = self.view.ui
+
+        v.setProject(None)
         
         # Set up the GUI
         ui.tempView.hide()
@@ -144,8 +207,6 @@ class StateMachine:
         ui.apiModelView = FacileGraphicsView()
         ui.viewSplitter.addWidget(ui.targetGUIModelView)
         ui.viewSplitter.addWidget(ui.apiModelView)
-
-        v.setProject(None)
         
         # create blank model to show that no project is open.
         blankProjectExplorer = QStandardItemModel()
@@ -185,6 +246,7 @@ class StateMachine:
         ui.actionManage_Project.triggered.connect(v.onManageProjectTriggered)
         ui.actionAutoExplore.triggered.connect(v.onAutomaticExploration)
         ui.actionManualExplore.triggered.connect(v.onManualExploration)
+        ui.actionAdd_Behavior.triggered.connect(v.onAddBehaviorTriggered)
         
         # Disable actions
         ui.actionSave_Project.setEnabled(False)
@@ -196,6 +258,20 @@ class StateMachine:
         ui.actionAdd_Behavior.setEnabled(False)
     
     def _state_MODEL_MANIPULATION(self, event: Event, previousState: State, *args, **kwargs) -> None:
+        """
+        This is the state handler for the MODEL_MANIPULATION state.
+
+        :param event: The event that caused entrance to this state
+        :type event: Event
+        :param previousState: The state visited prior to entering this state.
+        :type previousState: State
+        :param args: Any additional arguments needed for this state.
+        :type args: list
+        :param kwargs: Any additional keyword arguments needed for this state.
+        :type kwargs: dict
+        :return: None
+        :rtype: NoneType
+        """
         # Just for simpler code in this function.
         v = self.view
         ui = self.view.ui
@@ -206,6 +282,7 @@ class StateMachine:
             p.save()
             p.addToRecents()
             p.getTargetGUIModel().getScene().itemSelected.connect(v.onItemSelected)
+            p.getTargetGUIModel().getScene().itemBlink.connect(v.onItemBlink)
             p.getTargetGUIModel().dataChanged.connect(lambda: ui.projectExplorerView.update())
             ui.projectExplorerView.setModel(v._project.getProjectExplorerModel())
             ui.targetGUIModelView.setScene(v._project.getTargetGUIModel().getScene())
@@ -224,6 +301,20 @@ class StateMachine:
         ui.actionAdd_Behavior.setEnabled(True)
     
     def _state_ADDING_VB(self, event: Event, previousState: State, *args, **kwargs) -> None:
+        """
+        This is the state handler for the ADDING_VB state.
+
+        :param event: The event that caused entrance to this state
+        :type event: Event
+        :param previousState: The state visited prior to entering this state.
+        :type previousState: State
+        :param args: Any additional arguments needed for this state.
+        :type args: list
+        :param kwargs: Any additional keyword arguments needed for this state.
+        :type kwargs: dict
+        :return: None
+        :rtype: NoneType
+        """
         self.view.ui.actionAutoExplore.setEnabled(False)
         self.view.ui.actionManualExplore.setEnabled(False)
         self.view.ui.actionDetailed_View.setEnabled(True)
@@ -231,6 +322,20 @@ class StateMachine:
         self.view.ui.actionAdd_Behavior.setEnabled(True)
     
     def _state_EXPLORATION(self, event: Event, previousState: State, *args, **kwargs) -> None:
+        """
+        This is the state handler for the EXPLORATION state.
+
+        :param event: The event that caused entrance to this state
+        :type event: Event
+        :param previousState: The state visited prior to entering this state.
+        :type previousState: State
+        :param args: Any additional arguments needed for this state.
+        :type args: list
+        :param kwargs: Any additional keyword arguments needed for this state.
+        :type kwargs: dict
+        :return: None
+        :rtype: NoneType
+        """
         mode = kwargs["mode"]
         explorer = self._project.getExplorer()
         observer = self._project.getObserver()
@@ -253,26 +358,64 @@ class StateMachine:
     # Slots (Entry points for other parts of Facile)
     ############################################################################
     @Slot()
-    def addBehaviorClicked(self):
+    def addBehaviorClicked(self) -> None:
+        """
+        This method triggers the ADD_VB_CLICKED event in the state machine
+        
+        :return: None
+        :rtype: NoneType
+        """
         self.tick(StateMachine.Event.ADD_VB_CLICKED)
         
     @Slot()
-    def componentClicked(self, componentId: int):
-        self.tick(StateMachine.Event.COMPONENT_CLICKED, componentId)
+    def componentClicked(self, component: 'Component') -> None:
+        """
+        This method triggers the COMPONENT_CLICKED event in the state machine.
+        
+        :param component: The component that was clicked.
+        :type component: Component
+        :return: None
+        :rtype: NoneType
+        """
+        self.tick(StateMachine.Event.COMPONENT_CLICKED, component)
         
     @Slot()
-    def facileOpened(self):
+    def facileOpened(self) -> None:
+        """
+        This method triggers the FACILE_OPENED event in the state machine
+
+        :return: None
+        :rtype: NoneType
+        """
         self.tick(StateMachine.Event.FACILE_OPENED)
         
     @Slot()
-    def projectOpened(self, project):
+    def projectOpened(self, project: 'Project') -> None:
+        """
+        This method sets the project and triggers the PROJECT_OPENED event in the state machine
+
+        :return: None
+        :rtype: NoneType
+        """
         self._project = project
         self.tick(StateMachine.Event.PROJECT_OPENED)
         
     @Slot()
-    def startExploration(self, mode):
+    def startExploration(self, mode) -> None:
+        """
+        This method triggers the START_EXPLORATION event in the state machine
+
+        :return: None
+        :rtype: NoneType
+        """
         self.tick(StateMachine.Event.START_EXPLORATION, mode=mode)
         
     @Slot()
     def stopExploration(self):
+        """
+        This method triggers the STOP_EXPLORATION event in the state machine
+
+        :return: None
+        :rtype: NoneType
+        """
         self.tick(StateMachine.Event.STOP_EXPLORATION)
