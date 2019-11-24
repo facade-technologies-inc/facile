@@ -182,7 +182,7 @@ class Token:
 
         elif self.parentType != token2.parentType:
             return Token.Match.NO, 0
-        
+
         elif self.topLevelParentType != token2.topLevelParentType:
             return Token.Match.NO, 0
         
@@ -343,7 +343,10 @@ class Token:
                 return Token.Match.NO, score
 
     def __str__(self):
-        return "{} ({}) -> {}".format(self.title, self.type, self.controlIDs)
+        ret = "TOKEN:"
+        for key, val in vars(self).items():
+            ret += "\n\t{:20}:{}".format(key, val)
+        return ret
     
     def __repr__(self):
         return self.__str__()
