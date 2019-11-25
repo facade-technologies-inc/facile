@@ -1,314 +1,314 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>MainWindow</class>
- <widget class="QMainWindow" name="MainWindow">
-  <property name="geometry">
-   <rect>
-    <x>0</x>
-    <y>0</y>
-    <width>872</width>
-    <height>634</height>
-   </rect>
-  </property>
-  <property name="windowTitle">
-   <string>Facile</string>
-  </property>
-  <property name="unifiedTitleAndToolBarOnMac">
-   <bool>true</bool>
-  </property>
-  <widget class="QWidget" name="centralwidget">
-   <layout class="QHBoxLayout" name="horizontalLayout">
-    <item>
-     <widget class="QSplitter" name="viewSplitter">
-      <property name="orientation">
-       <enum>Qt::Horizontal</enum>
-      </property>
-      <widget class="QGraphicsView" name="tempView"/>
-     </widget>
-    </item>
-   </layout>
-  </widget>
-  <widget class="QMenuBar" name="menubar">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>0</y>
-     <width>872</width>
-     <height>19</height>
-    </rect>
-   </property>
-   <widget class="QMenu" name="menuFile">
-    <property name="title">
-     <string>File</string>
-    </property>
-    <widget class="QMenu" name="menuNew_Project">
-     <property name="title">
-      <string>New Project</string>
-     </property>
-     <addaction name="actionFrom_Scratch"/>
-     <addaction name="actionFrom_Existing_Project"/>
-    </widget>
-    <widget class="QMenu" name="menuRecent_Projects">
-     <property name="title">
-      <string>Recent Projects</string>
-     </property>
-    </widget>
-    <addaction name="menuNew_Project"/>
-    <addaction name="actionOpen_Project"/>
-    <addaction name="menuRecent_Projects"/>
-    <addaction name="separator"/>
-    <addaction name="actionSave_Project"/>
-    <addaction name="actionSave_as"/>
-    <addaction name="separator"/>
-    <addaction name="actionManage_Project"/>
-   </widget>
-   <widget class="QMenu" name="menuWindow">
-    <property name="title">
-     <string>Window</string>
-    </property>
-    <addaction name="actionProject_Tree"/>
-    <addaction name="actionProperty_Editor"/>
-    <addaction name="actionTarget_GUI_Model"/>
-    <addaction name="actionAPI_Builder"/>
-    <addaction name="actionAPI_Modules"/>
-    <addaction name="actionValidator"/>
-   </widget>
-   <widget class="QMenu" name="menuHelp">
-    <property name="title">
-     <string>Help</string>
-    </property>
-   </widget>
-   <widget class="QMenu" name="menuView">
-    <property name="title">
-     <string>View</string>
-    </property>
-   </widget>
-   <addaction name="menuFile"/>
-   <addaction name="menuView"/>
-   <addaction name="menuWindow"/>
-   <addaction name="menuHelp"/>
-  </widget>
-  <widget class="QStatusBar" name="statusbar"/>
-  <widget class="QDockWidget" name="dockWidget_2">
-   <property name="windowTitle">
-    <string>Project Explorer</string>
-   </property>
-   <attribute name="dockWidgetArea">
-    <number>1</number>
-   </attribute>
-   <widget class="QWidget" name="dockWidgetContents_2">
-    <layout class="QVBoxLayout" name="verticalLayout">
-     <item>
-      <widget class="QTreeView" name="projectExplorerView"/>
-     </item>
-    </layout>
-   </widget>
-  </widget>
-  <widget class="QDockWidget" name="dockWidget_4">
-   <property name="allowedAreas">
-    <set>Qt::BottomDockWidgetArea</set>
-   </property>
-   <property name="windowTitle">
-    <string>Validator Messages</string>
-   </property>
-   <attribute name="dockWidgetArea">
-    <number>8</number>
-   </attribute>
-   <widget class="QWidget" name="dockWidgetContents_4">
-    <layout class="QVBoxLayout" name="verticalLayout_3">
-     <item>
-      <widget class="QListView" name="validatorView"/>
-     </item>
-    </layout>
-   </widget>
-  </widget>
-  <widget class="QDockWidget" name="dockWidget_5">
-   <property name="windowTitle">
-    <string>Property Editor</string>
-   </property>
-   <attribute name="dockWidgetArea">
-    <number>1</number>
-   </attribute>
-   <widget class="QWidget" name="dockWidgetContents_5">
-    <layout class="QVBoxLayout" name="verticalLayout_2">
-     <item>
-      <widget class="QTreeView" name="propertyEditorView"/>
-     </item>
-    </layout>
-   </widget>
-  </widget>
-  <widget class="QDockWidget" name="dockWidget_6">
-   <property name="windowTitle">
-    <string>Modules</string>
-   </property>
-   <attribute name="dockWidgetArea">
-    <number>2</number>
-   </attribute>
-   <widget class="QWidget" name="dockWidgetContents_6">
-    <layout class="QVBoxLayout" name="verticalLayout_4">
-     <item>
-      <widget class="QTreeWidget" name="modulesView">
-       <column>
-        <property name="text">
-         <string>Module</string>
+    <class>MainWindow</class>
+    <widget class="QMainWindow" name="MainWindow">
+        <property name="geometry">
+            <rect>
+                <x>0</x>
+                <y>0</y>
+                <width>872</width>
+                <height>634</height>
+            </rect>
         </property>
-       </column>
-       <column>
-        <property name="text">
-         <string>Description</string>
+        <property name="windowTitle">
+            <string>Facile</string>
         </property>
-       </column>
-      </widget>
-     </item>
-    </layout>
-   </widget>
-  </widget>
-  <widget class="QToolBar" name="toolBar">
-   <property name="windowTitle">
-    <string>toolBar</string>
-   </property>
-   <attribute name="toolBarArea">
-    <enum>TopToolBarArea</enum>
-   </attribute>
-   <attribute name="toolBarBreak">
-    <bool>false</bool>
-   </attribute>
-   <addaction name="actionAutoExplore"/>
-   <addaction name="actionManualExplore"/>
-   <addaction name="actionIgnoreExplore"/>
-   <addaction name="actionDetailed_View"/>
-   <addaction name="actionShow_Behaviors"/>
-   <addaction name="separator"/>
-  </widget>
-  <action name="actionOpen_Project">
-   <property name="text">
-    <string>Open Project</string>
-   </property>
-  </action>
-  <action name="actionSave_Project">
-   <property name="text">
-    <string>Save Project</string>
-   </property>
-  </action>
-  <action name="actionSave_as">
-   <property name="text">
-    <string>Save As . . .</string>
-   </property>
-  </action>
-  <action name="actionSave_New_Version">
-   <property name="text">
-    <string>Save New Version</string>
-   </property>
-  </action>
-  <action name="actionFrom_Scratch">
-   <property name="text">
-    <string>From Scratch</string>
-   </property>
-  </action>
-  <action name="actionFrom_Existing_Project">
-   <property name="text">
-    <string>From Existing Project</string>
-   </property>
-  </action>
-  <action name="actionExample_Project">
-   <property name="text">
-    <string>Example Project</string>
-   </property>
-  </action>
-  <action name="actionProject_Tree">
-   <property name="text">
-    <string>Project Tree</string>
-   </property>
-  </action>
-  <action name="actionProperty_Editor">
-   <property name="text">
-    <string>Property Editor</string>
-   </property>
-  </action>
-  <action name="actionTarget_GUI_Model">
-   <property name="text">
-    <string>Target GUI Model</string>
-   </property>
-  </action>
-  <action name="actionAPI_Builder">
-   <property name="text">
-    <string>API Builder</string>
-   </property>
-  </action>
-  <action name="actionValidator">
-   <property name="text">
-    <string>Validator</string>
-   </property>
-  </action>
-  <action name="actionShow_Behaviors">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Show Behaviors</string>
-   </property>
-  </action>
-  <action name="actionDetailed_View">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Detailed View</string>
-   </property>
-  </action>
-  <action name="actionAutoExplore">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Auto Explore</string>
-   </property>
-   <property name="toolTip">
-    <string>Explore the target GUI autonomously (no user control)</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+Alt+A</string>
-   </property>
-  </action>
-  <action name="actionManualExplore">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Manual Explore</string>
-   </property>
-   <property name="toolTip">
-    <string>Watch for changes in the target GUI as the user interacts with it.</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+Alt+M</string>
-   </property>
-  </action>
-  <action name="actionIgnoreExplore">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Ignore Explore</string>
-   </property>
-   <property name="toolTip">
-    <string>The user can interact with the target GUI without changes being recognized.</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+Alt+I</string>
-   </property>
-  </action>
-  <action name="actionAPI_Modules">
-   <property name="text">
-    <string>API Modules</string>
-   </property>
-  </action>
-  <action name="actionManage_Project">
-   <property name="text">
-    <string>Project Settings</string>
-   </property>
-  </action>
- </widget>
- <resources/>
- <connections/>
+        <property name="unifiedTitleAndToolBarOnMac">
+            <bool>true</bool>
+        </property>
+        <widget class="QWidget" name="centralwidget">
+            <layout class="QHBoxLayout" name="horizontalLayout">
+                <item>
+                    <widget class="QSplitter" name="viewSplitter">
+                        <property name="orientation">
+                            <enum>Qt::Horizontal</enum>
+                        </property>
+                        <widget class="QGraphicsView" name="tempView"/>
+                    </widget>
+                </item>
+            </layout>
+        </widget>
+        <widget class="QMenuBar" name="menubar">
+            <property name="geometry">
+                <rect>
+                    <x>0</x>
+                    <y>0</y>
+                    <width>872</width>
+                    <height>19</height>
+                </rect>
+            </property>
+            <widget class="QMenu" name="menuFile">
+                <property name="title">
+                    <string>File</string>
+                </property>
+                <widget class="QMenu" name="menuNew_Project">
+                    <property name="title">
+                        <string>New Project</string>
+                    </property>
+                    <addaction name="actionFrom_Scratch"/>
+                    <addaction name="actionFrom_Existing_Project"/>
+                </widget>
+                <widget class="QMenu" name="menuRecent_Projects">
+                    <property name="title">
+                        <string>Recent Projects</string>
+                    </property>
+                </widget>
+                <addaction name="menuNew_Project"/>
+                <addaction name="actionOpen_Project"/>
+                <addaction name="menuRecent_Projects"/>
+                <addaction name="separator"/>
+                <addaction name="actionSave_Project"/>
+                <addaction name="actionSave_as"/>
+                <addaction name="separator"/>
+                <addaction name="actionManage_Project"/>
+            </widget>
+            <widget class="QMenu" name="menuWindow">
+                <property name="title">
+                    <string>Window</string>
+                </property>
+                <addaction name="actionProject_Tree"/>
+                <addaction name="actionProperty_Editor"/>
+                <addaction name="actionTarget_GUI_Model"/>
+                <addaction name="actionAPI_Builder"/>
+                <addaction name="actionAPI_Modules"/>
+                <addaction name="actionValidator"/>
+            </widget>
+            <widget class="QMenu" name="menuHelp">
+                <property name="title">
+                    <string>Help</string>
+                </property>
+            </widget>
+            <widget class="QMenu" name="menuView">
+                <property name="title">
+                    <string>View</string>
+                </property>
+            </widget>
+            <addaction name="menuFile"/>
+            <addaction name="menuView"/>
+            <addaction name="menuWindow"/>
+            <addaction name="menuHelp"/>
+        </widget>
+        <widget class="QStatusBar" name="statusbar"/>
+        <widget class="QDockWidget" name="dockWidget_2">
+            <property name="windowTitle">
+                <string>Project Explorer</string>
+            </property>
+            <attribute name="dockWidgetArea">
+                <number>1</number>
+            </attribute>
+            <widget class="QWidget" name="dockWidgetContents_2">
+                <layout class="QVBoxLayout" name="verticalLayout">
+                    <item>
+                        <widget class="QTreeView" name="projectExplorerView"/>
+                    </item>
+                </layout>
+            </widget>
+        </widget>
+        <widget class="QDockWidget" name="dockWidget_4">
+            <property name="allowedAreas">
+                <set>Qt::BottomDockWidgetArea</set>
+            </property>
+            <property name="windowTitle">
+                <string>Validator Messages</string>
+            </property>
+            <attribute name="dockWidgetArea">
+                <number>8</number>
+            </attribute>
+            <widget class="QWidget" name="dockWidgetContents_4">
+                <layout class="QVBoxLayout" name="verticalLayout_3">
+                    <item>
+                        <widget class="QListView" name="validatorView"/>
+                    </item>
+                </layout>
+            </widget>
+        </widget>
+        <widget class="QDockWidget" name="dockWidget_5">
+            <property name="windowTitle">
+                <string>Property Editor</string>
+            </property>
+            <attribute name="dockWidgetArea">
+                <number>1</number>
+            </attribute>
+            <widget class="QWidget" name="dockWidgetContents_5">
+                <layout class="QVBoxLayout" name="verticalLayout_2">
+                    <item>
+                        <widget class="QTreeView" name="propertyEditorView"/>
+                    </item>
+                </layout>
+            </widget>
+        </widget>
+        <widget class="QDockWidget" name="dockWidget_6">
+            <property name="windowTitle">
+                <string>Modules</string>
+            </property>
+            <attribute name="dockWidgetArea">
+                <number>2</number>
+            </attribute>
+            <widget class="QWidget" name="dockWidgetContents_6">
+                <layout class="QVBoxLayout" name="verticalLayout_4">
+                    <item>
+                        <widget class="QTreeWidget" name="modulesView">
+                            <column>
+                                <property name="text">
+                                    <string>Module</string>
+                                </property>
+                            </column>
+                            <column>
+                                <property name="text">
+                                    <string>Description</string>
+                                </property>
+                            </column>
+                        </widget>
+                    </item>
+                </layout>
+            </widget>
+        </widget>
+        <widget class="QToolBar" name="toolBar">
+            <property name="windowTitle">
+                <string>toolBar</string>
+            </property>
+            <attribute name="toolBarArea">
+                <enum>TopToolBarArea</enum>
+            </attribute>
+            <attribute name="toolBarBreak">
+                <bool>false</bool>
+            </attribute>
+            <addaction name="actionAutoExplore"/>
+            <addaction name="actionManualExplore"/>
+            <addaction name="actionIgnoreExplore"/>
+            <addaction name="actionDetailed_View"/>
+            <addaction name="actionShow_Behaviors"/>
+            <addaction name="separator"/>
+        </widget>
+        <action name="actionOpen_Project">
+            <property name="text">
+                <string>Open Project</string>
+            </property>
+        </action>
+        <action name="actionSave_Project">
+            <property name="text">
+                <string>Save Project</string>
+            </property>
+        </action>
+        <action name="actionSave_as">
+            <property name="text">
+                <string>Save As . . .</string>
+            </property>
+        </action>
+        <action name="actionSave_New_Version">
+            <property name="text">
+                <string>Save New Version</string>
+            </property>
+        </action>
+        <action name="actionFrom_Scratch">
+            <property name="text">
+                <string>From Scratch</string>
+            </property>
+        </action>
+        <action name="actionFrom_Existing_Project">
+            <property name="text">
+                <string>From Existing Project</string>
+            </property>
+        </action>
+        <action name="actionExample_Project">
+            <property name="text">
+                <string>Example Project</string>
+            </property>
+        </action>
+        <action name="actionProject_Tree">
+            <property name="text">
+                <string>Project Tree</string>
+            </property>
+        </action>
+        <action name="actionProperty_Editor">
+            <property name="text">
+                <string>Property Editor</string>
+            </property>
+        </action>
+        <action name="actionTarget_GUI_Model">
+            <property name="text">
+                <string>Target GUI Model</string>
+            </property>
+        </action>
+        <action name="actionAPI_Builder">
+            <property name="text">
+                <string>API Builder</string>
+            </property>
+        </action>
+        <action name="actionValidator">
+            <property name="text">
+                <string>Validator</string>
+            </property>
+        </action>
+        <action name="actionShow_Behaviors">
+            <property name="checkable">
+                <bool>true</bool>
+            </property>
+            <property name="text">
+                <string>Show Behaviors</string>
+            </property>
+        </action>
+        <action name="actionDetailed_View">
+            <property name="checkable">
+                <bool>true</bool>
+            </property>
+            <property name="text">
+                <string>Detailed View</string>
+            </property>
+        </action>
+        <action name="actionAutoExplore">
+            <property name="checkable">
+                <bool>true</bool>
+            </property>
+            <property name="text">
+                <string>Auto Explore</string>
+            </property>
+            <property name="toolTip">
+                <string>Explore the target GUI autonomously (no user control)</string>
+            </property>
+            <property name="shortcut">
+                <string>Ctrl+Alt+A</string>
+            </property>
+        </action>
+        <action name="actionManualExplore">
+            <property name="checkable">
+                <bool>true</bool>
+            </property>
+            <property name="text">
+                <string>Manual Explore</string>
+            </property>
+            <property name="toolTip">
+                <string>Watch for changes in the target GUI as the user interacts with it.</string>
+            </property>
+            <property name="shortcut">
+                <string>Ctrl+Alt+M</string>
+            </property>
+        </action>
+        <action name="actionIgnoreExplore">
+            <property name="checkable">
+                <bool>true</bool>
+            </property>
+            <property name="text">
+                <string>Ignore Explore</string>
+            </property>
+            <property name="toolTip">
+                <string>The user can interact with the target GUI without changes being recognized.</string>
+            </property>
+            <property name="shortcut">
+                <string>Ctrl+Alt+I</string>
+            </property>
+        </action>
+        <action name="actionAPI_Modules">
+            <property name="text">
+                <string>API Modules</string>
+            </property>
+        </action>
+        <action name="actionManage_Project">
+            <property name="text">
+                <string>Project Settings</string>
+            </property>
+        </action>
+    </widget>
+    <resources/>
+    <connections/>
 </ui>

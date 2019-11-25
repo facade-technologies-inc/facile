@@ -20,22 +20,21 @@
 This module contains the FacileView class which is the main window of Facile.
 Much of Facile is joined together here.
 """
-import os
 import json
+import os
 from copy import deepcopy
 from enum import Enum, unique
-from PySide2.QtWidgets import QMainWindow, QFileDialog, QMessageBox
-from PySide2.QtGui import QStandardItemModel, QStandardItem, Qt
+
 from PySide2.QtCore import Signal, Slot
-from gui.ui.ui_facileview import Ui_MainWindow as Ui_FacileView
-from gui.newprojectdialog import NewProjectDialog
-from gui.copyprojectdialog import CopyProjectDialog
-from gui.manageprojectdialog import ManageProjectDialog
-from gui.facilegraphicsview import FacileGraphicsView
+from PySide2.QtGui import QStandardItemModel, QStandardItem, Qt
+from PySide2.QtWidgets import QMainWindow, QFileDialog, QMessageBox
+
 from data.project import Project
-from data.properties import Properties
-from qt_models.propeditordelegate import PropertyEditorDelegate
-from qt_models.projectexplorermodel import ProjectExplorerModel
+from gui.copyprojectdialog import CopyProjectDialog
+from gui.facilegraphicsview import FacileGraphicsView
+from gui.manageprojectdialog import ManageProjectDialog
+from gui.newprojectdialog import NewProjectDialog
+from gui.ui.ui_facileview import Ui_MainWindow as Ui_FacileView
 
 
 class FacileView(QMainWindow):
@@ -51,7 +50,6 @@ class FacileView(QMainWindow):
 		MANUAL = 1
 		AUTOMATIC = 2
 		IGNORE = 3
-	
 	
 	def __init__(self) -> 'FacileView':
 		"""
@@ -70,11 +68,10 @@ class FacileView(QMainWindow):
 		self.ui.viewSplitter.addWidget(self.ui.targetGUIModelView)
 		self.ui.viewSplitter.addWidget(self.ui.apiModelView)
 		
-
 		self._setProject(None)
 		self._connectActions()
 		self._setEmptyModels()
-		
+	
 	@Slot(Project)
 	def _setProject(self, project: Project) -> None:
 		"""
@@ -99,13 +96,13 @@ class FacileView(QMainWindow):
 			self.ui.projectExplorerView.setModel(self._project.getProjectExplorerModel())
 			self.ui.targetGUIModelView.setScene(self._project.getTargetGUIModel().getScene())
 			self._project.startTargetApplication()
-			
-			# TODO: Enable a lot of buttons
-			
+		
+		# TODO: Enable a lot of buttons
+		
 		else:
 			# TODO: Disable a lot of buttons
 			pass
-			
+	
 	def _connectActions(self) -> None:
 		"""
 		Connects actions in Facile's GUI to business logic. Actions may be triggered by
@@ -126,7 +123,7 @@ class FacileView(QMainWindow):
 		self.ui.actionAutoExplore.triggered.connect(self._onAutomaticExploration)
 		self.ui.actionManualExplore.triggered.connect(self._onManualExploration)
 		self.ui.actionIgnoreExplore.triggered.connect(self._onIgnoreExploration)
-		
+	
 	def _setEmptyModels(self) -> None:
 		"""
 		Puts empty models in all of the model-based views in Facile's main window The empty models just contain a
@@ -150,7 +147,7 @@ class FacileView(QMainWindow):
 		label.setFlags(Qt.NoItemFlags)
 		blankPropertiesModel.appendRow([label])
 		self.ui.propertyEditorView.setModel(blankPropertiesModel)
-		
+	
 	def _populateRecents(self) -> None:
 		"""
 		Creates the recents dropdown menu by reading the recents file. If the recents file does not exist, the message
@@ -162,10 +159,10 @@ class FacileView(QMainWindow):
 		"""
 		try:
 			recentProjects = Project.getRecents(limit=10)
-			
+		
 		except json.JSONDecodeError as e:
 			self.ui.menuRecent_Projects.addAction("Error loading recent projects.")
-			
+		
 		else:
 			if len(recentProjects) == 0:
 				self.ui.menuRecent_Projects.addAction("No recent projects.")
@@ -225,7 +222,7 @@ class FacileView(QMainWindow):
 		
 		if self._project is not None:
 			self._project.save()
-			
+	
 	@Slot()
 	def _onNewProjectFromScratchTriggered(self) -> None:
 		"""
@@ -241,7 +238,7 @@ class FacileView(QMainWindow):
 		newProjectDialog = NewProjectDialog()
 		newProjectDialog.projectCreated.connect(self._setProject)
 		newProjectDialog.exec_()
-
+	
 	@Slot()
 	def _onNewProjectFromExistingTriggered(self) -> None:
 		"""
@@ -284,7 +281,7 @@ class FacileView(QMainWindow):
 		fileDialog.setNameFilter("Facile Project File (*.fcl)")
 		fileDialog.fileSelected.connect(lambda url: self._setProject(Project.load(url)))
 		fileDialog.exec_()
-		
+	
 	@Slot()
 	def _onManageProjectTriggered(self) -> None:
 		"""
@@ -297,7 +294,7 @@ class FacileView(QMainWindow):
 		manageProjectDialog = ManageProjectDialog(self._project)
 		manageProjectDialog.projectCreated.connect(self._setProject)
 		manageProjectDialog.exec_()
-		
+	
 	@Slot(int)
 	def _onItemSelected(self, id: int):
 		"""
@@ -308,7 +305,7 @@ class FacileView(QMainWindow):
 		# TODO: Change to get any entity instead of just component
 		properties = self._project.getTargetGUIModel().getComponent(id).getProperties()
 		self.ui.propertyEditorView.setModel(properties.getModel())
-		
+	
 	@Slot(bool)
 	def _onManualExploration(self, checked: bool) -> None:
 		"""
@@ -347,7 +344,7 @@ class FacileView(QMainWindow):
 		"""
 		if checked:
 			self._setExplorationMode(FacileView.ExploreMode.IGNORE)
-			
+	
 	def _setExplorationMode(self, mode: 'FacileView.ExploreMode') -> None:
 		"""
 		Sets the exploration mode. If there is no project, or the target application is not running, nothing happens.
@@ -372,7 +369,7 @@ class FacileView(QMainWindow):
 			observer.newSuperToken.connect(self._project.getTargetGUIModel().createComponent)
 			observer.play()
 			explorer.play()
-			
+		
 		elif mode == FacileView.ExploreMode.MANUAL:
 			self.ui.actionAutoExplore.setChecked(False)
 			self.ui.actionManualExplore.setChecked(True)
@@ -380,7 +377,7 @@ class FacileView(QMainWindow):
 			observer.newSuperToken.connect(self._project.getTargetGUIModel().createComponent)
 			observer.play()
 			explorer.pause()
-			
+		
 		elif mode == FacileView.ExploreMode.IGNORE:
 			self.ui.actionAutoExplore.setChecked(False)
 			self.ui.actionManualExplore.setChecked(False)

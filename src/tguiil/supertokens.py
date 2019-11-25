@@ -23,12 +23,14 @@ iterates through the tokens in the token list.
 
 from tguiil.tokens import Token
 
-class SuperToken: 
+
+class SuperToken:
 	"""
 	A super token is used to identify a component in multiple states. They can be ignored if the user
 	does not care about specific components.
 	"""
 	id_counter = 1
+	
 	def __init__(self, token, parent: 'SuperToken'):
 		""" 
 		Constructs a unique identifier and a way to hide certain components
@@ -54,8 +56,8 @@ class SuperToken:
 			px = parent.tokens[0].rectangle.left
 			py = parent.tokens[0].rectangle.top
 		self.posRelativeToParent = (token.rectangle.left - px, token.rectangle.top - py, width, height)
-
-	def addToken(self, tokenA): 
+	
+	def addToken(self, tokenA):
 		"""
 		The addToken function adds a token to the supertoken.
 
@@ -65,7 +67,7 @@ class SuperToken:
 		:rtype: SuperToken
 		"""
 		self.tokens.append(tokenA)
-
+	
 	def shouldContain(self, token2):
 		"""
 		The shouldContain function iterates through the tokens in a list to see if the token

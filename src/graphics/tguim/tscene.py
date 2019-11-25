@@ -25,36 +25,34 @@ from PySide2.QtWidgets import QGraphicsScene
 
 
 class TScene(QGraphicsScene):
+	itemSelected = Signal(int)
+	
+	def __init__(self, targetGUIModel: 'TargetGuiModel'):
+		"""
+		Construct the TScene class
 
-    itemSelected = Signal(int)
+		:param targetGUIModel: get the TargetGuiModel of the project
+		:type targetGUIModel: TargetGuiModel
+		"""
+		QGraphicsScene.__init__(self)
+		self._targetGuiModel = targetGUIModel
+	
+	def getTargetGUIModel(self) -> 'TargetGuiModel':
+		"""
+		Gets the target GUI Model.
 
-    def __init__(self, targetGUIModel: 'TargetGuiModel'):
-        """
-        Construct the TScene class
+		:return The target GUI model
+		:rtype data.tguim.targetguimodel.TargetGuiModel
+		"""
+		return self._targetGuiModel
+	
+	def emitItemSelected(self, id: int) -> None:
+		"""
+		Emits a signal that carries the ID of the item that was selected
 
-        :param targetGUIModel: get the TargetGuiModel of the project
-        :type targetGUIModel: TargetGuiModel
-        """
-        QGraphicsScene.__init__(self)
-        self._targetGuiModel = targetGUIModel
-
-
-    def getTargetGUIModel(self) -> 'TargetGuiModel':
-        """
-        Gets the target GUI Model.
-
-        :return The target GUI model
-        :rtype data.tguim.targetguimodel.TargetGuiModel
-        """
-        return self._targetGuiModel
-
-    def emitItemSelected(self, id: int) -> None:
-        """
-        Emits a signal that carries the ID of the item that was selected
-
-        :param id: The ID of the item that was selected.
-        :type id: int
-        :return: None
-        :rtype: NoneType
-        """
-        self.itemSelected.emit(id)
+		:param id: The ID of the item that was selected.
+		:type id: int
+		:return: None
+		:rtype: NoneType
+		"""
+		self.itemSelected.emit(id)
