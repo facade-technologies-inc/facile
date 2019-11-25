@@ -183,7 +183,6 @@ class Project:
 		:return: None
 		:rtype: NoneType
 		"""
-		
 		if backend.lower() != "win32" and backend.lower() != "uia":
 			self._backend = "uia"
 		else:

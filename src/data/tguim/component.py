@@ -69,13 +69,24 @@ class Component(Entity):
 		:return: The component's SuperToken
 		:rtype: SuperToken
 		"""
-		
 		return self._superToken
 	
 	def getSrcVisibilityBehaviors(self):
+		"""
+		Gets all the visibility behaviors coming out from this component
+
+		:return: The list of all the visibility behaviors coming out from this component
+		:rtype: List of VisibilityBehavior
+		"""
 		return self._srcVisibilityBehaviors
 	
 	def getDestVisibilityBehaviors(self):
+		"""
+		Gets all the visibility behaviors coming into this component
+
+		:return: The list of all the visibility behaviors coming into this component
+		:rtype: List of VisibilityBehavior
+		"""
 		return self._destVisibilityBehaviors
 	
 	def getModel(self) -> 'TargetGuiModel':

@@ -40,10 +40,12 @@ class VisibilityBehavior(Entity):
 	             reactionType: str = "show") -> 'VisibilityBehavior':
 		"""
 		 Constructs a VisibilityBehavior object.
-
-		:param srcComp: The "from/source" component. The one triggering the vis behavior.
+		
+		:param tguim: The one and only target GUI model
+		:type tguim: TargetGuiModel
+		:param srcComp: The "source" component. The one triggering the vis behavior.
 		:type srcComp: Component
-		:param destComp: The "to/destination" component. The one whose visibility is affected by the vis behavior.
+		:param destComp: The "destination" component. The one whose visibility is affected by the vis behavior.
 		:type destComp: Component
 		:param reactionType: "show" or "hide".
 		:return: A constructed VisibilityBehavior

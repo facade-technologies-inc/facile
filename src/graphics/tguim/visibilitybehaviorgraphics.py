@@ -67,6 +67,7 @@ class VBGraphics(QGraphicsItem):
 	def paint(self, painter: QPainter, option, widget):
 		"""
 		Paints the contents of the visibilitybehavior. Override the parent paint function
+		
 		:param painter: Use a Qpainter object.
 		:type painter: QPainter
 		:param option: It provides style options for the item.
@@ -90,7 +91,7 @@ class VBGraphics(QGraphicsItem):
 			self._dataVB) + 1
 		# This is the index of the edge at the DesNode's _edgeDesList
 		desNodeIndex = self._dataVB.getDestComponent().getDestVisibilityBehaviors().index(
-			self._dataEdge) + 1
+			self._dataVB) + 1
 		
 		x1 = self._dataVB.getSrcComponent().getGraphicsItem().scenePos().x()  # x does not change, stay at the left most of the node
 		y1 = self._dataVB.getSrcComponent().getGraphicsItem().scenePos().y() + (
