@@ -22,14 +22,16 @@ This module contains the StateMachine class which dictates which operations can
 be done in Facile at any given time.
 """
 
+import json
 from enum import Enum, auto
+
 from PySide2.QtCore import Slot
 from PySide2.QtGui import QStandardItem, QStandardItemModel, Qt
 from PySide2.QtWidgets import QMessageBox
-from gui.facilegraphicsview import FacileGraphicsView
-from data.tguim.visibilitybehavior import VisibilityBehavior
+
 from data.project import Project
-import json
+from data.tguim.visibilitybehavior import VisibilityBehavior
+from gui.facilegraphicsview import FacileGraphicsView
 
 
 class StateMachine:
@@ -178,7 +180,6 @@ class StateMachine:
 			print("State Change:", self.curState.name, "->", nextState.name)
 			self.curState = nextState
 	
-	
 	############################################################################
 	# State Handlers - 1 for each state. Called when entering state.
 	############################################################################
@@ -261,7 +262,8 @@ class StateMachine:
 		ui.actionShow_Behaviors.setEnabled(False)
 		ui.actionAdd_Behavior.setEnabled(False)
 	
-	def _state_MODEL_MANIPULATION(self, event: Event, previousState: State, *args, **kwargs) -> None:
+	def _state_MODEL_MANIPULATION(self, event: Event, previousState: State, *args,
+	                              **kwargs) -> None:
 		"""
 		This is the state handler for the MODEL_MANIPULATION state.
 
@@ -356,7 +358,6 @@ class StateMachine:
 		self.view.ui.actionDetailed_View.setEnabled(True)
 		self.view.ui.actionShow_Behaviors.setEnabled(True)
 		self.view.ui.actionAdd_Behavior.setEnabled(False)
-	
 	
 	############################################################################
 	# Slots (Entry points for other parts of Facile)

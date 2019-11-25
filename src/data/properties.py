@@ -21,15 +21,16 @@ This module contains the Properties() class.
 """
 
 from collections import OrderedDict
-from qt_models.propeditormodel import PropModel
+
 from data.property import Property
-from enum import Enum
+from qt_models.propeditormodel import PropModel
 
 
 class Properties:
 	"""
 	This class allows to create data of our properties.
 	"""
+	
 	def __init__(self):
 		"""
 		Constructs a Properties objects.
@@ -39,7 +40,6 @@ class Properties:
 		"""
 		self._categories = OrderedDict()
 		self._model = PropModel(self)
-	
 	
 	def newCategory(self, category: str) -> None:
 		"""
@@ -53,7 +53,7 @@ class Properties:
 		self._categories[category] = []
 	
 	def addProperty(self, category: str, name: str, value: object, type: object,
-					readOnly: bool = False) -> None:
+	                readOnly: bool = False) -> None:
 		"""
 		To add a property to a certain category.
 

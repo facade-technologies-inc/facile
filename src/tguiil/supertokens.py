@@ -21,8 +21,10 @@ This file contains the super tokens class that initializes tokens as a list and 
 iterates through the tokens in the token list.
 """
 
-from tguiil.tokens import Token
 from threading import Lock
+
+from tguiil.tokens import Token
+
 
 class SuperToken:
 	"""
@@ -30,6 +32,7 @@ class SuperToken:
 	does not care about specific components.
 	"""
 	id_counter = 1
+	
 	def __init__(self, token, parent: 'SuperToken'):
 		"""
 		Constructs a unique identifier and a way to hide certain components
@@ -55,7 +58,8 @@ class SuperToken:
 		else:
 			px = parent.tokens[0].rectangle.left
 			py = parent.tokens[0].rectangle.top
-		self.posRelativeToParent = (token.rectangle.left - px, token.rectangle.top - py, width, height)
+		self.posRelativeToParent = (
+			token.rectangle.left - px, token.rectangle.top - py, width, height)
 	
 	def addToken(self, tokenA):
 		"""
@@ -131,4 +135,3 @@ class SuperToken:
 	
 	def __repr__(self):
 		return self.__str__()
-

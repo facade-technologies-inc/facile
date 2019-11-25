@@ -20,6 +20,7 @@
 This module contains the Entity class.
 """
 
+
 # TODO: Import properties class for type hint purposes???
 
 
@@ -76,5 +77,3 @@ class Entity:
 		"""
 		
 		self._properties = propertiesObj
-
-

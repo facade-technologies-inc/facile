@@ -19,10 +19,12 @@
 This module contains the Explorer class, which explores the target GUI.
 """
 
+from threading import Lock
+
 import psutil
 import pyautogui
 from PySide2.QtCore import QThread
-from threading import Lock
+
 from tguiil.application import Application
 
 
@@ -92,7 +94,8 @@ class Explorer(QThread):
 						try:
 							if component.is_editable():  # Editable textfields
 								print('explorer: found textfield')
-								pyautogui.alert('Please enter necessary information, then press OK.')
+								pyautogui.alert(
+									'Please enter necessary information, then press OK.')
 						except:
 							pass
 						finally:
@@ -105,13 +108,13 @@ class Explorer(QThread):
 								pass
 							finally:
 								pass
-				
-				# for menupath in menu_paths:
-				#     window = menupath[0]
-				#     window.menu_select(menupath[1])
+		
+		# for menupath in menu_paths:
+		#     window = menupath[0]
+		#     window.menu_select(menupath[1])
 		finally:
 			return 0
-
+	
 	def setPlaying(self, status: bool) -> None:
 		"""
 		Sets the running flag.
@@ -148,7 +151,7 @@ class Explorer(QThread):
 		
 		if self.isRunning():
 			return True
-
+		
 		self.setPlaying(True)
 		self.start()
 		return self.isRunning()

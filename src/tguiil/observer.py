@@ -19,15 +19,16 @@
 This module contains the Observer class, which watches the target GUI for changes.
 """
 
-import psutil
-
-import pywinauto
 from threading import Lock
+
+import psutil
+import pywinauto
 from PySide2.QtCore import QThread, Signal
 from pywinauto.controls.uiawrapper import UIAWrapper
+
 from tguiil.application import Application
-from tguiil.tokens import Token
 from tguiil.supertokens import SuperToken
+from tguiil.tokens import Token
 
 
 class Observer(QThread):
@@ -43,7 +44,8 @@ class Observer(QThread):
 	"""
 	
 	# This signal is emitted when a new component is detected.
-	newSuperToken = Signal(SuperToken, SuperToken)  # (new SuperToken, new SuperToken's parent SuperToken)
+	newSuperToken = Signal(SuperToken,
+	                       SuperToken)  # (new SuperToken, new SuperToken's parent SuperToken)
 	
 	ignoreTypes = set()
 	ignoreTypes.add("SysShadow")
@@ -51,8 +53,8 @@ class Observer(QThread):
 	ignoreTypes.add("MSCTFIME UI")
 	ignoreTypes.add("IME")
 	
-	#ignoreTypes.add("wxWindowNR")
-	#ignoreTypes.add("wxWindow")
+	# ignoreTypes.add("wxWindowNR")
+	# ignoreTypes.add("wxWindow")
 	
 	def __init__(self, processID: int, backend: str = "uia"):
 		"""
@@ -69,7 +71,7 @@ class Observer(QThread):
 		self._process = psutil.Process(processID)
 		self._backend = backend
 		self._childMapping = {None: []}  # maps each super token to its list of children.
-
+		
 		self._playing = False
 		self._playingLock = Lock()
 	
@@ -83,22 +85,22 @@ class Observer(QThread):
 		app = Application(backend=self._backend)
 		app.setProcess(self._process)
 		while self._process.is_running():
-
+			
 			if not self.isPlaying(): return 0
-
+			
 			componentCount = 0
 			# work acts as a stack. Each element is a 2-tuple where the first element
 			# is a GUI component and the second element is the parent super token.
 			work = [(win, None) for win in app.windows()]
 			while len(work) > 0:
-
+				
 				if not self.isPlaying(): return 0
 				
 				curComponent, parentSuperToken = work.pop()
 				if curComponent.friendly_class_name() not in Observer.ignoreTypes:
 					try:
 						token = Observer.createToken(curComponent)
-						if token.type == "ListBox": #TODO: Make this more formal (ignore other similar types without checking firendly class name)
+						if token.type == "ListBox":  # TODO: Make this more formal (ignore other similar types without checking firendly class name)
 							continue
 					
 					except Token.CreationException as e:
@@ -107,7 +109,6 @@ class Observer(QThread):
 					nextParentSuperToken = self.matchToSuperToken(token, parentSuperToken)
 				else:
 					nextParentSuperToken = parentSuperToken
-				
 				
 				children = curComponent.children()
 				for child in children:
@@ -148,7 +149,7 @@ class Observer(QThread):
 		texts = component.texts()[1:]
 		title = component.window_text()
 		numControls = component.control_count()
-		image = None  #component.capture_as_image()
+		image = None  # component.capture_as_image()
 		typeOf = component.friendly_class_name()
 		
 		# get text of all children that are not editable.
@@ -188,7 +189,8 @@ class Observer(QThread):
 		controlIdentifiers = [title, typeOf, title + typeOf]
 		
 		# create a new token
-		token = Token(id, isDialog, isEnabled, isVisible, processID, typeOf, rectangle, texts, title,
+		token = Token(id, isDialog, isEnabled, isVisible, processID, typeOf, rectangle, texts,
+		              title,
 		              numControls, controlIdentifiers, parentTitle, parentType,
 		              topLevelParentTitle, topLevelParentType, childrenTexts, image, autoID,
 		              expandState, shownState)
@@ -213,7 +215,7 @@ class Observer(QThread):
 		:return: The SuperToken that gets matched to the provided token.
 		:rtype: SuperToken
 		"""
-
+		
 		# determine if the new token matches any super tokens and how well it matches if it does.
 		bestMatch = 0
 		bestDecision = Token.Match.NO.value
@@ -304,4 +306,3 @@ class Observer(QThread):
 			self.quit()
 			return True
 		return False
-

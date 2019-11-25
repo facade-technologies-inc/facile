@@ -25,7 +25,6 @@ from PySide2.QtWidgets import QGraphicsScene
 
 
 class TScene(QGraphicsScene):
-	
 	itemSelected = Signal(int)
 	itemBlink = Signal(int)
 	
@@ -38,7 +37,6 @@ class TScene(QGraphicsScene):
 		"""
 		QGraphicsScene.__init__(self)
 		self._targetGuiModel = targetGUIModel
-	
 	
 	def getTargetGUIModel(self) -> 'TargetGuiModel':
 		"""

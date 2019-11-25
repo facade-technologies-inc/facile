@@ -21,9 +21,10 @@ This file contains the Application class - an alternative to pywinauto's Applica
 pywinauto's Desktop class.
 """
 
-import pywinauto
-import psutil
 import time
+
+import psutil
+import pywinauto
 
 
 class Application(pywinauto.Desktop):
@@ -38,13 +39,13 @@ class Application(pywinauto.Desktop):
 		appWindows = app.windows()
 	"""
 	
-	#TODO: If the original process was just used to create other processes and then it disappears, the child processes
+	# TODO: If the original process was just used to create other processes and then it disappears, the child processes
 	# are called zombies. currently, this class does not work with applications that fit this description. This class
 	# could be made more robust.
-
+	
 	# def __init__(self, backend):
 	#     super().__init__(backend=backend)
-
+	
 	def setProcess(self, process: psutil.Process) -> None:
 		"""
 		Sets the application's process. This method should be called directly after the Application object is
@@ -56,7 +57,7 @@ class Application(pywinauto.Desktop):
 		:rtype: NoneType
 		"""
 		self._process = process
-		
+	
 	def getPIDs(self) -> list:
 		"""
 		Gets the target application's main process ID and all child process IDs.
@@ -84,13 +85,14 @@ class Application(pywinauto.Desktop):
 				continue
 			else:
 				break
-				
+		
 		appWins = []
 		pids = self.getPIDs()
 		for win in wins:
 			if win.process_id() in pids:
 				appWins.append(win)
 		return appWins
+
 
 if __name__ == "__main__":
 	desktop = pywinauto.Desktop(backend="uia")

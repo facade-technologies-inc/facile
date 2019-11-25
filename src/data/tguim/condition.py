@@ -25,6 +25,7 @@ class Condition:
 	"""
 	This class defines when a visibility behavior should or should not be taken.
 	"""
+	
 	def __init__(self) -> 'Condition':
 		"""
 		Constructs a new Condition object.

@@ -59,7 +59,7 @@ class VBGraphics(QGraphicsItem):
 		height = abs(self._srcComponentCenterPoint.y() - self._destComponentCenterPoint.y())
 		return QRectF(leftCornerX, leftCornerY, width, height)
 	
-	def paint(self, painter:QPainter, option, widget):
+	def paint(self, painter: QPainter, option, widget):
 		"""
 		Paints the contents of the visibilitybehavior. Override the parent paint function
 
@@ -75,20 +75,27 @@ class VBGraphics(QGraphicsItem):
 		
 		lengthSrcNodeSrcEdgeList = len(self._dataVB.getSrcComponent().getSrcVisibilityBehaviors())
 		lengthDesNodeDesEdgeList = len(self._dataVB.getDestComponent().getDestVisibilityBehaviors())
-		heightSrcNode = 2 * abs(self._dataVB.getSrcComponent().getGraphicsItem().boundingRect().y() - self._srcComponentCenterPoint.y())
-		heightDesNode = 2 * abs(self._dataVB.getDestComponent().getGraphicsItem().boundingRect().y() - self._destComponentCenterPoint.y())
+		heightSrcNode = 2 * abs(
+			self._dataVB.getSrcComponent().getGraphicsItem().boundingRect().y() - self._srcComponentCenterPoint.y())
+		heightDesNode = 2 * abs(
+			self._dataVB.getDestComponent().getGraphicsItem().boundingRect().y() - self._destComponentCenterPoint.y())
 		# This is the index(+1 avoid 0 in calculation) of the edge at the SourceNode's edgeSrcList
-		srcNodeIndex = self._dataVB.getSrcComponent().getSrcVisibilityBehaviors().index(self._dataVB) + 1
+		srcNodeIndex = self._dataVB.getSrcComponent().getSrcVisibilityBehaviors().index(
+			self._dataVB) + 1
 		# This is the index of the edge at the DesNode's _edgeDesList
-		desNodeIndex = self._dataVB.getDestComponent().getDestVisibilityBehaviors().index(self._dataVB) + 1
+		desNodeIndex = self._dataVB.getDestComponent().getDestVisibilityBehaviors().index(
+			self._dataVB) + 1
 		
-		x1 = self._dataVB.getSrcComponent().getGraphicsItem().boundingRect().x() #x does not change, stay at the left most of the node
-		y1 = self._dataVB.getSrcComponent().getGraphicsItem().boundingRect().y() + (heightSrcNode / (lengthSrcNodeSrcEdgeList + 1)) * srcNodeIndex
-		x2 = self._destComponentCenterPoint.x() + (self._destComponentCenterPoint.x() - self._dataVB.getDestComponent().getGraphicsItem().boundingRect().x())
-		y2 = self._dataVB.getDestComponent().getGraphicsItem().boundingRect().y() + (heightDesNode / (lengthDesNodeDesEdgeList + 1)) * desNodeIndex
+		x1 = self._dataVB.getSrcComponent().getGraphicsItem().boundingRect().x()  # x does not change, stay at the left most of the node
+		y1 = self._dataVB.getSrcComponent().getGraphicsItem().boundingRect().y() + (
+			heightSrcNode / (lengthSrcNodeSrcEdgeList + 1)) * srcNodeIndex
+		x2 = self._destComponentCenterPoint.x() + (
+			self._destComponentCenterPoint.x() - self._dataVB.getDestComponent().getGraphicsItem().boundingRect().x())
+		y2 = self._dataVB.getDestComponent().getGraphicsItem().boundingRect().y() + (
+			heightDesNode / (lengthDesNodeDesEdgeList + 1)) * desNodeIndex
 		
 		# painter.drawLine(x1, y1, x2, y2)
 		path = QPainterPath()
 		path.moveTo(x1, y1)
-		path.cubicTo(x1+100, y1+100, x2-200, y2-200, x2, y2)
+		path.cubicTo(x1 + 100, y1 + 100, x2 - 200, y2 - 200, x2, y2)
 		painter.drawPath(path)

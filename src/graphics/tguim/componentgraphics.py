@@ -21,7 +21,7 @@ This module contains the ComponentGraphics class.
 """
 
 from PySide2.QtCore import QRectF
-from PySide2.QtGui import QPainterPath, QColor, QPen, Qt, QFont, QFontMetrics
+from PySide2.QtGui import QPainterPath, QColor, QPen, Qt
 from PySide2.QtWidgets import QGraphicsScene, QGraphicsItem, QGraphicsSceneContextMenuEvent, QMenu
 
 
@@ -38,7 +38,7 @@ class ComponentGraphics(QGraphicsItem):
 	
 	TRIM = 1
 	
-	def __init__(self, dataComponent: 'Component', rect: tuple = (), parent = None):
+	def __init__(self, dataComponent: 'Component', rect: tuple = (), parent=None):
 		"""
 		Constructs a ComponentGraphics object
 
@@ -69,7 +69,8 @@ class ComponentGraphics(QGraphicsItem):
 		
 		self.menu = QMenu()
 		showInGui = self.menu.addAction("Show in target GUI")
-		showInGui.triggered.connect(lambda: self.scene().blinkComponent(self._dataComponent.getId()))
+		showInGui.triggered.connect(
+			lambda: self.scene().blinkComponent(self._dataComponent.getId()))
 	
 	def adjustPositioning(self) -> None:
 		"""
@@ -108,7 +109,7 @@ class ComponentGraphics(QGraphicsItem):
 			collidingSiblings, maxSibX, maxSibY = self.getCollidingComponents(siblings)
 			if collidingSiblings:
 				self.dumbCollisionResolution(maxSibX, maxSibY, closest=False)
-			#self.smartCollisionResolution(collidingSiblings)
+			# self.smartCollisionResolution(collidingSiblings)
 			else:
 				break
 		
@@ -118,7 +119,9 @@ class ComponentGraphics(QGraphicsItem):
 			height = max(maxSibY, self.y() + self._height)
 			parent.prepareGeometryChange()
 			if parentIsScene:
-				parent.setSceneRect(self.scene.x(), self.scene.y(), width + ComponentGraphics.MARGIN, height + ComponentGraphics.MARGIN)
+				parent.setSceneRect(self.scene.x(), self.scene.y(),
+				                    width + ComponentGraphics.MARGIN,
+				                    height + ComponentGraphics.MARGIN)
 			else:
 				parent._width = width
 				parent._height = height
@@ -191,7 +194,6 @@ class ComponentGraphics(QGraphicsItem):
 			if self.overlapsWith(sibling):
 				collidingSiblings.append(sibling)
 		return collidingSiblings, maxSibX, maxSibY
-	
 	
 	def getLabel(self) -> str:
 		"""
@@ -331,7 +333,8 @@ class ComponentGraphics(QGraphicsItem):
 		painter.drawRoundedRect(boundingRect, 5, 5)
 		
 		name = self.getLabel()
-		painter.drawText(int(ComponentGraphics.MARGIN*1.5), int(ComponentGraphics.MARGIN+30), name)
+		painter.drawText(int(ComponentGraphics.MARGIN * 1.5), int(ComponentGraphics.MARGIN + 30),
+		                 name)
 	
 	def mousePressEvent(self, event):
 		"""
@@ -354,7 +357,6 @@ class ComponentGraphics(QGraphicsItem):
 		"""
 		self.mousePressEvent(event)
 		selectedAction = self.menu.exec_(event.screenPos())
-	
 	
 	def triggerSceneUpdate(self):
 		"""

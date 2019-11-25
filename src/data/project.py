@@ -20,12 +20,14 @@
 This module contains the Project class.
 """
 
-import os
 import json
-import psutil
+import os
 from subprocess import PIPE
-from qt_models.projectexplorermodel import ProjectExplorerModel
+
+import psutil
+
 from data.tguim.targetguimodel import TargetGuiModel
+from qt_models.projectexplorermodel import ProjectExplorerModel
 from tguiil.explorer import Explorer
 from tguiil.observer import Observer
 
@@ -42,7 +44,7 @@ class Project:
 	# TODO: Store backend as enum instead of string
 	
 	def __init__(self, name: str, description: str, exe: str, backend: str,
-				 projectDir: str = "~/", startupTimeout: int = 10) -> 'Project':
+	             projectDir: str = "~/", startupTimeout: int = 10) -> 'Project':
 		"""
 		Constructs a Project object.
 		
@@ -342,8 +344,8 @@ class Project:
 		loadedProject = Project(name, description, exe, backend, projectDir, startupTimeout)
 		
 		# TODO: Load models and put them in the project object
-		#loadedProject.setTargetGUIModel(projectJSON["Model Files"]["Target GUI Model"])
-		#loadedProject.setAPIModel(["Model Files"]["API Model"] = self._APIModel)
+		# loadedProject.setTargetGUIModel(projectJSON["Model Files"]["Target GUI Model"])
+		# loadedProject.setAPIModel(["Model Files"]["API Model"] = self._APIModel)
 		
 		return loadedProject
 	
@@ -365,8 +367,8 @@ class Project:
 		projectDict["Application Information"]["Startup Timeout"] = self._startupTimeout
 		projectDict["Model Files"] = {}
 		
-		#projectDict["Model Files"]["Target GUI Model"] = self._targetGUIModel
-		#projectDict["Model Files"]["API Model"] = self._APIModel
+		# projectDict["Model Files"]["Target GUI Model"] = self._targetGUIModel
+		# projectDict["Model Files"]["API Model"] = self._APIModel
 		
 		with open(self.getMainProjectFile(), "w") as file:
 			file.write(json.dumps(projectDict, indent=4))

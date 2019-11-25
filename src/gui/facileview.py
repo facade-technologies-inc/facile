@@ -22,15 +22,17 @@ Much of Facile is joined together here.
 """
 import os
 from copy import deepcopy
+
+from PySide2.QtCore import Slot
 from PySide2.QtWidgets import QMainWindow, QFileDialog, QMessageBox
-from PySide2.QtCore import Signal, Slot
-from gui.ui.ui_facileview import Ui_MainWindow as Ui_FacileView
-from gui.newprojectdialog import NewProjectDialog
-from gui.copyprojectdialog import CopyProjectDialog
-from gui.manageprojectdialog import ManageProjectDialog
+
 from data.project import Project
 from data.statemachine import StateMachine
 from data.tguim.component import Component
+from gui.copyprojectdialog import CopyProjectDialog
+from gui.manageprojectdialog import ManageProjectDialog
+from gui.newprojectdialog import NewProjectDialog
+from gui.ui.ui_facileview import Ui_MainWindow as Ui_FacileView
 from tguiil.blinker import Blinker
 
 
@@ -57,7 +59,7 @@ class FacileView(QMainWindow):
 		# State Machine Initialization
 		self._stateMachine = StateMachine(self)
 		self._stateMachine.facileOpened()
-		
+	
 	@Slot(Project)
 	def setProject(self, project: Project) -> None:
 		"""
@@ -97,7 +99,8 @@ class FacileView(QMainWindow):
 						msg = QMessageBox()
 						msg.setIcon(QMessageBox.Critical)
 						msg.setText("Error")
-						msg.setInformativeText("Please choose a directory that does not already contain a project.")
+						msg.setInformativeText(
+							"Please choose a directory that does not already contain a project.")
 						msg.setWindowTitle("Error")
 						msg.exec_()
 						return
@@ -124,7 +127,7 @@ class FacileView(QMainWindow):
 		
 		if self._project is not None:
 			self._project.save()
-			
+	
 	@Slot()
 	def onNewProjectFromScratchTriggered(self) -> None:
 		"""
@@ -140,7 +143,7 @@ class FacileView(QMainWindow):
 		newProjectDialog = NewProjectDialog()
 		newProjectDialog.projectCreated.connect(self.setProject)
 		newProjectDialog.exec_()
-
+	
 	@Slot()
 	def onNewProjectFromExistingTriggered(self) -> None:
 		"""
@@ -183,7 +186,7 @@ class FacileView(QMainWindow):
 		fileDialog.setNameFilter("Facile Project File (*.fcl)")
 		fileDialog.fileSelected.connect(lambda url: self.setProject(Project.load(url)))
 		fileDialog.exec_()
-		
+	
 	@Slot()
 	def onManageProjectTriggered(self) -> None:
 		"""
@@ -196,7 +199,7 @@ class FacileView(QMainWindow):
 		manageProjectDialog = ManageProjectDialog(self._project)
 		manageProjectDialog.projectCreated.connect(self.setProject)
 		manageProjectDialog.exec_()
-		
+	
 	@Slot()
 	def onAddBehaviorTriggered(self) -> None:
 		"""
@@ -206,7 +209,7 @@ class FacileView(QMainWindow):
 		:rtype: NoneType
 		"""
 		self._stateMachine.addBehaviorClicked()
-		
+	
 	@Slot(int)
 	def onItemSelected(self, id: int):
 		"""
@@ -237,11 +240,11 @@ class FacileView(QMainWindow):
 		if self._blinker:
 			self._blinker.stop()
 		self._blinker = Blinker(self._project.getProcess().pid,
-								self._project.getBackend(),
-								component.getSuperToken())
+		                        self._project.getBackend(),
+		                        component.getSuperToken())
 		self._blinker.componentNotFound.connect(self.info)
 		self._blinker.start()
-		
+	
 	@Slot(bool)
 	def onManualExploration(self, checked: bool) -> None:
 		"""
