@@ -347,7 +347,9 @@ class ProjectExplorerModel(QAbstractItemModel):
 				return self.registerAndCreateIndex(data.getParentIndex(), 0, parentData)
 			
 			elif isinstance(innerData, Component):
-				return self.registerAndCreateIndex(parentData.getPositionInSiblings(), 0, parentData)
+				visBehaviors = list(self._project.getTargetGUIModel().getVisibilityBehaviors().values())
+				visBehaviorIdx = visBehaviors.index(parentData)
+				return self.registerAndCreateIndex(visBehaviorIdx, 0, parentData)
 			
 			else:
 				raise ProjectExplorerModel.UnsupportedTypeException("Unsupported data type in LeafIndex: {}".format(innerData))
@@ -491,7 +493,7 @@ class ProjectExplorerModel(QAbstractItemModel):
 					if col == 0:
 						return "From"
 					elif col == 1:
-						return innerData.getName()
+						return innerData.getProperties().getProperty("Name")[1].getValue()
 					else:
 						return None
 					
@@ -499,7 +501,7 @@ class ProjectExplorerModel(QAbstractItemModel):
 					if col == 0:
 						return "To"
 					elif col == 1:
-						return innerData.getName()
+						return innerData.getProperties().getProperty("Name")[1].getValue()
 					else:
 						return None
 		
