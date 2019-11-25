@@ -70,7 +70,8 @@ class Ui_Dialog(object):
 		self.verticalLayout.addWidget(self.tabWidget)
 		self.buttonBox = QtWidgets.QDialogButtonBox(Dialog)
 		self.buttonBox.setOrientation(QtCore.Qt.Horizontal)
-		self.buttonBox.setStandardButtons(QtWidgets.QDialogButtonBox.Close | QtWidgets.QDialogButtonBox.Save)
+		self.buttonBox.setStandardButtons(
+			QtWidgets.QDialogButtonBox.Close | QtWidgets.QDialogButtonBox.Save)
 		self.buttonBox.setCenterButtons(False)
 		self.buttonBox.setObjectName("buttonBox")
 		self.verticalLayout.addWidget(self.buttonBox)
@@ -90,12 +91,15 @@ class Ui_Dialog(object):
 		self.label_4.setText(QtWidgets.QApplication.translate("Dialog", "Application", None, -1))
 		self.label_5.setText(QtWidgets.QApplication.translate("Dialog", "Accessibility\n"
 		                                                                "Technology", None, -1))
-		self.backendEdit.setItemText(0, QtWidgets.QApplication.translate("Dialog", "WIN32", None, -1))
+		self.backendEdit.setItemText(0,
+		                             QtWidgets.QApplication.translate("Dialog", "WIN32", None, -1))
 		self.backendEdit.setItemText(1, QtWidgets.QApplication.translate("Dialog", "UIA", None, -1))
-		self.backendEdit.setItemText(2, QtWidgets.QApplication.translate("Dialog", "Other", None, -1))
+		self.backendEdit.setItemText(2,
+		                             QtWidgets.QApplication.translate("Dialog", "Other", None, -1))
 		self.tabWidget.setTabText(self.tabWidget.indexOf(self.project_tab),
 		                          QtWidgets.QApplication.translate("Dialog", "Project", None, -1))
 		self.tabWidget.setTabText(self.tabWidget.indexOf(self.target_gui_model_tab),
-		                          QtWidgets.QApplication.translate("Dialog", "Target GUI Model", None, -1))
+		                          QtWidgets.QApplication.translate("Dialog", "Target GUI Model",
+		                                                           None, -1))
 		self.tabWidget.setTabText(self.tabWidget.indexOf(self.api_model_tab),
 		                          QtWidgets.QApplication.translate("Dialog", "API Model", None, -1))

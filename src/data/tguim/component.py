@@ -34,7 +34,8 @@ class Component(Entity):
 	Components are organized in a tree in the TargetGuiModel class.
 	"""
 	
-	def __init__(self, tguim: 'TargetGuiModel', parent: 'Component' = None, superToken: 'SuperToken' = None):
+	def __init__(self, tguim: 'TargetGuiModel', parent: 'Component' = None,
+	             superToken: 'SuperToken' = None):
 		"""
 		Constructs a Component object.
 
@@ -56,7 +57,8 @@ class Component(Entity):
 		if superToken is None:
 			self._graphicsItem = ComponentGraphics(self, (0, 0, 0, 0), self.getParentGraphicsItem())
 		else:
-			self._graphicsItem = ComponentGraphics(self, superToken.posRelativeToParent, self.getParentGraphicsItem())
+			self._graphicsItem = ComponentGraphics(self, superToken.posRelativeToParent,
+			                                       self.getParentGraphicsItem())
 		if parent is not None:
 			parent.addChild(self)
 	

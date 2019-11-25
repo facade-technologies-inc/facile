@@ -211,7 +211,8 @@ class NewProjectDialog(QDialog):
 			elif not appBitnessMatches(appExe):
 				pyBit = getPythonBitness()
 				appBit = getExeBitness(appExe)
-				errors.append("{} bit Python cannot control {} bit application".format(pyBit, appBit))
+				errors.append(
+					"{} bit Python cannot control {} bit application".format(pyBit, appBit))
 		
 		# Check for valid framework
 		frameworkOption = self._radioBtnGroup.checkedButton()

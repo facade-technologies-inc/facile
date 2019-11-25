@@ -168,52 +168,84 @@ class Ui_MainWindow(object):
 		QtCore.QMetaObject.connectSlotsByName(MainWindow)
 	
 	def retranslateUi(self, MainWindow):
-		MainWindow.setWindowTitle(QtWidgets.QApplication.translate("MainWindow", "Facile", None, -1))
+		MainWindow.setWindowTitle(
+			QtWidgets.QApplication.translate("MainWindow", "Facile", None, -1))
 		self.menuFile.setTitle(QtWidgets.QApplication.translate("MainWindow", "File", None, -1))
-		self.menuNew_Project.setTitle(QtWidgets.QApplication.translate("MainWindow", "New Project", None, -1))
-		self.menuRecent_Projects.setTitle(QtWidgets.QApplication.translate("MainWindow", "Recent Projects", None, -1))
+		self.menuNew_Project.setTitle(
+			QtWidgets.QApplication.translate("MainWindow", "New Project", None, -1))
+		self.menuRecent_Projects.setTitle(
+			QtWidgets.QApplication.translate("MainWindow", "Recent Projects", None, -1))
 		self.menuWindow.setTitle(QtWidgets.QApplication.translate("MainWindow", "Window", None, -1))
 		self.menuHelp.setTitle(QtWidgets.QApplication.translate("MainWindow", "Help", None, -1))
 		self.menuView.setTitle(QtWidgets.QApplication.translate("MainWindow", "View", None, -1))
-		self.dockWidget_2.setWindowTitle(QtWidgets.QApplication.translate("MainWindow", "Project Explorer", None, -1))
-		self.dockWidget_4.setWindowTitle(QtWidgets.QApplication.translate("MainWindow", "Validator Messages", None, -1))
-		self.dockWidget_5.setWindowTitle(QtWidgets.QApplication.translate("MainWindow", "Property Editor", None, -1))
-		self.dockWidget_6.setWindowTitle(QtWidgets.QApplication.translate("MainWindow", "Modules", None, -1))
-		self.modulesView.headerItem().setText(0, QtWidgets.QApplication.translate("MainWindow", "Module", None, -1))
+		self.dockWidget_2.setWindowTitle(
+			QtWidgets.QApplication.translate("MainWindow", "Project Explorer", None, -1))
+		self.dockWidget_4.setWindowTitle(
+			QtWidgets.QApplication.translate("MainWindow", "Validator Messages", None, -1))
+		self.dockWidget_5.setWindowTitle(
+			QtWidgets.QApplication.translate("MainWindow", "Property Editor", None, -1))
+		self.dockWidget_6.setWindowTitle(
+			QtWidgets.QApplication.translate("MainWindow", "Modules", None, -1))
+		self.modulesView.headerItem().setText(0, QtWidgets.QApplication.translate("MainWindow",
+		                                                                          "Module", None,
+		                                                                          -1))
 		self.modulesView.headerItem().setText(1,
-		                                      QtWidgets.QApplication.translate("MainWindow", "Description", None, -1))
-		self.toolBar.setWindowTitle(QtWidgets.QApplication.translate("MainWindow", "toolBar", None, -1))
-		self.actionOpen_Project.setText(QtWidgets.QApplication.translate("MainWindow", "Open Project", None, -1))
-		self.actionSave_Project.setText(QtWidgets.QApplication.translate("MainWindow", "Save Project", None, -1))
-		self.actionSave_as.setText(QtWidgets.QApplication.translate("MainWindow", "Save As . . .", None, -1))
+		                                      QtWidgets.QApplication.translate("MainWindow",
+		                                                                       "Description", None,
+		                                                                       -1))
+		self.toolBar.setWindowTitle(
+			QtWidgets.QApplication.translate("MainWindow", "toolBar", None, -1))
+		self.actionOpen_Project.setText(
+			QtWidgets.QApplication.translate("MainWindow", "Open Project", None, -1))
+		self.actionSave_Project.setText(
+			QtWidgets.QApplication.translate("MainWindow", "Save Project", None, -1))
+		self.actionSave_as.setText(
+			QtWidgets.QApplication.translate("MainWindow", "Save As . . .", None, -1))
 		self.actionSave_New_Version.setText(
 			QtWidgets.QApplication.translate("MainWindow", "Save New Version", None, -1))
-		self.actionFrom_Scratch.setText(QtWidgets.QApplication.translate("MainWindow", "From Scratch", None, -1))
+		self.actionFrom_Scratch.setText(
+			QtWidgets.QApplication.translate("MainWindow", "From Scratch", None, -1))
 		self.actionFrom_Existing_Project.setText(
 			QtWidgets.QApplication.translate("MainWindow", "From Existing Project", None, -1))
-		self.actionExample_Project.setText(QtWidgets.QApplication.translate("MainWindow", "Example Project", None, -1))
-		self.actionProject_Tree.setText(QtWidgets.QApplication.translate("MainWindow", "Project Tree", None, -1))
-		self.actionProperty_Editor.setText(QtWidgets.QApplication.translate("MainWindow", "Property Editor", None, -1))
+		self.actionExample_Project.setText(
+			QtWidgets.QApplication.translate("MainWindow", "Example Project", None, -1))
+		self.actionProject_Tree.setText(
+			QtWidgets.QApplication.translate("MainWindow", "Project Tree", None, -1))
+		self.actionProperty_Editor.setText(
+			QtWidgets.QApplication.translate("MainWindow", "Property Editor", None, -1))
 		self.actionTarget_GUI_Model.setText(
 			QtWidgets.QApplication.translate("MainWindow", "Target GUI Model", None, -1))
-		self.actionAPI_Builder.setText(QtWidgets.QApplication.translate("MainWindow", "API Builder", None, -1))
-		self.actionValidator.setText(QtWidgets.QApplication.translate("MainWindow", "Validator", None, -1))
-		self.actionShow_Behaviors.setText(QtWidgets.QApplication.translate("MainWindow", "Show Behaviors", None, -1))
-		self.actionDetailed_View.setText(QtWidgets.QApplication.translate("MainWindow", "Detailed View", None, -1))
-		self.actionAutoExplore.setText(QtWidgets.QApplication.translate("MainWindow", "Auto Explore", None, -1))
+		self.actionAPI_Builder.setText(
+			QtWidgets.QApplication.translate("MainWindow", "API Builder", None, -1))
+		self.actionValidator.setText(
+			QtWidgets.QApplication.translate("MainWindow", "Validator", None, -1))
+		self.actionShow_Behaviors.setText(
+			QtWidgets.QApplication.translate("MainWindow", "Show Behaviors", None, -1))
+		self.actionDetailed_View.setText(
+			QtWidgets.QApplication.translate("MainWindow", "Detailed View", None, -1))
+		self.actionAutoExplore.setText(
+			QtWidgets.QApplication.translate("MainWindow", "Auto Explore", None, -1))
 		self.actionAutoExplore.setToolTip(
-			QtWidgets.QApplication.translate("MainWindow", "Explore the target GUI autonomously (no user control)",
+			QtWidgets.QApplication.translate("MainWindow",
+			                                 "Explore the target GUI autonomously (no user control)",
 			                                 None, -1))
-		self.actionAutoExplore.setShortcut(QtWidgets.QApplication.translate("MainWindow", "Ctrl+Alt+A", None, -1))
-		self.actionManualExplore.setText(QtWidgets.QApplication.translate("MainWindow", "Manual Explore", None, -1))
+		self.actionAutoExplore.setShortcut(
+			QtWidgets.QApplication.translate("MainWindow", "Ctrl+Alt+A", None, -1))
+		self.actionManualExplore.setText(
+			QtWidgets.QApplication.translate("MainWindow", "Manual Explore", None, -1))
 		self.actionManualExplore.setToolTip(QtWidgets.QApplication.translate("MainWindow",
 		                                                                     "Watch for changes in the target GUI as the user interacts with it.",
 		                                                                     None, -1))
-		self.actionManualExplore.setShortcut(QtWidgets.QApplication.translate("MainWindow", "Ctrl+Alt+M", None, -1))
-		self.actionIgnoreExplore.setText(QtWidgets.QApplication.translate("MainWindow", "Ignore Explore", None, -1))
+		self.actionManualExplore.setShortcut(
+			QtWidgets.QApplication.translate("MainWindow", "Ctrl+Alt+M", None, -1))
+		self.actionIgnoreExplore.setText(
+			QtWidgets.QApplication.translate("MainWindow", "Ignore Explore", None, -1))
 		self.actionIgnoreExplore.setToolTip(QtWidgets.QApplication.translate("MainWindow",
 		                                                                     "The user can interact with the target GUI without changes being recognized.",
 		                                                                     None, -1))
-		self.actionIgnoreExplore.setShortcut(QtWidgets.QApplication.translate("MainWindow", "Ctrl+Alt+I", None, -1))
-		self.actionAPI_Modules.setText(QtWidgets.QApplication.translate("MainWindow", "API Modules", None, -1))
-		self.actionManage_Project.setText(QtWidgets.QApplication.translate("MainWindow", "Project Settings", None, -1))
+		self.actionIgnoreExplore.setShortcut(
+			QtWidgets.QApplication.translate("MainWindow", "Ctrl+Alt+I", None, -1))
+		self.actionAPI_Modules.setText(
+			QtWidgets.QApplication.translate("MainWindow", "API Modules", None, -1))
+		self.actionManage_Project.setText(
+			QtWidgets.QApplication.translate("MainWindow", "Project Settings", None, -1))

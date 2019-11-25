@@ -122,7 +122,8 @@
                                         <widget class="QLineEdit" name="executable_file_edit"/>
                                     </item>
                                     <item>
-                                        <widget class="QToolButton" name="browseFilesButton_executable">
+                                        <widget class="QToolButton"
+                                                name="browseFilesButton_executable">
                                             <property name="text">
                                                 <string>...</string>
                                             </property>
@@ -142,7 +143,8 @@
                     <item>
                         <widget class="QLabel" name="label_4">
                             <property name="text">
-                                <string>Which category does the target application best fit under?</string>
+                                <string>Which category does the target application best fit under?
+                                </string>
                             </property>
                         </widget>
                     </item>

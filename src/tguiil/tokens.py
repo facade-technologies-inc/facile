@@ -62,9 +62,11 @@ class Token:
 	MAX_WEIGHTS = sum(Weight.values())
 	THRESH_PERCENT = 50
 	
-	def __init__(self, identifier: int, isDialog: bool, isEnabled: bool, isVisible: bool, processID: int, typeOf: str,
+	def __init__(self, identifier: int, isDialog: bool, isEnabled: bool, isVisible: bool,
+	             processID: int, typeOf: str,
 	             rectangle: RECT, texts: list, title: str, numControls: int, controlIDs: list,
-	             parentTitle: str, parentType: str, topLevelParentTitle: str, topLevelParentType: str,
+	             parentTitle: str, parentType: str, topLevelParentTitle: str,
+	             topLevelParentType: str,
 	             childrenTexts: list, picture: Image = None, autoID: int = None,
 	             expandState: int = None, shownState: int = None):
 		"""
@@ -258,14 +260,17 @@ class Token:
 			else:
 				max -= Token.Weight["PIC"]
 			
-			if self.autoid is not None and token2.autoid is not None and (self.autoid != "" or token2.autoid != ""):
-				total += SequenceMatcher(None, self.autoid, token2.autoid).ratio() * Token.Weight["AUTO_ID"]
+			if self.autoid is not None and token2.autoid is not None and (
+				self.autoid != "" or token2.autoid != ""):
+				total += SequenceMatcher(None, self.autoid, token2.autoid).ratio() * Token.Weight[
+					"AUTO_ID"]
 			else:
 				max -= Token.Weight["AUTO_ID"]
 			
 			# compare title, parent title, and top level parent title
 			titleSequence1 = ' > '.join([self.title, self.parentTitle, self.topLevelParentTitle])
-			titleSequence2 = ' > '.join([token2.title, token2.parentTitle, token2.topLevelParentTitle])
+			titleSequence2 = ' > '.join(
+				[token2.title, token2.parentTitle, token2.topLevelParentTitle])
 			titleSimilarity = SequenceMatcher(None, titleSequence1, titleSequence2).ratio()
 			total += titleSimilarity * Token.Weight["TITLE"]
 			
@@ -289,7 +294,8 @@ class Token:
 			if self.numControls == token2.numControls:
 				numChildrenDiff = 1
 			elif self.numControls != 0 and token2.numControls != 0:
-				numChildrenDiff = min(self.numControls / token2.numControls, token2.numControls / self.numControls)
+				numChildrenDiff = min(self.numControls / token2.numControls,
+				                      token2.numControls / self.numControls)
 			else:
 				numChildrenDiff = 0
 				# if self.isDialog:

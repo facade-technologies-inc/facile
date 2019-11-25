@@ -92,7 +92,8 @@ class FacileView(QMainWindow):
 			self._project.save()
 			self._project.addToRecents()
 			self._project.getTargetGUIModel().getScene().itemSelected.connect(self._onItemSelected)
-			self._project.getTargetGUIModel().dataChanged.connect(lambda: self.ui.projectExplorerView.update())
+			self._project.getTargetGUIModel().dataChanged.connect(
+				lambda: self.ui.projectExplorerView.update())
 			self.ui.projectExplorerView.setModel(self._project.getProjectExplorerModel())
 			self.ui.targetGUIModelView.setScene(self._project.getTargetGUIModel().getScene())
 			self._project.startTargetApplication()
@@ -115,7 +116,8 @@ class FacileView(QMainWindow):
 		self._populateRecents()
 		
 		self.ui.actionFrom_Scratch.triggered.connect(self._onNewProjectFromScratchTriggered)
-		self.ui.actionFrom_Existing_Project.triggered.connect(self._onNewProjectFromExistingTriggered)
+		self.ui.actionFrom_Existing_Project.triggered.connect(
+			self._onNewProjectFromExistingTriggered)
 		self.ui.actionOpen_Project.triggered.connect(self._onOpenProjectTriggered)
 		self.ui.actionSave_Project.triggered.connect(self._onSaveProjectTriggered)
 		self.ui.actionSave_as.triggered.connect(self._onSaveProjectAsTriggered)
@@ -195,7 +197,8 @@ class FacileView(QMainWindow):
 						msg = QMessageBox()
 						msg.setIcon(QMessageBox.Critical)
 						msg.setText("Error")
-						msg.setInformativeText("Please choose a directory that does not already contain a project.")
+						msg.setInformativeText(
+							"Please choose a directory that does not already contain a project.")
 						msg.setWindowTitle("Error")
 						msg.exec_()
 						return

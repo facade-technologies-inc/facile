@@ -125,7 +125,8 @@ class ComponentGraphics(QGraphicsItem):
 			height = max(maxSibY, self.y() + self._height)
 			parent.prepareGeometryChange()
 			if parentIsScene:
-				parent.setSceneRect(self.scene.x(), self.scene.y(), width + ComponentGraphics.MARGIN,
+				parent.setSceneRect(self.scene.x(), self.scene.y(),
+				                    width + ComponentGraphics.MARGIN,
 				                    height + ComponentGraphics.MARGIN)
 			else:
 				parent._width = width
@@ -338,10 +339,12 @@ class ComponentGraphics(QGraphicsItem):
 		painter.drawRoundedRect(boundingRect, 5, 5)
 		
 		name = self.getLabel()
-		painter.drawText(int(ComponentGraphics.MARGIN * 1.5), int(ComponentGraphics.MARGIN + 30), name)
+		painter.drawText(int(ComponentGraphics.MARGIN * 1.5), int(ComponentGraphics.MARGIN + 30),
+		                 name)
 		
 		token_count = str(self.getNumberOfTokens())
-		rectBox = QRectF(self.boundingRect().width() - ComponentGraphics.MARGIN, -ComponentGraphics.MARGIN,
+		rectBox = QRectF(self.boundingRect().width() - ComponentGraphics.MARGIN,
+		                 -ComponentGraphics.MARGIN,
 		                 ComponentGraphics.MARGIN * 2, ComponentGraphics.MARGIN * 2)
 		painter.drawRect(rectBox)
 		painter.drawText(rectBox.center(), token_count)

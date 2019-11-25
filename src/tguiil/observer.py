@@ -44,7 +44,8 @@ class Observer(QThread):
 	"""
 	
 	# This signal is emitted when a new component is detected.
-	newSuperToken = Signal(SuperToken, SuperToken)  # (new SuperToken, new SuperToken's parent SuperToken)
+	newSuperToken = Signal(SuperToken,
+	                       SuperToken)  # (new SuperToken, new SuperToken's parent SuperToken)
 	
 	ignoreTypes = set()
 	ignoreTypes.add("SysShadow")
@@ -103,8 +104,8 @@ class Observer(QThread):
 				children = curComponent.children()
 				for child in children:
 					work.append((child, nextParentSuperToken))
-			
-			# print("{} components were found in the GUI.".format(componentCount))
+		
+		# print("{} components were found in the GUI.".format(componentCount))
 	
 	def createToken(self, component: pywinauto.base_wrapper.BaseWrapper) -> Token:
 		"""
@@ -176,7 +177,8 @@ class Observer(QThread):
 			controlIdentifiers = [title, typeOf, title + typeOf]
 			
 			# create a new token
-			token = Token(id, isDialog, isEnabled, isVisible, processID, typeOf, rectangle, texts, title,
+			token = Token(id, isDialog, isEnabled, isVisible, processID, typeOf, rectangle, texts,
+			              title,
 			              numControls, controlIdentifiers, parentTitle, parentType,
 			              topLevelParentTitle, topLevelParentType, childrenTexts, image, autoID,
 			              expandState, shownState)

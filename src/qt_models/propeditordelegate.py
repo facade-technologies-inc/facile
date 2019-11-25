@@ -45,8 +45,9 @@ class PropertyEditorDelegate(QStyledItemDelegate):
 		:rtype: QRect
 		"""
 		check_box_style_option = QtWidgets.QStyleOptionButton()
-		check_box_rect = QtWidgets.QApplication.style().subElementRect(QtWidgets.QStyle.SE_CheckBoxIndicator,
-		                                                               check_box_style_option, None)
+		check_box_rect = QtWidgets.QApplication.style().subElementRect(
+			QtWidgets.QStyle.SE_CheckBoxIndicator,
+			check_box_style_option, None)
 		check_box_point = QtCore.QPoint(option.rect.x() +
 		                                check_box_rect.width() / 2,
 		                                option.rect.y() +
@@ -54,7 +55,8 @@ class PropertyEditorDelegate(QStyledItemDelegate):
 		                                check_box_rect.height() / 2)
 		return QRect(check_box_point, check_box_rect.size())
 	
-	def paint(self, painter: QStylePainter, option: QStyleOptionViewItem, index: QModelIndex) -> None:
+	def paint(self, painter: QStylePainter, option: QStyleOptionViewItem,
+	          index: QModelIndex) -> None:
 		"""
 		Paint a checkbox without the label.
 
@@ -86,11 +88,13 @@ class PropertyEditorDelegate(QStyledItemDelegate):
 			
 			check_box_style_option.state |= QtWidgets.QStyle.State_Enabled
 			
-			QtWidgets.QApplication.style().drawControl(QtWidgets.QStyle.CE_CheckBox, check_box_style_option, painter)
+			QtWidgets.QApplication.style().drawControl(QtWidgets.QStyle.CE_CheckBox,
+			                                           check_box_style_option, painter)
 		else:
 			QStyledItemDelegate.paint(self, painter, option, index)
 	
-	def createEditor(self, parent: QModelIndex, option: QStyleOptionViewItem, index: QModelIndex) -> QWidget:
+	def createEditor(self, parent: QModelIndex, option: QStyleOptionViewItem,
+	                 index: QModelIndex) -> QWidget:
 		"""
 		Creates the widget used to change data from the model and can be
 		reimplemented to customize editing behavior
@@ -128,7 +132,8 @@ class PropertyEditorDelegate(QStyledItemDelegate):
 					pass
 		return QStyledItemDelegate.createEditor(self, parent, option, index)
 	
-	def editorEvent(self, event: QEvent, model: 'PropModel', option: QStyleOptionViewItem, index: QModelIndex) -> bool:
+	def editorEvent(self, event: QEvent, model: 'PropModel', option: QStyleOptionViewItem,
+	                index: QModelIndex) -> bool:
 		"""
 		Change the data in the model and the state of the checkbox
 		if the user presses the left mouse button or presses
@@ -158,7 +163,8 @@ class PropertyEditorDelegate(QStyledItemDelegate):
 		if event.type() == QEvent.MouseButtonPress:
 			return False
 		if event.type() == QEvent.MouseButtonRelease or event.type() == QEvent.MouseButtonDblClick:
-			if event.button() != QtCore.Qt.LeftButton or not self.getCheckBoxRect(option).contains(event.pos()):
+			if event.button() != QtCore.Qt.LeftButton or not self.getCheckBoxRect(option).contains(
+				event.pos()):
 				return False
 			if event.type() == QEvent.MouseButtonDblClick:
 				return True

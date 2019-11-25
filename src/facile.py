@@ -54,7 +54,8 @@ if __name__ == "__main__":
 		dark_palette.setColor(QPalette.Disabled, QPalette.Text, Qt.darkGray)
 		dark_palette.setColor(QPalette.Disabled, QPalette.ButtonText, Qt.darkGray)
 		qApp.setPalette(dark_palette)
-		qApp.setStyleSheet("QToolTip { color: #ffffff; background-color: #2a82da; border: 1px solid white; }")
+		qApp.setStyleSheet(
+			"QToolTip { color: #ffffff; background-color: #2a82da; border: 1px solid white; }")
 	
 	
 	app = QApplication([])

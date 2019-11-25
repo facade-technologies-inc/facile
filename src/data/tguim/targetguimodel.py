@@ -97,7 +97,8 @@ class TargetGuiModel(QObject):
 			return None
 	
 	@Slot()
-	def createComponent(self, newSuperToken: 'SuperToken', parentToken: 'SuperToken') -> 'Component':
+	def createComponent(self, newSuperToken: 'SuperToken',
+	                    parentToken: 'SuperToken') -> 'Component':
 		"""
 		The slot function which is called when the Observer emits the "newSuperToken" signal.
 		Creates a new component using info from the SuperToken and adds it to the component tree.

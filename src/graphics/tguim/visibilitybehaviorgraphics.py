@@ -77,13 +77,18 @@ class VBGraphics(QGraphicsItem):
 		
 		lengthSrcNodeSrcEdgeList = len(self._dataVB.getSrcComponent().getSrcVisibilityBehaviors())
 		lengthDesNodeDesEdgeList = len(self._dataVB.getDestComponent().getDestVisibilityBehaviors())
-		heightSrcNode = self._dataVB.getSrcComponent().getGraphicsItem().boundingRect(withMargins=False).height()
-		heightDesNode = self._dataVB.getDestComponent().getGraphicsItem().boundingRect(withMargins=False).height()
-		widthDesNode = self._dataVB.getDestComponent().getGraphicsItem().boundingRect(withMargins=False).width()
+		heightSrcNode = self._dataVB.getSrcComponent().getGraphicsItem().boundingRect(
+			withMargins=False).height()
+		heightDesNode = self._dataVB.getDestComponent().getGraphicsItem().boundingRect(
+			withMargins=False).height()
+		widthDesNode = self._dataVB.getDestComponent().getGraphicsItem().boundingRect(
+			withMargins=False).width()
 		# This is the index(+1 avoid 0 in calculation) of the edge at the SourceNode's edgeSrcList
-		srcNodeIndex = self._dataVB.getSrcComponent().getSrcVisibilityBehaviors().index(self._dataVB) + 1
+		srcNodeIndex = self._dataVB.getSrcComponent().getSrcVisibilityBehaviors().index(
+			self._dataVB) + 1
 		# This is the index of the edge at the DesNode's _edgeDesList
-		desNodeIndex = self._dataVB.getDestComponent().getDestVisibilityBehaviors().index(self._dataEdge) + 1
+		desNodeIndex = self._dataVB.getDestComponent().getDestVisibilityBehaviors().index(
+			self._dataEdge) + 1
 		
 		x1 = self._dataVB.getSrcComponent().getGraphicsItem().scenePos().x()  # x does not change, stay at the left most of the node
 		y1 = self._dataVB.getSrcComponent().getGraphicsItem().scenePos().y() + (

@@ -17,18 +17,21 @@ class Ui_Dialog(object):
 		Dialog.resize(538, 515)
 		self.horizontalLayout_6 = QtWidgets.QHBoxLayout(Dialog)
 		self.horizontalLayout_6.setObjectName("horizontalLayout_6")
-		spacerItem = QtWidgets.QSpacerItem(84, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+		spacerItem = QtWidgets.QSpacerItem(84, 20, QtWidgets.QSizePolicy.Expanding,
+		                                   QtWidgets.QSizePolicy.Minimum)
 		self.horizontalLayout_6.addItem(spacerItem)
 		self.verticalLayout_4 = QtWidgets.QVBoxLayout()
 		self.verticalLayout_4.setObjectName("verticalLayout_4")
 		self.horizontalLayout_5 = QtWidgets.QHBoxLayout()
 		self.horizontalLayout_5.setObjectName("horizontalLayout_5")
-		spacerItem1 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+		spacerItem1 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding,
+		                                    QtWidgets.QSizePolicy.Minimum)
 		self.horizontalLayout_5.addItem(spacerItem1)
 		self.title_label = QtWidgets.QLabel(Dialog)
 		self.title_label.setObjectName("title_label")
 		self.horizontalLayout_5.addWidget(self.title_label)
-		spacerItem2 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+		spacerItem2 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding,
+		                                    QtWidgets.QSizePolicy.Minimum)
 		self.horizontalLayout_5.addItem(spacerItem2)
 		self.verticalLayout_4.addLayout(self.horizontalLayout_5)
 		self.formLayout = QtWidgets.QFormLayout()
@@ -119,7 +122,8 @@ class Ui_Dialog(object):
 		self.horizontalLayout_3.addWidget(self.groupBox_2)
 		self.verticalLayout_3 = QtWidgets.QVBoxLayout()
 		self.verticalLayout_3.setObjectName("verticalLayout_3")
-		spacerItem3 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+		spacerItem3 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum,
+		                                    QtWidgets.QSizePolicy.Expanding)
 		self.verticalLayout_3.addItem(spacerItem3)
 		self.horizontalLayout_2 = QtWidgets.QHBoxLayout()
 		self.horizontalLayout_2.setObjectName("horizontalLayout_2")
@@ -133,7 +137,8 @@ class Ui_Dialog(object):
 		self.option_idk = QtWidgets.QRadioButton(Dialog)
 		self.option_idk.setObjectName("option_idk")
 		self.verticalLayout_3.addWidget(self.option_idk)
-		spacerItem4 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+		spacerItem4 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum,
+		                                    QtWidgets.QSizePolicy.Expanding)
 		self.verticalLayout_3.addItem(spacerItem4)
 		self.horizontalLayout_3.addLayout(self.verticalLayout_3)
 		self.verticalLayout_4.addLayout(self.horizontalLayout_3)
@@ -144,11 +149,13 @@ class Ui_Dialog(object):
 		self.verticalLayout_4.addWidget(self.error_label)
 		self.dialogButtons = QtWidgets.QDialogButtonBox(Dialog)
 		self.dialogButtons.setOrientation(QtCore.Qt.Horizontal)
-		self.dialogButtons.setStandardButtons(QtWidgets.QDialogButtonBox.Cancel | QtWidgets.QDialogButtonBox.Ok)
+		self.dialogButtons.setStandardButtons(
+			QtWidgets.QDialogButtonBox.Cancel | QtWidgets.QDialogButtonBox.Ok)
 		self.dialogButtons.setObjectName("dialogButtons")
 		self.verticalLayout_4.addWidget(self.dialogButtons)
 		self.horizontalLayout_6.addLayout(self.verticalLayout_4)
-		spacerItem5 = QtWidgets.QSpacerItem(84, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+		spacerItem5 = QtWidgets.QSpacerItem(84, 20, QtWidgets.QSizePolicy.Expanding,
+		                                    QtWidgets.QSizePolicy.Minimum)
 		self.horizontalLayout_6.addItem(spacerItem5)
 		
 		self.retranslateUi(Dialog)
@@ -158,15 +165,23 @@ class Ui_Dialog(object):
 	
 	def retranslateUi(self, Dialog):
 		Dialog.setWindowTitle(QtWidgets.QApplication.translate("Dialog", "Dialog", None, -1))
-		self.title_label.setText(QtWidgets.QApplication.translate("Dialog", "Create a New Project", None, -1))
-		self.name_label.setText(QtWidgets.QApplication.translate("Dialog", "Project Name", None, -1))
-		self.description_label.setText(QtWidgets.QApplication.translate("Dialog", "Project Description", None, -1))
-		self.project_folder_label.setText(QtWidgets.QApplication.translate("Dialog", "Project Folder", None, -1))
-		self.browseFilesButton_folder.setText(QtWidgets.QApplication.translate("Dialog", "...", None, -1))
-		self.application_label.setText(QtWidgets.QApplication.translate("Dialog", "Target Application", None, -1))
-		self.browseFilesButton_executable.setText(QtWidgets.QApplication.translate("Dialog", "...", None, -1))
+		self.title_label.setText(
+			QtWidgets.QApplication.translate("Dialog", "Create a New Project", None, -1))
+		self.name_label.setText(
+			QtWidgets.QApplication.translate("Dialog", "Project Name", None, -1))
+		self.description_label.setText(
+			QtWidgets.QApplication.translate("Dialog", "Project Description", None, -1))
+		self.project_folder_label.setText(
+			QtWidgets.QApplication.translate("Dialog", "Project Folder", None, -1))
+		self.browseFilesButton_folder.setText(
+			QtWidgets.QApplication.translate("Dialog", "...", None, -1))
+		self.application_label.setText(
+			QtWidgets.QApplication.translate("Dialog", "Target Application", None, -1))
+		self.browseFilesButton_executable.setText(
+			QtWidgets.QApplication.translate("Dialog", "...", None, -1))
 		self.label_4.setText(
-			QtWidgets.QApplication.translate("Dialog", "Which category does the target application best fit under?",
+			QtWidgets.QApplication.translate("Dialog",
+			                                 "Which category does the target application best fit under?",
 			                                 None, -1))
 		self.groupBox.setTitle(QtWidgets.QApplication.translate("Dialog", "WIN32", None, -1))
 		self.option_MFC.setText(QtWidgets.QApplication.translate("Dialog", "MFC", None, -1))
@@ -174,11 +189,14 @@ class Ui_Dialog(object):
 		self.option_VCL.setText(QtWidgets.QApplication.translate("Dialog", "VCL", None, -1))
 		self.option_Legacy.setText(QtWidgets.QApplication.translate("Dialog", "Legacy", None, -1))
 		self.groupBox_2.setTitle(QtWidgets.QApplication.translate("Dialog", "UIA", None, -1))
-		self.option_WinForms.setText(QtWidgets.QApplication.translate("Dialog", "WinForms", None, -1))
+		self.option_WinForms.setText(
+			QtWidgets.QApplication.translate("Dialog", "WinForms", None, -1))
 		self.option_WPF.setText(QtWidgets.QApplication.translate("Dialog", "WPF", None, -1))
 		self.option_Qt5.setText(QtWidgets.QApplication.translate("Dialog", "Qt5", None, -1))
-		self.option_Store_App.setText(QtWidgets.QApplication.translate("Dialog", "Store App", None, -1))
+		self.option_Store_App.setText(
+			QtWidgets.QApplication.translate("Dialog", "Store App", None, -1))
 		self.option_Browser.setText(QtWidgets.QApplication.translate("Dialog", "Browser", None, -1))
 		self.option_Other.setText(QtWidgets.QApplication.translate("Dialog", "Other", None, -1))
-		self.option_idk.setText(QtWidgets.QApplication.translate("Dialog", "I don\'t know", None, -1))
+		self.option_idk.setText(
+			QtWidgets.QApplication.translate("Dialog", "I don\'t know", None, -1))
 		self.error_label.setText(QtWidgets.QApplication.translate("Dialog", "error:", None, -1))

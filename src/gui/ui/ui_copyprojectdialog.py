@@ -109,7 +109,8 @@ class Ui_Dialog(object):
 		self.verticalLayout_4.addLayout(self.horizontalLayout_3)
 		self.buttonBox = QtWidgets.QDialogButtonBox(Dialog)
 		self.buttonBox.setOrientation(QtCore.Qt.Horizontal)
-		self.buttonBox.setStandardButtons(QtWidgets.QDialogButtonBox.Cancel | QtWidgets.QDialogButtonBox.Ok)
+		self.buttonBox.setStandardButtons(
+			QtWidgets.QDialogButtonBox.Cancel | QtWidgets.QDialogButtonBox.Ok)
 		self.buttonBox.setObjectName("buttonBox")
 		self.verticalLayout_4.addWidget(self.buttonBox)
 		
@@ -120,17 +121,21 @@ class Ui_Dialog(object):
 	
 	def retranslateUi(self, Dialog):
 		Dialog.setWindowTitle(QtWidgets.QApplication.translate("Dialog", "Dialog", None, -1))
-		self.groupBox.setTitle(QtWidgets.QApplication.translate("Dialog", "Existing Project", None, -1))
+		self.groupBox.setTitle(
+			QtWidgets.QApplication.translate("Dialog", "Existing Project", None, -1))
 		self.label.setText(QtWidgets.QApplication.translate("Dialog", "Location", None, -1))
 		self.oldBrowseBtn.setText(QtWidgets.QApplication.translate("Dialog", "...", None, -1))
 		self.label_4.setText(QtWidgets.QApplication.translate("Dialog", "Name", None, -1))
 		self.label_2.setText(QtWidgets.QApplication.translate("Dialog", "Application", None, -1))
 		self.label_3.setText(QtWidgets.QApplication.translate("Dialog", "Description", None, -1))
-		self.oldErrorLabel.setText(QtWidgets.QApplication.translate("Dialog", "Old Project Errors", None, -1))
-		self.groupBox_2.setTitle(QtWidgets.QApplication.translate("Dialog", "New Project", None, -1))
+		self.oldErrorLabel.setText(
+			QtWidgets.QApplication.translate("Dialog", "Old Project Errors", None, -1))
+		self.groupBox_2.setTitle(
+			QtWidgets.QApplication.translate("Dialog", "New Project", None, -1))
 		self.label_5.setText(QtWidgets.QApplication.translate("Dialog", "Location", None, -1))
 		self.newBrowseBtn.setText(QtWidgets.QApplication.translate("Dialog", "...", None, -1))
 		self.label_8.setText(QtWidgets.QApplication.translate("Dialog", "Name", None, -1))
 		self.label_6.setText(QtWidgets.QApplication.translate("Dialog", "Application", None, -1))
 		self.label_7.setText(QtWidgets.QApplication.translate("Dialog", "Description", None, -1))
-		self.newErrorLabel.setText(QtWidgets.QApplication.translate("Dialog", "New Project Errors", None, -1))
+		self.newErrorLabel.setText(
+			QtWidgets.QApplication.translate("Dialog", "New Project Errors", None, -1))

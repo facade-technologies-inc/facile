@@ -292,7 +292,9 @@
                 <string>Ignore Explore</string>
             </property>
             <property name="toolTip">
-                <string>The user can interact with the target GUI without changes being recognized.</string>
+                <string>The user can interact with the target GUI without changes being
+                    recognized.
+                </string>
             </property>
             <property name="shortcut">
                 <string>Ctrl+Alt+I</string>

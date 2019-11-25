@@ -244,7 +244,8 @@ class ProjectExplorerModel(QAbstractItemModel):
 		# If the parent is the ghost root, return an index with the appropriate string.
 		if not parent.isValid():
 			if row == ProjectExplorerModel.TARGET_GUI_ROW:
-				return self.registerAndCreateIndex(row, column, ProjectExplorerModel.TARGET_GUI_LABEL)
+				return self.registerAndCreateIndex(row, column,
+				                                   ProjectExplorerModel.TARGET_GUI_LABEL)
 			
 			elif row == ProjectExplorerModel.PIPELINE_ROW:
 				return self.registerAndCreateIndex(row, column, ProjectExplorerModel.PIPELINE_LABEL)
@@ -256,10 +257,12 @@ class ProjectExplorerModel(QAbstractItemModel):
 		if isinstance(parentData, str):
 			if parentData == ProjectExplorerModel.TARGET_GUI_LABEL:
 				if row == ProjectExplorerModel.COMPONENT_ROW:
-					return self.registerAndCreateIndex(row, column, ProjectExplorerModel.COMPONENT_LABEL)
+					return self.registerAndCreateIndex(row, column,
+					                                   ProjectExplorerModel.COMPONENT_LABEL)
 				
 				elif row == ProjectExplorerModel.BEHAVIOR_ROW:
-					return self.registerAndCreateIndex(row, column, ProjectExplorerModel.BEHAVIOR_LABEL)
+					return self.registerAndCreateIndex(row, column,
+					                                   ProjectExplorerModel.BEHAVIOR_LABEL)
 				
 				else:
 					return QModelIndex()
@@ -270,14 +273,17 @@ class ProjectExplorerModel(QAbstractItemModel):
 						ProjectExplorerModel.NO_COMPONENTS_LABEL, parentData, 0))
 				
 				return self.registerAndCreateIndex(row, column,
-				                                   self._project.getTargetGUIModel().getRoot().getNthChild(row))
+				                                   self._project.getTargetGUIModel().getRoot().getNthChild(
+					                                   row))
 			
 			elif parentData == ProjectExplorerModel.BEHAVIOR_LABEL:
 				if len(self._project.getTargetGUIModel().getVisibilityBehaviors()) == 0:
 					return self.registerAndCreateIndex(row, column, ProjectExplorerModel.LeafIndex(
 						ProjectExplorerModel.NO_BEHAVIORS_LABEL, parentData, 0))
 				
-				return self.registerAndCreateIndex(row, column, self._project.getTargetGUIModel().getNthBehavior(row))
+				return self.registerAndCreateIndex(row, column,
+				                                   self._project.getTargetGUIModel().getNthBehavior(
+					                                   row))
 			
 			elif parentData == ProjectExplorerModel.PIPELINE_LABEL:
 				# TODO: replace this once action pipelines are implemented
@@ -285,7 +291,8 @@ class ProjectExplorerModel(QAbstractItemModel):
 					ProjectExplorerModel.NO_PIPELINES_LABEL, parentData, 1))
 			
 			else:
-				raise ProjectExplorerModel.InvalidLabelException("Unsupported data string: {}".format(parentData))
+				raise ProjectExplorerModel.InvalidLabelException(
+					"Unsupported data string: {}".format(parentData))
 		
 		elif isinstance(parentData, Component):
 			return self.registerAndCreateIndex(row, column, parentData.getNthChild(row))
@@ -293,13 +300,15 @@ class ProjectExplorerModel(QAbstractItemModel):
 		elif isinstance(parentData, VisibilityBehavior):
 			if row == 0:
 				return self.registerAndCreateIndex(row, column,
-				                                   ProjectExplorerModel.LeafIndex(parentData.getSrcComponent(),
-				                                                                  parentData))
+				                                   ProjectExplorerModel.LeafIndex(
+					                                   parentData.getSrcComponent(),
+					                                   parentData))
 			
 			if row == 1:
 				return self.registerAndCreateIndex(row, column,
-				                                   ProjectExplorerModel.LeafIndex(parentData.getDestComponent(),
-				                                                                  parentData))
+				                                   ProjectExplorerModel.LeafIndex(
+					                                   parentData.getDestComponent(),
+					                                   parentData))
 		
 		elif isinstance(parentData, ActionPipeline):
 			# TODO: replace this once action pipelines are implemented
@@ -330,11 +339,13 @@ class ProjectExplorerModel(QAbstractItemModel):
 			if data in (ProjectExplorerModel.TARGET_GUI_LABEL, ProjectExplorerModel.PIPELINE_LABEL):
 				return QModelIndex()
 			
-			elif data in (ProjectExplorerModel.COMPONENT_LABEL, ProjectExplorerModel.BEHAVIOR_LABEL):
+			elif data in (
+			ProjectExplorerModel.COMPONENT_LABEL, ProjectExplorerModel.BEHAVIOR_LABEL):
 				return self.registerAndCreateIndex(0, 0, ProjectExplorerModel.TARGET_GUI_LABEL)
 			
 			else:
-				raise ProjectExplorerModel.InvalidLabelException("Unsupported label: {}".format(data))
+				raise ProjectExplorerModel.InvalidLabelException(
+					"Unsupported label: {}".format(data))
 		
 		elif isinstance(data, Component):
 			parentComponent = data.getParent()
@@ -342,7 +353,8 @@ class ProjectExplorerModel(QAbstractItemModel):
 				return self.registerAndCreateIndex(0, 0, ProjectExplorerModel.COMPONENT_LABEL)
 			
 			else:
-				return self.registerAndCreateIndex(parentComponent.getPositionInSiblings(), 0, parentComponent)
+				return self.registerAndCreateIndex(parentComponent.getPositionInSiblings(), 0,
+				                                   parentComponent)
 		
 		elif isinstance(data, VisibilityBehavior):
 			return self.registerAndCreateIndex(1, 0, ProjectExplorerModel.BEHAVIOR_LABEL)
@@ -358,14 +370,16 @@ class ProjectExplorerModel(QAbstractItemModel):
 				return self.registerAndCreateIndex(data.getParentIndex(), 0, parentData)
 			
 			elif isinstance(innerData, Component):
-				return self.registerAndCreateIndex(parentData.getPositionInSiblings(), 0, parentData)
+				return self.registerAndCreateIndex(parentData.getPositionInSiblings(), 0,
+				                                   parentData)
 			
 			else:
 				raise ProjectExplorerModel.UnsupportedTypeException(
 					"Unsupported data type in LeafIndex: {}".format(innerData))
 		
 		else:
-			raise ProjectExplorerModel.UnsupportedTypeException("Unsupported data type in index: {}".format(type(data)))
+			raise ProjectExplorerModel.UnsupportedTypeException(
+				"Unsupported data type in index: {}".format(type(data)))
 	
 	def rowCount(self, parent: QModelIndex) -> int:
 		"""
@@ -408,7 +422,8 @@ class ProjectExplorerModel(QAbstractItemModel):
 			pass
 		
 		else:
-			raise ProjectExplorerModel.UnsupportedTypeException("Unsupported data type in index: {}".format(type(data)))
+			raise ProjectExplorerModel.UnsupportedTypeException(
+				"Unsupported data type in index: {}".format(type(data)))
 	
 	def columnCount(self, parent: QModelIndex) -> int:
 		"""
@@ -516,9 +531,11 @@ class ProjectExplorerModel(QAbstractItemModel):
 						return None
 		
 		else:
-			raise ProjectExplorerModel.UnsupportedTypeException("Unsupported data type in index: {}".format(type(data)))
+			raise ProjectExplorerModel.UnsupportedTypeException(
+				"Unsupported data type in index: {}".format(type(data)))
 	
-	def headerData(self, section: int, orientation: Qt.Orientation, role: Qt.ItemDataRole = Qt.DisplayRole) -> str:
+	def headerData(self, section: int, orientation: Qt.Orientation,
+	               role: Qt.ItemDataRole = Qt.DisplayRole) -> str:
 		"""
 		Gets the header data.
 		
@@ -577,7 +594,8 @@ class ProjectExplorerModel(QAbstractItemModel):
 					if isinstance(data, Component):
 						self.componentSelected.emit(data)
 			else:
-				raise ProjectExplorerModel.InvalidSelectionException("Multiple row selection is not supported")
+				raise ProjectExplorerModel.InvalidSelectionException(
+					"Multiple row selection is not supported")
 	
 	def registerAndCreateIndex(self, row, col, data):
 		"""

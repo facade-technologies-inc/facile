@@ -61,7 +61,8 @@ class VisibilityBehavior(Entity):
 			self._reactionType = reactionType
 		else:
 			self._reactionType = "show"
-			raise ValueError("VisibilityBehavior(): reactionType must be one of %r." % VALID_REACTION_TYPES)
+			raise ValueError(
+				"VisibilityBehavior(): reactionType must be one of %r." % VALID_REACTION_TYPES)
 	
 	def getDestComponent(self) -> 'Component':
 		"""
