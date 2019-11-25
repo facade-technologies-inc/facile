@@ -68,7 +68,12 @@ class ComponentGraphics(QGraphicsItem):
         self.adjustPositioning()
 
     def getNumberOfTokens(self):
-        #TODO: getSuperToken function from Sean's model
+        """
+        Get the number of tokens.
+
+        :return: the number of tokens
+        :rtype: int
+        """
         tokensCount = len(self._dataComponent.getSuperToken().tokens)
 
         return tokensCount
@@ -338,7 +343,9 @@ class ComponentGraphics(QGraphicsItem):
         painter.drawText(int(ComponentGraphics.MARGIN*1.5), int(ComponentGraphics.MARGIN+30), name)
 
         token_count = str(self.getNumberOfTokens())
-        painter.drawText(int(ComponentGraphics.MARGIN*1.5 + 100), int(ComponentGraphics.MARGIN + 30), token_count)
+        rectBox = QRectF(ComponentGraphics.MARGIN*1.5, ComponentGraphics.MARGIN+30, 100, 100)
+        painter.drawText(rectBox, 0, token_count)
+        painter.drawRect(rectBox)
 
     def mousePressEvent(self, event):
         """
