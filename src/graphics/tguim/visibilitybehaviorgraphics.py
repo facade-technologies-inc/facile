@@ -84,15 +84,15 @@ class VBGraphics(QGraphicsItem):
 			self._dataVB) + 1
 		# This is the index of the edge at the DesNode's _edgeDesList
 		desNodeIndex = self._dataVB.getDestComponent().getDestVisibilityBehaviors().index(
-			self._dataEdge) + 1
+			self._dataVB) + 1
 		
 		x1 = self._dataVB.getSrcComponent().getGraphicsItem().boundingRect().x()  # x does not change, stay at the left most of the node
 		y1 = self._dataVB.getSrcComponent().getGraphicsItem().boundingRect().y() + (
-				heightSrcNode / (lengthSrcNodeSrcEdgeList + 1)) * srcNodeIndex
+			heightSrcNode / (lengthSrcNodeSrcEdgeList + 1)) * srcNodeIndex
 		x2 = self._destComponentCenterPoint.x() + (
-				self._destComponentCenterPoint.x() - self._dataVB.getDestComponent().getGraphicsItem().boundingRect().x())
+			self._destComponentCenterPoint.x() - self._dataVB.getDestComponent().getGraphicsItem().boundingRect().x())
 		y2 = self._dataVB.getDestComponent().getGraphicsItem().boundingRect().y() + (
-				heightDesNode / (lengthDesNodeDesEdgeList + 1)) * desNodeIndex
+			heightDesNode / (lengthDesNodeDesEdgeList + 1)) * desNodeIndex
 		
 		# painter.drawLine(x1, y1, x2, y2)
 		path = QPainterPath()
