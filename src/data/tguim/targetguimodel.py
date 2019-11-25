@@ -20,6 +20,8 @@
 This module contains the TargetGuiModel class.
 """
 
+from collections import OrderedDict
+
 from PySide2.QtCore import QObject, Slot, Signal
 
 from data.properties import Properties
@@ -48,8 +50,8 @@ class TargetGuiModel(QObject):
 		QObject.__init__(self)
 		self._scene = TScene(self)
 		self._root = Component(self)  # Note: remains constant. Represents the application.
-		self._components = {}  # Note: Root Component not stored here.
-		self._visibilityBehaviors = {}
+		self._components = OrderedDict()  # Note: Root Component not stored here.
+		self._visibilityBehaviors = OrderedDict()
 		
 		# Allows easy lookup of components given a super token
 		self._superTokenToComponentMapping = {None: None}
@@ -183,3 +185,8 @@ class TargetGuiModel(QObject):
 		"""
 		if newVisBehavior.getId() not in self._visibilityBehaviors:
 			self._visibilityBehaviors[newVisBehavior.getId()] = newVisBehavior
+
+		src = newVisBehavior.getSrcComponent()
+		dest = newVisBehavior.getDestComponent()
+		src.addSrcVisibilityBehavior(newVisBehavior)
+		dest.addDestVisibilityBehavior(newVisBehavior)

@@ -1,22 +1,22 @@
 """
 ..
-    /------------------------------------------------------------------------------\
-    |                 -- FACADE TECHNOLOGIES INC.  CONFIDENTIAL --                 |
-    |------------------------------------------------------------------------------|
-    |                                                                              |
-    |    Copyright [2019] Facade Technologies Inc.                                 |
-    |    All Rights Reserved.                                                      |
-    |                                                                              |
-    | NOTICE:  All information contained herein is, and remains the property of    |
-    | Facade Technologies Inc. and its suppliers if any.  The intellectual and     |
-    | and technical concepts contained herein are proprietary to Facade            |
-    | Technologies Inc. and its suppliers and may be covered by U.S. and Foreign   |
-    | Patents, patents in process, and are protected by trade secret or copyright  |
-    | law.  Dissemination of this information or reproduction of this material is  |
-    | strictly forbidden unless prior written permission is obtained from Facade   |
-    | Technologies Inc.                                                            |
-    |                                                                              |
-    \------------------------------------------------------------------------------/
+	/------------------------------------------------------------------------------\
+	|                 -- FACADE TECHNOLOGIES INC.  CONFIDENTIAL --                 |
+	|------------------------------------------------------------------------------|
+	|                                                                              |
+	|    Copyright [2019] Facade Technologies Inc.                                 |
+	|    All Rights Reserved.                                                      |
+	|                                                                              |
+	| NOTICE:  All information contained herein is, and remains the property of    |
+	| Facade Technologies Inc. and its suppliers if any.  The intellectual and     |
+	| and technical concepts contained herein are proprietary to Facade            |
+	| Technologies Inc. and its suppliers and may be covered by U.S. and Foreign   |
+	| Patents, patents in process, and are protected by trade secret or copyright  |
+	| law.  Dissemination of this information or reproduction of this material is  |
+	| strictly forbidden unless prior written permission is obtained from Facade   |
+	| Technologies Inc.                                                            |
+	|                                                                              |
+	\------------------------------------------------------------------------------/
 
 This module contains the StateMachine class which dictates which operations can
 be done in Facile at any given time.
@@ -156,6 +156,10 @@ class StateMachine:
 		# When the "Add Behavior" button is clicked, only go into the ADDING_VB state if we're
 		# currently in the MODEL_MANIPULATION state.
 		elif event == StateMachine.Event.ADD_VB_CLICKED:
+			if self.curState == StateMachine.State.ADDING_VB:
+				self.vbComponents = []
+				nextState = StateMachine.State.MODEL_MANIPULATION
+			
 			if self.curState == StateMachine.State.MODEL_MANIPULATION:
 				self.vbComponents = []
 				nextState = StateMachine.State.ADDING_VB
@@ -321,20 +325,6 @@ class StateMachine:
 		ui = self.view.ui
 		p = self.view._project
 		
-		if previousState == StateMachine.State.EXPLORATION:
-			self._project.getObserver().pause()
-			self._project.getExplorer().pause()
-		
-		ui.actionSave_Project.setEnabled(True)
-		ui.actionSave_as.setEnabled(True)
-		ui.actionDetailed_View.setEnabled(True)
-		ui.actionShow_Behaviors.setEnabled(True)
-		ui.actionAdd_Behavior.setEnabled(True)
-		ui.actionStart_App.setEnabled(True)
-		ui.actionStop_App.setEnabled(True)
-		ui.actionAutoExplore.setEnabled(True)
-		ui.actionManualExplore.setEnabled(True)
-		
 		if event == StateMachine.Event.PROJECT_OPENED:
 			v.setWindowTitle("Facile - " + self._project.getMainProjectFile())
 			p.save()
@@ -347,6 +337,19 @@ class StateMachine:
 			ui.actionStop_App.setEnabled(False)
 			ui.actionManualExplore.setEnabled(False)
 			ui.actionAutoExplore.setEnabled(False)
+			p.startTargetApplication()  # TODO: Remove this once application controls exist
+		
+		if previousState == StateMachine.State.EXPLORATION:
+			self._project.getObserver().pause()
+			self._project.getExplorer().pause()
+		
+		ui.actionSave_Project.setEnabled(True)
+		ui.actionSave_as.setEnabled(True)
+		ui.actionAutoExplore.setEnabled(True)
+		ui.actionManualExplore.setEnabled(True)
+		ui.actionDetailed_View.setEnabled(True)
+		ui.actionShow_Behaviors.setEnabled(True)
+		ui.actionAdd_Behavior.setEnabled(True)
 	
 	def _state_ADDING_VB(self, event: Event, previousState: State, *args, **kwargs) -> None:
 		"""

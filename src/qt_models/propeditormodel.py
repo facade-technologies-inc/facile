@@ -85,12 +85,9 @@ class PropModel(QAbstractItemModel):
 			return QModelIndex()
 		
 		data = index.internalPointer()
-		
 		if data in self._propData.getCategories():
 			return QModelIndex()
-		
 		category = self._propData.getPropertyCategory(data)
-		
 		return self.createIndex(self._propData.getCategoryIndex(category), 0, category)
 	
 	def columnCount(self, parent: QModelIndex) -> int:
@@ -116,9 +113,7 @@ class PropModel(QAbstractItemModel):
 		if not parent.isValid():
 			numCategories = self._propData.getNumCategories()
 			return numCategories
-		
 		parentData = parent.internalPointer()
-		
 		if parentData in self._propData.getCategories():
 			return self._propData.getNumPropertiesInCategory(parentData)
 		else:
@@ -184,7 +179,6 @@ class PropModel(QAbstractItemModel):
 		:return: Model of header data.
 		:rtype: object
 		"""
-		
 		if orientation == Qt.Horizontal and role == Qt.DisplayRole:
 			return ["Name", "Value"][section]
 		return None
@@ -198,7 +192,6 @@ class PropModel(QAbstractItemModel):
 		"""
 		parent = QModelIndex()
 		work = [parent]
-		
 		while len(work) > 0:
 			cur = work.pop()
 			

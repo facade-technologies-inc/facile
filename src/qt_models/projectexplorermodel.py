@@ -335,8 +335,7 @@ class ProjectExplorerModel(QAbstractItemModel):
 			if data in (ProjectExplorerModel.TARGET_GUI_LABEL, ProjectExplorerModel.PIPELINE_LABEL):
 				return QModelIndex()
 			
-			elif data in (
-			ProjectExplorerModel.COMPONENT_LABEL, ProjectExplorerModel.BEHAVIOR_LABEL):
+			elif data in (ProjectExplorerModel.COMPONENT_LABEL, ProjectExplorerModel.BEHAVIOR_LABEL):
 				return self.registerAndCreateIndex(0, 0, ProjectExplorerModel.TARGET_GUI_LABEL)
 			
 			else:
@@ -366,8 +365,9 @@ class ProjectExplorerModel(QAbstractItemModel):
 				return self.registerAndCreateIndex(data.getParentIndex(), 0, parentData)
 			
 			elif isinstance(innerData, Component):
-				return self.registerAndCreateIndex(parentData.getPositionInSiblings(), 0,
-				                                   parentData)
+				visBehaviors = list(self._project.getTargetGUIModel().getVisibilityBehaviors().values())
+				visBehaviorIdx = visBehaviors.index(parentData)
+				return self.registerAndCreateIndex(visBehaviorIdx, 0, parentData)
 			
 			else:
 				raise ProjectExplorerModel.UnsupportedTypeException(
@@ -514,7 +514,7 @@ class ProjectExplorerModel(QAbstractItemModel):
 					if col == 0:
 						return "From"
 					elif col == 1:
-						return innerData.getName()
+						return innerData.getProperties().getProperty("Name")[1].getValue()
 					else:
 						return None
 				
@@ -522,7 +522,7 @@ class ProjectExplorerModel(QAbstractItemModel):
 					if col == 0:
 						return "To"
 					elif col == 1:
-						return innerData.getName()
+						return innerData.getProperties().getProperty("Name")[1].getValue()
 					else:
 						return None
 		

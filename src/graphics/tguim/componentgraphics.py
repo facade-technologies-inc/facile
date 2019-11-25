@@ -286,8 +286,8 @@ class ComponentGraphics(QGraphicsItem):
 	
 	def shape(self):
 		"""
-	   Returns the shape of this item as a QPainterPath in local coordinates.
-	   The shape could be used for many things, like collision detection.
+		Returns the shape of this item as a QPainterPath in local coordinates.
+		The shape could be used for many things, like collision detection.
 
 		:return Returns the shape of this item as a QPainterPath in local coordinates.
 		:rtype QPainterPath
