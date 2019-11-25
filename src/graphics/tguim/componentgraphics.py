@@ -343,9 +343,10 @@ class ComponentGraphics(QGraphicsItem):
         painter.drawText(int(ComponentGraphics.MARGIN*1.5), int(ComponentGraphics.MARGIN+30), name)
 
         token_count = str(self.getNumberOfTokens())
-        rectBox = QRectF(ComponentGraphics.MARGIN*1.5, ComponentGraphics.MARGIN+30, 100, 100)
-        painter.drawText(rectBox, 0, token_count)
+        rectBox = QRectF(self.boundingRect().width() - ComponentGraphics.MARGIN, -ComponentGraphics.MARGIN,
+                         ComponentGraphics.MARGIN * 2, ComponentGraphics.MARGIN * 2)
         painter.drawRect(rectBox)
+        painter.drawText(rectBox.center(), token_count)
 
     def mousePressEvent(self, event):
         """
