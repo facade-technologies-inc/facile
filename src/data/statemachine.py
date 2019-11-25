@@ -126,6 +126,10 @@ class StateMachine:
         # When the "Add Behavior" button is clicked, only go into the ADDING_VB state if we're
         # currently in the MODEL_MANIPULATION state.
         elif event == StateMachine.Event.ADD_VB_CLICKED:
+            if self.curState == StateMachine.State.ADDING_VB:
+                self.vbComponents = []
+                nextState = StateMachine.State.MODEL_MANIPULATION
+            
             if self.curState == StateMachine.State.MODEL_MANIPULATION:
                 self.vbComponents = []
                 nextState = StateMachine.State.ADDING_VB

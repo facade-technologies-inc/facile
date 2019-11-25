@@ -184,3 +184,8 @@ class TargetGuiModel(QObject):
         """
         if newVisBehavior.getId() not in self._visibilityBehaviors:
             self._visibilityBehaviors[newVisBehavior.getId()] = newVisBehavior
+            
+        src = newVisBehavior.getSrcComponent()
+        dest = newVisBehavior.getDestComponent()
+        src.addSrcVisibilityBehavior(newVisBehavior)
+        dest.addDestVisibilityBehavior(newVisBehavior)
