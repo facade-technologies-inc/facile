@@ -345,7 +345,7 @@ class ComponentGraphics(QGraphicsItem):
 		name = self.getLabel()
 		painter.drawText(int(ComponentGraphics.MARGIN * 1.5), int(ComponentGraphics.MARGIN + 30),
 		                 name)
-	
+		
 		token_count = str(self.getNumberOfTokens())
 		rectBox = QRectF(self.boundingRect().width() - ComponentGraphics.MARGIN,
 		                 -ComponentGraphics.MARGIN,
