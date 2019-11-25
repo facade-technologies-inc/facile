@@ -20,12 +20,14 @@
 This module contains the Project class.
 """
 
-import os
 import json
-import psutil
+import os
 from subprocess import PIPE
-from qt_models.projectexplorermodel import ProjectExplorerModel
+
+import psutil
+
 from data.tguim.targetguimodel import TargetGuiModel
+from qt_models.projectexplorermodel import ProjectExplorerModel
 from tguiil.explorer import Explorer
 from tguiil.observer import Observer
 
@@ -42,7 +44,7 @@ class Project:
 	# TODO: Store backend as enum instead of string
 	
 	def __init__(self, name: str, description: str, exe: str, backend: str,
-				projectDir: str = "~/", startupTimeout: int = 10) -> 'Project':
+	             projectDir: str = "~/", startupTimeout: int = 10) -> 'Project':
 		"""
 		Constructs a Project object.
 		
@@ -83,7 +85,7 @@ class Project:
 		self.setExecutableFile(exe)
 		self.setBackend(backend)
 		self.setStartupTimeout(startupTimeout)
-		
+	
 	def getObserver(self) -> 'Observer':
 		"""
 		Gets the project's observer
@@ -111,7 +113,7 @@ class Project:
 			if self._explorer is None:
 				self._explorer = Explorer(self._process.pid, self._backend)
 			return self._explorer
-
+	
 	def getTargetGUIModel(self) -> 'TargetGuiModel':
 		"""
 		Gets the the project's target GUI model.
@@ -120,7 +122,7 @@ class Project:
 		:rtype: TargetGuiModel
 		"""
 		return self._targetGUIModel
-		
+	
 	def setProjectDir(self, url: str) -> None:
 		"""
 		Sets the project's directory.
@@ -132,7 +134,7 @@ class Project:
 		"""
 		
 		self._projectDir = os.path.abspath(url)
-		
+	
 	def setDescription(self, description: str) -> None:
 		"""
 		Sets the project's description
@@ -144,7 +146,7 @@ class Project:
 		"""
 		
 		self._description = description
-		
+	
 	def setName(self, name: str) -> None:
 		"""
 		Sets the name of the project
@@ -156,7 +158,7 @@ class Project:
 		"""
 		
 		self._name = name
-		
+	
 	def setExecutableFile(self, exe: str) -> None:
 		"""
 		Sets the target application of the project.
@@ -168,19 +170,23 @@ class Project:
 		"""
 		
 		self._executable = exe
-		
-	def setBackend(self, backend: str) -> None:
+	
+	def setBackend(self, backend: str = "uia") -> None:
 		"""
 		Sets the accessibility technology (backend) used to control the target application.
+		
+		Defaults to uia.
 		
 		:param backend: The accessibility technology used to control the target application
 		:type backend: str
 		:return: None
 		:rtype: NoneType
 		"""
-		
-		self._backend = backend
-		
+		if backend.lower() != "win32" and backend.lower() != "uia":
+			self._backend = "uia"
+		else:
+			self._backend = backend.lower()
+	
 	def setStartupTimeout(self, timeout: int) -> None:
 		"""
 		Sets the timeout for the target application startup time.
@@ -192,7 +198,7 @@ class Project:
 		"""
 		
 		self._startupTimeout = timeout
-		
+	
 	def getName(self) -> str:
 		"""
 		Gets the project's name.
@@ -242,7 +248,7 @@ class Project:
 		"""
 		
 		return self._startupTimeout
-		
+	
 	def getProjectDir(self) -> str:
 		"""
 		Gets the directory that the project is located in.
@@ -252,7 +258,7 @@ class Project:
 		"""
 		
 		return self._projectDir
-		
+	
 	def getMainProjectFile(self) -> str:
 		"""
 		Gets the project's main file path (the .fcl file)
@@ -282,7 +288,7 @@ class Project:
 		"""
 		
 		return os.path.join(self._projectDir, self._name + ".apim")
-
+	
 	def startTargetApplication(self) -> None:
 		"""
 		Starts the target application
@@ -291,7 +297,7 @@ class Project:
 		:rtype: None
 		"""
 		self._process = psutil.Popen([self._executable], stdout=PIPE)
-		
+	
 	def getProcess(self) -> psutil.Process:
 		"""
 		Gets the process of the target application iff it is running.
@@ -302,7 +308,7 @@ class Project:
 		if (self._process is None) or (not self._process.is_running()):
 			return None
 		return self._process
-
+	
 	def getProjectExplorerModel(self) -> ProjectExplorerModel:
 		"""
 		Gets a model that allows a Qt tree view to access the data in a limited manner.
@@ -336,11 +342,11 @@ class Project:
 		startupTimeout = projectJSON["Application Information"]["Startup Timeout"]
 		
 		loadedProject = Project(name, description, exe, backend, projectDir, startupTimeout)
-
+		
 		# TODO: Load models and put them in the project object
-		#loadedProject.setTargetGUIModel(projectJSON["Model Files"]["Target GUI Model"])
-		#loadedProject.setAPIModel(["Model Files"]["API Model"] = self._APIModel)
-
+		# loadedProject.setTargetGUIModel(projectJSON["Model Files"]["Target GUI Model"])
+		# loadedProject.setAPIModel(["Model Files"]["API Model"] = self._APIModel)
+		
 		return loadedProject
 	
 	def save(self) -> None:
@@ -361,12 +367,12 @@ class Project:
 		projectDict["Application Information"]["Startup Timeout"] = self._startupTimeout
 		projectDict["Model Files"] = {}
 		
-		#projectDict["Model Files"]["Target GUI Model"] = self._targetGUIModel
-		#projectDict["Model Files"]["API Model"] = self._APIModel
+		# projectDict["Model Files"]["Target GUI Model"] = self._targetGUIModel
+		# projectDict["Model Files"]["API Model"] = self._APIModel
 		
 		with open(self.getMainProjectFile(), "w") as file:
 			file.write(json.dumps(projectDict, indent=4))
-		
+	
 	def addToRecents(self) -> None:
 		"""
 		Adds the project to the recents file.
@@ -389,7 +395,7 @@ class Project:
 			recentProjects.insert(0, self.getMainProjectFile())
 			with open(recentsFile, "w") as recents:
 				recents.write(json.dumps(recentProjects, indent=4))
-				
+	
 	@staticmethod
 	def getRecents(limit: int = 0) -> list:
 		"""
@@ -405,18 +411,18 @@ class Project:
 		try:
 			with open(os.path.join(os.getcwd(), "temp/recentProjects.json"), "r") as recents:
 				recentProjects = json.loads(recents.read())
-				
+		
 		except FileNotFoundError:
 			recentProjects = []
 		
 		# limit the length of the list
 		if limit > 0:
 			recentProjects = recentProjects[:limit]
-			
+		
 		# remove recent projects that don't exist
 		filteredProjects = []
 		for proj in recentProjects:
 			if os.path.exists(proj):
 				filteredProjects.append(proj)
-			
+		
 		return filteredProjects

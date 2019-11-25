@@ -22,23 +22,24 @@ This module contains the Condition class.
 
 
 class Condition:
-    """
-    This class defines when a visibility behavior should or should not be taken.
-    """
-    def __init__(self) -> 'Condition':
-        """
-        Constructs a new Condition object.
+	"""
+	This class defines when a visibility behavior should or should not be taken.
+	"""
+	
+	def __init__(self) -> 'Condition':
+		"""
+		Constructs a new Condition object.
 
-        :return: The constructed Condition object.
-        :rtype: Condition
-        """
-        pass
+		:return: The constructed Condition object.
+		:rtype: Condition
+		"""
+		pass
+	
+	def evaluateCondition(self) -> bool:
+		"""
+		Determine if visibility behavior should be taken.
 
-    def evaluateCondition(self) -> bool:
-        """
-        Determine if visibility behavior should be taken.
-
-        :return: Boolean -> True if visibility behavior should be taken.  False otherwise.
-        :rtype: bool
-        """
-        return True
+		:return: Boolean -> True if visibility behavior should be taken.  False otherwise.
+		:rtype: bool
+		"""
+		return True

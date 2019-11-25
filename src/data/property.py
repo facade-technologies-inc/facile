@@ -20,11 +20,13 @@
 The module contains the Property() class.
 """
 
+
 class Property:
 	"""
 	This class allows us to establish the data of our properties.
 	"""
-	def __init__(self, name: str, value: object, type: object, readOnly: bool=False):
+	
+	def __init__(self, name: str, value: object, type: object, readOnly: bool = False):
 		"""
 		Constructs a Property Object
 
@@ -43,7 +45,7 @@ class Property:
 		self._value = value
 		self._type = type
 		self._readOnly = readOnly
-
+	
 	def isReadOnly(self) -> bool:
 		"""
 		Shows the property's data structure.
@@ -52,7 +54,7 @@ class Property:
 		:rtype: bool
 		"""
 		return self._readOnly
-
+	
 	def getName(self) -> str:
 		"""
 		Gets the property's name.
@@ -61,7 +63,7 @@ class Property:
 		:rtype: str
 		"""
 		return self._name
-
+	
 	def getValue(self) -> object:
 		"""
 		Gets the property's value.
@@ -70,7 +72,7 @@ class Property:
 		:rtype: object
 		"""
 		return self._value
-
+	
 	def getType(self) -> object:
 		"""
 		Gets the property's type.
@@ -79,7 +81,7 @@ class Property:
 		:rtype: object
 		"""
 		return self._type
-
+	
 	def setValue(self, newValue: object) -> bool:
 		"""
 		Sets the value if there is a new value.
@@ -94,10 +96,9 @@ class Property:
 		else:
 			self._value = newValue
 			return True
-
-
+	
 	def __str__(self):
 		return "{}:{}".format(self._name, self._value)
-
+	
 	def __repr__(self):
 		return str(self)
