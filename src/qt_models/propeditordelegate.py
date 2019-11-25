@@ -111,7 +111,7 @@ class PropertyEditorDelegate(QStyledItemDelegate):
 		data = index.internalPointer()
 		if index.column() == 1 and isinstance(data, Property) and data.getType() == bool:
 			return None
-
+		
 		if type(data) == Property:
 			if index.column() == 1:
 				t = data.getType()

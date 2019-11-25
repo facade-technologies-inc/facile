@@ -50,7 +50,7 @@ class TargetGuiModel(QObject):
 		QObject.__init__(self)
 		self._scene = TScene(self)
 		self._root = Component(self)  # Note: remains constant. Represents the application.
-
+		
 		self._components = OrderedDict()  # Note: Root Component not stored here.
 		self._visibilityBehaviors = OrderedDict()
 		
@@ -186,7 +186,7 @@ class TargetGuiModel(QObject):
 		"""
 		if newVisBehavior.getId() not in self._visibilityBehaviors:
 			self._visibilityBehaviors[newVisBehavior.getId()] = newVisBehavior
-
+		
 		src = newVisBehavior.getSrcComponent()
 		dest = newVisBehavior.getDestComponent()
 		src.addSrcVisibilityBehavior(newVisBehavior)

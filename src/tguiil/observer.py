@@ -71,7 +71,7 @@ class Observer(QThread):
 		self._process = psutil.Process(processID)
 		self._backend = backend
 		self._childMapping = {None: []}  # maps each super token to its list of children.
-
+		
 		self._playing = False
 		self._playingLock = Lock()
 	
@@ -85,7 +85,7 @@ class Observer(QThread):
 		app = Application(backend=self._backend)
 		app.setProcess(self._process)
 		while self._process.is_running():
-
+			
 			if not self.isPlaying(): return 0
 			
 			componentCount = 0
@@ -93,9 +93,9 @@ class Observer(QThread):
 			# is a GUI component and the second element is the parent super token.
 			work = [(win, None) for win in app.windows()]
 			while len(work) > 0:
-
+				
 				if not self.isPlaying(): return 0
-
+				
 				curComponent, parentSuperToken = work.pop()
 				if curComponent.friendly_class_name() not in Observer.ignoreTypes:
 					try:
@@ -252,7 +252,7 @@ class Observer(QThread):
 		else:
 			selectedSuperToken.addToken(token)
 			return selectedSuperToken
-
+	
 	def setPlaying(self, status: bool) -> None:
 		"""
 		Sets the running flag.
@@ -275,7 +275,7 @@ class Observer(QThread):
 		running = self._playing
 		self._playingLock.release()
 		return running
-
+	
 	def play(self):
 		"""
 		Runs the Observer.
@@ -288,7 +288,7 @@ class Observer(QThread):
 		
 		if self.isRunning():
 			return True
-
+		
 		self.setPlaying(True)
 		self.start()
 		return self.isRunning()

@@ -58,7 +58,8 @@ class SuperToken:
 		else:
 			px = parent.tokens[0].rectangle.left
 			py = parent.tokens[0].rectangle.top
-		self.posRelativeToParent = (token.rectangle.left - px, token.rectangle.top - py, width, height)
+		self.posRelativeToParent = (
+		token.rectangle.left - px, token.rectangle.top - py, width, height)
 	
 	def addToken(self, tokenA):
 		"""

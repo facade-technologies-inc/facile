@@ -66,7 +66,7 @@ class VisibilityBehavior(Entity):
 			self._reactionType = "show"
 			raise ValueError(
 				"VisibilityBehavior(): reactionType must be one of %r." % VALID_REACTION_TYPES)
-
+		
 		predefined = ["Base", "Visibility Behavior"]
 		custom = {}
 		props = Properties.createPropertiesObject(predefined, custom)

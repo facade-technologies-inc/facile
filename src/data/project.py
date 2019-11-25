@@ -298,7 +298,7 @@ class Project:
 		:rtype: None
 		"""
 		self._process = psutil.Popen([self._executable], stdout=PIPE)
-
+	
 	def stopTargetApplication(self) -> None:
 		"""
 		Kills the target application.
@@ -310,7 +310,7 @@ class Project:
 			self._process.kill()
 		except:
 			pass
-
+	
 	def getProcess(self) -> psutil.Process:
 		"""
 		Gets the process of the target application iff it is running.

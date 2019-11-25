@@ -209,7 +209,7 @@ class FacileView(QMainWindow):
 		:rtype: NoneType
 		"""
 		self._stateMachine.addBehaviorClicked()
-
+	
 	@Slot()
 	def onStartAppTriggered(self):
 		"""
@@ -231,7 +231,7 @@ class FacileView(QMainWindow):
 		"""
 		self._project.stopTargetApplication()
 		self._stateMachine.stopApp()
-
+	
 	@Slot(int)
 	def onItemSelected(self, id: int):
 		"""

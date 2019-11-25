@@ -119,7 +119,7 @@ class StateMachine:
 		:rtype: NoneType
 		"""
 		nextState = None
-
+		
 		# If an update event takes place, we just force the state handler to run again.
 		if event == StateMachine.Event.UPDATE:
 			nextState = self.curState
@@ -159,7 +159,7 @@ class StateMachine:
 			if self.curState == StateMachine.State.ADDING_VB:
 				self.vbComponents = []
 				nextState = StateMachine.State.MODEL_MANIPULATION
-
+			
 			if self.curState == StateMachine.State.MODEL_MANIPULATION:
 				self.vbComponents = []
 				nextState = StateMachine.State.ADDING_VB
@@ -256,7 +256,7 @@ class StateMachine:
 		label.setFlags(Qt.NoItemFlags)
 		blankPropertiesModel.appendRow([label])
 		ui.propertyEditorView.setModel(blankPropertiesModel)
-
+		
 		# Create Timer for detecting app termination
 		def tick() -> None:
 			if not self._project.getProcess():
@@ -266,7 +266,7 @@ class StateMachine:
 		self.view.appWatcher = QTimer(self.view)
 		self.view.appWatcher.timeout.connect(tick)
 		self.view.appWatcher.setInterval(500)
-
+		
 		# Create actions for recent projects
 		try:
 			recentProjects = Project.getRecents(limit=10)
