@@ -33,6 +33,7 @@ from PySide2.QtGui import QPalette, QColor, Qt, QPixmap
 from PySide2.QtCore import QTimer
 
 from gui.facileview import FacileView
+from gui.splashscreen import FacileSplashScreen
 
 if __name__ == "__main__":
     
@@ -61,8 +62,7 @@ if __name__ == "__main__":
     app = QApplication([])
     stylize(app)
 
-    splash = QSplashScreen()
-    splash.setPixmap(QPixmap('../resources/facade_logo.png'))
+    splash = FacileSplashScreen()
     splash.show()
 
     window = FacileView()

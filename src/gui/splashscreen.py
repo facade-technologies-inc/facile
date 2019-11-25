@@ -22,7 +22,7 @@ This file contains the FacileSplashScreen class which creates a loading window b
 is started up.
 
 """
-from PySide2.QtWidgets import QSplashScreen
+from PySide2.QtWidgets import QSplashScreen, QApplication
 from PySide2.QtCore import QTimer
 from PySide2.QtGui import QPixmap
 
@@ -32,10 +32,9 @@ class FacileSplashScreen(QSplashScreen):
 	"""
 	def __init__(self):
 		QSplashScreen.__init__(self)
-		splash_pix = QPixmap('C:/Users/Brandi/Desktop/Facade/facile/resources/facade_logo.png')
-		splash_pix_height = splash_pix.scaledToHeight(64)
+		height = QApplication.instance().primaryScreen().size().height() * .5
+		self.setPixmap(QPixmap('../resources/facade_logo.png').scaledToHeight(height))
 		
-		self.setPixmap(splash_pix_height)
 
 
 """
