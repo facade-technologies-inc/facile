@@ -37,7 +37,7 @@ class Application(pywinauto.Desktop):
 		app.setProcess(process)
 		appWindows = app.windows()
 	"""
-
+	
 	#TODO: If the original process was just used to create other processes and then it disappears, the child processes
 	# are called zombies. currently, this class does not work with applications that fit this description. This class
 	# could be made more robust.
@@ -91,7 +91,7 @@ class Application(pywinauto.Desktop):
 			if win.process_id() in pids:
 				appWins.append(win)
 		return appWins
-	
+
 if __name__ == "__main__":
 	desktop = pywinauto.Desktop(backend="uia")
 	print(desktop.windows())

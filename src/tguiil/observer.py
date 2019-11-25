@@ -69,7 +69,7 @@ class Observer(QThread):
 		self._process = psutil.Process(processID)
 		self._backend = backend
 		self._childMapping = {None: []}  # maps each super token to its list of children.
-		
+
 		self._playing = False
 		self._playingLock = Lock()
 	
@@ -83,14 +83,15 @@ class Observer(QThread):
 		app = Application(backend=self._backend)
 		app.setProcess(self._process)
 		while self._process.is_running():
-			
+
 			if not self.isPlaying(): return 0
-			
+
 			componentCount = 0
 			# work acts as a stack. Each element is a 2-tuple where the first element
 			# is a GUI component and the second element is the parent super token.
 			work = [(win, None) for win in app.windows()]
 			while len(work) > 0:
+
 				if not self.isPlaying(): return 0
 				
 				curComponent, parentSuperToken = work.pop()
@@ -188,9 +189,9 @@ class Observer(QThread):
 		
 		# create a new token
 		token = Token(id, isDialog, isEnabled, isVisible, processID, typeOf, rectangle, texts, title,
-					  numControls, controlIdentifiers, parentTitle, parentType,
-					  topLevelParentTitle, topLevelParentType, childrenTexts, image, autoID,
-					  expandState, shownState)
+		              numControls, controlIdentifiers, parentTitle, parentType,
+		              topLevelParentTitle, topLevelParentType, childrenTexts, image, autoID,
+		              expandState, shownState)
 		
 		return token
 	
@@ -212,6 +213,7 @@ class Observer(QThread):
 		:return: The SuperToken that gets matched to the provided token.
 		:rtype: SuperToken
 		"""
+
 		# determine if the new token matches any super tokens and how well it matches if it does.
 		bestMatch = 0
 		bestDecision = Token.Match.NO.value
@@ -292,6 +294,7 @@ class Observer(QThread):
 	def pause(self):
 		"""
 		Stops the Observer.
+
 		:return: True if the observer is running, False otherwise.
 		:rtype: bool
 		"""
@@ -301,3 +304,4 @@ class Observer(QThread):
 			self.quit()
 			return True
 		return False
+

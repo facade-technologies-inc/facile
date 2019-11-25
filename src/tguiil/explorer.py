@@ -41,6 +41,7 @@ class Explorer(QThread):
 	def __init__(self, processID: int, backend: str = 'uia'):
 		"""
 		Initializes explorer.
+
 		:param processID: process ID of target application
 		:type processID: int
 		:param backend: type of backend to use: either uia or win32
@@ -50,13 +51,13 @@ class Explorer(QThread):
 		QThread.__init__(self)
 		self._process = psutil.Process(processID)
 		self._backend = backend
-		
 		self._playing = False
 		self._playingLock = Lock()
 	
 	def run(self) -> int:
 		"""
 		Called when thread is started
+		
 		:return: the exit code
 		:rtype: int
 		"""
@@ -110,7 +111,7 @@ class Explorer(QThread):
 				#     window.menu_select(menupath[1])
 		finally:
 			return 0
-	
+
 	def setPlaying(self, status: bool) -> None:
 		"""
 		Sets the running flag.
@@ -137,6 +138,7 @@ class Explorer(QThread):
 	def play(self):
 		"""
 		Runs the Explorer.
+
 		:return: True if the observer is running, False otherwise.
 		:rtype: bool
 		"""
@@ -146,7 +148,7 @@ class Explorer(QThread):
 		
 		if self.isRunning():
 			return True
-		
+
 		self.setPlaying(True)
 		self.start()
 		return self.isRunning()
@@ -154,6 +156,7 @@ class Explorer(QThread):
 	def pause(self):
 		"""
 		Stops the Explorer.
+		
 		:return: True if the observer is running, False otherwise.
 		:rtype: bool
 		"""

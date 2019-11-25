@@ -42,7 +42,7 @@ class Project:
 	# TODO: Store backend as enum instead of string
 	
 	def __init__(self, name: str, description: str, exe: str, backend: str,
-	             projectDir: str = "~/", startupTimeout: int = 10) -> 'Project':
+				 projectDir: str = "~/", startupTimeout: int = 10) -> 'Project':
 		"""
 		Constructs a Project object.
 		

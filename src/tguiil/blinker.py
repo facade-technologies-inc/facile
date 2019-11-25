@@ -64,7 +64,7 @@ class Blinker(QThread):
 		self._superToken = superToken
 		self._color = Blinker.colors[Blinker.curColorIdx%len(Blinker.colors)]
 		Blinker.curColorIdx += 1
-		
+
 	def run(self) -> None:
 		"""
 		DO NOT CALL THIS METHOD!
@@ -99,11 +99,11 @@ class Blinker(QThread):
 						if certainty > bestCertainty:
 							closestComponent = curComponent
 							bestCertainty = certainty
-		
+
 				children = curComponent.children()
 				for child in children:
 					work.append(child)
-					
+
 			if closestComponent:
 				self.initiateBlinkSequence(closestComponent)
 				return
@@ -111,7 +111,7 @@ class Blinker(QThread):
 				title = "Component Not Found"
 				info = "The selected component could not be found in the target GUI."
 				self.componentNotFound.emit(title, info)
-				
+
 	def initiateBlinkSequence(self, component: 'Component') -> None:
 		"""
 		Starts the blink sequence by setting timers and executing an event loop.
@@ -131,7 +131,7 @@ class Blinker(QThread):
 		self._timer.start(Blinker.INTERVAL_MILLIS)
 		self._stopWatch.start()
 		self.exec_()
-		
+
 	def tick(self) -> None:
 		"""
 		Draws an outline around the component of interest.
@@ -147,7 +147,7 @@ class Blinker(QThread):
 		
 		if self._stopWatch.hasExpired(Blinker.DURATION_MILLIS):
 			self.stop()
-			
+
 	def stop(self) -> None:
 		"""
 		Stops the blinker regardless of whether it was running or not.

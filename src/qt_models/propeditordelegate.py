@@ -20,6 +20,7 @@
 This module contains the PropertyEditorDelegate() Class.
 """
 
+from enum import Enum
 from PySide2 import QtGui, QtCore, QtWidgets
 from PySide2.QtCore import QAbstractItemModel, QModelIndex, QRect, QEvent
 from PySide2.QtWidgets import QItemDelegate, QStyledItemDelegate, QStyle, QLineEdit, QSpinBox, QCheckBox, QDoubleSpinBox, QWidget, QStyleOptionViewItem, QStylePainter
@@ -44,14 +45,14 @@ class PropertyEditorDelegate(QStyledItemDelegate):
 		"""
 		check_box_style_option = QtWidgets.QStyleOptionButton()
 		check_box_rect = QtWidgets.QApplication.style().subElementRect(QtWidgets.QStyle.SE_CheckBoxIndicator,
-																   check_box_style_option, None)
+													check_box_style_option, None)
 		check_box_point = QtCore.QPoint(option.rect.x() +
 										check_box_rect.width() / 2,
 										option.rect.y() +
 										option.rect.height() / 2 -
 										check_box_rect.height() / 2)
 		return QRect(check_box_point, check_box_rect.size())
-
+	
 	def paint(self, painter: QStylePainter, option: QStyleOptionViewItem, index: QModelIndex) -> None:
 		"""
 		Paint a checkbox without the label.
@@ -68,25 +69,22 @@ class PropertyEditorDelegate(QStyledItemDelegate):
 		if index.column() == 1 and isinstance(index.internalPointer(), Property) and index.internalPointer().getType() == bool:
 			checked = index.internalPointer().getValue()
 			check_box_style_option = QtWidgets.QStyleOptionButton()
-
 			if (index.flags() & QtCore.Qt.ItemIsEditable) > 0:
 				check_box_style_option.state |= QtWidgets.QStyle.State_Enabled
 			else:
 				check_box_style_option.state |= QtWidgets.QStyle.State_ReadOnly
-
+				
 			if checked:
 				check_box_style_option.state |= QtWidgets.QStyle.State_On
 			else:
 				check_box_style_option.state |= QtWidgets.QStyle.State_Off
 
 			check_box_style_option.rect = self.getCheckBoxRect(option)
-
 			check_box_style_option.state |= QtWidgets.QStyle.State_Enabled
-
 			QtWidgets.QApplication.style().drawControl(QtWidgets.QStyle.CE_CheckBox, check_box_style_option, painter)
 		else:
 			QStyledItemDelegate.paint(self, painter, option, index)
-
+	
 	def createEditor(self, parent: QModelIndex, option: QStyleOptionViewItem, index: QModelIndex) -> QWidget:
 		"""
 		Creates the widget used to change data from the model and can be
@@ -104,7 +102,6 @@ class PropertyEditorDelegate(QStyledItemDelegate):
 		data = index.internalPointer()
 		if index.column() == 1 and isinstance(data, Property) and data.getType() == bool:
 			return None
-
 		if type(data) == Property:
 			if index.column() == 1:
 				t = data.getType()
@@ -124,7 +121,7 @@ class PropertyEditorDelegate(QStyledItemDelegate):
 				else:
 					pass
 		return QStyledItemDelegate.createEditor(self, parent, option, index)
-
+	
 	def editorEvent(self, event: QEvent, model: 'PropModel', option: QStyleOptionViewItem, index: QModelIndex) -> bool:
 		"""
 		Change the data in the model and the state of the checkbox
@@ -146,11 +143,11 @@ class PropertyEditorDelegate(QStyledItemDelegate):
 		event.type()
 		if not (index.flags() & QtCore.Qt.ItemIsEditable) > 0:
 			return False
-
+		
 		data = index.internalPointer()
 		if index.column() != 1 or not isinstance(data, Property) or data.getType() != bool:
 			return QStyledItemDelegate.editorEvent(self, event, model, option, index)
-
+		
 		# Do not change the checkbox-state
 		if event.type() == QEvent.MouseButtonPress:
 			return False
@@ -164,7 +161,7 @@ class PropertyEditorDelegate(QStyledItemDelegate):
 				return False
 		else:
 			return False
-
+		
 		# Change the checkbox-state
 		checkbox = QCheckBox('temp')
 		checkbox.setChecked(not data.getValue())
@@ -215,9 +212,8 @@ class PropertyEditorDelegate(QStyledItemDelegate):
 		:rtype: NoneType
 		"""
 		data = index.internalPointer()
-
+		
 		if type(data) == Property:
-
 			if index.column() == 1:
 				t = data.getType()
 				if t == str:

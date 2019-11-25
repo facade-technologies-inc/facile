@@ -175,9 +175,10 @@
    </attribute>
    <addaction name="actionAutoExplore"/>
    <addaction name="actionManualExplore"/>
-   <addaction name="actionIgnoreExplore"/>
+   <addaction name="separator"/>
    <addaction name="actionDetailed_View"/>
    <addaction name="actionShow_Behaviors"/>
+   <addaction name="actionAdd_Behavior"/>
    <addaction name="separator"/>
   </widget>
   <action name="actionOpen_Project">
@@ -195,11 +196,6 @@
     <string>Save As . . .</string>
    </property>
   </action>
-  <action name="actionSave_New_Version">
-   <property name="text">
-    <string>Save New Version</string>
-   </property>
-  </action>
   <action name="actionFrom_Scratch">
    <property name="text">
     <string>From Scratch</string>
@@ -208,11 +204,6 @@
   <action name="actionFrom_Existing_Project">
    <property name="text">
     <string>From Existing Project</string>
-   </property>
-  </action>
-  <action name="actionExample_Project">
-   <property name="text">
-    <string>Example Project</string>
    </property>
   </action>
   <action name="actionProject_Tree">
@@ -284,20 +275,6 @@
     <string>Ctrl+Alt+M</string>
    </property>
   </action>
-  <action name="actionIgnoreExplore">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Ignore Explore</string>
-   </property>
-   <property name="toolTip">
-    <string>The user can interact with the target GUI without changes being recognized.</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+Alt+I</string>
-   </property>
-  </action>
   <action name="actionAPI_Modules">
    <property name="text">
     <string>API Modules</string>
@@ -306,6 +283,14 @@
   <action name="actionManage_Project">
    <property name="text">
     <string>Project Settings</string>
+   </property>
+  </action>
+  <action name="actionAdd_Behavior">
+   <property name="text">
+    <string>Add Behavior</string>
+   </property>
+   <property name="toolTip">
+    <string>Add a visibility behavior to the target GUI model</string>
    </property>
   </action>
  </widget>
