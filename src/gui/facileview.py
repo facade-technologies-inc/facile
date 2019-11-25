@@ -20,23 +20,6 @@
 This module contains the FacileView class which is the main window of Facile.
 Much of Facile is joined together here.
 """
-<<<<<<< HEAD
-import json
-import os
-from copy import deepcopy
-from enum import Enum, unique
-
-from PySide2.QtCore import Signal, Slot
-from PySide2.QtGui import QStandardItemModel, QStandardItem, Qt
-from PySide2.QtWidgets import QMainWindow, QFileDialog, QMessageBox
-
-from data.project import Project
-from gui.copyprojectdialog import CopyProjectDialog
-from gui.facilegraphicsview import FacileGraphicsView
-from gui.manageprojectdialog import ManageProjectDialog
-from gui.newprojectdialog import NewProjectDialog
-from gui.ui.ui_facileview import Ui_MainWindow as Ui_FacileView
-=======
 import os
 from copy import deepcopy
 
@@ -51,7 +34,6 @@ from gui.manageprojectdialog import ManageProjectDialog
 from gui.newprojectdialog import NewProjectDialog
 from gui.ui.ui_facileview import Ui_MainWindow as Ui_FacileView
 from tguiil.blinker import Blinker
->>>>>>> feature/MVPIntegration
 
 
 class FacileView(QMainWindow):
@@ -59,18 +41,6 @@ class FacileView(QMainWindow):
 	FacileView is the main window for Facile.
 	"""
 	
-<<<<<<< HEAD
-	# This signal will be emitted when the project changes to notify all components of Facile.
-	projectChanged = Signal(Project)
-	
-	@unique
-	class ExploreMode(Enum):
-		MANUAL = 1
-		AUTOMATIC = 2
-		IGNORE = 3
-	
-=======
->>>>>>> feature/MVPIntegration
 	def __init__(self) -> 'FacileView':
 		"""
 		Constructs a FacileView object.
@@ -84,17 +54,11 @@ class FacileView(QMainWindow):
 		self.ui = Ui_FacileView()
 		self.ui.setupUi(self)
 		
-<<<<<<< HEAD
-		self._setProject(None)
-		self._connectActions()
-		self._setEmptyModels()
-=======
 		self._blinker = None
 		
 		# State Machine Initialization
 		self._stateMachine = StateMachine(self)
 		self._stateMachine.facileOpened()
->>>>>>> feature/MVPIntegration
 	
 	@Slot(Project)
 	def setProject(self, project: Project) -> None:
@@ -110,97 +74,7 @@ class FacileView(QMainWindow):
 		self._project = project
 		
 		if project is not None:
-<<<<<<< HEAD
-			self.setWindowTitle("Facile - " + self._project.getMainProjectFile())
-			print(self._project.getProjectDir())
-			self.projectChanged.emit(project)
-			self._project.save()
-			self._project.addToRecents()
-			self._project.getTargetGUIModel().getScene().itemSelected.connect(self._onItemSelected)
-			self._project.getTargetGUIModel().dataChanged.connect(
-				lambda: self.ui.projectExplorerView.update())
-			self.ui.projectExplorerView.setModel(self._project.getProjectExplorerModel())
-			self.ui.targetGUIModelView.setScene(self._project.getTargetGUIModel().getScene())
-			self._project.startTargetApplication()
-		
-		# TODO: Enable a lot of buttons
-		
-		else:
-			# TODO: Disable a lot of buttons
-			pass
-	
-	def _connectActions(self) -> None:
-		"""
-		Connects actions in Facile's GUI to business logic. Actions may be triggered by
-		clicking on the toolbar, menu bar, or something else.
-		
-		:return: None
-		:rtype: NoneType
-		"""
-		
-		self._populateRecents()
-		
-		self.ui.actionFrom_Scratch.triggered.connect(self._onNewProjectFromScratchTriggered)
-		self.ui.actionFrom_Existing_Project.triggered.connect(
-			self._onNewProjectFromExistingTriggered)
-		self.ui.actionOpen_Project.triggered.connect(self._onOpenProjectTriggered)
-		self.ui.actionSave_Project.triggered.connect(self._onSaveProjectTriggered)
-		self.ui.actionSave_as.triggered.connect(self._onSaveProjectAsTriggered)
-		self.ui.actionManage_Project.triggered.connect(self._onManageProjectTriggered)
-		self.ui.actionAutoExplore.triggered.connect(self._onAutomaticExploration)
-		self.ui.actionManualExplore.triggered.connect(self._onManualExploration)
-		self.ui.actionIgnoreExplore.triggered.connect(self._onIgnoreExploration)
-	
-	def _setEmptyModels(self) -> None:
-		"""
-		Puts empty models in all of the model-based views in Facile's main window The empty models just contain a
-		message.
-
-		:return: None
-		:rtype: NoneType
-		"""
-		# create blank model to show that no project is open.
-		blankProjectExplorer = QStandardItemModel()
-		blankProjectExplorer.setHorizontalHeaderLabels([""])
-		label = QStandardItem("No project is open.")
-		label.setFlags(Qt.NoItemFlags)
-		blankProjectExplorer.appendRow([label])
-		self.ui.projectExplorerView.setModel(blankProjectExplorer)
-		
-		# create blank model to show that no item is selected.
-		blankPropertiesModel = QStandardItemModel()
-		blankPropertiesModel.setHorizontalHeaderLabels([""])
-		label = QStandardItem("No model item is selected.")
-		label.setFlags(Qt.NoItemFlags)
-		blankPropertiesModel.appendRow([label])
-		self.ui.propertyEditorView.setModel(blankPropertiesModel)
-	
-	def _populateRecents(self) -> None:
-		"""
-		Creates the recents dropdown menu by reading the recents file. If the recents file does not exist, the message
-		"No recent projects." is shown. If there was a problem decoding the file, the message "Error loading recent
-		projects." is shown.
-		
-		:return: None
-		:rtype: NoneType
-		"""
-		try:
-			recentProjects = Project.getRecents(limit=10)
-		
-		except json.JSONDecodeError as e:
-			self.ui.menuRecent_Projects.addAction("Error loading recent projects.")
-		
-		else:
-			if len(recentProjects) == 0:
-				self.ui.menuRecent_Projects.addAction("No recent projects.")
-			
-			else:
-				for proj in recentProjects[:10]:
-					action = self.ui.menuRecent_Projects.addAction(proj)
-					action.triggered.connect(self._onOpenRecentProject)
-=======
 			self._stateMachine.projectOpened(project)
->>>>>>> feature/MVPIntegration
 	
 	@Slot()
 	def onSaveProjectAsTriggered(self) -> None:
@@ -326,8 +200,6 @@ class FacileView(QMainWindow):
 		manageProjectDialog.projectCreated.connect(self.setProject)
 		manageProjectDialog.exec_()
 	
-<<<<<<< HEAD
-=======
 	@Slot()
 	def onAddBehaviorTriggered(self) -> None:
 		"""
@@ -338,7 +210,6 @@ class FacileView(QMainWindow):
 		"""
 		self._stateMachine.addBehaviorClicked()
 	
->>>>>>> feature/MVPIntegration
 	@Slot(int)
 	def onItemSelected(self, id: int):
 		"""
@@ -350,8 +221,6 @@ class FacileView(QMainWindow):
 		entity = self._project.getTargetGUIModel().getComponent(id)
 		properties = entity.getProperties()
 		self.ui.propertyEditorView.setModel(properties.getModel())
-<<<<<<< HEAD
-=======
 		
 		if type(entity) == Component:
 			self._stateMachine.componentClicked(entity)
@@ -375,7 +244,6 @@ class FacileView(QMainWindow):
 		                        component.getSuperToken())
 		self._blinker.componentNotFound.connect(self.info)
 		self._blinker.start()
->>>>>>> feature/MVPIntegration
 	
 	@Slot(bool)
 	def onManualExploration(self, checked: bool) -> None:
@@ -419,49 +287,4 @@ class FacileView(QMainWindow):
 		:return: None
 		:rtype: NoneType
 		"""
-<<<<<<< HEAD
-		if checked:
-			self._setExplorationMode(FacileView.ExploreMode.IGNORE)
-	
-	def _setExplorationMode(self, mode: 'FacileView.ExploreMode') -> None:
-		"""
-		Sets the exploration mode. If there is no project, or the target application is not running, nothing happens.
-		
-		:param mode: The mode to set exploration to.
-		:type mode: FacileView.ExploreMode
-		:return: None
-		:rtyp: NoneType
-		"""
-		if self._project is None:
-			return
-		if self._project.getProcess() is None:
-			return
-		
-		observer = self._project.getObserver()
-		explorer = self._project.getExplorer()
-		
-		if mode == FacileView.ExploreMode.AUTOMATIC:
-			self.ui.actionAutoExplore.setChecked(True)
-			self.ui.actionManualExplore.setChecked(False)
-			self.ui.actionIgnoreExplore.setChecked(False)
-			observer.newSuperToken.connect(self._project.getTargetGUIModel().createComponent)
-			observer.play()
-			explorer.play()
-		
-		elif mode == FacileView.ExploreMode.MANUAL:
-			self.ui.actionAutoExplore.setChecked(False)
-			self.ui.actionManualExplore.setChecked(True)
-			self.ui.actionIgnoreExplore.setChecked(False)
-			observer.newSuperToken.connect(self._project.getTargetGUIModel().createComponent)
-			observer.play()
-			explorer.pause()
-		
-		elif mode == FacileView.ExploreMode.IGNORE:
-			self.ui.actionAutoExplore.setChecked(False)
-			self.ui.actionManualExplore.setChecked(False)
-			self.ui.actionIgnoreExplore.setChecked(True)
-			observer.pause()
-			explorer.pause()
-=======
 		QMessageBox.information(self, title, message)
->>>>>>> feature/MVPIntegration

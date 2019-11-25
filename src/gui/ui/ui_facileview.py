@@ -100,20 +100,10 @@ class Ui_MainWindow(object):
 		self.actionSave_Project.setObjectName("actionSave_Project")
 		self.actionSave_as = QtWidgets.QAction(MainWindow)
 		self.actionSave_as.setObjectName("actionSave_as")
-<<<<<<< HEAD
-		self.actionSave_New_Version = QtWidgets.QAction(MainWindow)
-		self.actionSave_New_Version.setObjectName("actionSave_New_Version")
-=======
->>>>>>> feature/MVPIntegration
 		self.actionFrom_Scratch = QtWidgets.QAction(MainWindow)
 		self.actionFrom_Scratch.setObjectName("actionFrom_Scratch")
 		self.actionFrom_Existing_Project = QtWidgets.QAction(MainWindow)
 		self.actionFrom_Existing_Project.setObjectName("actionFrom_Existing_Project")
-<<<<<<< HEAD
-		self.actionExample_Project = QtWidgets.QAction(MainWindow)
-		self.actionExample_Project.setObjectName("actionExample_Project")
-=======
->>>>>>> feature/MVPIntegration
 		self.actionProject_Tree = QtWidgets.QAction(MainWindow)
 		self.actionProject_Tree.setObjectName("actionProject_Tree")
 		self.actionProperty_Editor = QtWidgets.QAction(MainWindow)
@@ -136,21 +126,12 @@ class Ui_MainWindow(object):
 		self.actionManualExplore = QtWidgets.QAction(MainWindow)
 		self.actionManualExplore.setCheckable(True)
 		self.actionManualExplore.setObjectName("actionManualExplore")
-<<<<<<< HEAD
-		self.actionIgnoreExplore = QtWidgets.QAction(MainWindow)
-		self.actionIgnoreExplore.setCheckable(True)
-		self.actionIgnoreExplore.setObjectName("actionIgnoreExplore")
-=======
->>>>>>> feature/MVPIntegration
 		self.actionAPI_Modules = QtWidgets.QAction(MainWindow)
 		self.actionAPI_Modules.setObjectName("actionAPI_Modules")
 		self.actionManage_Project = QtWidgets.QAction(MainWindow)
 		self.actionManage_Project.setObjectName("actionManage_Project")
-<<<<<<< HEAD
-=======
 		self.actionAdd_Behavior = QtWidgets.QAction(MainWindow)
 		self.actionAdd_Behavior.setObjectName("actionAdd_Behavior")
->>>>>>> feature/MVPIntegration
 		self.menuNew_Project.addAction(self.actionFrom_Scratch)
 		self.menuNew_Project.addAction(self.actionFrom_Existing_Project)
 		self.menuFile.addAction(self.menuNew_Project.menuAction())
@@ -173,16 +154,10 @@ class Ui_MainWindow(object):
 		self.menubar.addAction(self.menuHelp.menuAction())
 		self.toolBar.addAction(self.actionAutoExplore)
 		self.toolBar.addAction(self.actionManualExplore)
-<<<<<<< HEAD
-		self.toolBar.addAction(self.actionIgnoreExplore)
-		self.toolBar.addAction(self.actionDetailed_View)
-		self.toolBar.addAction(self.actionShow_Behaviors)
-=======
 		self.toolBar.addSeparator()
 		self.toolBar.addAction(self.actionDetailed_View)
 		self.toolBar.addAction(self.actionShow_Behaviors)
 		self.toolBar.addAction(self.actionAdd_Behavior)
->>>>>>> feature/MVPIntegration
 		self.toolBar.addSeparator()
 		
 		self.retranslateUi(MainWindow)
@@ -210,16 +185,9 @@ class Ui_MainWindow(object):
 		self.modulesView.headerItem().setText(0, QtWidgets.QApplication.translate("MainWindow",
 		                                                                          "Module", None,
 		                                                                          -1))
-<<<<<<< HEAD
-		self.modulesView.headerItem().setText(1,
-		                                      QtWidgets.QApplication.translate("MainWindow",
-		                                                                       "Description", None,
-		                                                                       -1))
-=======
 		self.modulesView.headerItem().setText(1, QtWidgets.QApplication.translate("MainWindow",
 		                                                                          "Description",
 		                                                                          None, -1))
->>>>>>> feature/MVPIntegration
 		self.toolBar.setWindowTitle(
 			QtWidgets.QApplication.translate("MainWindow", "toolBar", None, -1))
 		self.actionOpen_Project.setText(
@@ -228,20 +196,10 @@ class Ui_MainWindow(object):
 			QtWidgets.QApplication.translate("MainWindow", "Save Project", None, -1))
 		self.actionSave_as.setText(
 			QtWidgets.QApplication.translate("MainWindow", "Save As . . .", None, -1))
-<<<<<<< HEAD
-		self.actionSave_New_Version.setText(
-			QtWidgets.QApplication.translate("MainWindow", "Save New Version", None, -1))
-=======
->>>>>>> feature/MVPIntegration
 		self.actionFrom_Scratch.setText(
 			QtWidgets.QApplication.translate("MainWindow", "From Scratch", None, -1))
 		self.actionFrom_Existing_Project.setText(
 			QtWidgets.QApplication.translate("MainWindow", "From Existing Project", None, -1))
-<<<<<<< HEAD
-		self.actionExample_Project.setText(
-			QtWidgets.QApplication.translate("MainWindow", "Example Project", None, -1))
-=======
->>>>>>> feature/MVPIntegration
 		self.actionProject_Tree.setText(
 			QtWidgets.QApplication.translate("MainWindow", "Project Tree", None, -1))
 		self.actionProperty_Editor.setText(
@@ -258,16 +216,9 @@ class Ui_MainWindow(object):
 			QtWidgets.QApplication.translate("MainWindow", "Detailed View", None, -1))
 		self.actionAutoExplore.setText(
 			QtWidgets.QApplication.translate("MainWindow", "Auto Explore", None, -1))
-<<<<<<< HEAD
-		self.actionAutoExplore.setToolTip(
-			QtWidgets.QApplication.translate("MainWindow",
-			                                 "Explore the target GUI autonomously (no user control)",
-			                                 None, -1))
-=======
 		self.actionAutoExplore.setToolTip(QtWidgets.QApplication.translate("MainWindow",
 		                                                                   "Explore the target GUI autonomously (no user control)",
 		                                                                   None, -1))
->>>>>>> feature/MVPIntegration
 		self.actionAutoExplore.setShortcut(
 			QtWidgets.QApplication.translate("MainWindow", "Ctrl+Alt+A", None, -1))
 		self.actionManualExplore.setText(
@@ -277,25 +228,12 @@ class Ui_MainWindow(object):
 		                                                                     None, -1))
 		self.actionManualExplore.setShortcut(
 			QtWidgets.QApplication.translate("MainWindow", "Ctrl+Alt+M", None, -1))
-<<<<<<< HEAD
-		self.actionIgnoreExplore.setText(
-			QtWidgets.QApplication.translate("MainWindow", "Ignore Explore", None, -1))
-		self.actionIgnoreExplore.setToolTip(QtWidgets.QApplication.translate("MainWindow",
-		                                                                     "The user can interact with the target GUI without changes being recognized.",
-		                                                                     None, -1))
-		self.actionIgnoreExplore.setShortcut(
-			QtWidgets.QApplication.translate("MainWindow", "Ctrl+Alt+I", None, -1))
-=======
->>>>>>> feature/MVPIntegration
 		self.actionAPI_Modules.setText(
 			QtWidgets.QApplication.translate("MainWindow", "API Modules", None, -1))
 		self.actionManage_Project.setText(
 			QtWidgets.QApplication.translate("MainWindow", "Project Settings", None, -1))
-<<<<<<< HEAD
-=======
 		self.actionAdd_Behavior.setText(
 			QtWidgets.QApplication.translate("MainWindow", "Add Behavior", None, -1))
 		self.actionAdd_Behavior.setToolTip(QtWidgets.QApplication.translate("MainWindow",
 		                                                                    "Add a visibility behavior to the target GUI model",
 		                                                                    None, -1))
->>>>>>> feature/MVPIntegration

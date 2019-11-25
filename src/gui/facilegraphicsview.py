@@ -25,14 +25,9 @@ TODO: make this view draggable
 """
 
 from PySide2.QtCore import QPoint
-<<<<<<< HEAD
-from PySide2.QtGui import QWheelEvent
-from PySide2.QtWidgets import QGraphicsView, QWidget
-=======
 from PySide2.QtGui import QWheelEvent, Qt, QColor
 from PySide2.QtWidgets import QGraphicsView, QGraphicsScene, QGraphicsRectItem, QGraphicsTextItem
 from PySide2.QtWidgets import QWidget
->>>>>>> feature/MVPIntegration
 
 
 class FacileGraphicsView(QGraphicsView):
@@ -53,8 +48,6 @@ class FacileGraphicsView(QGraphicsView):
 		:rtype: NoneType
 		"""
 		super(FacileGraphicsView, self).__init__(parent)
-<<<<<<< HEAD
-=======
 		scene = QGraphicsScene()
 		box = QGraphicsRectItem(0, 0, 100, 100)
 		box.setPen(QColor(Qt.transparent))
@@ -62,7 +55,6 @@ class FacileGraphicsView(QGraphicsView):
 		QGraphicsTextItem("Nothing to show here yet!", box)
 		scene.addItem(box)
 		self.setScene(scene)
->>>>>>> feature/MVPIntegration
 	
 	def wheelEvent(self, event: QWheelEvent) -> None:
 		"""
