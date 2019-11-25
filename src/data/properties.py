@@ -53,7 +53,7 @@ class Properties:
         self._categories[category] = []
 
     def addProperty(self, category: str, name: str, value: object, type: object,
-                    readOnly: object = False) -> None:
+                    readOnly: bool = False) -> None:
         """
         To add a property to a certain category.
 
@@ -66,7 +66,7 @@ class Properties:
         :param type: Type of property.
         :type type: object
         :param readOnly: Data structure of property.
-        :type readOnly: object
+        :type readOnly: bool
         :return: None
         :rtype: NoneType
         """
@@ -92,14 +92,9 @@ class Properties:
             newProperties.newCategory(predefinedCategories[i])
             if predefinedCategories[i] == "Base":
                 newProperties.addProperty("Base", "Name", "default", str)
-                newProperties.addProperty("Base", "Type", "Push Button", str)
+                newProperties.addProperty("Base", "Type", "Push Button", str, True)
                 newProperties.addProperty("Base", "Annotation", "", str)
-                newProperties.addProperty("Base", "Read-Only", True, bool)
-                newProperties.addProperty("Base", "Size", 3.45, float)
             elif predefinedCategories[i] == "Visual":
-                newProperties.addProperty("Visual", "BoxColor", Color.GREEN, Color)
-                newProperties.addProperty("Visual", "TextColor", "black", str)
-                newProperties.addProperty("Visual", "BorderWidth", 1, int)
                 newProperties.addProperty("Visual", "X", 0, int)
                 newProperties.addProperty("Visual", "Y", 0, int)
                 newProperties.addProperty("Visual", "Width", 100, int)
@@ -107,7 +102,7 @@ class Properties:
             elif predefinedCategories[i] == "GUI Component":
                 newProperties.addProperty("GUI Component", "Parent", 1, int, True)
                 newProperties.addProperty("GUI Component", "Children", [], list, True)
-            elif predefinedCategories[i] == "Visibility Behaviors":
+            elif predefinedCategories[i] == "Visibility Behavior":
                 newProperties.addProperty("Visibility Behavior", "From", 1, int, True)
                 newProperties.addProperty("Visibility Behavior", "To", 1, int, True)
 

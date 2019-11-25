@@ -24,8 +24,9 @@ view, but can be zoomed.
 TODO: make this view draggable
 """
 
-from PySide2.QtWidgets import QGraphicsView, QWidget
-from PySide2.QtGui import QWheelEvent
+from PySide2.QtWidgets import QGraphicsView, QGraphicsScene, QGraphicsRectItem, QGraphicsTextItem
+from PySide2.QtWidgets import QWidget
+from PySide2.QtGui import QWheelEvent, Qt, QColor
 from PySide2.QtCore import QPoint
 
 class FacileGraphicsView(QGraphicsView):
@@ -46,6 +47,14 @@ class FacileGraphicsView(QGraphicsView):
         :rtype: NoneType
         """
         super(FacileGraphicsView, self).__init__(parent)
+        
+        scene = QGraphicsScene()
+        box = QGraphicsRectItem(0,0,100,100)
+        box.setPen(QColor(Qt.transparent))
+        box.setBrush(QColor(Qt.transparent))
+        QGraphicsTextItem("Nothing to show here yet!", box)
+        scene.addItem(box)
+        self.setScene(scene)
     
     def wheelEvent(self, event: QWheelEvent) -> None:
         """

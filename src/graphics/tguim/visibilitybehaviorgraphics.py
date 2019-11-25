@@ -26,7 +26,7 @@ from PySide2.QtWidgets import QGraphicsItem
 
 
 class VBGraphics(QGraphicsItem):
-    def __init__(self, dataVisibilityBehavior: 'VisibilityBehavior'):
+    def __init__(self, dataVisibilityBehavior: 'VisibilityBehavior', parent: 'TScene'):
         """
         Construct the VBGraphics class.
         'src' means the source component, the one triggering the vb.
@@ -34,15 +34,17 @@ class VBGraphics(QGraphicsItem):
 
         :param dataVisibilityBehavior: get the data of a VisibilityBehavior
         :type dataVisibilityBehavior: VisibilityBehavior
+        :param parent: The parent of the visibility behavior (This will always be the scene)
+        :type parent: TScene
         :return None
         :rtype NoneType
         """
         QGraphicsItem.__init__(self)
         self._dataVB = dataVisibilityBehavior
-        self.setFlag(QGraphicsItem.ItemIsMovable)
         self.setFlag(QGraphicsItem.ItemIsSelectable)
         self._srcComponentCenterPoint = self._dataVB.getSrcComponent().getGraphicsItem().boundingRect().center()
         self._destComponentCenterPoint = self._dataVB.getDestComponent().getGraphicsItem().boundingRect().center()
+        parent.addItem(self)
 
     def boundingRect(self):
         """
@@ -78,7 +80,8 @@ class VBGraphics(QGraphicsItem):
         # This is the index(+1 avoid 0 in calculation) of the edge at the SourceNode's edgeSrcList
         srcNodeIndex = self._dataVB.getSrcComponent().getSrcVisibilityBehaviors().index(self._dataVB) + 1
         # This is the index of the edge at the DesNode's _edgeDesList
-        desNodeIndex = self._dataVB.getDestComponent().getDestVisibilityBehaviors().index(self._dataEdge) + 1
+        desNodeIndex = self._dataVB.getDestComponent().getDestVisibilityBehaviors().index(
+            self._dataVB) + 1
 
         x1 = self._dataVB.getSrcComponent().getGraphicsItem().boundingRect().x() #x does not change, stay at the left most of the node
         y1 = self._dataVB.getSrcComponent().getGraphicsItem().boundingRect().y() + (heightSrcNode / (lengthSrcNodeSrcEdgeList + 1)) * srcNodeIndex

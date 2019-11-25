@@ -272,7 +272,7 @@ class ProjectExplorerModel(QAbstractItemModel):
 				if len(self._project.getTargetGUIModel().getVisibilityBehaviors()) == 0:
 					return self.registerAndCreateIndex(row, column, ProjectExplorerModel.LeafIndex(ProjectExplorerModel.NO_BEHAVIORS_LABEL, parentData, 0))
 				
-				return self.registerAndCreateIndex(row, column, self._project.getTargetGUIModel().getNthBehavior(row))
+				return self.registerAndCreateIndex(row, column, self._project.getTargetGUIModel().getNthVisibilityBehavior(row))
 			
 			elif parentData == ProjectExplorerModel.PIPELINE_LABEL:
 				# TODO: replace this once action pipelines are implemented
@@ -347,7 +347,9 @@ class ProjectExplorerModel(QAbstractItemModel):
 				return self.registerAndCreateIndex(data.getParentIndex(), 0, parentData)
 			
 			elif isinstance(innerData, Component):
-				return self.registerAndCreateIndex(parentData.getPositionInSiblings(), 0, parentData)
+				visBehaviors = list(self._project.getTargetGUIModel().getVisibilityBehaviors().values())
+				visBehaviorIdx = visBehaviors.index(parentData)
+				return self.registerAndCreateIndex(visBehaviorIdx, 0, parentData)
 			
 			else:
 				raise ProjectExplorerModel.UnsupportedTypeException("Unsupported data type in LeafIndex: {}".format(innerData))
@@ -464,9 +466,9 @@ class ProjectExplorerModel(QAbstractItemModel):
 		
 		elif isinstance(data, VisibilityBehavior):
 			if col == 0:
-				return data.getName()
+				return data.getProperties().getProperty("Name")[1].getValue()
 			elif col == 1:
-				return data.getType()
+				return data.getReactionType()
 			else:
 				return None
 		
@@ -491,7 +493,7 @@ class ProjectExplorerModel(QAbstractItemModel):
 					if col == 0:
 						return "From"
 					elif col == 1:
-						return innerData.getName()
+						return innerData.getProperties().getProperty("Name")[1].getValue()
 					else:
 						return None
 					
@@ -499,7 +501,7 @@ class ProjectExplorerModel(QAbstractItemModel):
 					if col == 0:
 						return "To"
 					elif col == 1:
-						return innerData.getName()
+						return innerData.getProperties().getProperty("Name")[1].getValue()
 					else:
 						return None
 		

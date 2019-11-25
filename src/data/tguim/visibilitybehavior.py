@@ -22,6 +22,7 @@ This module contains the VisibilityBehavior class.
 
 from data.tguim.condition import Condition
 from data.entity import Entity
+from data.properties import Properties
 from graphics.tguim.visibilitybehaviorgraphics import VBGraphics
 
 
@@ -35,11 +36,14 @@ class VisibilityBehavior(Entity):
      to be shown.
     """
 
-    def __init__(self, srcComp: 'Component'=None, destComp: 'Component'=None,
+    def __init__(self, tguim: 'TargetGuiModel', srcComp: 'Component'=None, destComp:
+    'Component'=None,
                  reactionType: str="show") -> 'VisibilityBehavior':
         """
          Constructs a VisibilityBehavior object.
 
+        :param tguim: The one and only target GUI model
+        :type tguim: TargetGuiModel
         :param srcComp: The "from/source" component. The one triggering the vis behavior.
         :type srcComp: Component
         :param destComp: The "to/destination" component. The one whose visibility is affected by the vis behavior.
@@ -54,7 +58,8 @@ class VisibilityBehavior(Entity):
         self._srcComponent = srcComp
         self._condition = Condition()
         self._reactionType = None
-        self._graphicsItem = VBGraphics(self)  # TODO: Construct a graphicsItem from the class Ramos creates. Ramos added it :)
+        self._tguim = tguim
+        self._graphicsItem = VBGraphics(self, tguim.getScene())
         # TODO: Add a "trigger action" data member?
 
         if reactionType in VALID_REACTION_TYPES:
@@ -62,6 +67,13 @@ class VisibilityBehavior(Entity):
         else:
             self._reactionType = "show"
             raise ValueError("VisibilityBehavior(): reactionType must be one of %r." % VALID_REACTION_TYPES)
+        
+        predefined = ["Base", "Visibility Behavior"]
+        custom = {}
+        props = Properties.createPropertiesObject(predefined, custom)
+        props.getProperty("Name")[1].setValue("VB #{}".format(self.getId()))
+        props.getProperty("Type")[1].setValue("Visibility Behavior")
+        self.setProperties(props)
 
     def getDestComponent(self) -> 'Component':
         """
