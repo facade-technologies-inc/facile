@@ -621,3 +621,6 @@ class ProjectExplorerModel(QAbstractItemModel):
 			self._backwardRegistry[self._registryCounter] = data
 		
 		return self.createIndex(row, col, data)
+	
+	def selectComponent(self, component: 'Component') -> None:
+		pass
