@@ -62,13 +62,14 @@ class Component(Entity):
 		if parent is not None:
 			parent.addChild(self)
 	
-	def getSuperToken(self):
+	def getSuperToken(self) -> 'SuperToken':
 		"""
-		Gets the supertoken.
-
-		:return Gets the supertoken
-		:rtype SuperToken
+		Gets the component's SuperToken
+		
+		:return: The component's SuperToken
+		:rtype: SuperToken
 		"""
+		
 		return self._superToken
 	
 	def getSrcVisibilityBehaviors(self):

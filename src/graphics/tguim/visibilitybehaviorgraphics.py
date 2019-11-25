@@ -26,7 +26,7 @@ from PySide2.QtWidgets import QGraphicsItem
 
 
 class VBGraphics(QGraphicsItem):
-	def __init__(self, dataVisibilityBehavior: 'VisibilityBehavior'):
+	def __init__(self, dataVisibilityBehavior: 'VisibilityBehavior', parent: 'TScene'):
 		"""
 		Construct the VBGraphics class.
 		'src' means the source component, the one triggering the vb.
@@ -34,15 +34,17 @@ class VBGraphics(QGraphicsItem):
 
 		:param dataVisibilityBehavior: get the data of a VisibilityBehavior
 		:type dataVisibilityBehavior: VisibilityBehavior
+		:param parent: The parent of the visibility behavior (This will always be the scene)
+		:type parent: TScene
 		:return None
 		:rtype NoneType
 		"""
 		QGraphicsItem.__init__(self)
 		self._dataVB = dataVisibilityBehavior
-		self.setFlag(QGraphicsItem.ItemIsMovable)
 		self.setFlag(QGraphicsItem.ItemIsSelectable)
 		self._srcComponentCenterPoint = self._dataVB.getSrcComponent().getGraphicsItem().boundingRect().center()
 		self._destComponentCenterPoint = self._dataVB.getDestComponent().getGraphicsItem().boundingRect().center()
+		parent.addItem(self)
 	
 	def boundingRect(self):
 		"""
@@ -51,6 +53,7 @@ class VBGraphics(QGraphicsItem):
 		:return create the bounding of the item
 		:rtype QRectF
 		"""
+
 		leftCornerX = min(self._dataVB.getSrcComponent().getGraphicsItem().scenePos().x(),
 		                  self._dataVB.getDestComponent().getGraphicsItem().scenePos().x())
 		leftCornerY = min(self._dataVB.getSrcComponent().getGraphicsItem().scenePos().y(),
@@ -64,7 +67,6 @@ class VBGraphics(QGraphicsItem):
 	def paint(self, painter: QPainter, option, widget):
 		"""
 		Paints the contents of the visibilitybehavior. Override the parent paint function
-
 		:param painter: Use a Qpainter object.
 		:type painter: QPainter
 		:param option: It provides style options for the item.

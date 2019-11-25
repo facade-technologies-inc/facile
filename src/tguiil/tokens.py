@@ -347,7 +347,10 @@ class Token:
 				return Token.Match.NO, score
 	
 	def __str__(self):
-		return "{} ({}) -> {}".format(self.title, self.type, self.controlIDs)
+		ret = "TOKEN:"
+		for key, val in vars(self).items():
+			ret += "\n\t{:20}:{}".format(key, val)
+		return ret
 	
 	def __repr__(self):
 		return self.__str__()

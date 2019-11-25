@@ -22,7 +22,7 @@ This module contains the ComponentGraphics class.
 
 from PySide2.QtCore import QRectF
 from PySide2.QtGui import QPainterPath, QColor, QPen, Qt
-from PySide2.QtWidgets import QGraphicsScene, QGraphicsItem
+from PySide2.QtWidgets import QGraphicsScene, QGraphicsItem, QGraphicsSceneContextMenuEvent, QMenu
 
 
 class ComponentGraphics(QGraphicsItem):
@@ -66,6 +66,10 @@ class ComponentGraphics(QGraphicsItem):
 		self._height = max(rect[3], ComponentGraphics.MIN_HEIGHT)
 		self.setPos(max(0, rect[0]), max(0, rect[1]))
 		self.adjustPositioning()
+		self.menu = QMenu()
+		showInGui = self.menu.addAction("Show in target GUI")
+		showInGui.triggered.connect(
+			lambda: self.scene().blinkComponent(self._dataComponent.getId()))
 	
 	def getNumberOfTokens(self):
 		"""
@@ -341,14 +345,14 @@ class ComponentGraphics(QGraphicsItem):
 		name = self.getLabel()
 		painter.drawText(int(ComponentGraphics.MARGIN * 1.5), int(ComponentGraphics.MARGIN + 30),
 		                 name)
-		
+	
 		token_count = str(self.getNumberOfTokens())
 		rectBox = QRectF(self.boundingRect().width() - ComponentGraphics.MARGIN,
 		                 -ComponentGraphics.MARGIN,
 		                 ComponentGraphics.MARGIN * 2, ComponentGraphics.MARGIN * 2)
 		painter.drawRect(rectBox)
 		painter.drawText(rectBox.center(), token_count)
-	
+		
 	def mousePressEvent(self, event):
 		"""
 		This event handler is implemented to receive mouse press events for this item.
@@ -358,6 +362,18 @@ class ComponentGraphics(QGraphicsItem):
 		"""
 		self.setSelected(True)
 		self.scene().emitItemSelected(self._dataComponent.getId())
+	
+	def contextMenuEvent(self, event: QGraphicsSceneContextMenuEvent) -> None:
+		"""
+		Opens a context menu (right click menu) for the component.
+		
+		:param event: The event that was generated when the user right-clicked on this item.
+		:type event: QGraphicsSceneContextMenuEvent
+		:return: None
+		:rtype: NoneType
+		"""
+		self.mousePressEvent(event)
+		selectedAction = self.menu.exec_(event.screenPos())
 	
 	def triggerSceneUpdate(self):
 		"""

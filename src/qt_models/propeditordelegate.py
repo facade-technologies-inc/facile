@@ -20,11 +20,21 @@
 This module contains the PropertyEditorDelegate() Class.
 """
 
+<<<<<<< HEAD
 from PySide2 import QtCore, QtWidgets
 from PySide2.QtCore import QModelIndex, QRect, QEvent
 from PySide2.QtWidgets import QStyleOptionViewItem, QStylePainter
 from PySide2.QtWidgets import QStyledItemDelegate, QLineEdit, QSpinBox, QCheckBox, \
 	QDoubleSpinBox, QWidget, QComboBox
+=======
+from enum import Enum
+
+from PySide2 import QtCore, QtWidgets
+from PySide2.QtCore import QModelIndex, QRect, QEvent
+from PySide2.QtWidgets import QStyleOptionViewItem, QStylePainter
+from PySide2.QtWidgets import QStyledItemDelegate, QLineEdit, QSpinBox, \
+	QCheckBox, QDoubleSpinBox, QWidget, QComboBox
+>>>>>>> feature/MVPIntegration
 
 from data.property import Property
 from qt_models.propeditormodel import PropModel
@@ -73,7 +83,10 @@ class PropertyEditorDelegate(QStyledItemDelegate):
 		                                      Property) and index.internalPointer().getType() == bool:
 			checked = index.internalPointer().getValue()
 			check_box_style_option = QtWidgets.QStyleOptionButton()
+<<<<<<< HEAD
 			
+=======
+>>>>>>> feature/MVPIntegration
 			if (index.flags() & QtCore.Qt.ItemIsEditable) > 0:
 				check_box_style_option.state |= QtWidgets.QStyle.State_Enabled
 			else:
@@ -85,9 +98,13 @@ class PropertyEditorDelegate(QStyledItemDelegate):
 				check_box_style_option.state |= QtWidgets.QStyle.State_Off
 			
 			check_box_style_option.rect = self.getCheckBoxRect(option)
+<<<<<<< HEAD
 			
 			check_box_style_option.state |= QtWidgets.QStyle.State_Enabled
 			
+=======
+			check_box_style_option.state |= QtWidgets.QStyle.State_Enabled
+>>>>>>> feature/MVPIntegration
 			QtWidgets.QApplication.style().drawControl(QtWidgets.QStyle.CE_CheckBox,
 			                                           check_box_style_option, painter)
 		else:
@@ -111,7 +128,10 @@ class PropertyEditorDelegate(QStyledItemDelegate):
 		data = index.internalPointer()
 		if index.column() == 1 and isinstance(data, Property) and data.getType() == bool:
 			return None
+<<<<<<< HEAD
 		
+=======
+>>>>>>> feature/MVPIntegration
 		if type(data) == Property:
 			if index.column() == 1:
 				t = data.getType()
@@ -226,7 +246,10 @@ class PropertyEditorDelegate(QStyledItemDelegate):
 		data = index.internalPointer()
 		
 		if type(data) == Property:
+<<<<<<< HEAD
 			
+=======
+>>>>>>> feature/MVPIntegration
 			if index.column() == 1:
 				t = data.getType()
 				if t == str:

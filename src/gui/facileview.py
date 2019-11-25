@@ -20,6 +20,7 @@
 This module contains the FacileView class which is the main window of Facile.
 Much of Facile is joined together here.
 """
+<<<<<<< HEAD
 import json
 import os
 from copy import deepcopy
@@ -35,6 +36,22 @@ from gui.facilegraphicsview import FacileGraphicsView
 from gui.manageprojectdialog import ManageProjectDialog
 from gui.newprojectdialog import NewProjectDialog
 from gui.ui.ui_facileview import Ui_MainWindow as Ui_FacileView
+=======
+import os
+from copy import deepcopy
+
+from PySide2.QtCore import Slot
+from PySide2.QtWidgets import QMainWindow, QFileDialog, QMessageBox
+
+from data.project import Project
+from data.statemachine import StateMachine
+from data.tguim.component import Component
+from gui.copyprojectdialog import CopyProjectDialog
+from gui.manageprojectdialog import ManageProjectDialog
+from gui.newprojectdialog import NewProjectDialog
+from gui.ui.ui_facileview import Ui_MainWindow as Ui_FacileView
+from tguiil.blinker import Blinker
+>>>>>>> feature/MVPIntegration
 
 
 class FacileView(QMainWindow):
@@ -42,6 +59,7 @@ class FacileView(QMainWindow):
 	FacileView is the main window for Facile.
 	"""
 	
+<<<<<<< HEAD
 	# This signal will be emitted when the project changes to notify all components of Facile.
 	projectChanged = Signal(Project)
 	
@@ -51,6 +69,8 @@ class FacileView(QMainWindow):
 		AUTOMATIC = 2
 		IGNORE = 3
 	
+=======
+>>>>>>> feature/MVPIntegration
 	def __init__(self) -> 'FacileView':
 		"""
 		Constructs a FacileView object.
@@ -58,22 +78,26 @@ class FacileView(QMainWindow):
 		:return: The new FacileView object
 		:rtype: FacileView
 		"""
-		
 		super(FacileView, self).__init__()
+		
+		# UI Initialization
 		self.ui = Ui_FacileView()
 		self.ui.setupUi(self)
-		self.ui.tempView.hide()
-		self.ui.targetGUIModelView = FacileGraphicsView()
-		self.ui.apiModelView = FacileGraphicsView()
-		self.ui.viewSplitter.addWidget(self.ui.targetGUIModelView)
-		self.ui.viewSplitter.addWidget(self.ui.apiModelView)
 		
+<<<<<<< HEAD
 		self._setProject(None)
 		self._connectActions()
 		self._setEmptyModels()
+=======
+		self._blinker = None
+		
+		# State Machine Initialization
+		self._stateMachine = StateMachine(self)
+		self._stateMachine.facileOpened()
+>>>>>>> feature/MVPIntegration
 	
 	@Slot(Project)
-	def _setProject(self, project: Project) -> None:
+	def setProject(self, project: Project) -> None:
 		"""
 		Sets the project object.
 		
@@ -86,6 +110,7 @@ class FacileView(QMainWindow):
 		self._project = project
 		
 		if project is not None:
+<<<<<<< HEAD
 			self.setWindowTitle("Facile - " + self._project.getMainProjectFile())
 			print(self._project.getProjectDir())
 			self.projectChanged.emit(project)
@@ -173,9 +198,12 @@ class FacileView(QMainWindow):
 				for proj in recentProjects[:10]:
 					action = self.ui.menuRecent_Projects.addAction(proj)
 					action.triggered.connect(self._onOpenRecentProject)
+=======
+			self._stateMachine.projectOpened(project)
+>>>>>>> feature/MVPIntegration
 	
 	@Slot()
-	def _onSaveProjectAsTriggered(self) -> None:
+	def onSaveProjectAsTriggered(self) -> None:
 		"""
 		This slot is run when the user clicks "File -> Save As..."
 		
@@ -205,8 +233,8 @@ class FacileView(QMainWindow):
 			
 			newProject = deepcopy(self._project)
 			newProject.setProjectDir(url)
-			self._setProject(newProject)
-			self._onSaveProjectTriggered()
+			self.setProject(newProject)
+			self.onSaveProjectTriggered()
 		
 		fileDialog = QFileDialog()
 		fileDialog.setFileMode(QFileDialog.Directory)
@@ -215,7 +243,7 @@ class FacileView(QMainWindow):
 		fileDialog.exec_()
 	
 	@Slot()
-	def _onSaveProjectTriggered(self) -> None:
+	def onSaveProjectTriggered(self) -> None:
 		"""
 		This slot is run when the user saves the current project in Facile
 		
@@ -227,7 +255,7 @@ class FacileView(QMainWindow):
 			self._project.save()
 	
 	@Slot()
-	def _onNewProjectFromScratchTriggered(self) -> None:
+	def onNewProjectFromScratchTriggered(self) -> None:
 		"""
 		This slot is run when the user elects to create a new project from scratch.
 		
@@ -239,11 +267,11 @@ class FacileView(QMainWindow):
 		"""
 		
 		newProjectDialog = NewProjectDialog()
-		newProjectDialog.projectCreated.connect(self._setProject)
+		newProjectDialog.projectCreated.connect(self.setProject)
 		newProjectDialog.exec_()
 	
 	@Slot()
-	def _onNewProjectFromExistingTriggered(self) -> None:
+	def onNewProjectFromExistingTriggered(self) -> None:
 		"""
 		This slot is run when the user elects to create a new project from an existing one.
 		A CopyProjectDialog is opened that allows the user to specify the new location, name, and description.
@@ -253,11 +281,11 @@ class FacileView(QMainWindow):
 		"""
 		
 		copyProjectDialog = CopyProjectDialog()
-		copyProjectDialog.projectCreated.connect(self._setProject)
+		copyProjectDialog.projectCreated.connect(self.setProject)
 		copyProjectDialog.exec_()
 	
 	@Slot()
-	def _onOpenRecentProject(self) -> None:
+	def onOpenRecentProject(self) -> None:
 		"""
 		This slot is run when the user selects to open a recent project.
 		
@@ -265,10 +293,10 @@ class FacileView(QMainWindow):
 		:rtype: NoneType
 		"""
 		
-		self._setProject(Project.load(self.sender().text()))
+		self.setProject(Project.load(self.sender().text()))
 	
 	@Slot()
-	def _onOpenProjectTriggered(self) -> None:
+	def onOpenProjectTriggered(self) -> None:
 		"""
 		This slot is run when the user elects to open an existing project.
 		
@@ -282,69 +310,116 @@ class FacileView(QMainWindow):
 		fileDialog.setFileMode(QFileDialog.ExistingFile)
 		fileDialog.setDirectory(os.path.expanduser("~"))
 		fileDialog.setNameFilter("Facile Project File (*.fcl)")
-		fileDialog.fileSelected.connect(lambda url: self._setProject(Project.load(url)))
+		fileDialog.fileSelected.connect(lambda url: self.setProject(Project.load(url)))
 		fileDialog.exec_()
 	
 	@Slot()
-	def _onManageProjectTriggered(self) -> None:
+	def onManageProjectTriggered(self) -> None:
 		"""
-		This slot is run when a the user selects "file -> project settings"
+		This slot is run when the user selects "file -> project settings"
 		
 		:return: None
 		:rtype: NoneType
 		"""
 		
 		manageProjectDialog = ManageProjectDialog(self._project)
-		manageProjectDialog.projectCreated.connect(self._setProject)
+		manageProjectDialog.projectCreated.connect(self.setProject)
 		manageProjectDialog.exec_()
 	
+<<<<<<< HEAD
+=======
+	@Slot()
+	def onAddBehaviorTriggered(self) -> None:
+		"""
+		This slot is run when the user selects "Add Behavior"
+		
+		:return: None
+		:rtype: NoneType
+		"""
+		self._stateMachine.addBehaviorClicked()
+	
+>>>>>>> feature/MVPIntegration
 	@Slot(int)
-	def _onItemSelected(self, id: int):
+	def onItemSelected(self, id: int):
 		"""
 		This slot will update the view when an item is selected.
 		
 		:return: None
 		"""
 		# TODO: Change to get any entity instead of just component
-		properties = self._project.getTargetGUIModel().getComponent(id).getProperties()
+		entity = self._project.getTargetGUIModel().getComponent(id)
+		properties = entity.getProperties()
 		self.ui.propertyEditorView.setModel(properties.getModel())
+<<<<<<< HEAD
+=======
+		
+		if type(entity) == Component:
+			self._stateMachine.componentClicked(entity)
+	
+	@Slot(int)
+	def onItemBlink(self, id: int) -> None:
+		"""
+		Attempt to show an item in the GUI. Can only do this if the item is currently shown in
+		the GUI.
+
+		:param id: The ID of the component to show.
+		:type id: int
+		:return: None
+		:rtype: NoneType
+		"""
+		component = self._project.getTargetGUIModel().getComponent(id)
+		if self._blinker:
+			self._blinker.stop()
+		self._blinker = Blinker(self._project.getProcess().pid,
+		                        self._project.getBackend(),
+		                        component.getSuperToken())
+		self._blinker.componentNotFound.connect(self.info)
+		self._blinker.start()
+>>>>>>> feature/MVPIntegration
 	
 	@Slot(bool)
-	def _onManualExploration(self, checked: bool) -> None:
+	def onManualExploration(self, checked: bool) -> None:
 		"""
 		Sets the exploration mode to be manual iff checked is True
 		
-		:param checked: if True, set the exploration mode to be manual. Else do nothing
+		:param checked: if True, set the exploration mode to be manual. Else leave exploration.
 		:type checked: bool
 		:return: None
 		:rtype: NoneType
 		"""
 		if checked:
-			self._setExplorationMode(FacileView.ExploreMode.MANUAL)
+			self._stateMachine.startExploration(StateMachine.ExplorationMode.MANUAL)
+		else:
+			self._stateMachine.stopExploration()
 	
 	@Slot(bool)
-	def _onAutomaticExploration(self, checked: bool) -> None:
+	def onAutomaticExploration(self, checked: bool) -> None:
 		"""
 		Sets the exploration mode to be automatic iff checked is True
 
-		:param checked: if True, set the exploration mode to automatic. Else do nothing
+		:param checked: if True, set the exploration mode to automatic. Else leave exploration.
 		:type checked: bool
 		:return: None
 		:rtype: NoneType
 		"""
 		if checked:
-			self._setExplorationMode(FacileView.ExploreMode.AUTOMATIC)
+			self._stateMachine.startExploration(StateMachine.ExplorationMode.AUTO)
+		else:
+			self._stateMachine.stopExploration()
 	
-	@Slot(bool)
-	def _onIgnoreExploration(self, checked: bool) -> None:
+	@Slot(str, str)
+	def info(self, title: str, message: str) -> None:
 		"""
-		Sets the exploration mode to be ignore iff checked is True
+		This function displays an information message box. with the FacileView as the parent.
 
-		:param checked: if True, set the exploration mode to be ignore. Else do nothing
-		:type checked: bool
+		:param title: The title of the window to show.
+		:type title: str
+		:param message: The message to show inside of the window
+		:type message: str
 		:return: None
 		:rtype: NoneType
 		"""
+<<<<<<< HEAD
 		if checked:
 			self._setExplorationMode(FacileView.ExploreMode.IGNORE)
 	
@@ -387,3 +462,6 @@ class FacileView(QMainWindow):
 			self.ui.actionIgnoreExplore.setChecked(True)
 			observer.pause()
 			explorer.pause()
+=======
+		QMessageBox.information(self, title, message)
+>>>>>>> feature/MVPIntegration

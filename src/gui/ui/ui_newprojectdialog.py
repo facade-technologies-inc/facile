@@ -179,10 +179,16 @@ class Ui_Dialog(object):
 			QtWidgets.QApplication.translate("Dialog", "Target Application", None, -1))
 		self.browseFilesButton_executable.setText(
 			QtWidgets.QApplication.translate("Dialog", "...", None, -1))
+<<<<<<< HEAD
 		self.label_4.setText(
 			QtWidgets.QApplication.translate("Dialog",
 			                                 "Which category does the target application best fit under?",
 			                                 None, -1))
+=======
+		self.label_4.setText(QtWidgets.QApplication.translate("Dialog",
+		                                                      "Which category does the target application best fit under?",
+		                                                      None, -1))
+>>>>>>> feature/MVPIntegration
 		self.groupBox.setTitle(QtWidgets.QApplication.translate("Dialog", "WIN32", None, -1))
 		self.option_MFC.setText(QtWidgets.QApplication.translate("Dialog", "MFC", None, -1))
 		self.option_VB6.setText(QtWidgets.QApplication.translate("Dialog", "VB6", None, -1))

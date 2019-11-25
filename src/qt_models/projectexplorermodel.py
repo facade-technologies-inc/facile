@@ -282,7 +282,11 @@ class ProjectExplorerModel(QAbstractItemModel):
 						ProjectExplorerModel.NO_BEHAVIORS_LABEL, parentData, 0))
 				
 				return self.registerAndCreateIndex(row, column,
+<<<<<<< HEAD
 				                                   self._project.getTargetGUIModel().getNthBehavior(
+=======
+				                                   self._project.getTargetGUIModel().getNthVisibilityBehavior(
+>>>>>>> feature/MVPIntegration
 					                                   row))
 			
 			elif parentData == ProjectExplorerModel.PIPELINE_LABEL:
@@ -299,6 +303,7 @@ class ProjectExplorerModel(QAbstractItemModel):
 		
 		elif isinstance(parentData, VisibilityBehavior):
 			if row == 0:
+<<<<<<< HEAD
 				return self.registerAndCreateIndex(row, column,
 				                                   ProjectExplorerModel.LeafIndex(
 					                                   parentData.getSrcComponent(),
@@ -309,6 +314,14 @@ class ProjectExplorerModel(QAbstractItemModel):
 				                                   ProjectExplorerModel.LeafIndex(
 					                                   parentData.getDestComponent(),
 					                                   parentData))
+=======
+				return self.registerAndCreateIndex(row, column, ProjectExplorerModel.LeafIndex(
+					parentData.getSrcComponent(), parentData))
+			
+			if row == 1:
+				return self.registerAndCreateIndex(row, column, ProjectExplorerModel.LeafIndex(
+					parentData.getDestComponent(), parentData))
+>>>>>>> feature/MVPIntegration
 		
 		elif isinstance(parentData, ActionPipeline):
 			# TODO: replace this once action pipelines are implemented
@@ -340,7 +353,11 @@ class ProjectExplorerModel(QAbstractItemModel):
 				return QModelIndex()
 			
 			elif data in (
+<<<<<<< HEAD
 			ProjectExplorerModel.COMPONENT_LABEL, ProjectExplorerModel.BEHAVIOR_LABEL):
+=======
+				ProjectExplorerModel.COMPONENT_LABEL, ProjectExplorerModel.BEHAVIOR_LABEL):
+>>>>>>> feature/MVPIntegration
 				return self.registerAndCreateIndex(0, 0, ProjectExplorerModel.TARGET_GUI_LABEL)
 			
 			else:
@@ -370,8 +387,15 @@ class ProjectExplorerModel(QAbstractItemModel):
 				return self.registerAndCreateIndex(data.getParentIndex(), 0, parentData)
 			
 			elif isinstance(innerData, Component):
+<<<<<<< HEAD
 				return self.registerAndCreateIndex(parentData.getPositionInSiblings(), 0,
 				                                   parentData)
+=======
+				visBehaviors = list(
+					self._project.getTargetGUIModel().getVisibilityBehaviors().values())
+				visBehaviorIdx = visBehaviors.index(parentData)
+				return self.registerAndCreateIndex(visBehaviorIdx, 0, parentData)
+>>>>>>> feature/MVPIntegration
 			
 			else:
 				raise ProjectExplorerModel.UnsupportedTypeException(
@@ -491,9 +515,9 @@ class ProjectExplorerModel(QAbstractItemModel):
 		
 		elif isinstance(data, VisibilityBehavior):
 			if col == 0:
-				return data.getName()
+				return data.getProperties().getProperty("Name")[1].getValue()
 			elif col == 1:
-				return data.getType()
+				return data.getReactionType()
 			else:
 				return None
 		
@@ -518,7 +542,7 @@ class ProjectExplorerModel(QAbstractItemModel):
 					if col == 0:
 						return "From"
 					elif col == 1:
-						return innerData.getName()
+						return innerData.getProperties().getProperty("Name")[1].getValue()
 					else:
 						return None
 				
@@ -526,7 +550,7 @@ class ProjectExplorerModel(QAbstractItemModel):
 					if col == 0:
 						return "To"
 					elif col == 1:
-						return innerData.getName()
+						return innerData.getProperties().getProperty("Name")[1].getValue()
 					else:
 						return None
 		

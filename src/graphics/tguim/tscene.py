@@ -26,6 +26,7 @@ from PySide2.QtWidgets import QGraphicsScene
 
 class TScene(QGraphicsScene):
 	itemSelected = Signal(int)
+	itemBlink = Signal(int)
 	
 	def __init__(self, targetGUIModel: 'TargetGuiModel'):
 		"""
@@ -56,3 +57,15 @@ class TScene(QGraphicsScene):
 		:rtype: NoneType
 		"""
 		self.itemSelected.emit(id)
+
+	def blinkComponent(self, id: int) -> None:
+		"""
+		emits the itemBlink signal which means that an item should be shown in the
+		target GUI.
+		
+		:param id: The ID of the component that should be blinked.
+		:type id: int
+		:return: None
+		:rtype: NoneType
+		"""
+		self.itemBlink.emit(id)

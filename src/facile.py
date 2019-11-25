@@ -32,6 +32,7 @@ from PySide2.QtWidgets import QApplication
 from PySide2.QtGui import QPalette, QColor, Qt
 
 from gui.facileview import FacileView
+import psutil
 
 if __name__ == "__main__":
 	def stylize(qApp):
@@ -57,6 +58,10 @@ if __name__ == "__main__":
 		qApp.setStyleSheet(
 			"QToolTip { color: #ffffff; background-color: #2a82da; border: 1px solid white; }")
 	
+	
+	# increases performance by hogging more processor time
+	p = psutil.Process()
+	p.nice(psutil.HIGH_PRIORITY_CLASS)
 	
 	app = QApplication([])
 	stylize(app)
