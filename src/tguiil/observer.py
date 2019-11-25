@@ -52,6 +52,7 @@ class Observer(QThread):
     ignoreTypes.add("ToolTips")
     ignoreTypes.add("MSCTFIME UI")
     ignoreTypes.add("IME")
+    ignoreTypes.add("Pane")
 
     #ignoreTypes.add("wxWindowNR")
     #ignoreTypes.add("wxWindow")
@@ -98,7 +99,11 @@ class Observer(QThread):
                 if curComponent.friendly_class_name() not in Observer.ignoreTypes:
                     try:
                         token = Observer.createToken(curComponent)
-                        # if token.type == "ListBox": #TODO: Make this more formal (ignore other similar types without checking firendly class name)
+                        
+                        # List boxes have a ton of children that we probably don't care about.
+                        # There are probably other types like it where we just want to ignore the
+                        # children. We can make this type of
+                        # if token.type == "ListBox":
                         #     continue
                         
                     except Token.CreationException as e:
@@ -214,6 +219,9 @@ class Observer(QThread):
         :return: The SuperToken that gets matched to the provided token.
         :rtype: SuperToken
         """
+
+        if token.isDialog:
+            parentSuperToken = None
         
         # determine if the new token matches any super tokens and how well it matches if it does.
         bestMatch = 0
@@ -247,6 +255,7 @@ class Observer(QThread):
     
         # No match was found
         if selectedSuperToken == None:
+            
             newSuperToken = SuperToken(token, parentSuperToken)
             
             self._childMapping[parentSuperToken].append(newSuperToken)
