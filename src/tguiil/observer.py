@@ -188,9 +188,9 @@ class Observer(QThread):
 		
 		# create a new token
 		token = Token(id, isDialog, isEnabled, isVisible, processID, typeOf, rectangle, texts, title,
-		              numControls, controlIdentifiers, parentTitle, parentType,
-		              topLevelParentTitle, topLevelParentType, childrenTexts, image, autoID,
-		              expandState, shownState)
+					  numControls, controlIdentifiers, parentTitle, parentType,
+					  topLevelParentTitle, topLevelParentType, childrenTexts, image, autoID,
+					  expandState, shownState)
 		
 		return token
 	

@@ -326,8 +326,8 @@ class FacileView(QMainWindow):
 		if self._blinker:
 			self._blinker.stop()
 		self._blinker = Blinker(self._project.getProcess().pid,
-		                        self._project.getBackend(),
-		                        component.getSuperToken())
+								self._project.getBackend(),
+								component.getSuperToken())
 		self._blinker.componentNotFound.connect(self.info)
 		self._blinker.start()
 	
