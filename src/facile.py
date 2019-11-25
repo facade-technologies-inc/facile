@@ -38,7 +38,7 @@ if __name__ == "__main__":
 	
 	def stylize(qApp):
 		qApp.setStyle("Fusion")
-		
+
 		dark_palette = QPalette()
 		dark_palette.setColor(QPalette.Window, QColor(53, 53, 53))
 		dark_palette.setColor(QPalette.WindowText, Qt.white)
@@ -57,11 +57,11 @@ if __name__ == "__main__":
 		dark_palette.setColor(QPalette.Disabled, QPalette.ButtonText, Qt.darkGray)
 		qApp.setPalette(dark_palette)
 		qApp.setStyleSheet("QToolTip { color: #ffffff; background-color: #2a82da; border: 1px solid white; }")
-	
+
 	# increases performance by hogging more processor time
 	p = psutil.Process()
 	p.nice(psutil.HIGH_PRIORITY_CLASS)
-	
+
 	app = QApplication([])
 	stylize(app)
 	window = FacileView()

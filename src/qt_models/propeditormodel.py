@@ -42,7 +42,7 @@ class PropModel(QAbstractItemModel):
 		"""
 		QAbstractItemModel.__init__(self)
 		self._propData = propData
-	
+
 	def index(self, row: int, column: int, parent: QModelIndex) -> QModelIndex:
 		"""
 		Purpose of this function is to return a QModelIndex that maps to the appropriate data
@@ -58,7 +58,7 @@ class PropModel(QAbstractItemModel):
 		"""
 		if not self.hasIndex(row, column, parent):
 			return QModelIndex()
-		
+
 		# referencing category
 		if not parent.isValid():
 			internalData = self._propData.getCategories()[row]
@@ -66,12 +66,12 @@ class PropModel(QAbstractItemModel):
 			parentData = parent.internalPointer()
 			if parentData in self._propData.getCategories():
 				internalData = self._propData.getCategoryProperties(parentData)[row]
-			
+
 			else:
 				return QModelIndex()
 		
 		return self.createIndex(row, column, internalData)
-	
+
 	def parent(self, index: QModelIndex) -> QModelIndex:
 		"""
 		Purpose of this function is to return the parent index of the index that is provided
@@ -83,16 +83,13 @@ class PropModel(QAbstractItemModel):
 		"""
 		if not index.isValid():
 			return QModelIndex()
-		
+
 		data = index.internalPointer()
-		
 		if data in self._propData.getCategories():
 			return QModelIndex()
-		
 		category = self._propData.getPropertyCategory(data)
-		
 		return self.createIndex(self._propData.getCategoryIndex(category), 0, category)
-	
+
 	def columnCount(self, parent: QModelIndex) -> int:
 		"""
 		Purpose of this function is to return the number of columns for the children of a given parent
@@ -103,7 +100,7 @@ class PropModel(QAbstractItemModel):
 		:rtype: int
 		"""
 		return 2
-	
+
 	def rowCount(self, parent: QModelIndex) -> int:
 		"""
 		Purpose of this function is to return the number of children of a given parent
@@ -116,14 +113,12 @@ class PropModel(QAbstractItemModel):
 		if not parent.isValid():
 			numCategories = self._propData.getNumCategories()
 			return numCategories
-		
 		parentData = parent.internalPointer()
-		
 		if parentData in self._propData.getCategories():
 			return self._propData.getNumPropertiesInCategory(parentData)
 		else:
 			return 0
-	
+
 	def data(self, index: QModelIndex, role: int) -> object:
 		"""
 		Purpose of this function is to retrieve data stored under the given role for the item referred to by the
@@ -138,11 +133,11 @@ class PropModel(QAbstractItemModel):
 		"""
 		if not index.isValid():
 			return QModelIndex()
-		
+
 		row = index.row()
 		col = index.column()
 		data = index.internalPointer()
-		
+
 		if role == Qt.DisplayRole:
 			if data in self._propData.getCategories():
 				if col == 0:
@@ -162,14 +157,14 @@ class PropModel(QAbstractItemModel):
 					return str(data.getValue())
 				else:
 					return None
-		
+
 		elif role == Qt.BackgroundRole:
 			if data in self._propData.getCategories():
 				return QColor(Qt.yellow)
 			else:
 				shade = row % 2 * 25
 				return QColor(100 + shade, 150 + shade, 200 + shade)
-	
+
 	def headerData(self, section: int, orientation: Qt.Orientation, role: int) -> object:
 		"""
 		This method is used for displaying the header data for 'the given role
@@ -184,11 +179,10 @@ class PropModel(QAbstractItemModel):
 		:return: Model of header data.
 		:rtype: object
 		"""
-		
 		if orientation == Qt.Horizontal and role == Qt.DisplayRole:
 			return ["Name", "Value"][section]
 		return None
-	
+
 	def traverse(self) -> None:
 		"""
 		This method is used for debugging by mimicking how a view might query the model for data.
@@ -198,23 +192,22 @@ class PropModel(QAbstractItemModel):
 		"""
 		parent = QModelIndex()
 		work = [parent]
-		
 		while len(work) > 0:
 			cur = work.pop()
-			
+
 			curRow = cur.row()
 			curCol = cur.column()
 			curData = self.data(cur, Qt.DisplayRole)
 			if cur.isValid():
 				print(curRow, curCol, curData)
 				pass
-			
+
 			rows = self.rowCount(cur)
 			cols = self.columnCount(cur)
 			for r in range(rows):
 				for c in range(cols):
 					work.append(self.index(r, c, cur))
-	
+
 	def setData(self, index: QModelIndex, value: object, role: int) -> bool:
 		"""
 		Purpose of this function is to set the role data for the index to value
@@ -230,15 +223,15 @@ class PropModel(QAbstractItemModel):
 		"""
 		if role != Qt.EditRole:
 			return False
-		
+
 		if not index.isValid():
 			return False
-		
+
 		if not value:
 			return False
-		
+
 		data = index.internalPointer()
-		
+
 		if data in self._propData.getCategories():
 			return False
 		else:
@@ -247,7 +240,7 @@ class PropModel(QAbstractItemModel):
 			else:
 				valueWasSet = data.setValue(value)
 				return valueWasSet
-	
+
 	def flags(self, index: QModelIndex) -> object:
 		"""
 		Purpose of this function is to determine what can be done with a given index
@@ -259,9 +252,9 @@ class PropModel(QAbstractItemModel):
 		"""
 		if not index.isValid():
 			return Qt.NoItemFlags
-		
+
 		data = index.internalPointer()
-		
+
 		if data in self._propData.getCategories():
 			return Qt.ItemIsEnabled | Qt.ItemIsSelectable
 		else:

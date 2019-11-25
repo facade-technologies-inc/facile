@@ -47,7 +47,6 @@ class FacileGraphicsView(QGraphicsView):
 		:rtype: NoneType
 		"""
 		super(FacileGraphicsView, self).__init__(parent)
-		
 		scene = QGraphicsScene()
 		box = QGraphicsRectItem(0,0,100,100)
 		box.setPen(QColor(Qt.transparent))

@@ -16,15 +16,13 @@
 | Technologies Inc.                                                            |
 |                                                                              |
 \------------------------------------------------------------------------------/
-
 This module contains the Observer class, which watches the target GUI for changes.
-
 """
 
 import psutil
 
 import pywinauto
-
+from threading import Lock
 from PySide2.QtCore import QThread, Signal
 from pywinauto.controls.uiawrapper import UIAWrapper
 from tguiil.application import Application
@@ -71,6 +69,9 @@ class Observer(QThread):
 		self._process = psutil.Process(processID)
 		self._backend = backend
 		self._childMapping = {None: []}  # maps each super token to its list of children.
+
+		self._playing = False
+		self._playingLock = Lock()
 	
 	def run(self) -> int:
 		"""
@@ -82,11 +83,17 @@ class Observer(QThread):
 		app = Application(backend=self._backend)
 		app.setProcess(self._process)
 		while self._process.is_running():
+
+			if not self.isPlaying(): return 0
+
 			componentCount = 0
 			# work acts as a stack. Each element is a 2-tuple where the first element
 			# is a GUI component and the second element is the parent super token.
 			work = [(win, None) for win in app.windows()]
 			while len(work) > 0:
+
+				if not self.isPlaying(): return 0
+				
 				curComponent, parentSuperToken = work.pop()
 				if curComponent.friendly_class_name() not in Observer.ignoreTypes:
 					try:
@@ -206,7 +213,7 @@ class Observer(QThread):
 		:return: The SuperToken that gets matched to the provided token.
 		:rtype: SuperToken
 		"""
-		
+
 		# determine if the new token matches any super tokens and how well it matches if it does.
 		bestMatch = 0
 		bestDecision = Token.Match.NO.value
@@ -244,6 +251,29 @@ class Observer(QThread):
 			selectedSuperToken.addToken(token)
 			return selectedSuperToken
 	
+	def setPlaying(self, status: bool) -> None:
+		"""
+		Sets the running flag.
+		:param status: True if running, False if not.
+		:type status: bool
+		:return: None
+		:rtype: NoneType
+		"""
+		self._playingLock.acquire()
+		self._playing = status
+		self._playingLock.release()
+	
+	def isPlaying(self) -> bool:
+		"""
+		Gets the running status.
+		:return: True if running, False if not.
+		:rtype: bool
+		"""
+		self._playingLock.acquire()
+		running = self._playing
+		self._playingLock.release()
+		return running
+	
 	def play(self):
 		"""
 		Runs the Observer.
@@ -257,6 +287,7 @@ class Observer(QThread):
 		if self.isRunning():
 			return True
 		
+		self.setPlaying(True)
 		self.start()
 		return self.isRunning()
 	
@@ -267,7 +298,10 @@ class Observer(QThread):
 		:return: True if the observer is running, False otherwise.
 		:rtype: bool
 		"""
+		self.setPlaying(False)
+		
 		if self.isRunning():
 			self.quit()
 			return True
 		return False
+

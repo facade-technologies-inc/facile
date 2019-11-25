@@ -20,6 +20,7 @@
 This module contains the PropertyEditorDelegate() Class.
 """
 
+from enum import Enum
 from PySide2 import QtGui, QtCore, QtWidgets
 from PySide2.QtCore import QAbstractItemModel, QModelIndex, QRect, QEvent
 from PySide2.QtWidgets import QItemDelegate, QStyledItemDelegate, QStyle, QLineEdit, QSpinBox, QCheckBox, QDoubleSpinBox, QWidget, QStyleOptionViewItem, QStylePainter
@@ -44,12 +45,12 @@ class PropertyEditorDelegate(QStyledItemDelegate):
 		"""
 		check_box_style_option = QtWidgets.QStyleOptionButton()
 		check_box_rect = QtWidgets.QApplication.style().subElementRect(QtWidgets.QStyle.SE_CheckBoxIndicator,
-		                                                               check_box_style_option, None)
+													check_box_style_option, None)
 		check_box_point = QtCore.QPoint(option.rect.x() +
-		                                check_box_rect.width() / 2,
-		                                option.rect.y() +
-		                                option.rect.height() / 2 -
-		                                check_box_rect.height() / 2)
+										check_box_rect.width() / 2,
+										option.rect.y() +
+										option.rect.height() / 2 -
+										check_box_rect.height() / 2)
 		return QRect(check_box_point, check_box_rect.size())
 	
 	def paint(self, painter: QStylePainter, option: QStyleOptionViewItem, index: QModelIndex) -> None:
@@ -68,21 +69,18 @@ class PropertyEditorDelegate(QStyledItemDelegate):
 		if index.column() == 1 and isinstance(index.internalPointer(), Property) and index.internalPointer().getType() == bool:
 			checked = index.internalPointer().getValue()
 			check_box_style_option = QtWidgets.QStyleOptionButton()
-			
 			if (index.flags() & QtCore.Qt.ItemIsEditable) > 0:
 				check_box_style_option.state |= QtWidgets.QStyle.State_Enabled
 			else:
 				check_box_style_option.state |= QtWidgets.QStyle.State_ReadOnly
-			
+				
 			if checked:
 				check_box_style_option.state |= QtWidgets.QStyle.State_On
 			else:
 				check_box_style_option.state |= QtWidgets.QStyle.State_Off
-			
+
 			check_box_style_option.rect = self.getCheckBoxRect(option)
-			
 			check_box_style_option.state |= QtWidgets.QStyle.State_Enabled
-			
 			QtWidgets.QApplication.style().drawControl(QtWidgets.QStyle.CE_CheckBox, check_box_style_option, painter)
 		else:
 			QStyledItemDelegate.paint(self, painter, option, index)
@@ -104,7 +102,6 @@ class PropertyEditorDelegate(QStyledItemDelegate):
 		data = index.internalPointer()
 		if index.column() == 1 and isinstance(data, Property) and data.getType() == bool:
 			return None
-		
 		if type(data) == Property:
 			if index.column() == 1:
 				t = data.getType()
@@ -170,7 +167,7 @@ class PropertyEditorDelegate(QStyledItemDelegate):
 		checkbox.setChecked(not data.getValue())
 		self.setModelData(checkbox, model, index)
 		return True
-	
+
 	def setEditorData(self, editor: QWidget, index: QModelIndex) -> None:
 		"""
 		Provides the widget with data to manipulate.
@@ -183,7 +180,7 @@ class PropertyEditorDelegate(QStyledItemDelegate):
 		:rtype: NoneType
 		"""
 		data = index.internalPointer()
-		
+
 		if type(data) == Property:
 			value = data.getValue()
 			if index.column() == 1:
@@ -200,7 +197,7 @@ class PropertyEditorDelegate(QStyledItemDelegate):
 					pass #TODO: set combo box default data
 				else:
 					pass
-	
+
 	def setModelData(self, editor: QWidget, model: 'PropModel', index: QModelIndex) -> None:
 		"""
 		Returns updated data to the model
@@ -217,7 +214,6 @@ class PropertyEditorDelegate(QStyledItemDelegate):
 		data = index.internalPointer()
 		
 		if type(data) == Property:
-			
 			if index.column() == 1:
 				t = data.getType()
 				if t == str:

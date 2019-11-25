@@ -53,7 +53,7 @@ class Properties:
 		self._categories[category] = []
 	
 	def addProperty(self, category: str, name: str, value: object, type: object,
-	                readOnly: bool = False) -> None:
+					readOnly: bool = False) -> None:
 		"""
 		To add a property to a certain category.
 

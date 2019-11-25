@@ -121,14 +121,14 @@ class TargetGuiModel(QObject):
 		#TODO: Create Properties object based on values from the SuperToken
 		predefinedCategories = []
 		customCategories = {"Temporary":[{"name":     "Name",
-		                                  "type":     str,
-		                                  "default":  newSuperToken.tokens[-1].controlIDs[-1],
-		                                  "readOnly": False},
-		                                 {"name": "Type",
-		                                  "type": str,
-		                                  "default": newSuperToken.tokens[-1].type,
-		                                  "readOnly": True}
-		                                 ]}
+										  "type":     str,
+										  "default":  newSuperToken.tokens[-1].controlIDs[-1],
+										  "readOnly": False},
+										 {"name": "Type",
+										  "type": str,
+										  "default": newSuperToken.tokens[-1].type,
+										  "readOnly": True}
+										 ]}
 		properties = Properties.createPropertiesObject(predefinedCategories, customCategories)
 		newComponent.setProperties(properties)
 		
@@ -145,7 +145,7 @@ class TargetGuiModel(QObject):
 		:rtype: dict
 		"""
 		return self._visibilityBehaviors
-	
+
 	def getNthVisibilityBehavior(self, n: int) -> 'VisibilityBehavior':
 		"""
 		Gets the visibility behavior at a specific position.
@@ -158,7 +158,7 @@ class TargetGuiModel(QObject):
 		keys = list(self._visibilityBehaviors.keys())
 		keys.sort()
 		return self._visibilityBehaviors[keys[n]]
-	
+
 	def getVisibilityBehavior(self, iD: int) -> 'VisibilityBehavior':
 		"""
 		Gets the VisibilityBehavior with the specified id.
@@ -184,7 +184,7 @@ class TargetGuiModel(QObject):
 		"""
 		if newVisBehavior.getId() not in self._visibilityBehaviors:
 			self._visibilityBehaviors[newVisBehavior.getId()] = newVisBehavior
-		
+
 		src = newVisBehavior.getSrcComponent()
 		dest = newVisBehavior.getDestComponent()
 		src.addSrcVisibilityBehavior(newVisBehavior)
