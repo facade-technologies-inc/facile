@@ -33,8 +33,9 @@ class FacileSplashScreen(QSplashScreen):
 	def __init__(self):
 		QSplashScreen.__init__(self)
 		splash_pix = QPixmap('C:/Users/Brandi/Desktop/Facade/facile/resources/facade_logo.png')
-
-		self.setPixmap(splash_pix)
+		splash_pix_height = splash_pix.scaledToHeight(64)
+		
+		self.setPixmap(splash_pix_height)
 
 
 """
