@@ -191,10 +191,8 @@ class StateMachine:
 				if self._project.getProcess():
 					nextState = StateMachine.State.EXPLORATION
 				else:
-					QMessageBox.critical(self.view,
-					                     "Not Available",
-					                     "To Start exploration, you must first be running the "
-					                     "target application.")
+					self.view.info("To Start exploration, you must\n" \
+					               "first be running the target application.")
 		
 		# If we've been requested to stop exploration and we're in the exploration state, go to the
 		# MODEL_MANIPULATION state
