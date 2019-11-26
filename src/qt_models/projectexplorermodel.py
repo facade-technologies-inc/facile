@@ -339,7 +339,7 @@ class ProjectExplorerModel(QAbstractItemModel):
 				return QModelIndex()
 			
 			elif data in (
-				ProjectExplorerModel.COMPONENT_LABEL, ProjectExplorerModel.BEHAVIOR_LABEL):
+			ProjectExplorerModel.COMPONENT_LABEL, ProjectExplorerModel.BEHAVIOR_LABEL):
 				return self.registerAndCreateIndex(0, 0, ProjectExplorerModel.TARGET_GUI_LABEL)
 			
 			else:

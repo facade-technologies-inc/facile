@@ -53,13 +53,14 @@ class Explorer(QThread):
 		QThread.__init__(self)
 		self._process = psutil.Process(processID)
 		self._backend = backend
+		
 		self._playing = False
 		self._playingLock = Lock()
 	
 	def run(self) -> int:
 		"""
 		Called when thread is started
-		
+
 		:return: the exit code
 		:rtype: int
 		"""
@@ -108,10 +109,10 @@ class Explorer(QThread):
 								pass
 							finally:
 								pass
-		
-		# for menupath in menu_paths:
-		#     window = menupath[0]
-		#     window.menu_select(menupath[1])
+				
+				# for menupath in menu_paths:
+				#     window = menupath[0]
+				#     window.menu_select(menupath[1])
 		finally:
 			return 0
 	
@@ -159,13 +160,12 @@ class Explorer(QThread):
 	def pause(self):
 		"""
 		Stops the Explorer.
-		
+
 		:return: True if the observer is running, False otherwise.
 		:rtype: bool
 		"""
 		
 		self.setPlaying(False)
-		
 		if self.isRunning():
 			self.quit()
 			return True
