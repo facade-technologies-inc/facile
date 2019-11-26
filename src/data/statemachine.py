@@ -190,10 +190,8 @@ class StateMachine:
 				if self._project.getProcess():
 					nextState = StateMachine.State.EXPLORATION
 				else:
-					QMessageBox.critical(self.view,
-					                     "Not Available",
-					                     "To Start exploration, you must first be running the "
-					                     "target application.")
+					self.view.info("To Start exploration, you must\n" \
+					               "first be running the target application.")
 		
 		# If we've been requested to stop exploration and we're in the exploration state, go to the
 		# MODEL_MANIPULATION state
@@ -260,7 +258,7 @@ class StateMachine:
 		def tick() -> None:
 			if not self._project.getProcess():
 				self.view.appWatcher.stop()
-				self.view.ui.actionStop_App.trigger()
+				self.view.onStopAppTriggered(confirm=False)
 		
 		self.view.appWatcher = QTimer(self.view)
 		self.view.appWatcher.timeout.connect(tick)
@@ -290,7 +288,7 @@ class StateMachine:
 		ui.actionManualExplore.triggered.connect(v.onManualExploration)
 		ui.actionAdd_Behavior.triggered.connect(v.onAddBehaviorTriggered)
 		ui.actionStart_App.triggered.connect(v.onStartAppTriggered)
-		ui.actionStop_App.triggered.connect(v.onStopAppTriggered)
+		ui.actionStop_App.triggered.connect(lambda: v.onStopAppTriggered(confirm=True))
 		
 		# Disable actions
 		ui.actionSave_Project.setEnabled(False)

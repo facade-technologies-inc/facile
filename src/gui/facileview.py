@@ -23,8 +23,11 @@ Much of Facile is joined together here.
 import os
 from copy import deepcopy
 
-from PySide2.QtCore import Slot, QItemSelection
-from PySide2.QtWidgets import QMainWindow, QFileDialog, QMessageBox
+from PySide2.QtGui import Qt
+from PySide2.QtCore import Slot, QPropertyAnimation, QTimer, QEasingCurve, QByteArray, \
+	QItemSelection
+from PySide2.QtWidgets import QMainWindow, QFileDialog, QMessageBox, QLabel, \
+	QGraphicsOpacityEffect, QApplication
 
 from data.project import Project
 from data.statemachine import StateMachine
@@ -242,15 +245,24 @@ class FacileView(QMainWindow):
 		self._stateMachine.startApp()
 	
 	@Slot()
-	def onStopAppTriggered(self):
+	def onStopAppTriggered(self, confirm=True):
 		"""
 		This slot is run when the user selects "Stop App"
 
 		:return: None
 		:rtype: NoneType
 		"""
-		self._project.stopTargetApplication()
-		self._stateMachine.stopApp()
+		if confirm:
+			title = "Confirm Application Termination"
+			message = "Are you sure you'd like to terminate the target application?"
+			response = QMessageBox.question(self, title, message)
+		else:
+			response = QMessageBox.StandardButton.Yes
+			
+		if response == QMessageBox.StandardButton.Yes:
+			self._project.stopTargetApplication()
+			self._stateMachine.stopApp()
+			self.info("The target application has been\nterminated.")
 	
 	@Slot(int)
 	def onItemSelected(self, id: int) -> None:
@@ -320,15 +332,66 @@ class FacileView(QMainWindow):
 			self._stateMachine.stopExploration()
 	
 	@Slot(str, str)
-	def info(self, title: str, message: str) -> None:
+	def info(self,  message: str) -> None:
 		"""
-		This function displays an information message box. with the FacileView as the parent.
+		This function will show a box with a message that will fade in and then out.
 
-		:param title: The title of the window to show.
-		:type title: str
 		:param message: The message to show inside of the window
 		:type message: str
 		:return: None
 		:rtype: NoneType
 		"""
-		QMessageBox.information(self, title, message)
+		# QMessageBox.information(self, title, message)
+		
+		label = QLabel(self)
+		windowWidth = self.width()
+		windowHeight = self.height()
+		labelWidth = 700
+		labelHeight = 300
+		label.setGeometry(windowWidth/2-labelWidth/2,
+		                  windowHeight/3-labelHeight/2,
+		                  labelWidth,
+		                  labelHeight)
+		label.show()
+		style = "border: 3px solid red;"\
+		        "border-radius:20px;"\
+		        "background-color:#353535;"\
+		        "color:#dddddd"
+		label.setStyleSheet(style)
+		label.setAlignment(Qt.AlignCenter)
+		label.setText(message)
+		
+		fadeInTimer = QTimer()
+		waitTimer = QTimer()
+		fadeOutTimer = QTimer()
+		
+		waitTimer.setSingleShot(True)
+		waitTimer.setInterval(1000)
+		
+		effect = QGraphicsOpacityEffect(label)
+		label.setGraphicsEffect(effect)
+		effect.setOpacity(0)
+		
+		def fadeIn():
+			opacity = effect.opacity() + 0.01
+			effect.setOpacity(opacity)
+			
+			if opacity >= 1:
+				fadeInTimer.stop()
+				waitTimer.start()
+		
+		def wait():
+			fadeOutTimer.start(10)
+		
+		def fadeOut():
+			opacity = effect.opacity() - 0.01
+			effect.setOpacity(opacity)
+			
+			if opacity <= 0:
+				fadeOutTimer.stop()
+				label.hide()
+		
+		fadeInTimer.timeout.connect(fadeIn)
+		waitTimer.timeout.connect(wait)
+		fadeOutTimer.timeout.connect(fadeOut)
+		fadeInTimer.start(10)

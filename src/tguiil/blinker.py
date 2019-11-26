@@ -36,7 +36,7 @@ class Blinker(QThread):
 	amount of time. Because the box sometimes disappears on its own, this can cause a blinking affect.
 	"""
 	
-	componentNotFound = Signal(str, str)  # carries title and information
+	componentNotFound = Signal(str)
 	
 	INTERVAL_MILLIS = 250
 	DURATION_MILLIS = 10_000
@@ -107,9 +107,8 @@ class Blinker(QThread):
 				self.initiateBlinkSequence(closestComponent)
 				return
 			else:
-				title = "Component Not Found"
-				info = "The selected component could not be found in the target GUI."
-				self.componentNotFound.emit(title, info)
+				info = "The selected component could not be\nfound in the target GUI."
+				self.componentNotFound.emit(info)
 	
 	def initiateBlinkSequence(self, component: 'Component') -> None:
 		"""
