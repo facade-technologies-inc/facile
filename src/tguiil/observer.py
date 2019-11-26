@@ -52,6 +52,7 @@ class Observer(QThread):
 	ignoreTypes.add("ToolTips")
 	ignoreTypes.add("MSCTFIME UI")
 	ignoreTypes.add("IME")
+	ignoreTypes.add("Pane")
 	
 	# ignoreTypes.add("wxWindowNR")
 	# ignoreTypes.add("wxWindow")
@@ -72,6 +73,10 @@ class Observer(QThread):
 		self._backend = backend
 		self._childMapping = {None: []}  # maps each super token to its list of children.
 		
+		# maps each super token to the laster iteration it was matched on.
+		self._lastSuperTokenIterations = {}
+		self._iteration = 0
+		
 		self._playing = False
 		self._playingLock = Lock()
 	
@@ -82,9 +87,11 @@ class Observer(QThread):
 		:return: the exit code of the thread which should be 0.
 		:rtype: int
 		"""
+		self._iteration = 0
 		app = Application(backend=self._backend)
 		app.setProcess(self._process)
 		while self._process.is_running():
+			self._iteration += 1
 			
 			if not self.isPlaying(): return 0
 			
@@ -100,13 +107,18 @@ class Observer(QThread):
 				if curComponent.friendly_class_name() not in Observer.ignoreTypes:
 					try:
 						token = Observer.createToken(curComponent)
-						if token.type == "ListBox":  # TODO: Make this more formal (ignore other similar types without checking firendly class name)
-							continue
+					
+					# List boxes have a ton of children that we probably don't care about.
+					# There are probably other types like it where we just want to ignore the
+					# children. We can make this type of
+					# if token.type == "ListBox":
+					#     continue
 					
 					except Token.CreationException as e:
 						print(str(e))
 					
 					nextParentSuperToken = self.matchToSuperToken(token, parentSuperToken)
+					self._lastSuperTokenIterations[nextParentSuperToken] = self._iteration
 				else:
 					nextParentSuperToken = parentSuperToken
 				
@@ -215,6 +227,8 @@ class Observer(QThread):
 		:return: The SuperToken that gets matched to the provided token.
 		:rtype: SuperToken
 		"""
+		if token.isDialog:
+			parentSuperToken = None
 		
 		# determine if the new token matches any super tokens and how well it matches if it does.
 		bestMatch = 0
@@ -223,6 +237,13 @@ class Observer(QThread):
 		potentialMatches = self._childMapping[parentSuperToken]
 		
 		for superToken in potentialMatches:
+			
+			if self._lastSuperTokenIterations[superToken] == self._iteration:
+				# print("Skipping", superToken)
+				continue
+			else:
+				print("Not Skipped", superToken)
+			
 			decision, matchVal = superToken.shouldContain(token)
 			bestDecision = min(bestDecision, decision.value)
 			

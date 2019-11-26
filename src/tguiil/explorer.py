@@ -109,10 +109,10 @@ class Explorer(QThread):
 								pass
 							finally:
 								pass
-			
-			# for menupath in menu_paths:
-			#     window = menupath[0]
-			#     window.menu_select(menupath[1])
+		
+		# for menupath in menu_paths:
+		#     window = menupath[0]
+		#     window.menu_select(menupath[1])
 		finally:
 			return 0
 	
@@ -164,7 +164,6 @@ class Explorer(QThread):
 		:return: True if the observer is running, False otherwise.
 		:rtype: bool
 		"""
-		
 		self.setPlaying(False)
 		if self.isRunning():
 			self.quit()

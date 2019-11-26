@@ -25,6 +25,7 @@ import os
 from subprocess import PIPE
 
 import psutil
+from PySide2.QtWidgets import QTreeView
 
 from data.tguim.targetguimodel import TargetGuiModel
 from qt_models.projectexplorermodel import ProjectExplorerModel
@@ -322,14 +323,16 @@ class Project:
 			return None
 		return self._process
 	
-	def getProjectExplorerModel(self) -> ProjectExplorerModel:
+	def getProjectExplorerModel(self, view: QTreeView) -> ProjectExplorerModel:
 		"""
 		Gets a model that allows a Qt tree view to access the data in a limited manner.
 		
+		:param view: The view to place the model into
+		:type view: QTreeView
 		:return: The project explorer model
 		:rtype: ProjectExplorerModel
 		"""
-		return ProjectExplorerModel(self)
+		return ProjectExplorerModel(self, view)
 	
 	@staticmethod
 	def load(mainFile: str) -> 'Project':
