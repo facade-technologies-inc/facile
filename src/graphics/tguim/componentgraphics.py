@@ -350,7 +350,9 @@ class ComponentGraphics(QGraphicsItem):
 		rectBox = QRectF(self.boundingRect().width() - ComponentGraphics.MARGIN,
 		                 -ComponentGraphics.MARGIN,
 		                 ComponentGraphics.MARGIN * 2, ComponentGraphics.MARGIN * 2)
+		painter.setBrush(QColor(255, 0, 0, 127))
 		painter.drawRect(rectBox)
+		painter.setBrush(QColor(100, 200, 255))
 		painter.drawText(rectBox.center(), token_count)
 	
 	def mousePressEvent(self, event):
