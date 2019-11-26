@@ -164,7 +164,6 @@ class Explorer(QThread):
 		:return: True if the observer is running, False otherwise.
 		:rtype: bool
 		"""
-		
 		self.setPlaying(False)
 		if self.isRunning():
 			self.quit()
