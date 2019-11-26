@@ -24,7 +24,8 @@ import os
 from copy import deepcopy
 
 from PySide2.QtGui import Qt
-from PySide2.QtCore import Slot, QPropertyAnimation, QTimer, QEasingCurve, QByteArray
+from PySide2.QtCore import Slot, QPropertyAnimation, QTimer, QEasingCurve, QByteArray, \
+	QItemSelection
 from PySide2.QtWidgets import QMainWindow, QFileDialog, QMessageBox, QLabel, \
 	QGraphicsOpacityEffect, QApplication
 
