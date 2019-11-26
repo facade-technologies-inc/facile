@@ -156,12 +156,11 @@ class StateMachine:
 		# When the "Add Behavior" button is clicked, only go into the ADDING_VB state if we're
 		# currently in the MODEL_MANIPULATION state.
 		elif event == StateMachine.Event.ADD_VB_CLICKED:
+			self.vbComponents = []
 			if self.curState == StateMachine.State.ADDING_VB:
-				self.vbComponents = []
 				nextState = StateMachine.State.MODEL_MANIPULATION
 			
 			if self.curState == StateMachine.State.MODEL_MANIPULATION:
-				self.vbComponents = []
 				nextState = StateMachine.State.ADDING_VB
 		
 		# When a component is clicked, if we are in the ADDING_VB state, record the click. Once two
@@ -170,7 +169,6 @@ class StateMachine:
 		elif event == StateMachine.Event.COMPONENT_CLICKED:
 			if self.curState == StateMachine.State.ADDING_VB:
 				self.vbComponents.append(args[0])
-				print(self.vbComponents)
 				if len(self.vbComponents) == 1:
 					nextState = StateMachine.State.ADDING_VB
 				elif len(self.vbComponents) == 2:
@@ -180,6 +178,7 @@ class StateMachine:
 					newVB = VisibilityBehavior(tguim, srcComp, destComp)
 					self.view._project.getTargetGUIModel().addVisibilityBehavior(newVB)
 					self.view.ui.projectExplorerView.update()
+					self.view.ui.projectExplorerView.model().selectBehavior(newVB)
 					nextState = StateMachine.State.MODEL_MANIPULATION
 		
 		
@@ -332,7 +331,10 @@ class StateMachine:
 			p.getTargetGUIModel().getScene().itemSelected.connect(v.onItemSelected)
 			p.getTargetGUIModel().getScene().itemBlink.connect(v.onItemBlink)
 			p.getTargetGUIModel().dataChanged.connect(lambda: ui.projectExplorerView.update())
-			ui.projectExplorerView.setModel(v._project.getProjectExplorerModel())
+			ui.projectExplorerView.setModel(
+				v._project.getProjectExplorerModel(ui.projectExplorerView))
+			ui.projectExplorerView.selectionModel().selectionChanged.connect(
+				v.onProjectExplorerIndexSelected)
 			ui.targetGUIModelView.setScene(v._project.getTargetGUIModel().getScene())
 			ui.actionStop_App.setEnabled(False)
 			ui.actionManualExplore.setEnabled(False)

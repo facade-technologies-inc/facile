@@ -23,7 +23,7 @@ Much of Facile is joined together here.
 import os
 from copy import deepcopy
 
-from PySide2.QtCore import Slot
+from PySide2.QtCore import Slot, QItemSelection
 from PySide2.QtWidgets import QMainWindow, QFileDialog, QMessageBox
 
 from data.project import Project
@@ -211,6 +211,26 @@ class FacileView(QMainWindow):
 		self._stateMachine.addBehaviorClicked()
 	
 	@Slot()
+	def onProjectExplorerIndexSelected(self, selected: QItemSelection,
+	                                   deselected: QItemSelection) -> None:
+		"""
+		This slot is called when an item is selected in the project explorer.
+		
+		:param selected: The newly selected items
+		:type selected: QItemSelection
+		:param deselected: The items that used to be selected.
+		:type deselected: QItemSelection
+		:return: None
+		:rtype: NoneType
+		"""
+		selectedIndexes = selected.indexes()
+		index = selectedIndexes[0]
+		entity = index.internalPointer()
+		self._project.getTargetGUIModel().getScene().clearSelection()
+		entity.getGraphicsItem().setSelected(True)
+		self.ui.propertyEditorView.setModel(entity.getProperties().getModel())
+		self.ui.propertyEditorView.expandAll()
+	
 	def onStartAppTriggered(self):
 		"""
 		This slot is run when the user selects "Start App"
@@ -233,11 +253,12 @@ class FacileView(QMainWindow):
 		self._stateMachine.stopApp()
 	
 	@Slot(int)
-	def onItemSelected(self, id: int):
+	def onItemSelected(self, id: int) -> None:
 		"""
 		This slot will update the view when an item is selected.
 		
 		:return: None
+		:rtype: NoneType
 		"""
 		# TODO: Change to get any entity instead of just component
 		entity = self._project.getTargetGUIModel().getComponent(id)
@@ -245,6 +266,7 @@ class FacileView(QMainWindow):
 		self.ui.propertyEditorView.setModel(properties.getModel())
 		
 		if type(entity) == Component:
+			self.ui.projectExplorerView.model().selectComponent(entity)
 			self._stateMachine.componentClicked(entity)
 	
 	@Slot(int)

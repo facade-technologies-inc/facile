@@ -283,8 +283,8 @@ class ComponentGraphics(QGraphicsItem):
 		halfWidth = ComponentGraphics.PEN_WIDTH / 2
 		if withMargins:
 			marginAdjustment = -ComponentGraphics.TRIM + ComponentGraphics.MARGIN * 2 + ComponentGraphics.PEN_WIDTH
-			return QRectF(-halfWidth,
-			              -halfWidth,
+			return QRectF(-halfWidth - ComponentGraphics.MARGIN,
+			              -halfWidth - ComponentGraphics.MARGIN,
 			              self._width + marginAdjustment,
 			              self._height + marginAdjustment)
 		else:
@@ -374,7 +374,7 @@ class ComponentGraphics(QGraphicsItem):
 		:return: None
 		:rtype: NoneType
 		"""
-		self.mousePressEvent(event)
+		self.setSelected(True)
 		selectedAction = self.menu.exec_(event.screenPos())
 	
 	def triggerSceneUpdate(self):
