@@ -173,6 +173,9 @@
             <attribute name="toolBarBreak">
                 <bool>false</bool>
             </attribute>
+            <addaction name="actionStart_App"/>
+            <addaction name="actionStop_App"/>
+            <addaction name="separator"/>
             <addaction name="actionAutoExplore"/>
             <addaction name="actionManualExplore"/>
             <addaction name="separator"/>
@@ -291,6 +294,22 @@
             </property>
             <property name="toolTip">
                 <string>Add a visibility behavior to the target GUI model</string>
+            </property>
+        </action>
+        <action name="actionStart_App">
+            <property name="text">
+                <string>Start App</string>
+            </property>
+            <property name="toolTip">
+                <string>Start running this project's target application</string>
+            </property>
+        </action>
+        <action name="actionStop_App">
+            <property name="text">
+                <string>Stop App</string>
+            </property>
+            <property name="toolTip">
+                <string>Stop running this project's target application</string>
             </property>
         </action>
     </widget>

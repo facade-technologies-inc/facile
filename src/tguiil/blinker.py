@@ -17,7 +17,7 @@
 	| Technologies Inc.                                                            |
 	|                                                                              |
 	\------------------------------------------------------------------------------/
-	
+
 This module contains the blinker class which is used to relate the target GUI model
 to the actual target GUI.
 """
