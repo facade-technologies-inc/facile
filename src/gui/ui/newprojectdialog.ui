@@ -1,360 +1,362 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>Dialog</class>
- <widget class="QDialog" name="Dialog">
-  <property name="geometry">
-   <rect>
-    <x>0</x>
-    <y>0</y>
-    <width>538</width>
-    <height>515</height>
-   </rect>
-  </property>
-  <property name="windowTitle">
-   <string>Dialog</string>
-  </property>
-  <layout class="QHBoxLayout" name="horizontalLayout_6">
-   <item>
-    <spacer name="horizontalSpacer_2">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>84</width>
-       <height>20</height>
-      </size>
-     </property>
-    </spacer>
-   </item>
-   <item>
-    <layout class="QVBoxLayout" name="verticalLayout_4">
-     <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_5">
-       <item>
-        <spacer name="horizontalSpacer_4">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>40</width>
-           <height>20</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-       <item>
-        <widget class="QLabel" name="title_label">
-         <property name="text">
-          <string>Create a New Project</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <spacer name="horizontalSpacer_3">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>40</width>
-           <height>20</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-      </layout>
-     </item>
-     <item>
-      <layout class="QFormLayout" name="formLayout">
-       <item row="0" column="0">
-        <widget class="QLabel" name="name_label">
-         <property name="text">
-          <string>Project Name</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="1">
-        <widget class="QLineEdit" name="project_name_edit"/>
-       </item>
-       <item row="1" column="0">
-        <widget class="QLabel" name="description_label">
-         <property name="text">
-          <string>Project Description</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="1">
-        <widget class="QTextEdit" name="description_edit"/>
-       </item>
-       <item row="2" column="0">
-        <widget class="QLabel" name="project_folder_label">
-         <property name="text">
-          <string>Project Folder</string>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="1">
-        <layout class="QHBoxLayout" name="horizontalLayout_4">
-         <item>
-          <widget class="QLineEdit" name="project_folder_edit"/>
-         </item>
-         <item>
-          <widget class="QToolButton" name="browseFilesButton_folder">
-           <property name="text">
-            <string>...</string>
-           </property>
-          </widget>
-         </item>
+    <class>Dialog</class>
+    <widget class="QDialog" name="Dialog">
+        <property name="geometry">
+            <rect>
+                <x>0</x>
+                <y>0</y>
+                <width>538</width>
+                <height>515</height>
+            </rect>
+        </property>
+        <property name="windowTitle">
+            <string>Dialog</string>
+        </property>
+        <layout class="QHBoxLayout" name="horizontalLayout_6">
+            <item>
+                <spacer name="horizontalSpacer_2">
+                    <property name="orientation">
+                        <enum>Qt::Horizontal</enum>
+                    </property>
+                    <property name="sizeHint" stdset="0">
+                        <size>
+                            <width>84</width>
+                            <height>20</height>
+                        </size>
+                    </property>
+                </spacer>
+            </item>
+            <item>
+                <layout class="QVBoxLayout" name="verticalLayout_4">
+                    <item>
+                        <layout class="QHBoxLayout" name="horizontalLayout_5">
+                            <item>
+                                <spacer name="horizontalSpacer_4">
+                                    <property name="orientation">
+                                        <enum>Qt::Horizontal</enum>
+                                    </property>
+                                    <property name="sizeHint" stdset="0">
+                                        <size>
+                                            <width>40</width>
+                                            <height>20</height>
+                                        </size>
+                                    </property>
+                                </spacer>
+                            </item>
+                            <item>
+                                <widget class="QLabel" name="title_label">
+                                    <property name="text">
+                                        <string>Create a New Project</string>
+                                    </property>
+                                </widget>
+                            </item>
+                            <item>
+                                <spacer name="horizontalSpacer_3">
+                                    <property name="orientation">
+                                        <enum>Qt::Horizontal</enum>
+                                    </property>
+                                    <property name="sizeHint" stdset="0">
+                                        <size>
+                                            <width>40</width>
+                                            <height>20</height>
+                                        </size>
+                                    </property>
+                                </spacer>
+                            </item>
+                        </layout>
+                    </item>
+                    <item>
+                        <layout class="QFormLayout" name="formLayout">
+                            <item row="0" column="0">
+                                <widget class="QLabel" name="name_label">
+                                    <property name="text">
+                                        <string>Project Name</string>
+                                    </property>
+                                </widget>
+                            </item>
+                            <item row="0" column="1">
+                                <widget class="QLineEdit" name="project_name_edit"/>
+                            </item>
+                            <item row="1" column="0">
+                                <widget class="QLabel" name="description_label">
+                                    <property name="text">
+                                        <string>Project Description</string>
+                                    </property>
+                                </widget>
+                            </item>
+                            <item row="1" column="1">
+                                <widget class="QTextEdit" name="description_edit"/>
+                            </item>
+                            <item row="2" column="0">
+                                <widget class="QLabel" name="project_folder_label">
+                                    <property name="text">
+                                        <string>Project Folder</string>
+                                    </property>
+                                </widget>
+                            </item>
+                            <item row="2" column="1">
+                                <layout class="QHBoxLayout" name="horizontalLayout_4">
+                                    <item>
+                                        <widget class="QLineEdit" name="project_folder_edit"/>
+                                    </item>
+                                    <item>
+                                        <widget class="QToolButton" name="browseFilesButton_folder">
+                                            <property name="text">
+                                                <string>...</string>
+                                            </property>
+                                        </widget>
+                                    </item>
+                                </layout>
+                            </item>
+                            <item row="3" column="0">
+                                <widget class="QLabel" name="application_label">
+                                    <property name="text">
+                                        <string>Target Application</string>
+                                    </property>
+                                </widget>
+                            </item>
+                            <item row="3" column="1">
+                                <layout class="QHBoxLayout" name="horizontalLayout">
+                                    <item>
+                                        <widget class="QLineEdit" name="executable_file_edit"/>
+                                    </item>
+                                    <item>
+                                        <widget class="QToolButton"
+                                                name="browseFilesButton_executable">
+                                            <property name="text">
+                                                <string>...</string>
+                                            </property>
+                                        </widget>
+                                    </item>
+                                </layout>
+                            </item>
+                        </layout>
+                    </item>
+                    <item>
+                        <widget class="Line" name="line">
+                            <property name="orientation">
+                                <enum>Qt::Horizontal</enum>
+                            </property>
+                        </widget>
+                    </item>
+                    <item>
+                        <widget class="QLabel" name="label_4">
+                            <property name="text">
+                                <string>Which category does the target application best fit under?
+                                </string>
+                            </property>
+                        </widget>
+                    </item>
+                    <item>
+                        <layout class="QHBoxLayout" name="horizontalLayout_3">
+                            <item>
+                                <widget class="QGroupBox" name="groupBox">
+                                    <property name="title">
+                                        <string>WIN32</string>
+                                    </property>
+                                    <layout class="QVBoxLayout" name="verticalLayout_2">
+                                        <item>
+                                            <widget class="QRadioButton" name="option_MFC">
+                                                <property name="text">
+                                                    <string>MFC</string>
+                                                </property>
+                                            </widget>
+                                        </item>
+                                        <item>
+                                            <widget class="QRadioButton" name="option_VB6">
+                                                <property name="text">
+                                                    <string>VB6</string>
+                                                </property>
+                                            </widget>
+                                        </item>
+                                        <item>
+                                            <widget class="QRadioButton" name="option_VCL">
+                                                <property name="text">
+                                                    <string>VCL</string>
+                                                </property>
+                                            </widget>
+                                        </item>
+                                        <item>
+                                            <widget class="QRadioButton" name="option_Legacy">
+                                                <property name="text">
+                                                    <string>Legacy</string>
+                                                </property>
+                                            </widget>
+                                        </item>
+                                    </layout>
+                                </widget>
+                            </item>
+                            <item>
+                                <widget class="QGroupBox" name="groupBox_2">
+                                    <property name="title">
+                                        <string>UIA</string>
+                                    </property>
+                                    <layout class="QVBoxLayout" name="verticalLayout">
+                                        <item>
+                                            <widget class="QRadioButton" name="option_WinForms">
+                                                <property name="text">
+                                                    <string>WinForms</string>
+                                                </property>
+                                            </widget>
+                                        </item>
+                                        <item>
+                                            <widget class="QRadioButton" name="option_WPF">
+                                                <property name="text">
+                                                    <string>WPF</string>
+                                                </property>
+                                            </widget>
+                                        </item>
+                                        <item>
+                                            <widget class="QRadioButton" name="option_Qt5">
+                                                <property name="text">
+                                                    <string>Qt5</string>
+                                                </property>
+                                            </widget>
+                                        </item>
+                                        <item>
+                                            <widget class="QRadioButton" name="option_Store_App">
+                                                <property name="text">
+                                                    <string>Store App</string>
+                                                </property>
+                                            </widget>
+                                        </item>
+                                        <item>
+                                            <widget class="QRadioButton" name="option_Browser">
+                                                <property name="text">
+                                                    <string>Browser</string>
+                                                </property>
+                                            </widget>
+                                        </item>
+                                    </layout>
+                                </widget>
+                            </item>
+                            <item>
+                                <layout class="QVBoxLayout" name="verticalLayout_3">
+                                    <item>
+                                        <spacer name="verticalSpacer">
+                                            <property name="orientation">
+                                                <enum>Qt::Vertical</enum>
+                                            </property>
+                                            <property name="sizeHint" stdset="0">
+                                                <size>
+                                                    <width>20</width>
+                                                    <height>40</height>
+                                                </size>
+                                            </property>
+                                        </spacer>
+                                    </item>
+                                    <item>
+                                        <layout class="QHBoxLayout" name="horizontalLayout_2">
+                                            <item>
+                                                <widget class="QRadioButton" name="option_Other">
+                                                    <property name="text">
+                                                        <string>Other</string>
+                                                    </property>
+                                                </widget>
+                                            </item>
+                                            <item>
+                                                <widget class="QLineEdit" name="other_edit"/>
+                                            </item>
+                                        </layout>
+                                    </item>
+                                    <item>
+                                        <widget class="QRadioButton" name="option_idk">
+                                            <property name="text">
+                                                <string>I don't know</string>
+                                            </property>
+                                        </widget>
+                                    </item>
+                                    <item>
+                                        <spacer name="verticalSpacer_2">
+                                            <property name="orientation">
+                                                <enum>Qt::Vertical</enum>
+                                            </property>
+                                            <property name="sizeHint" stdset="0">
+                                                <size>
+                                                    <width>20</width>
+                                                    <height>40</height>
+                                                </size>
+                                            </property>
+                                        </spacer>
+                                    </item>
+                                </layout>
+                            </item>
+                        </layout>
+                    </item>
+                    <item>
+                        <widget class="QLabel" name="error_label">
+                            <property name="autoFillBackground">
+                                <bool>false</bool>
+                            </property>
+                            <property name="styleSheet">
+                                <string notr="true">color: red</string>
+                            </property>
+                            <property name="text">
+                                <string>error:</string>
+                            </property>
+                        </widget>
+                    </item>
+                    <item>
+                        <widget class="QDialogButtonBox" name="dialogButtons">
+                            <property name="orientation">
+                                <enum>Qt::Horizontal</enum>
+                            </property>
+                            <property name="standardButtons">
+                                <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+                            </property>
+                        </widget>
+                    </item>
+                </layout>
+            </item>
+            <item>
+                <spacer name="horizontalSpacer">
+                    <property name="orientation">
+                        <enum>Qt::Horizontal</enum>
+                    </property>
+                    <property name="sizeHint" stdset="0">
+                        <size>
+                            <width>84</width>
+                            <height>20</height>
+                        </size>
+                    </property>
+                </spacer>
+            </item>
         </layout>
-       </item>
-       <item row="3" column="0">
-        <widget class="QLabel" name="application_label">
-         <property name="text">
-          <string>Target Application</string>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="1">
-        <layout class="QHBoxLayout" name="horizontalLayout">
-         <item>
-          <widget class="QLineEdit" name="executable_file_edit"/>
-         </item>
-         <item>
-          <widget class="QToolButton" name="browseFilesButton_executable">
-           <property name="text">
-            <string>...</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-      </layout>
-     </item>
-     <item>
-      <widget class="Line" name="line">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QLabel" name="label_4">
-       <property name="text">
-        <string>Which category does the target application best fit under?</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_3">
-       <item>
-        <widget class="QGroupBox" name="groupBox">
-         <property name="title">
-          <string>WIN32</string>
-         </property>
-         <layout class="QVBoxLayout" name="verticalLayout_2">
-          <item>
-           <widget class="QRadioButton" name="option_MFC">
-            <property name="text">
-             <string>MFC</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QRadioButton" name="option_VB6">
-            <property name="text">
-             <string>VB6</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QRadioButton" name="option_VCL">
-            <property name="text">
-             <string>VCL</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QRadioButton" name="option_Legacy">
-            <property name="text">
-             <string>Legacy</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </widget>
-       </item>
-       <item>
-        <widget class="QGroupBox" name="groupBox_2">
-         <property name="title">
-          <string>UIA</string>
-         </property>
-         <layout class="QVBoxLayout" name="verticalLayout">
-          <item>
-           <widget class="QRadioButton" name="option_WinForms">
-            <property name="text">
-             <string>WinForms</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QRadioButton" name="option_WPF">
-            <property name="text">
-             <string>WPF</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QRadioButton" name="option_Qt5">
-            <property name="text">
-             <string>Qt5</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QRadioButton" name="option_Store_App">
-            <property name="text">
-             <string>Store App</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QRadioButton" name="option_Browser">
-            <property name="text">
-             <string>Browser</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </widget>
-       </item>
-       <item>
-        <layout class="QVBoxLayout" name="verticalLayout_3">
-         <item>
-          <spacer name="verticalSpacer">
-           <property name="orientation">
-            <enum>Qt::Vertical</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>20</width>
-             <height>40</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-         <item>
-          <layout class="QHBoxLayout" name="horizontalLayout_2">
-           <item>
-            <widget class="QRadioButton" name="option_Other">
-             <property name="text">
-              <string>Other</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLineEdit" name="other_edit"/>
-           </item>
-          </layout>
-         </item>
-         <item>
-          <widget class="QRadioButton" name="option_idk">
-           <property name="text">
-            <string>I don't know</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <spacer name="verticalSpacer_2">
-           <property name="orientation">
-            <enum>Qt::Vertical</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>20</width>
-             <height>40</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-        </layout>
-       </item>
-      </layout>
-     </item>
-     <item>
-      <widget class="QLabel" name="error_label">
-       <property name="autoFillBackground">
-        <bool>false</bool>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">color: red</string>
-       </property>
-       <property name="text">
-        <string>error:</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QDialogButtonBox" name="dialogButtons">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="standardButtons">
-        <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </item>
-   <item>
-    <spacer name="horizontalSpacer">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>84</width>
-       <height>20</height>
-      </size>
-     </property>
-    </spacer>
-   </item>
-  </layout>
- </widget>
- <resources/>
- <connections>
-  <connection>
-   <sender>dialogButtons</sender>
-   <signal>accepted()</signal>
-   <receiver>Dialog</receiver>
-   <slot>accept()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>248</x>
-     <y>254</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>157</x>
-     <y>274</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>dialogButtons</sender>
-   <signal>rejected()</signal>
-   <receiver>Dialog</receiver>
-   <slot>reject()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>316</x>
-     <y>260</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>286</x>
-     <y>274</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
+    </widget>
+    <resources/>
+    <connections>
+        <connection>
+            <sender>dialogButtons</sender>
+            <signal>accepted()</signal>
+            <receiver>Dialog</receiver>
+            <slot>accept()</slot>
+            <hints>
+                <hint type="sourcelabel">
+                    <x>248</x>
+                    <y>254</y>
+                </hint>
+                <hint type="destinationlabel">
+                    <x>157</x>
+                    <y>274</y>
+                </hint>
+            </hints>
+        </connection>
+        <connection>
+            <sender>dialogButtons</sender>
+            <signal>rejected()</signal>
+            <receiver>Dialog</receiver>
+            <slot>reject()</slot>
+            <hints>
+                <hint type="sourcelabel">
+                    <x>316</x>
+                    <y>260</y>
+                </hint>
+                <hint type="destinationlabel">
+                    <x>286</x>
+                    <y>274</y>
+                </hint>
+            </hints>
+        </connection>
+    </connections>
 </ui>
