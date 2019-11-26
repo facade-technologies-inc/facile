@@ -335,7 +335,6 @@ class ComponentGraphics(QGraphicsItem):
 			pen.setColor(QColor(0, 0, 0))
 		painter.setPen(pen)
 		
-		# set background color:
 		painter.setBrush(QColor(100, 200, 255))
 		
 		id = self._dataComponent.getId()
@@ -350,7 +349,10 @@ class ComponentGraphics(QGraphicsItem):
 		rectBox = QRectF(self.boundingRect().width() - ComponentGraphics.MARGIN,
 		                 -ComponentGraphics.MARGIN,
 		                 ComponentGraphics.MARGIN * 2, ComponentGraphics.MARGIN * 2)
+		
+		painter.setBrush(QColor(255, 0, 0, 127))
 		painter.drawRect(rectBox)
+		painter.setBrush(QColor(100, 200, 255))
 		painter.drawText(rectBox.center(), token_count)
 	
 	def mousePressEvent(self, event):
