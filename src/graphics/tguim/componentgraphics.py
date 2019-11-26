@@ -109,7 +109,7 @@ class ComponentGraphics(QGraphicsItem):
 			collidingSiblings, maxSibX, maxSibY = self.getCollidingComponents(siblings)
 			if collidingSiblings:
 				self.dumbCollisionResolution(maxSibX, maxSibY, closest=False)
-			# self.smartCollisionResolution(collidingSiblings)
+				# self.smartCollisionResolution(collidingSiblings)
 			else:
 				break
 		
@@ -273,8 +273,8 @@ class ComponentGraphics(QGraphicsItem):
 		halfWidth = ComponentGraphics.PEN_WIDTH / 2
 		if withMargins:
 			marginAdjustment = -ComponentGraphics.TRIM + ComponentGraphics.MARGIN * 2 + ComponentGraphics.PEN_WIDTH
-			return QRectF(-halfWidth,
-			              -halfWidth,
+			return QRectF(-halfWidth - ComponentGraphics.MARGIN,
+			              -halfWidth - ComponentGraphics.MARGIN,
 			              self._width + marginAdjustment,
 			              self._height + marginAdjustment)
 		else:
@@ -345,7 +345,7 @@ class ComponentGraphics(QGraphicsItem):
 		"""
 		self.setSelected(True)
 		self.scene().emitItemSelected(self._dataComponent.getId())
-	
+		
 	def contextMenuEvent(self, event: QGraphicsSceneContextMenuEvent) -> None:
 		"""
 		Opens a context menu (right click menu) for the component.
@@ -355,7 +355,7 @@ class ComponentGraphics(QGraphicsItem):
 		:return: None
 		:rtype: NoneType
 		"""
-		self.mousePressEvent(event)
+		self.setSelected(True)
 		selectedAction = self.menu.exec_(event.screenPos())
 	
 	def triggerSceneUpdate(self):
