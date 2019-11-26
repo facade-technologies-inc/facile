@@ -337,7 +337,7 @@ class StateMachine:
 			ui.actionStop_App.setEnabled(False)
 			ui.actionManualExplore.setEnabled(False)
 			ui.actionAutoExplore.setEnabled(False)
-			p.startTargetApplication()  # TODO: Remove this once application controls exist
+			ui.actionStart_App.setEnabled(True)
 		
 		if previousState == StateMachine.State.EXPLORATION:
 			self._project.getObserver().pause()
