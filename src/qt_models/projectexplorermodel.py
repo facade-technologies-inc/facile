@@ -22,6 +22,8 @@ This is module contains the Qt model for the project explorer.
 """
 
 from PySide2.QtCore import QAbstractItemModel, QModelIndex, Qt, Signal, Slot, QItemSelection
+from PySide2.QtCore import QItemSelectionModel
+from PySide2.QtWidgets import QTreeView
 
 from data.apim.actionpipeline import ActionPipeline
 from data.tguim.component import Component
@@ -209,7 +211,7 @@ class ProjectExplorerModel(QAbstractItemModel):
 	#           END EXCEPTION DEFINITIONS           #
 	#################################################
 	
-	def __init__(self, project: 'Project') -> 'ProjectExplorerModel':
+	def __init__(self, project: 'Project', view: QTreeView) -> 'ProjectExplorerModel':
 		"""
 		Constructs a ProjectExplorerModel exception
 		
@@ -218,6 +220,7 @@ class ProjectExplorerModel(QAbstractItemModel):
 		"""
 		QAbstractItemModel.__init__(self)
 		self._project = project
+		self._view = view
 		
 		# Data structures that let us efficiently store references to internal data without hogging exorbitant amounts
 		# of memory.
@@ -336,7 +339,7 @@ class ProjectExplorerModel(QAbstractItemModel):
 				return QModelIndex()
 			
 			elif data in (
-			ProjectExplorerModel.COMPONENT_LABEL, ProjectExplorerModel.BEHAVIOR_LABEL):
+				ProjectExplorerModel.COMPONENT_LABEL, ProjectExplorerModel.BEHAVIOR_LABEL):
 				return self.registerAndCreateIndex(0, 0, ProjectExplorerModel.TARGET_GUI_LABEL)
 			
 			else:
@@ -621,3 +624,59 @@ class ProjectExplorerModel(QAbstractItemModel):
 			self._backwardRegistry[self._registryCounter] = data
 		
 		return self.createIndex(row, col, data)
+	
+	def selectComponent(self, component: 'Component') -> None:
+		"""
+		Selects a component in the project explorer by expanding all parents recursively.
+		
+		:param component: The component to select
+		:type component: Component
+		:return: None
+		:rtype: NoneType
+		"""
+		path = component.getPathFromRoot()
+		# remove ghost root
+		path.pop()
+		
+		indexPath = [0, 0]
+		
+		cur = QModelIndex()
+		cur = self.index(0, 0, cur)
+		self._view.expand(cur)
+		cur = self.index(0, 0, cur)
+		self._view.expand(cur)
+		while len(path) > 0:
+			comp, idx = path.pop()
+			cur = self.index(idx, 0, cur)
+			self._view.expand(cur)
+		
+		qism = QItemSelectionModel
+		f = qism.ClearAndSelect | qism.Current | qism.Rows
+		self._view.selectionModel().select(cur, f)
+		self._view.selectionModel().setCurrentIndex(cur, f)
+	
+	def selectBehavior(self, visibilityBehavior: 'VisibilityBehavior') -> None:
+		"""
+		Select a visibility behavior in the project explorer.
+		
+		:param visibilityBehavior: The visibility behavior to select.
+		:type visibilityBehavior: VisibilityBehavior
+		:return: None
+		:rtype: NoneType
+		"""
+		cur = QModelIndex()
+		cur = self.index(0, 0, cur)
+		self._view.expand(cur)
+		cur = self.index(1, 0, cur)
+		self._view.collapse(cur)
+		self._view.expand(cur)
+		
+		visBehaviors = list(self._project.getTargetGUIModel().getVisibilityBehaviors().values())
+		visBehaviorIdx = visBehaviors.index(visibilityBehavior)
+		cur = self.index(visBehaviorIdx, 0, cur)
+		self._view.expand(cur)
+		
+		qism = QItemSelectionModel
+		f = qism.ClearAndSelect | qism.Current | qism.Rows
+		self._view.selectionModel().select(cur, f)
+		self._view.selectionModel().setCurrentIndex(cur, f)

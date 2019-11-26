@@ -109,10 +109,10 @@ class Explorer(QThread):
 								pass
 							finally:
 								pass
-			
-			# for menupath in menu_paths:
-			#     window = menupath[0]
-			#     window.menu_select(menupath[1])
+		
+		# for menupath in menu_paths:
+		#     window = menupath[0]
+		#     window.menu_select(menupath[1])
 		finally:
 			return 0
 	
