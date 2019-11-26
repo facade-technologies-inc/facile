@@ -301,7 +301,6 @@ class Observer(QThread):
 		:rtype: bool
 		"""
 		self.setPlaying(False)
-		
 		if self.isRunning():
 			self.quit()
 			return True

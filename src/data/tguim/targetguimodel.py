@@ -50,6 +50,7 @@ class TargetGuiModel(QObject):
 		QObject.__init__(self)
 		self._scene = TScene(self)
 		self._root = Component(self)  # Note: remains constant. Represents the application.
+		
 		self._components = OrderedDict()  # Note: Root Component not stored here.
 		self._visibilityBehaviors = OrderedDict()
 		

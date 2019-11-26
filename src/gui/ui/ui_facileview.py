@@ -3,7 +3,7 @@
 # Form implementation generated from reading ui file 'facileview.ui',
 # licensing of 'facileview.ui' applies.
 #
-# Created: Sat Nov 23 01:04:09 2019
+# Created: Sat Nov 23 05:43:19 2019
 #      by: pyside2-uic  running on PySide2 5.13.0
 #
 # WARNING! All changes made in this file will be lost!
@@ -132,6 +132,10 @@ class Ui_MainWindow(object):
 		self.actionManage_Project.setObjectName("actionManage_Project")
 		self.actionAdd_Behavior = QtWidgets.QAction(MainWindow)
 		self.actionAdd_Behavior.setObjectName("actionAdd_Behavior")
+		self.actionStart_App = QtWidgets.QAction(MainWindow)
+		self.actionStart_App.setObjectName("actionStart_App")
+		self.actionStop_App = QtWidgets.QAction(MainWindow)
+		self.actionStop_App.setObjectName("actionStop_App")
 		self.menuNew_Project.addAction(self.actionFrom_Scratch)
 		self.menuNew_Project.addAction(self.actionFrom_Existing_Project)
 		self.menuFile.addAction(self.menuNew_Project.menuAction())
@@ -152,6 +156,9 @@ class Ui_MainWindow(object):
 		self.menubar.addAction(self.menuView.menuAction())
 		self.menubar.addAction(self.menuWindow.menuAction())
 		self.menubar.addAction(self.menuHelp.menuAction())
+		self.toolBar.addAction(self.actionStart_App)
+		self.toolBar.addAction(self.actionStop_App)
+		self.toolBar.addSeparator()
 		self.toolBar.addAction(self.actionAutoExplore)
 		self.toolBar.addAction(self.actionManualExplore)
 		self.toolBar.addSeparator()
@@ -237,3 +244,13 @@ class Ui_MainWindow(object):
 		self.actionAdd_Behavior.setToolTip(QtWidgets.QApplication.translate("MainWindow",
 		                                                                    "Add a visibility behavior to the target GUI model",
 		                                                                    None, -1))
+		self.actionStart_App.setText(
+			QtWidgets.QApplication.translate("MainWindow", "Start App", None, -1))
+		self.actionStart_App.setToolTip(QtWidgets.QApplication.translate("MainWindow",
+		                                                                 "Start running this project\'s target application",
+		                                                                 None, -1))
+		self.actionStop_App.setText(
+			QtWidgets.QApplication.translate("MainWindow", "Stop App", None, -1))
+		self.actionStop_App.setToolTip(QtWidgets.QApplication.translate("MainWindow",
+		                                                                "Stop running this project\'s target application",
+		                                                                None, -1))

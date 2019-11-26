@@ -53,7 +53,7 @@ class VBGraphics(QGraphicsItem):
 		:return create the bounding of the item
 		:rtype QRectF
 		"""
-
+		
 		leftCornerX = min(self._dataVB.getSrcComponent().getGraphicsItem().scenePos().x(),
 		                  self._dataVB.getDestComponent().getGraphicsItem().scenePos().x())
 		leftCornerY = min(self._dataVB.getSrcComponent().getGraphicsItem().scenePos().y(),
