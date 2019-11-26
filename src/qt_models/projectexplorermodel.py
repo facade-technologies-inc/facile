@@ -638,7 +638,7 @@ class ProjectExplorerModel(QAbstractItemModel):
 		# remove ghost root
 		path.pop()
 		
-		indexPath = [0,0]
+		indexPath = [0, 0]
 		
 		cur = QModelIndex()
 		cur = self.index(0, 0, cur)
@@ -649,12 +649,12 @@ class ProjectExplorerModel(QAbstractItemModel):
 			comp, idx = path.pop()
 			cur = self.index(idx, 0, cur)
 			self._view.expand(cur)
-			
+		
 		qism = QItemSelectionModel
 		f = qism.ClearAndSelect | qism.Current | qism.Rows
 		self._view.selectionModel().select(cur, f)
 		self._view.selectionModel().setCurrentIndex(cur, f)
-
+	
 	def selectBehavior(self, visibilityBehavior: 'VisibilityBehavior') -> None:
 		"""
 		Select a visibility behavior in the project explorer.

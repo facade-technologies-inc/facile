@@ -211,7 +211,8 @@ class FacileView(QMainWindow):
 		self._stateMachine.addBehaviorClicked()
 	
 	@Slot()
-	def onProjectExplorerIndexSelected(self, selected: QItemSelection, deselected: QItemSelection) -> None:
+	def onProjectExplorerIndexSelected(self, selected: QItemSelection,
+	                                   deselected: QItemSelection) -> None:
 		"""
 		This slot is called when an item is selected in the project explorer.
 		

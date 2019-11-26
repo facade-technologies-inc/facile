@@ -289,8 +289,10 @@ class StateMachine:
 			p.getTargetGUIModel().getScene().itemSelected.connect(v.onItemSelected)
 			p.getTargetGUIModel().getScene().itemBlink.connect(v.onItemBlink)
 			p.getTargetGUIModel().dataChanged.connect(lambda: ui.projectExplorerView.update())
-			ui.projectExplorerView.setModel(v._project.getProjectExplorerModel(ui.projectExplorerView))
-			ui.projectExplorerView.selectionModel().selectionChanged.connect(v.onProjectExplorerIndexSelected)
+			ui.projectExplorerView.setModel(
+				v._project.getProjectExplorerModel(ui.projectExplorerView))
+			ui.projectExplorerView.selectionModel().selectionChanged.connect(
+				v.onProjectExplorerIndexSelected)
 			ui.targetGUIModelView.setScene(v._project.getTargetGUIModel().getScene())
 			p.startTargetApplication()  # TODO: Remove this once application controls exist
 		

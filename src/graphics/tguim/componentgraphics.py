@@ -109,7 +109,7 @@ class ComponentGraphics(QGraphicsItem):
 			collidingSiblings, maxSibX, maxSibY = self.getCollidingComponents(siblings)
 			if collidingSiblings:
 				self.dumbCollisionResolution(maxSibX, maxSibY, closest=False)
-				# self.smartCollisionResolution(collidingSiblings)
+			# self.smartCollisionResolution(collidingSiblings)
 			else:
 				break
 		
@@ -345,7 +345,7 @@ class ComponentGraphics(QGraphicsItem):
 		"""
 		self.setSelected(True)
 		self.scene().emitItemSelected(self._dataComponent.getId())
-		
+	
 	def contextMenuEvent(self, event: QGraphicsSceneContextMenuEvent) -> None:
 		"""
 		Opens a context menu (right click menu) for the component.

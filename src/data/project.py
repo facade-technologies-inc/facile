@@ -25,7 +25,6 @@ import os
 from subprocess import PIPE
 
 import psutil
-
 from PySide2.QtWidgets import QTreeView
 
 from data.tguim.targetguimodel import TargetGuiModel
