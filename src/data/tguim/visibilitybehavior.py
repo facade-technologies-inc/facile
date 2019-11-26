@@ -34,7 +34,7 @@ class VisibilityBehavior(Entity):
 	 or invisible to the user. E.g. clicking a button (the "from" component) causes a window (the "to" component)
 	 to be shown.
 	"""
-
+	
 	def __init__(self, tguim: 'TargetGuiModel', srcComp: 'Component' = None,
 	             destComp: 'Component' = None, reactionType: str = "show") -> 'VisibilityBehavior':
 		"""
@@ -66,7 +66,7 @@ class VisibilityBehavior(Entity):
 			self._reactionType = "show"
 			raise ValueError(
 				"VisibilityBehavior(): reactionType must be one of %r." % VALID_REACTION_TYPES)
-
+		
 		predefined = ["Base", "Visibility Behavior"]
 		custom = {}
 		props = Properties.createPropertiesObject(predefined, custom)

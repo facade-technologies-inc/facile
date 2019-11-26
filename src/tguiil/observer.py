@@ -100,19 +100,19 @@ class Observer(QThread):
 			# is a GUI component and the second element is the parent super token.
 			work = [(win, None) for win in app.windows()]
 			while len(work) > 0:
-
+				
 				if not self.isPlaying(): return 0
-
+				
 				curComponent, parentSuperToken = work.pop()
 				if curComponent.friendly_class_name() not in Observer.ignoreTypes:
 					try:
 						token = Observer.createToken(curComponent)
-
-						# List boxes have a ton of children that we probably don't care about.
-						# There are probably other types like it where we just want to ignore the
-						# children. We can make this type of
-						# if token.type == "ListBox":
-						#     continue
+					
+					# List boxes have a ton of children that we probably don't care about.
+					# There are probably other types like it where we just want to ignore the
+					# children. We can make this type of
+					# if token.type == "ListBox":
+					#     continue
 					
 					except Token.CreationException as e:
 						print(str(e))
@@ -229,7 +229,7 @@ class Observer(QThread):
 		"""
 		if token.isDialog:
 			parentSuperToken = None
-
+		
 		# determine if the new token matches any super tokens and how well it matches if it does.
 		bestMatch = 0
 		bestDecision = Token.Match.NO.value
@@ -237,13 +237,13 @@ class Observer(QThread):
 		potentialMatches = self._childMapping[parentSuperToken]
 		
 		for superToken in potentialMatches:
-
+			
 			if self._lastSuperTokenIterations[superToken] == self._iteration:
 				# print("Skipping", superToken)
 				continue
 			else:
 				print("Not Skipped", superToken)
-
+			
 			decision, matchVal = superToken.shouldContain(token)
 			bestDecision = min(bestDecision, decision.value)
 			
@@ -309,7 +309,7 @@ class Observer(QThread):
 		
 		if self.isRunning():
 			return True
-
+		
 		self.setPlaying(True)
 		self.start()
 		return self.isRunning()

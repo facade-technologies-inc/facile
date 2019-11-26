@@ -109,7 +109,7 @@ class ComponentGraphics(QGraphicsItem):
 			collidingSiblings, maxSibX, maxSibY = self.getCollidingComponents(siblings)
 			if collidingSiblings:
 				self.dumbCollisionResolution(maxSibX, maxSibY, closest=False)
-				# self.smartCollisionResolution(collidingSiblings)
+			# self.smartCollisionResolution(collidingSiblings)
 			else:
 				break
 		

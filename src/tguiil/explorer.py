@@ -53,7 +53,7 @@ class Explorer(QThread):
 		QThread.__init__(self)
 		self._process = psutil.Process(processID)
 		self._backend = backend
-
+		
 		self._playing = False
 		self._playingLock = Lock()
 	
@@ -72,16 +72,16 @@ class Explorer(QThread):
 		
 		try:
 			while self._process.is_running():
-
+				
 				if not self.isPlaying(): return 0
 				
 				work = [win for win in app.windows()]
 				# menu_paths = []
 				
 				while len(work) > 0:
-
+					
 					if not self.isPlaying(): return 0
-
+					
 					component = work.pop()
 					if component.friendly_class_name() not in Explorer.ignoreTypes:
 						print('explorer: found ' + component.friendly_class_name())
@@ -138,7 +138,7 @@ class Explorer(QThread):
 		running = self._playing
 		self._playingLock.release()
 		return running
-
+	
 	def play(self):
 		"""
 		Runs the Explorer.
@@ -152,7 +152,7 @@ class Explorer(QThread):
 		
 		if self.isRunning():
 			return True
-
+		
 		self.setPlaying(True)
 		self.start()
 		return self.isRunning()

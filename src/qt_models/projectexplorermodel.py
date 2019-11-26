@@ -335,7 +335,8 @@ class ProjectExplorerModel(QAbstractItemModel):
 			if data in (ProjectExplorerModel.TARGET_GUI_LABEL, ProjectExplorerModel.PIPELINE_LABEL):
 				return QModelIndex()
 			
-			elif data in (ProjectExplorerModel.COMPONENT_LABEL, ProjectExplorerModel.BEHAVIOR_LABEL):
+			elif data in (
+			ProjectExplorerModel.COMPONENT_LABEL, ProjectExplorerModel.BEHAVIOR_LABEL):
 				return self.registerAndCreateIndex(0, 0, ProjectExplorerModel.TARGET_GUI_LABEL)
 			
 			else:
@@ -365,7 +366,8 @@ class ProjectExplorerModel(QAbstractItemModel):
 				return self.registerAndCreateIndex(data.getParentIndex(), 0, parentData)
 			
 			elif isinstance(innerData, Component):
-				visBehaviors = list(self._project.getTargetGUIModel().getVisibilityBehaviors().values())
+				visBehaviors = list(
+					self._project.getTargetGUIModel().getVisibilityBehaviors().values())
 				visBehaviorIdx = visBehaviors.index(parentData)
 				return self.registerAndCreateIndex(visBehaviorIdx, 0, parentData)
 			

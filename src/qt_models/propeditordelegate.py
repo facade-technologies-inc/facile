@@ -75,7 +75,7 @@ class PropertyEditorDelegate(QStyledItemDelegate):
 		                                      Property) and index.internalPointer().getType() == bool:
 			checked = index.internalPointer().getValue()
 			check_box_style_option = QtWidgets.QStyleOptionButton()
-
+			
 			if (index.flags() & QtCore.Qt.ItemIsEditable) > 0:
 				check_box_style_option.state |= QtWidgets.QStyle.State_Enabled
 			else:
@@ -111,7 +111,7 @@ class PropertyEditorDelegate(QStyledItemDelegate):
 		data = index.internalPointer()
 		if index.column() == 1 and isinstance(data, Property) and data.getType() == bool:
 			return None
-
+		
 		if type(data) == Property:
 			if index.column() == 1:
 				t = data.getType()
