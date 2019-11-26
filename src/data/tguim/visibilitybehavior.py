@@ -36,16 +36,15 @@ class VisibilityBehavior(Entity):
 	"""
 	
 	def __init__(self, tguim: 'TargetGuiModel', srcComp: 'Component' = None,
-	             destComp: 'Component' = None,
-	             reactionType: str = "show") -> 'VisibilityBehavior':
+	             destComp: 'Component' = None, reactionType: str = "show") -> 'VisibilityBehavior':
 		"""
 		 Constructs a VisibilityBehavior object.
-
+		
 		:param tguim: The one and only target GUI model
 		:type tguim: TargetGuiModel
-		:param srcComp: The "from/source" component. The one triggering the vis behavior.
+		:param srcComp: The "source" component. The one triggering the vis behavior.
 		:type srcComp: Component
-		:param destComp: The "to/destination" component. The one whose visibility is affected by the vis behavior.
+		:param destComp: The "destination" component. The one whose visibility is affected by the vis behavior.
 		:type destComp: Component
 		:param reactionType: "show" or "hide".
 		:return: A constructed VisibilityBehavior
@@ -67,6 +66,7 @@ class VisibilityBehavior(Entity):
 			self._reactionType = "show"
 			raise ValueError(
 				"VisibilityBehavior(): reactionType must be one of %r." % VALID_REACTION_TYPES)
+		
 		predefined = ["Base", "Visibility Behavior"]
 		custom = {}
 		props = Properties.createPropertiesObject(predefined, custom)

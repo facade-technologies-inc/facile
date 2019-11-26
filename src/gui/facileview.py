@@ -210,6 +210,28 @@ class FacileView(QMainWindow):
 		"""
 		self._stateMachine.addBehaviorClicked()
 	
+	@Slot()
+	def onStartAppTriggered(self):
+		"""
+		This slot is run when the user selects "Start App"
+		
+		:return: None
+		:rtype: NoneType
+		"""
+		self._project.startTargetApplication()
+		self._stateMachine.startApp()
+	
+	@Slot()
+	def onStopAppTriggered(self):
+		"""
+		This slot is run when the user selects "Stop App"
+
+		:return: None
+		:rtype: NoneType
+		"""
+		self._project.stopTargetApplication()
+		self._stateMachine.stopApp()
+	
 	@Slot(int)
 	def onItemSelected(self, id: int):
 		"""

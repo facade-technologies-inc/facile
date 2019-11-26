@@ -66,11 +66,21 @@ class ComponentGraphics(QGraphicsItem):
 		self._height = max(rect[3], ComponentGraphics.MIN_HEIGHT)
 		self.setPos(max(0, rect[0]), max(0, rect[1]))
 		self.adjustPositioning()
-		
 		self.menu = QMenu()
 		showInGui = self.menu.addAction("Show in target GUI")
 		showInGui.triggered.connect(
 			lambda: self.scene().blinkComponent(self._dataComponent.getId()))
+	
+	def getNumberOfTokens(self):
+		"""
+		Get the number of tokens.
+
+		:return: the number of tokens
+		:rtype: int
+		"""
+		tokensCount = len(self._dataComponent.getSuperToken().tokens)
+		
+		return tokensCount
 	
 	def adjustPositioning(self) -> None:
 		"""
@@ -335,6 +345,13 @@ class ComponentGraphics(QGraphicsItem):
 		name = self.getLabel()
 		painter.drawText(int(ComponentGraphics.MARGIN * 1.5), int(ComponentGraphics.MARGIN + 30),
 		                 name)
+		
+		token_count = str(self.getNumberOfTokens())
+		rectBox = QRectF(self.boundingRect().width() - ComponentGraphics.MARGIN,
+		                 -ComponentGraphics.MARGIN,
+		                 ComponentGraphics.MARGIN * 2, ComponentGraphics.MARGIN * 2)
+		painter.drawRect(rectBox)
+		painter.drawText(rectBox.center(), token_count)
 	
 	def mousePressEvent(self, event):
 		"""
