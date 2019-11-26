@@ -230,7 +230,7 @@ class FacileView(QMainWindow):
 		entity.getGraphicsItem().setSelected(True)
 		self.ui.propertyEditorView.setModel(entity.getProperties().getModel())
 		self.ui.propertyEditorView.expandAll()
-
+	
 	def onStartAppTriggered(self):
 		"""
 		This slot is run when the user selects "Start App"

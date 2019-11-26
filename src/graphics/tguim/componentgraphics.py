@@ -352,7 +352,7 @@ class ComponentGraphics(QGraphicsItem):
 		                 ComponentGraphics.MARGIN * 2, ComponentGraphics.MARGIN * 2)
 		painter.drawRect(rectBox)
 		painter.drawText(rectBox.center(), token_count)
-		
+	
 	def mousePressEvent(self, event):
 		"""
 		This event handler is implemented to receive mouse press events for this item.
