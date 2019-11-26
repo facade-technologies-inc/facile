@@ -261,7 +261,7 @@ class StateMachine:
 		def tick() -> None:
 			if not self._project.getProcess():
 				self.view.appWatcher.stop()
-				self.view.ui.actionStop_App.trigger()
+				self.view.onStopAppTriggered(confirm=False)
 		
 		self.view.appWatcher = QTimer(self.view)
 		self.view.appWatcher.timeout.connect(tick)
@@ -291,7 +291,7 @@ class StateMachine:
 		ui.actionManualExplore.triggered.connect(v.onManualExploration)
 		ui.actionAdd_Behavior.triggered.connect(v.onAddBehaviorTriggered)
 		ui.actionStart_App.triggered.connect(v.onStartAppTriggered)
-		ui.actionStop_App.triggered.connect(v.onStopAppTriggered)
+		ui.actionStop_App.triggered.connect(lambda: v.onStopAppTriggered(confirm=True))
 		
 		# Disable actions
 		ui.actionSave_Project.setEnabled(False)
