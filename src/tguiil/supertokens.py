@@ -107,7 +107,8 @@ class SuperToken:
 		
 		bestCloseScore = 0
 		for token in self.tokens:
-			decision, score = token.isEqualTo(token2)
+			result = token.isEqualTo(token2)
+			decision, score = result
 			
 			if DEBUG_TOKEN_COMPARISON:
 				print()
