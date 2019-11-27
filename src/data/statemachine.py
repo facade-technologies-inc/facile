@@ -339,8 +339,10 @@ class StateMachine:
 			ui.actionStart_App.setEnabled(True)
 		
 		if previousState == StateMachine.State.EXPLORATION:
-			self._project.getObserver().pause()
-			self._project.getExplorer().pause()
+			o = self._project.getObserver()
+			e = self._project.getExplorer()
+			if o: o.pause()
+			if e: e.pause()
 		
 		if self._project.getProcess():
 			ui.actionAutoExplore.setEnabled(True)

@@ -78,8 +78,11 @@ class Application(pywinauto.Desktop):
 		:rtype: list[int]
 		"""
 		pids = [self._process.pid]
-		for child in self._process.children():
-			pids.append(child.pid)
+		try:
+			for child in self._process.children():
+				pids.append(child.pid)
+		except:
+			pass
 		return pids
 	
 	def windows(self) -> list:
