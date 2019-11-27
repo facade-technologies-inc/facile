@@ -21,7 +21,7 @@ This module contains the VBGraphics class.
 """
 
 from PySide2.QtCore import QRectF
-from PySide2.QtGui import QPainterPath, QPainter
+from PySide2.QtGui import QPainterPath, QPainter, QPen, Qt, QColor
 from PySide2.QtWidgets import QGraphicsItem
 
 
@@ -77,6 +77,12 @@ class VBGraphics(QGraphicsItem):
 		:return None
 		:rtype NoneType
 		"""
+		pen = QPen(QColor(255, 255, 0))
+		if self.isSelected():
+			pen.setStyle(Qt.DashDotLine)
+		else:
+			pen.setStyle(Qt.SolidLine)
+		painter.setPen(pen)
 		
 		lengthSrcNodeSrcEdgeList = len(self._dataVB.getSrcComponent().getSrcVisibilityBehaviors())
 		lengthDesNodeDesEdgeList = len(self._dataVB.getDestComponent().getDestVisibilityBehaviors())
@@ -101,7 +107,23 @@ class VBGraphics(QGraphicsItem):
 			heightDesNode / (lengthDesNodeDesEdgeList + 1)) * desNodeIndex
 		
 		# painter.drawLine(x1, y1, x2, y2)
+		path = self.buildPath(x1, x2, y1, y2)
+		painter.drawPath(path)
+		
+		#force re-draw when there's a new visibility behavior
+	
+	def buildPath(self, x1, x2, y1, y2):
 		path = QPainterPath()
 		path.moveTo(x1, y1)
 		path.cubicTo(x1 + 100, y1 + 100, x2 - 200, y2 - 200, x2, y2)
-		painter.drawPath(path)
+		
+		return path
+	
+	'''
+	def shape(self):
+		path = QPainterPath()
+		path.moveTo(x1, y1)
+		path.cubicTo(x1 + 100, y1 + 100, x2 - 200, y2 - 200, x2, y2)
+		path.addRect(self.boundingRect())
+		return path
+	'''
