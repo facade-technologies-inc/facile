@@ -283,8 +283,8 @@ class ComponentGraphics(QGraphicsItem):
 		halfWidth = ComponentGraphics.PEN_WIDTH / 2
 		if withMargins:
 			marginAdjustment = -ComponentGraphics.TRIM + ComponentGraphics.MARGIN * 2 + ComponentGraphics.PEN_WIDTH
-			return QRectF(-halfWidth,
-			              -halfWidth,
+			return QRectF(-halfWidth - ComponentGraphics.MARGIN,
+			              -halfWidth - ComponentGraphics.MARGIN,
 			              self._width + marginAdjustment,
 			              self._height + marginAdjustment)
 		else:
@@ -335,7 +335,6 @@ class ComponentGraphics(QGraphicsItem):
 			pen.setColor(QColor(0, 0, 0))
 		painter.setPen(pen)
 		
-		# set background color:
 		painter.setBrush(QColor(100, 200, 255))
 		
 		id = self._dataComponent.getId()
@@ -350,7 +349,10 @@ class ComponentGraphics(QGraphicsItem):
 		rectBox = QRectF(self.boundingRect().width() - ComponentGraphics.MARGIN,
 		                 -ComponentGraphics.MARGIN,
 		                 ComponentGraphics.MARGIN * 2, ComponentGraphics.MARGIN * 2)
+		
+		painter.setBrush(QColor(255, 0, 0, 127))
 		painter.drawRect(rectBox)
+		painter.setBrush(QColor(100, 200, 255))
 		painter.drawText(rectBox.center(), token_count)
 	
 	def mousePressEvent(self, event):
@@ -372,7 +374,7 @@ class ComponentGraphics(QGraphicsItem):
 		:return: None
 		:rtype: NoneType
 		"""
-		self.mousePressEvent(event)
+		self.setSelected(True)
 		selectedAction = self.menu.exec_(event.screenPos())
 	
 	def triggerSceneUpdate(self):
