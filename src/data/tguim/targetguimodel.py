@@ -120,20 +120,6 @@ class TargetGuiModel(QObject):
 		
 		newComponent = Component(self, parentComponent, newSuperToken)
 		
-		# TODO: Create Properties object based on values from the SuperToken
-		predefinedCategories = []
-		customCategories = {"Temporary": [{"name": "Name",
-		                                   "type": str,
-		                                   "default": newSuperToken.tokens[-1].controlIDs[-1],
-		                                   "readOnly": False},
-		                                  {"name": "Type",
-		                                   "type": str,
-		                                   "default": newSuperToken.tokens[-1].type,
-		                                   "readOnly": True}
-		                                  ]}
-		properties = Properties.createPropertiesObject(predefinedCategories, customCategories)
-		newComponent.setProperties(properties)
-		
 		self._superTokenToComponentMapping[newSuperToken] = newComponent
 		self._components[newComponent.getId()] = newComponent
 		self.dataChanged.emit(newComponent.getId())

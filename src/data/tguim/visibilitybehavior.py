@@ -20,6 +20,8 @@
 This module contains the VisibilityBehavior class.
 """
 
+from enum import Enum, auto
+
 from data.entity import Entity
 from data.properties import Properties
 from data.tguim.condition import Condition
@@ -35,10 +37,15 @@ class VisibilityBehavior(Entity):
 	 to be shown.
 	"""
 	
+	class ReactionType(Enum):
+		Show = auto()
+		Hide = auto()
+	
 	def __init__(self, tguim: 'TargetGuiModel', srcComp: 'Component' = None,
-	             destComp: 'Component' = None, reactionType: str = "show") -> 'VisibilityBehavior':
+	             destComp: 'Component' = None, reactionType: ReactionType = ReactionType.Show) -> \
+		'VisibilityBehavior':
 		"""
-		 Constructs a VisibilityBehavior object.
+		Constructs a VisibilityBehavior object.
 		
 		:param tguim: The one and only target GUI model
 		:type tguim: TargetGuiModel
@@ -46,7 +53,8 @@ class VisibilityBehavior(Entity):
 		:type srcComp: Component
 		:param destComp: The "destination" component. The one whose visibility is affected by the vis behavior.
 		:type destComp: Component
-		:param reactionType: "show" or "hide".
+		:param reactionType: Show or Hide
+		:type reactionType: ReactionType
 		:return: A constructed VisibilityBehavior
 		:rtype: VisibilityBehavior
 		"""
@@ -55,23 +63,19 @@ class VisibilityBehavior(Entity):
 		self._destComponent = destComp
 		self._srcComponent = srcComp
 		self._condition = Condition()
-		self._reactionType = None
 		self._tguim = tguim
 		self._graphicsItem = VBGraphics(self, tguim.getScene())
 		# TODO: Add a "trigger action" data member?
 		
-		if reactionType in VALID_REACTION_TYPES:
-			self._reactionType = reactionType
-		else:
-			self._reactionType = "show"
-			raise ValueError(
-				"VisibilityBehavior(): reactionType must be one of %r." % VALID_REACTION_TYPES)
-		
 		predefined = ["Base", "Visibility Behavior"]
 		custom = {}
 		props = Properties.createPropertiesObject(predefined, custom)
+		props.getProperty("Reaction Type")[1].setValue(reactionType)
 		props.getProperty("Name")[1].setValue("VB #{}".format(self.getId()))
 		props.getProperty("Type")[1].setValue("Visibility Behavior")
+		props.getProperty("Source ID")[1].setValue(self._srcComponent.getId())
+		props.getProperty("Destination ID")[1].setValue(self._destComponent.getId())
+		
 		self.setProperties(props)
 	
 	def getDestComponent(self) -> 'Component':
@@ -104,14 +108,14 @@ class VisibilityBehavior(Entity):
 		
 		return self._condition
 	
-	def getReactionType(self) -> str:
+	def getReactionType(self) -> ReactionType:
 		"""
 		Gets the reaction type of the visibility behavior.
 
 		:return: The reaction type of the visibility behavior.
-		:rtype: str
+		:rtype: ReactionType
 		"""
-		return self._reactionType
+		return self.getProperties().getProperty("Reaction Type")[1].getValue()
 	
 	def getGraphicsItem(self):  # TODO: type hint the return value. Update doc string.
 		"""
@@ -145,16 +149,12 @@ class VisibilityBehavior(Entity):
 		
 		self._srcComponent = srcComp
 	
-	def setReactionType(self, reactType: str) -> None:
+	def setReactionType(self, reactType: ReactionType) -> None:
 		"""
 		Sets the reaction type of the visibility behavior. Input param must be in the set of valid reaction types.
 
-		:param reactType:
+		:param reactType: The reaction of the visibility behavior
+		:type reactType: ReactionType
 		:return:
 		"""
-		
-		if reactType in VALID_REACTION_TYPES:
-			self._reactionType = reactType
-		else:
-			raise ValueError("VisibilityBehavior.setReactionType(): reactionType must be one of %r."
-			                 % VALID_REACTION_TYPES)
+		self.getProperties().getProperty("Reaction Type")[1].setValue(reactType)

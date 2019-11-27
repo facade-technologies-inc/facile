@@ -125,6 +125,7 @@ class PropertyEditorDelegate(QStyledItemDelegate):
 					return QDoubleSpinBox(parent)
 				elif issubclass(t, Enum):
 					editor = QComboBox(parent)
+					t = type(data.getValue())
 					for i, option in enumerate(t):
 						editor.addItem(option.name, option)
 					return editor

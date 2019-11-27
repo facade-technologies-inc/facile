@@ -239,10 +239,7 @@ class Observer(QThread):
 		for superToken in potentialMatches:
 			
 			if self._lastSuperTokenIterations[superToken] == self._iteration:
-				# print("Skipping", superToken)
 				continue
-			else:
-				print("Not Skipped", superToken)
 			
 			decision, matchVal = superToken.shouldContain(token)
 			bestDecision = min(bestDecision, decision.value)
