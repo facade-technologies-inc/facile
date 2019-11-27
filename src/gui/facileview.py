@@ -23,11 +23,10 @@ Much of Facile is joined together here.
 import os
 from copy import deepcopy
 
+from PySide2.QtCore import Slot, QTimer, QItemSelection
 from PySide2.QtGui import Qt
-from PySide2.QtCore import Slot, QPropertyAnimation, QTimer, QEasingCurve, QByteArray, \
-	QItemSelection
 from PySide2.QtWidgets import QMainWindow, QFileDialog, QMessageBox, QLabel, \
-	QGraphicsOpacityEffect, QApplication
+	QGraphicsOpacityEffect
 
 from data.project import Project
 from data.statemachine import StateMachine
@@ -36,8 +35,8 @@ from gui.copyprojectdialog import CopyProjectDialog
 from gui.manageprojectdialog import ManageProjectDialog
 from gui.newprojectdialog import NewProjectDialog
 from gui.ui.ui_facileview import Ui_MainWindow as Ui_FacileView
-from tguiil.blinker import Blinker
 from qt_models.projectexplorermodel import ProjectExplorerModel
+from tguiil.blinker import Blinker
 
 
 class FacileView(QMainWindow):
@@ -260,7 +259,7 @@ class FacileView(QMainWindow):
 			response = QMessageBox.question(self, title, message)
 		else:
 			response = QMessageBox.StandardButton.Yes
-			
+		
 		if response == QMessageBox.StandardButton.Yes:
 			self._project.stopTargetApplication()
 			self._stateMachine.stopApp()
@@ -334,7 +333,7 @@ class FacileView(QMainWindow):
 			self._stateMachine.stopExploration()
 	
 	@Slot(str, str)
-	def info(self,  message: str) -> None:
+	def info(self, message: str) -> None:
 		"""
 		This function will show a box with a message that will fade in and then out.
 
@@ -350,14 +349,14 @@ class FacileView(QMainWindow):
 		windowHeight = self.height()
 		labelWidth = 700
 		labelHeight = 300
-		label.setGeometry(windowWidth/2-labelWidth/2,
-		                  windowHeight/3-labelHeight/2,
+		label.setGeometry(windowWidth / 2 - labelWidth / 2,
+		                  windowHeight / 3 - labelHeight / 2,
 		                  labelWidth,
 		                  labelHeight)
 		label.show()
-		style = "border: 3px solid red;"\
-		        "border-radius:20px;"\
-		        "background-color:#353535;"\
+		style = "border: 3px solid red;" \
+		        "border-radius:20px;" \
+		        "background-color:#353535;" \
 		        "color:#dddddd"
 		label.setStyleSheet(style)
 		label.setAlignment(Qt.AlignCenter)

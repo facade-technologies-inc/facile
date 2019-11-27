@@ -25,8 +25,6 @@ from enum import Enum
 from PySide2.QtCore import QAbstractItemModel, QModelIndex, Qt
 from PySide2.QtGui import QColor
 
-from data.property import Property
-
 
 class PropModel(QAbstractItemModel):
 	"""

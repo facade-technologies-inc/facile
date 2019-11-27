@@ -92,6 +92,7 @@ class Properties:
 		for i in range(len(predefinedCategories)):
 			newProperties.newCategory(predefinedCategories[i])
 			if predefinedCategories[i] == "Base":
+				newProperties.addProperty("Base", "ID", 0, int, True)
 				newProperties.addProperty("Base", "Name", "default", str)
 				newProperties.addProperty("Base", "Type", "Push Button", str, True)
 				newProperties.addProperty("Base", "Annotation", "Add a comment here...", str)

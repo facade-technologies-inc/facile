@@ -24,7 +24,6 @@ from collections import OrderedDict
 
 from PySide2.QtCore import QObject, Slot, Signal
 
-from data.properties import Properties
 from data.tguim.component import Component
 from data.tguim.visibilitybehavior import VisibilityBehavior
 from graphics.tguim.tscene import TScene
@@ -172,7 +171,7 @@ class TargetGuiModel(QObject):
 		"""
 		if newVisBehavior.getId() not in self._visibilityBehaviors:
 			self._visibilityBehaviors[newVisBehavior.getId()] = newVisBehavior
-
+		
 		src = newVisBehavior.getSrcComponent()
 		dest = newVisBehavior.getDestComponent()
 		src.addSrcVisibilityBehavior(newVisBehavior)

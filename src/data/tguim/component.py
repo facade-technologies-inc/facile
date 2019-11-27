@@ -20,8 +20,8 @@
 This module contains the Component class.
 """
 
-from data.properties import Properties
 from data.entity import Entity
+from data.properties import Properties
 from data.tguim.visibilitybehavior import VisibilityBehavior
 from graphics.tguim.componentgraphics import ComponentGraphics
 
@@ -66,6 +66,7 @@ class Component(Entity):
 			props = Properties.createPropertiesObject(predefinedCategories, customCategories)
 			
 			# Set base property values
+			props.getProperty("ID")[1].setValue(self.getId())
 			props.getProperty("Name")[1].setValue(propToken.controlIDs[-1])
 			props.getProperty("Type")[1].setValue("Component")
 			

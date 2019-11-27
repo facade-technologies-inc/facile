@@ -27,7 +27,6 @@ from enum import Enum, auto
 
 from PySide2.QtCore import Slot, QTimer
 from PySide2.QtGui import QStandardItem, QStandardItemModel, Qt
-from PySide2.QtWidgets import QMessageBox
 
 from data.project import Project
 from data.tguim.visibilitybehavior import VisibilityBehavior

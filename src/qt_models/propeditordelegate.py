@@ -93,7 +93,6 @@ class PropertyEditorDelegate(QStyledItemDelegate):
 			check_box_style_option.state |= QtWidgets.QStyle.State_Enabled
 			QtWidgets.QApplication.style().drawControl(QtWidgets.QStyle.CE_CheckBox,
 			                                           check_box_style_option, painter)
-			
 	
 	def createEditor(self, parent: QModelIndex, option: QStyleOptionViewItem,
 	                 index: QModelIndex) -> QWidget:

@@ -70,6 +70,7 @@ class VisibilityBehavior(Entity):
 		predefined = ["Base", "Visibility Behavior"]
 		custom = {}
 		props = Properties.createPropertiesObject(predefined, custom)
+		props.getProperty("ID")[1].setValue(self.getId())
 		props.getProperty("Reaction Type")[1].setValue(reactionType)
 		props.getProperty("Name")[1].setValue("VB #{}".format(self.getId()))
 		props.getProperty("Type")[1].setValue("Visibility Behavior")
