@@ -104,7 +104,7 @@ class Properties:
 				newProperties.addProperty("GUI Component", "Title", "default", str, True)
 				newProperties.addProperty("GUI Component", "Parent Title", "default", str, True)
 				newProperties.addProperty("GUI Component", "Class Name", "default", str, True)
-				newProperties.addProperty("GUI Component", "Is Dialog", "default", str, True)
+				newProperties.addProperty("GUI Component", "Is Dialog", True, bool, True)
 			elif predefinedCategories[i] == "Visibility Behavior":
 				newProperties.addProperty("Visibility Behavior", "Reaction Type", None, Enum)
 				newProperties.addProperty("Visibility Behavior", "Source ID", 1, int, True)

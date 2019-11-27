@@ -25,6 +25,8 @@ from enum import Enum
 from PySide2.QtCore import QAbstractItemModel, QModelIndex, Qt
 from PySide2.QtGui import QColor
 
+from data.property import Property
+
 
 class PropModel(QAbstractItemModel):
 	"""
@@ -255,7 +257,7 @@ class PropModel(QAbstractItemModel):
 		
 		data = index.internalPointer()
 		
-		if data in self._propData.getCategories() or data.isReadOnly():
+		if data in self._propData.getCategories() or (data.isReadOnly() and data.getType() != bool):
 			return Qt.ItemIsEnabled | Qt.ItemIsSelectable
 		else:
 			if index.column() == 1:

@@ -71,6 +71,9 @@ class PropertyEditorDelegate(QStyledItemDelegate):
 		:return: None
 		:rtype: NoneType
 		"""
+		
+		QStyledItemDelegate.paint(self, painter, option, index)
+		
 		if index.column() == 1 and isinstance(index.internalPointer(),
 		                                      Property) and index.internalPointer().getType() == bool:
 			checked = index.internalPointer().getValue()
@@ -90,8 +93,7 @@ class PropertyEditorDelegate(QStyledItemDelegate):
 			check_box_style_option.state |= QtWidgets.QStyle.State_Enabled
 			QtWidgets.QApplication.style().drawControl(QtWidgets.QStyle.CE_CheckBox,
 			                                           check_box_style_option, painter)
-		else:
-			QStyledItemDelegate.paint(self, painter, option, index)
+			
 	
 	def createEditor(self, parent: QModelIndex, option: QStyleOptionViewItem,
 	                 index: QModelIndex) -> QWidget:
@@ -159,6 +161,9 @@ class PropertyEditorDelegate(QStyledItemDelegate):
 		data = index.internalPointer()
 		if index.column() != 1 or not isinstance(data, Property) or data.getType() != bool:
 			return QStyledItemDelegate.editorEvent(self, event, model, option, index)
+		
+		if data.isReadOnly():
+			return False
 		
 		# Do not change the checkbox-state
 		if event.type() == QEvent.MouseButtonPress:
