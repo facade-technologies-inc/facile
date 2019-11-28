@@ -64,7 +64,7 @@ class ComponentGraphics(QGraphicsItem):
 		self._y = rect[1]
 		self._width = max(rect[2], ComponentGraphics.MIN_WIDTH)
 		self._height = max(rect[3], ComponentGraphics.MIN_HEIGHT)
-		self.setPos(max(0, rect[0]), max(0, rect[1]))
+		self.setPos(max(0, rect[0]), max(0, rect[1] + 10))
 		self.adjustPositioning()
 		self.menu = QMenu()
 		showInGui = self.menu.addAction("Show in target GUI")
