@@ -33,9 +33,9 @@ class ComponentGraphics(QGraphicsItem):
     
     MIN_WIDTH = 0
     MIN_HEIGHT = 0
-    MARGIN = 20
+    MARGIN = 5
     PEN_WIDTH = 1.0
-    
+
     TRIM = 1
     
     def __init__(self, dataComponent: 'Component', rect: tuple = (), parent = None):
@@ -62,13 +62,13 @@ class ComponentGraphics(QGraphicsItem):
         self._y = rect[1]
         self._width = max(rect[2], ComponentGraphics.MIN_WIDTH)
         self._height = max(rect[3], ComponentGraphics.MIN_HEIGHT)
-        self.setPos(max(0, rect[0]), max(0, rect[1]))
+        self.setPos(max(0, rect[0]), max(0, rect[1] + 10)) # adds 10 to make space for titlebar of each component
         self.adjustPositioning()
         
     def adjustPositioning(self) -> None:
         """
         Places component using the following criteria:
-        1. Place teh component where it actually is in the GUI.
+        1. Place the component where it actually is in the GUI.
         2. If there is a collision with a sibling, the one that is on the bottom and/or right has to move.
         3. Once all sibling collisions are resolved, the parent may need to expand to fit all children inside.
         4. Once the parent is expanded, start at step 2 again, but his time with the parent.
@@ -98,20 +98,30 @@ class ComponentGraphics(QGraphicsItem):
             siblings.remove(self)
         
         # Resolve collisions with siblings
-        while True:
-            collidingSiblings, maxSibX, maxSibY = self.getCollidingComponents(siblings)
-            if collidingSiblings:
-                self.dumbCollisionResolution(maxSibX, maxSibY, closest=False)
-                #self.smartCollisionResolution(collidingSiblings)
-            else:
-                break
+
+        # while True:
+        #     yCollidingSiblings, maxSibY = self.getCollidingComponentsY(siblings)
+        #     if yCollidingSiblings:
+        #         self.resolveYCollosions(yCollidingSiblings, maxSibY)
+        #     else:
+        #         break
+        #
+        # while True:
+        #     xCollidingSiblings, maxSibX = self.getCollidingComponentsX(siblings)
+        #     if xCollidingSiblings:
+        #         self.resolveXCollosions(xCollidingSiblings, maxSibX)
+        #     else:
+        #         break
+
+        yCollidingSiblings, maxSibY = self.getCollidingComponentsY(siblings)
+        xCollidingSiblings, maxSibX = self.getCollidingComponentsX(siblings)
             
         # If component isn't placed inside the parent, expand the parent
         if not parentIsScene and not parent.contains(self):
             width = max(maxSibX, self.x() + self._width)
             height = max(maxSibY, self.y() + self._height)
             parent.prepareGeometryChange()
-            if parentIsScene:
+            if parentIsScene:  # TODO: Is this going to execute since "not parentIsScene" is in the first if's reqs?
                 parent.setSceneRect(self.scene.x(), self.scene.y(), width + ComponentGraphics.MARGIN, height + ComponentGraphics.MARGIN)
             else:
                 parent._width = width
@@ -119,6 +129,18 @@ class ComponentGraphics(QGraphicsItem):
                 
                 if isinstance(parent, ComponentGraphics):
                     parent.adjustPositioning()
+
+    def resolveYCollisions(self, maxY: float):
+        """
+        This is a function that resolves all collisions in the y direction.
+
+        :param maxY: The maximum y coordinate of all siblings
+        :type maxY: float
+        :return: None
+        :rtype: NoneType
+        """
+        moveDownSize = maxY + self._height
+        self.setPos(self.x(), maxY)
     
     def dumbCollisionResolution(self, maxX: float, maxY: float, closest=True) -> None:
         """
@@ -166,10 +188,28 @@ class ComponentGraphics(QGraphicsItem):
         """
         raise NotImplemented("This function is not yet implemented")
     
-    def getCollidingComponents(self, components: list) -> tuple:
+    def getCollidingComponentsY(self, components: list) -> tuple:
         """
         Gets all of the components from a list that collide with this component.
         
+        :param components: The components to detect collisions with
+        :type components: list[ComponentGraphics]
+        :return: All of the components that actually collide with this component and the maximum sibling x and y positions.
+        :rtype: list[ComponentGraphics], float, float
+        """
+        collidingSiblings = []
+        maxSibY = 0
+        for sibling in components:
+            sibBound = sibling.boundingRect()
+            maxSibY = max(maxSibY, sibling.y() + sibBound.height())
+            if self.overlapsWith(sibling):
+                collidingSiblings.append(sibling)
+        return collidingSiblings, maxSibY
+
+    def getCollidingComponentsX(self, components: list) -> tuple:
+        """
+        Gets all of the components from a list that collide with this component.
+
         :param components: The components to detect collisions with
         :type components: list[ComponentGraphics]
         :return: All of the components that actually collide with this component and the maximum sibling x and y positions.
@@ -177,16 +217,13 @@ class ComponentGraphics(QGraphicsItem):
         """
         collidingSiblings = []
         maxSibX = 0
-        maxSibY = 0
         for sibling in components:
             sibBound = sibling.boundingRect()
             maxSibX = max(maxSibX, sibling.x() + sibBound.width())
-            maxSibY = max(maxSibY, sibling.y() + sibBound.height())
             if self.overlapsWith(sibling):
                 collidingSiblings.append(sibling)
-        return collidingSiblings, maxSibX, maxSibY
-    
-    
+        return collidingSiblings, maxSibX
+
     def getLabel(self) -> str:
         """
         Gets the label from this component.
