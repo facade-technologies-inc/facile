@@ -35,6 +35,7 @@ from gui.copyprojectdialog import CopyProjectDialog
 from gui.manageprojectdialog import ManageProjectDialog
 from gui.newprojectdialog import NewProjectDialog
 from gui.ui.ui_facileview import Ui_MainWindow as Ui_FacileView
+from qt_models.projectexplorermodel import ProjectExplorerModel
 from tguiil.blinker import Blinker
 
 
@@ -228,10 +229,11 @@ class FacileView(QMainWindow):
 		selectedIndexes = selected.indexes()
 		index = selectedIndexes[0]
 		entity = index.internalPointer()
-		self._project.getTargetGUIModel().getScene().clearSelection()
-		entity.getGraphicsItem().setSelected(True)
-		self.ui.propertyEditorView.setModel(entity.getProperties().getModel())
-		self.ui.propertyEditorView.expandAll()
+		if not isinstance(entity, (ProjectExplorerModel.LeafIndex, str)):
+			self._project.getTargetGUIModel().getScene().clearSelection()
+			entity.getGraphicsItem().setSelected(True)
+			self.ui.propertyEditorView.setModel(entity.getProperties().getModel())
+			self.ui.propertyEditorView.expandAll()
 	
 	def onStartAppTriggered(self):
 		"""

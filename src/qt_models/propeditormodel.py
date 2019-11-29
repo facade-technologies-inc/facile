@@ -255,7 +255,7 @@ class PropModel(QAbstractItemModel):
 		
 		data = index.internalPointer()
 		
-		if data in self._propData.getCategories():
+		if data in self._propData.getCategories() or (data.isReadOnly() and data.getType() != bool):
 			return Qt.ItemIsEnabled | Qt.ItemIsSelectable
 		else:
 			if index.column() == 1:

@@ -91,11 +91,8 @@ class Property:
 		:return: The property's value.
 		:rtype: bool
 		"""
-		if self.isReadOnly():
-			return False
-		else:
-			self._value = newValue
-			return True
+		self._value = newValue
+		return True
 	
 	def __str__(self):
 		return "{}:{}".format(self._name, self._value)

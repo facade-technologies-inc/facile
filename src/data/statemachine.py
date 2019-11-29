@@ -31,6 +31,7 @@ from PySide2.QtGui import QStandardItem, QStandardItemModel, Qt
 from data.project import Project
 from data.tguim.visibilitybehavior import VisibilityBehavior
 from gui.facilegraphicsview import FacileGraphicsView
+from qt_models.propeditordelegate import PropertyEditorDelegate
 
 
 class StateMachine:
@@ -334,6 +335,7 @@ class StateMachine:
 				v._project.getProjectExplorerModel(ui.projectExplorerView))
 			ui.projectExplorerView.selectionModel().selectionChanged.connect(
 				v.onProjectExplorerIndexSelected)
+			ui.propertyEditorView.setItemDelegate(PropertyEditorDelegate())
 			ui.targetGUIModelView.setScene(v._project.getTargetGUIModel().getScene())
 			ui.actionStop_App.setEnabled(False)
 			ui.actionStart_App.setEnabled(True)
