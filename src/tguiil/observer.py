@@ -19,6 +19,7 @@
 This module contains the Observer class, which watches the target GUI for changes.
 """
 
+from datetime import datetime
 from threading import Lock
 
 import psutil
@@ -69,16 +70,53 @@ class Observer(QThread):
 		:rtype: NoneType
 		"""
 		QThread.__init__(self)
+		self._pid = processID
 		self._process = psutil.Process(processID)
 		self._backend = backend
 		self._childMapping = {None: []}  # maps each super token to its list of children.
 		
-		# maps each super token to the laster iteration it was matched on.
+		# maps each super token to the last iteration it was matched on.
 		self._lastSuperTokenIterations = {}
 		self._iteration = 0
 		
 		self._playing = False
 		self._playingLock = Lock()
+	
+	def loadSuperTokens(self, tguim: 'TargetGuiModel') -> None:
+		"""
+		Loads existing super tokens into the observer to avoid duplication of super tokens.
+
+		This method will iterate over all components in the target GUI model and extract the
+		SuperToken references. It will build the simple of super tokens internally using
+		dictionaries.
+
+		This method is vital because when a new observer is created, it needs to know about
+		existing super tokens to avoid duplication.
+
+		.. note::
+			This method should be run in Facile's main thread BEFORE the observer is played.
+
+		:param tguim: The target GUI model to load the super tokens from.
+		:type tguim: TargetGuiModel
+		:return: None
+		:rtype: NoneType
+		"""
+		componentWork = tguim.getRoot().getChildren()[:]
+		
+		# add all of the top level components to be children of None
+		self._childMapping[None] = []
+		for component in componentWork:
+			superT = component.getSuperToken()
+			self._childMapping[None].append(superT)
+		
+		while componentWork:
+			component = componentWork.pop()
+			super = component.getSuperToken()
+			self._lastSuperTokenIterations[super] = -1
+			self._childMapping[super] = []
+			for child in component.getChildren():
+				self._childMapping[super].append(child.getSuperToken())
+				componentWork.append(child)
 	
 	def run(self) -> int:
 		"""
@@ -90,6 +128,8 @@ class Observer(QThread):
 		self._iteration = 0
 		app = Application(backend=self._backend)
 		app.setProcess(self._process)
+		
+		appTimeStamp = app.getStartTime()
 		while self._process.is_running():
 			self._iteration += 1
 			
@@ -106,7 +146,7 @@ class Observer(QThread):
 				curComponent, parentSuperToken = work.pop()
 				if curComponent.friendly_class_name() not in Observer.ignoreTypes:
 					try:
-						token = Observer.createToken(curComponent)
+						token = Observer.createToken(appTimeStamp, curComponent)
 					
 					# List boxes have a ton of children that we probably don't care about.
 					# There are probably other types like it where we just want to ignore the
@@ -115,7 +155,7 @@ class Observer(QThread):
 					#     continue
 					
 					except Token.CreationException as e:
-						print(str(e))
+						continue
 					
 					nextParentSuperToken = self.matchToSuperToken(token, parentSuperToken)
 					self._lastSuperTokenIterations[nextParentSuperToken] = self._iteration
@@ -127,85 +167,89 @@ class Observer(QThread):
 					work.append((child, nextParentSuperToken))
 	
 	@staticmethod
-	def createToken(component: pywinauto.base_wrapper.BaseWrapper) -> Token:
+	def createToken(timeStamp: datetime, component: pywinauto.base_wrapper.BaseWrapper) -> Token:
 		"""
 		Create a token from a pywinauto control.
 		
 		:raises: Token.CreationException
 		
+		:param timeStamp: The time that the application instance was created.
+		:type timeStamp: datetime
 		:param component: A pywinauto control from the target GUI.
 		:type component: pywinauto.base_wrapper
 		:return: The token that was created from the pywinauto control.
 		:rtype: Token
 		"""
 		
-		parent = component.parent()
-		if parent:
-			parentTitle = parent.window_text()
-			parentType = parent.friendly_class_name()
-		else:
-			parentTitle = ""
-			parentType = ""
-		
-		topLevelParent = component.top_level_parent()
-		topLevelParentTitle = topLevelParent.window_text()
-		topLevelParentType = topLevelParent.friendly_class_name()
-		
-		# Information we can get about any element
-		id = component.control_id()
-		isDialog = component.is_dialog()
-		isEnabled = component.is_enabled()
-		isVisible = component.is_visible()
-		processID = component.process_id()
-		rectangle = component.rectangle()
-		texts = component.texts()[1:]
-		title = component.window_text()
-		numControls = component.control_count()
-		image = None  # component.capture_as_image()
-		typeOf = component.friendly_class_name()
-		
-		# get text of all children that are not editable.
-		childrenTexts = []
-		for child in component.children():
-			if type(child) != pywinauto.controls.win32_controls.EditWrapper:
-				try:
-					text = child.text()
-					if text is None:
-						text = child.window_text()
-					if text is None:
-						text = ""
-					childrenTexts.append(text)
-				except:
-					childrenTexts.append("")
-		
-		# additional information we can get about uia elements
 		try:
-			autoID = component.automation_id()
-			shownState = component.get_show_state()
-			expandState = component.get_expand_state()
-		except:
-			autoID = None
-			expandState = None
-			shownState = None
-		
-		# construct control identifiers
-		# There are 4 possible control identifiers:
-		#   - title
-		#   - friendly class
-		#   - title + friendly class
-		#   - closest text + friendly class (only if the title is empty)
-		
-		if title is None:
-			title = ""
-		
-		controlIdentifiers = [title, typeOf, title + typeOf]
+			parent = component.parent()
+			if parent:
+				parentTitle = parent.window_text()
+				parentType = parent.friendly_class_name()
+			else:
+				parentTitle = ""
+				parentType = ""
+			
+			topLevelParent = component.top_level_parent()
+			topLevelParentTitle = topLevelParent.window_text()
+			topLevelParentType = topLevelParent.friendly_class_name()
+			
+			# Information we can get about any element
+			id = component.control_id()
+			isDialog = component.is_dialog()
+			isEnabled = component.is_enabled()
+			isVisible = component.is_visible()
+			processID = component.process_id()
+			rectangle = component.rectangle()
+			texts = component.texts()[1:]
+			title = component.window_text()
+			numControls = component.control_count()
+			image = None  # component.capture_as_image()
+			typeOf = component.friendly_class_name()
+			
+			# get text of all children that are not editable.
+			childrenTexts = []
+			for child in component.children():
+				if type(child) != pywinauto.controls.win32_controls.EditWrapper:
+					try:
+						text = child.text()
+						if text is None:
+							text = child.window_text()
+						if text is None:
+							text = ""
+						childrenTexts.append(text)
+					except:
+						childrenTexts.append("")
+			
+			# additional information we can get about uia elements
+			try:
+				autoID = component.automation_id()
+				shownState = component.get_show_state()
+				expandState = component.get_expand_state()
+			except:
+				autoID = None
+				expandState = None
+				shownState = None
+			
+			# construct control identifiers
+			# There are 4 possible control identifiers:
+			#   - title
+			#   - friendly class
+			#   - title + friendly class
+			#   - closest text + friendly class (only if the title is empty)
+			
+			if title is None:
+				title = ""
+			
+			controlIdentifiers = [title, typeOf, title + typeOf]
+		except Exception as e:
+			raise Token.CreationException("Could not build token: {}".format(str(e)))
 		
 		# create a new token
-		token = Token(id, isDialog, isEnabled, isVisible, processID, typeOf, rectangle, texts,
-		              title,
-		              numControls, controlIdentifiers, parentTitle, parentType,
-		              topLevelParentTitle, topLevelParentType, childrenTexts, image, autoID,
-		              expandState, shownState)
+		token = Token(timeStamp, id, isDialog, isEnabled, isVisible, processID, typeOf,
+		              rectangle, texts, title, numControls, controlIdentifiers, parentTitle,
+		              parentType, topLevelParentTitle, topLevelParentType, childrenTexts, image,
+		              autoID, expandState, shownState)
 		
 		return token
 	
@@ -239,10 +283,7 @@ class Observer(QThread):
 		for superToken in potentialMatches:
 			
 			if self._lastSuperTokenIterations[superToken] == self._iteration:
-				# print("Skipping", superToken)
 				continue
-			else:
-				print("Not Skipped", superToken)
 			
 			decision, matchVal = superToken.shouldContain(token)
 			bestDecision = min(bestDecision, decision.value)
@@ -326,3 +367,12 @@ class Observer(QThread):
 			self.quit()
 			return True
 		return False
+	
+	def getPID(self) -> int:
+		"""
+		Gets the Process ID of the process that is being watched by the observer
+		
+		:return: The process ID of the process that the observer is watching.
+		:rtype: int
+		"""
+		return self._pid

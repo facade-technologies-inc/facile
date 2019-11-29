@@ -27,7 +27,6 @@ from enum import Enum, auto
 
 from PySide2.QtCore import Slot, QTimer
 from PySide2.QtGui import QStandardItem, QStandardItemModel, Qt
-from PySide2.QtWidgets import QMessageBox
 
 from data.project import Project
 from data.tguim.visibilitybehavior import VisibilityBehavior
@@ -192,6 +191,8 @@ class StateMachine:
 				else:
 					self.view.info("To Start exploration, you must\n" \
 					               "first be running the target application.")
+					self.view.ui.actionManualExplore.setChecked(False)
+					self.view.ui.actionAutoExplore.setChecked(False)
 		
 		# If we've been requested to stop exploration and we're in the exploration state, go to the
 		# MODEL_MANIPULATION state
@@ -335,18 +336,27 @@ class StateMachine:
 				v.onProjectExplorerIndexSelected)
 			ui.targetGUIModelView.setScene(v._project.getTargetGUIModel().getScene())
 			ui.actionStop_App.setEnabled(False)
-			ui.actionManualExplore.setEnabled(False)
-			ui.actionAutoExplore.setEnabled(False)
 			ui.actionStart_App.setEnabled(True)
 		
 		if previousState == StateMachine.State.EXPLORATION:
-			self._project.getObserver().pause()
-			self._project.getExplorer().pause()
+			o = self._project.getObserver()
+			e = self._project.getExplorer()
+			if o: o.pause()
+			if e: e.pause()
+		
+		if self._project.getProcess():
+			ui.actionAutoExplore.setEnabled(True)
+			ui.actionManualExplore.setEnabled(True)
+			ui.actionStop_App.setEnabled(True)
+			ui.actionStart_App.setEnabled(False)
+		else:
+			ui.actionManualExplore.setEnabled(False)
+			ui.actionAutoExplore.setEnabled(False)
+			ui.actionStop_App.setEnabled(False)
+			ui.actionStart_App.setEnabled(True)
 		
 		ui.actionSave_Project.setEnabled(True)
 		ui.actionSave_as.setEnabled(True)
-		ui.actionAutoExplore.setEnabled(True)
-		ui.actionManualExplore.setEnabled(True)
 		ui.actionDetailed_View.setEnabled(True)
 		ui.actionShow_Behaviors.setEnabled(True)
 		ui.actionAdd_Behavior.setEnabled(True)
