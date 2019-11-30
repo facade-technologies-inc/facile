@@ -20,7 +20,8 @@
 This module contains the ComponentGraphics class.
 """
 
-from PySide2.QtCore import QRectF
+import copy
+from PySide2.QtCore import QRectF, QPointF
 from PySide2.QtGui import QPainterPath, QColor, QPen, Qt
 from PySide2.QtWidgets import QGraphicsScene, QGraphicsItem, QGraphicsSceneContextMenuEvent, QMenu
 
@@ -33,7 +34,7 @@ class ComponentGraphics(QGraphicsItem):
 	
 	MIN_WIDTH = 0
 	MIN_HEIGHT = 0
-	MARGIN = 20
+	MARGIN = 0  # Currently removed margins since there are now component titlebars
 	PEN_WIDTH = 1.0
 	
 	TRIM = 1
@@ -53,7 +54,7 @@ class ComponentGraphics(QGraphicsItem):
 		
 		if parent is None:
 			dataComponent.getModel().getScene().addItem(self)
-			self.isRoot = True
+			self.isRoot = True  # TODO: Have to resize scene to smallest possible
 		else:
 			self.isRoot = False
 		
@@ -64,7 +65,7 @@ class ComponentGraphics(QGraphicsItem):
 		self._y = rect[1]
 		self._width = max(rect[2], ComponentGraphics.MIN_WIDTH)
 		self._height = max(rect[3], ComponentGraphics.MIN_HEIGHT)
-		self.setPos(max(0, rect[0]), max(0, rect[1] + 10))
+		self.setPos(max(0, rect[0]), max(0, rect[1] + 10))  # +10 for titlebar
 		self.adjustPositioning()
 		self.menu = QMenu()
 		showInGui = self.menu.addAction("Show in target GUI")
@@ -104,6 +105,7 @@ class ComponentGraphics(QGraphicsItem):
 		elif self._dataComponent.getParent().getParent() is None:
 			parent = self.scene()
 			parentRect = parent.sceneRect()
+			self.setFlag(QGraphicsItem.ItemIsMovable)
 			parentIsScene = True
 		else:
 			parent = self._dataComponent.getParent().getGraphicsItem()
@@ -119,7 +121,7 @@ class ComponentGraphics(QGraphicsItem):
 			collidingSiblings, maxSibX, maxSibY = self.getCollidingComponents(siblings)
 			if collidingSiblings:
 				self.dumbCollisionResolution(maxSibX, maxSibY, closest=False)
-			# self.smartCollisionResolution(collidingSiblings)
+				# self.smartCollisionResolution(collidingSiblings)
 			else:
 				break
 		
@@ -129,7 +131,7 @@ class ComponentGraphics(QGraphicsItem):
 			height = max(maxSibY, self.y() + self._height)
 			parent.prepareGeometryChange()
 			if parentIsScene:
-				parent.setSceneRect(self.scene.x(), self.scene.y(),
+				parent.setSceneRect(self.scene().x(), self.scene().y(),
 				                    width + ComponentGraphics.MARGIN,
 				                    height + ComponentGraphics.MARGIN)
 			else:
@@ -170,21 +172,79 @@ class ComponentGraphics(QGraphicsItem):
 			else:
 				self.setPos(maxX, self.y())
 	
-	def smartCollisionResolution(self, colliding: list) -> None:
+	def smartCollisionResolution(self, collidingSiblings: list) -> None:
 		"""
 		This is an algorithm that resolves collisions in a smart way by always pushing one of
 		two colliding elements in a right/downward direction.
-		
-		unlike the dumbCollisionResolution, this algorithm can push items diagonally. This algorithm
-		is much less efficient than the dumbCollisionDetection.
-		
-		:param colliding: All of the elements colliding with our element.
-		:type colliding: list[ComponentGraphics]
+
+		:param collidingSiblings: list of the colliding siiblings
+		:type collidingSiblings: list
 		:return: None
 		:rtype: NoneType
 		"""
-		raise NotImplemented("This function is not yet implemented")
-	
+		moveRightSize = maxX + self._width
+		moveDownSize = maxY + self._height
+		# we'll move all the way to the bottom
+		if moveRightSize >= moveDownSize:
+			self.setPos(self.x(), maxY)
+		# or we'll move all the way to the right
+		else:
+			self.setPos(maxX, self.y())
+
+	def itemChange(self, change: 'GraphicsItemChange', value):
+		if change == QGraphicsItem.ItemPositionChange:
+			delX = value.x() - self.x()
+			delY = value.y() - self.y()
+
+			if delX == 0 and delY == 0:
+				return value
+
+			translateX = copy.deepcopy(self.boundingRect())
+			translateX.translate(dx=delX, dy=0)
+			translateY = copy.deepcopy(self.boundingRect())
+			translateY.translate(dx=0, dy=delY)
+
+			xOkay = True
+			yOkay = True
+
+			# Checking if there's a collision in x or y direction
+			for sibling in self._dataComponent.getSiblings():
+				sib = sibling.getGraphicsItem()
+				if sib == self:
+					continue
+
+				if translateX.intersects(sib.boundingRect()):
+					xOkay = False
+				if translateY.intersects(sib.boundingRect()):
+					yOkay = False
+
+			# Decides where to place component based on collision detection
+			if xOkay and yOkay:
+				return
+			elif xOkay:
+				self.pos().setX(value.x())
+			elif yOkay:
+				self.pos().setY(value.y())
+
+		return QGraphicsItem.itemChange(self, change, value)
+
+	# def rectsCollide(self, a: QRectF, b: QRectF):
+	# 	ax1 = 0
+	# 	ay1 = 0
+	# 	ax2 = 0
+	# 	ay2 = 0
+	# 	ax1, ay1, ax2, ay2 = a.getCoords()
+	# 	print(ax1 + ' ' + ay1)
+	#
+	# 	bx1 = 0
+	# 	by1 = 0
+	# 	bx2 = 0
+	# 	by2 = 0
+	# 	bx1, by1, bx2, by2 = b.getCoords()
+	# 	print(bx1 + ' ' + by1)
+	#
+	# 	return ax1 < bx2 and ax2 > bx1 and ay1 < by2 and ay2 > by1
+
 	def getCollidingComponents(self, components: list) -> tuple:
 		"""
 		Gets all of the components from a list that collide with this component.
@@ -229,19 +289,18 @@ class ComponentGraphics(QGraphicsItem):
 		:return: True if components overlap, False otherwise.
 		:rtype: bool
 		"""
-		
-		selfBound = self.boundingRect(withMargins=False)
+		selfBound = self.boundingRect(withMargins=False)  # withMargins=False
 		selfx = self.scenePos().x() + selfBound.x()
 		selfy = self.scenePos().y() + selfBound.y()
-		
+
 		sibBound = sibling.boundingRect(withMargins=False)
 		sibx = sibling.scenePos().x() + sibBound.x()
 		siby = sibling.scenePos().y() + sibBound.y()
-		
+
 		if (sibx < selfx + selfBound.width() and
-			sibx + sibBound.width() > selfx and
-			siby < selfy + selfBound.height() and
-			siby + sibBound.height() > selfy):
+				sibx + sibBound.width() > selfx and
+				siby < selfy + selfBound.height() and
+				siby + sibBound.height() > selfy):
 			return True
 		return False
 	
