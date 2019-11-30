@@ -211,3 +211,18 @@ class Properties:
 			for property in self._categories[category]:
 				if property.getName() == name:
 					return category, property
+
+	def asDict(self) -> dict:
+		"""
+		Get a dictionary representation of the visibility behavior.
+
+		.. note::
+			This is not just a getter of the __dict__ attribute.
+
+		:return: The dictionary representation of the object.
+		:rtype: dict
+		"""
+		d = {}
+		for cat, props in self._categories.items():
+			d[cat] = [prop.asDict() for prop in props]
+		return d

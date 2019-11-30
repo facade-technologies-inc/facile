@@ -358,3 +358,45 @@ class Token:
 	
 	def __repr__(self):
 		return self.__str__()
+	
+	def asDict(self) -> dict:
+		"""
+		Get a dictionary representation of the visibility behavior.
+
+		.. note::
+			This is not just a getter of the __dict__ attribute.
+
+		:return: The dictionary representation of the object.
+		:rtype: dict
+		"""
+		d = self.__dict__.copy()
+		d['rectangle'] = [self.rectangle.left, self.rectangle.top, self.rectangle.width(),
+		                  self.rectangle.height()]
+		if 'picture' in d and d['picture'] is not None:
+			d['picture'] = np.array(self.picture).tolist()
+			
+		return d
+	
+	@staticmethod()
+	def fromDict(d: dict) -> 'Token':
+		"""
+		Creates a token from a dictionary.
+
+		:param d: The dictionary that represents the Component.
+		:type d: dict
+		:return: The Token object that was constructed from the dictionary
+		:rtype: Token
+		"""
+		
+		if d is None:
+			return None
+		
+		t = Token.__new__(Token)
+		
+		if d['picture']:
+			d["picture"] = Image.fromarray(np.uint8(np.asarray(d["picture"])))
+			
+		if d['rectangle']:
+			d['rectangle'] =
+		
+		t.__dict__ = d

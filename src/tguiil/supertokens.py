@@ -136,3 +136,40 @@ class SuperToken:
 	
 	def __repr__(self):
 		return self.__str__()
+	
+	def asDict(self) -> dict:
+		"""
+		Get a dictionary representation of the visibility behavior.
+
+		.. note::
+			This is not just a getter of the __dict__ attribute.
+
+		:return: The dictionary representation of the object.
+		:rtype: dict
+		"""
+		d = {}
+		d["id"] = self.id
+		d["tokens"] = [t.asDict() for t in self.tokens]
+		d["ignoreFlag"] = self.ignoreFlag
+		d['relativePos'] = list(self.posRelativeToParent)
+		return d
+	
+	@staticmethod()
+	def fromDict(d: dict) -> 'SuperToken':
+		"""
+		Creates a super token from a dictionary.
+
+		:param d: The dictionary that represents the Component.
+		:type d: dict
+		:return: The SuperToken object that was constructed from the dictionary
+		:rtype: SuperToken
+		"""
+		
+		if d is None:
+			return None
+		
+		st = SuperToken.__new__(SuperToken)
+		st._tokenListLock = Lock()
+		st.tokens = d['tokens']
+		st.ignoreFlag = d['ignoreFlag']
+		st.id = d['id']

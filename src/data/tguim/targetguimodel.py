@@ -22,6 +22,8 @@ This module contains the TargetGuiModel class.
 
 from collections import OrderedDict
 
+import json
+
 from PySide2.QtCore import QObject, Slot, Signal
 
 from data.tguim.component import Component
@@ -176,3 +178,73 @@ class TargetGuiModel(QObject):
 		dest = newVisBehavior.getDestComponent()
 		src.addSrcVisibilityBehavior(newVisBehavior)
 		dest.addDestVisibilityBehavior(newVisBehavior)
+		
+			
+	def asDict(self) -> dict:
+		"""
+		Get a dictionary representation of the visibility behavior.
+
+		.. note::
+			This is not just a getter of the __dict__ attribute.
+
+		:return: The dictionary representation of the object.
+		:rtype: dict
+		"""
+		tguimDict = {}
+		
+		tguimDict["root"] = self._root.asDict()
+		
+		tguimDict["components"] = {}
+		for id, comp in self._components.items():
+			tguimDict["components"][id] = comp.asDict()
+			
+		tguimDict["behaviors"] = {}
+		for id, vb in self._visibilityBehaviors.items():
+			tguimDict["behaviors"][id] = vb.asDict()
+		
+		return tguimDict
+	
+	@staticmethod()
+	def fromDict(d: dict) -> 'TargetGui':
+		"""
+		Creates a target GUI model from a dictionary.
+		
+		This method reconstructs the entire target GUI model in 2 "passes". First, all of the
+		components and visibility behaviors are created, but they only store IDs of other
+		components and visibility behaviors. Once all of the objects have been created,
+		the references are finalized.
+		
+		:param d: The dictionary that represents the target GUI model.
+		:type d: dict
+		:return: The TargetGUIModel object that was constructed from the dictionary
+		:rtype: TargetGuiModel
+		"""
+		tguim = TargetGuiModel()
+		tguim._root = Component.fromDict(d["root"], tguim)
+		
+		# create all components (superficially)
+		for id, comp in d['components']:
+			newComp = Component.fromDict(comp, tguim)
+			tguim._components[id] = newComp
+			tguim._superTokenToComponentMapping[newComp.getSuperToken()] = newComp
+		
+		# create all visibility behaviors (superficially)
+		for id, vb in d['behaviors']:
+			newVB = VisibilityBehavior.fromDict(vb)
+			tguim._visibilityBehaviors[id] = newVB
+			
+		# connect all components and visibility behaviors
+		for component in tguim._components.values():
+			component._parent = tguim._components[component._parent]
+			for i in range(len(component._children)):
+				component._children[i] = tguim._components[component._children[i]]
+				
+			for i in range(len(component._srcVisibilityBehaviors)):
+				component._srcVisibilityBehaviors[i] = tguim._components[
+					component._srcVisibilityBehaviors[i]]
+				
+			for i in range(len(component._destVisibilityBehaviors)):
+				component._destVisibilityBehaviors[i] = tguim._components[
+					component._destVisibilityBehaviors[i]]
+			
+		# TODO: Create graphics for VBs and components

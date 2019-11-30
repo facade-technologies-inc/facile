@@ -24,6 +24,7 @@ from data.entity import Entity
 from data.properties import Properties
 from data.tguim.visibilitybehavior import VisibilityBehavior
 from graphics.tguim.componentgraphics import ComponentGraphics
+from tguiil.supertokens import SuperToken
 
 
 class Component(Entity):
@@ -33,7 +34,7 @@ class Component(Entity):
 	"""
 	
 	def __init__(self, tguim: 'TargetGuiModel', parent: 'Component' = None,
-	             superToken: 'SuperToken' = None):
+	             superToken: 'SuperToken' = None, createGraphics: 'ComponentGraphics' = True):
 		"""
 		Constructs a Component object.
 
@@ -43,6 +44,8 @@ class Component(Entity):
 		:type parent: Component
 		:param superToken: The SuperToken associated with the new Component
 		:type superToken: SuperToken
+		:param createGraphics: if True, graphics will be created. If not, they won't
+		:type createGraphics: bool
 		"""
 		
 		super().__init__()
@@ -52,11 +55,10 @@ class Component(Entity):
 		self._srcVisibilityBehaviors = []
 		self._destVisibilityBehaviors = []
 		self._model = tguim
-		if superToken is None:
-			self._graphicsItem = ComponentGraphics(self, (0, 0, 0, 0), self.getParentGraphicsItem())
-		else:
-			self._graphicsItem = ComponentGraphics(self, superToken.posRelativeToParent,
-			                                       self.getParentGraphicsItem())
+		
+		if createGraphics:
+			self.createGraphics()
+		
 		if parent is not None:
 			parent.addChild(self)
 			
@@ -84,6 +86,19 @@ class Component(Entity):
 			props.getProperty("Height")[1].setValue(geometry[3])
 			
 			self.setProperties(props)
+			
+	def createGraphics(self) -> None:
+		"""
+		Create the graphics for the component
+		
+		:return: None
+		:rtype: NoneType
+		"""
+		if self._superToken is None:
+			self._graphicsItem = ComponentGraphics(self, (0, 0, 0, 0), self.getParentGraphicsItem())
+		else:
+			self._graphicsItem = ComponentGraphics(self, self._superToken.posRelativeToParent,
+			                                       self.getParentGraphicsItem())
 	
 	def getSuperToken(self) -> 'SuperToken':
 		"""
@@ -352,3 +367,62 @@ class Component(Entity):
 		:rtype: str
 		"""
 		return str(self._id)
+	
+	def asDict(self) -> dict:
+		"""
+		Get a dictionary representation of the component.
+		
+		NOTE: this is not just a getter of the __dict__ attribute.
+		
+		:return: The dictionary representation of the object.
+		:rtype: dict
+		"""
+		d = {}
+		d["id"] = self._id
+		d["srcBehaviors"] = [vb.getId() for vb in self._srcVisibilityBehaviors]
+		d["destBehaviors"] = [vb.getId() for vb in self._destVisibilityBehaviors]
+		d['children'] = [c.getId() for c in self._children]
+		
+		if self._properties:
+			d['properties'] = self.getProperties().asDict()
+		else:
+			d['properties'] = None
+		
+		if self._superToken:
+			d['superToken'] = self._superToken.asDict()
+		else:
+			d['superToken'] = None
+			
+		if self._parent:
+			d["parent"] = self._parent.getId()
+		else:
+			d["parent"] = None
+		
+		return d
+	
+	@staticmethod()
+	def fromDict(d: dict, tguim:'TargetGuiModel') -> 'Component':
+		"""
+		Creates a Component from a dictionary.
+
+		The created component isn't "complete" because it only holds the IDs of other components
+		and visibility behaviors. Outside of this function, the references are completed.
+
+		:param d: The dictionary that represents the Component.
+		:type d: dict
+		:param tguim: The target GUI model to add the component to
+		:type tguim: TargetGuiModel
+		:return: The Component object that was constructed from the dictionary
+		:rtype: Component
+		"""
+		
+		if d is None:
+			return None
+		
+		superToken = SuperToken.fromDict(d['superToken'])
+		comp = Component(tguim, superToken=superToken, createGraphics=False)
+		comp._parent = d['parent']['id']
+		comp._children = [child['id'] for child in d['children']]
+		comp._srcVisibilityBehaviors = [vb['id'] for vb in d['srcBehaviors']]
+		comp._destVisibilityBehaviors = [vb['id'] for vb in d['destBehaviors']]
+		comp.setProperties(Properties.fromDict(d['Properties']))
