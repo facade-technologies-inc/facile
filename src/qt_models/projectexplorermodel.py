@@ -482,7 +482,7 @@ class ProjectExplorerModel(QAbstractItemModel):
 		
 		elif isinstance(data, Component):
 			category, name = data.getProperties().getProperty("Name")
-			category, typeOf = data.getProperties().getProperty("Type")
+			category, typeOf = data.getProperties().getProperty("Class Name")
 			if col == 0:
 				return name.getValue()
 			elif col == 1:
@@ -494,7 +494,7 @@ class ProjectExplorerModel(QAbstractItemModel):
 			if col == 0:
 				return data.getProperties().getProperty("Name")[1].getValue()
 			elif col == 1:
-				return data.getReactionType()
+				return data.getProperties().getProperty("Reaction Type")[1].getValue().name
 			else:
 				return None
 		

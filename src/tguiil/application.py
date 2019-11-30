@@ -22,6 +22,7 @@ pywinauto's Desktop class.
 """
 
 import time
+from datetime import datetime
 
 import psutil
 import pywinauto
@@ -43,8 +44,19 @@ class Application(pywinauto.Desktop):
 	# are called zombies. currently, this class does not work with applications that fit this description. This class
 	# could be made more robust.
 	
-	# def __init__(self, backend):
-	#     super().__init__(backend=backend)
+	def __init__(self, backend: str = "uia") -> None:
+		"""
+		Constructs an Application instance
+		
+		:param backend: the accessibility technology to use to deconstruct the target GUI.
+		:type backend: str
+		:return: None
+		:rtype: NoneType
+		"""
+		pywinauto.Desktop.__init__(self, backend=backend)
+		
+		# store time stamp as int
+		self._startTime = int(datetime.now().strftime("%y%m%d%H%M%S").lstrip("0"))
 	
 	def setProcess(self, process: psutil.Process) -> None:
 		"""
@@ -66,8 +78,11 @@ class Application(pywinauto.Desktop):
 		:rtype: list[int]
 		"""
 		pids = [self._process.pid]
-		for child in self._process.children():
-			pids.append(child.pid)
+		try:
+			for child in self._process.children():
+				pids.append(child.pid)
+		except:
+			pass
 		return pids
 	
 	def windows(self) -> list:
@@ -92,6 +107,15 @@ class Application(pywinauto.Desktop):
 			if win.process_id() in pids:
 				appWins.append(win)
 		return appWins
+	
+	def getStartTime(self) -> int:
+		"""
+		Gets the time that the Application instance was created as an int.
+		
+		:return: The time that the Application instance was created.
+		:rtype: int
+		"""
+		return self._startTime
 
 
 if __name__ == "__main__":

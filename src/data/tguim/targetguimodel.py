@@ -24,7 +24,6 @@ from collections import OrderedDict
 
 from PySide2.QtCore import QObject, Slot, Signal
 
-from data.properties import Properties
 from data.tguim.component import Component
 from data.tguim.visibilitybehavior import VisibilityBehavior
 from graphics.tguim.tscene import TScene
@@ -120,20 +119,6 @@ class TargetGuiModel(QObject):
 		
 		newComponent = Component(self, parentComponent, newSuperToken)
 		
-		# TODO: Create Properties object based on values from the SuperToken
-		predefinedCategories = []
-		customCategories = {"Temporary": [{"name": "Name",
-		                                   "type": str,
-		                                   "default": newSuperToken.tokens[-1].controlIDs[-1],
-		                                   "readOnly": False},
-		                                  {"name": "Type",
-		                                   "type": str,
-		                                   "default": newSuperToken.tokens[-1].type,
-		                                   "readOnly": True}
-		                                  ]}
-		properties = Properties.createPropertiesObject(predefinedCategories, customCategories)
-		newComponent.setProperties(properties)
-		
 		self._superTokenToComponentMapping[newSuperToken] = newComponent
 		self._components[newComponent.getId()] = newComponent
 		self.dataChanged.emit(newComponent.getId())
@@ -186,7 +171,7 @@ class TargetGuiModel(QObject):
 		"""
 		if newVisBehavior.getId() not in self._visibilityBehaviors:
 			self._visibilityBehaviors[newVisBehavior.getId()] = newVisBehavior
-
+		
 		src = newVisBehavior.getSrcComponent()
 		dest = newVisBehavior.getDestComponent()
 		src.addSrcVisibilityBehavior(newVisBehavior)
