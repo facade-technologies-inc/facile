@@ -204,7 +204,7 @@ class TargetGuiModel(QObject):
 		
 		return tguimDict
 	
-	@staticmethod()
+	@staticmethod
 	def fromDict(d: dict) -> 'TargetGui':
 		"""
 		Creates a target GUI model from a dictionary.
@@ -223,19 +223,27 @@ class TargetGuiModel(QObject):
 		tguim._root = Component.fromDict(d["root"], tguim)
 		
 		# create all components (superficially)
-		for id, comp in d['components']:
+		for id, comp in d['components'].items():
 			newComp = Component.fromDict(comp, tguim)
 			tguim._components[id] = newComp
 			tguim._superTokenToComponentMapping[newComp.getSuperToken()] = newComp
 		
 		# create all visibility behaviors (superficially)
-		for id, vb in d['behaviors']:
+		for id, vb in d['behaviors'].items():
 			newVB = VisibilityBehavior.fromDict(vb)
 			tguim._visibilityBehaviors[id] = newVB
 			
+		# connect root's children
+		for i in range(len(tguim._root._children)):
+			tguim._root._children[i] = tguim._components[tguim._root._children[i]]
+		
 		# connect all components and visibility behaviors
 		for component in tguim._components.values():
-			component._parent = tguim._components[component._parent]
+			if component._parent in tguim._components:
+				component._parent = tguim._components[component._parent]
+			else:
+				component._parent = tguim._root
+				
 			for i in range(len(component._children)):
 				component._children[i] = tguim._components[component._children[i]]
 				

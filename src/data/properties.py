@@ -226,3 +226,26 @@ class Properties:
 		for cat, props in self._categories.items():
 			d[cat] = [prop.asDict() for prop in props]
 		return d
+	
+	@staticmethod
+	def fromDict(d: dict) -> 'Properties':
+		"""
+		Creates a Properties object from a dictionary.
+
+		:param d: The dictionary that represents the Properties object.
+		:type d: dict
+		:return: The Properties object that was constructed from the dictionary
+		:rtype: Properties
+		"""
+		
+		if d is None:
+			return None
+
+		props = Properties()
+
+		for cat in d:
+			props.newCategory(cat)
+			for prop in d[cat]:
+				props._categories[cat].append(Property.fromDict(prop))
+				
+		return props

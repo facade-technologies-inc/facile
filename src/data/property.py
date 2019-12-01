@@ -116,3 +116,18 @@ class Property:
 		if isinstance(d["_value"], Enum):
 			d["_value"] = d["_value"].name
 		return d
+	
+	@staticmethod
+	def fromDict(d:dict) -> 'Property':
+		"""
+		Creates a Property object from a dictionary.
+
+		:param d: The dictionary that represents the Property object.
+		:type d: dict
+		:return: The Property object that was constructed from the dictionary
+		:rtype: Property
+		"""
+		p = Property.__new__(Property)
+		d["_type"] = eval(d["_type"])
+		p.__dict__ = d
+		return p

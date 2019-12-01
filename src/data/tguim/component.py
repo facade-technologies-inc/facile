@@ -400,7 +400,7 @@ class Component(Entity):
 		
 		return d
 	
-	@staticmethod()
+	@staticmethod
 	def fromDict(d: dict, tguim:'TargetGuiModel') -> 'Component':
 		"""
 		Creates a Component from a dictionary.
@@ -421,8 +421,10 @@ class Component(Entity):
 		
 		superToken = SuperToken.fromDict(d['superToken'])
 		comp = Component(tguim, superToken=superToken, createGraphics=False)
-		comp._parent = d['parent']['id']
-		comp._children = [child['id'] for child in d['children']]
+		comp._children = d['children']
 		comp._srcVisibilityBehaviors = [vb['id'] for vb in d['srcBehaviors']]
 		comp._destVisibilityBehaviors = [vb['id'] for vb in d['destBehaviors']]
-		comp.setProperties(Properties.fromDict(d['Properties']))
+		comp.setProperties(Properties.fromDict(d['properties']))
+		comp._parent = d['parent']
+		
+		return comp

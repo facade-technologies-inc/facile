@@ -197,7 +197,7 @@ class VisibilityBehavior(Entity):
 		
 		return d
 	
-	@staticmethod()
+	@staticmethod
 	def fromDict(d: dict, tguim: 'TargetGuiModel') -> 'Component':
 		"""
 		Creates a visibility behavior from a dictionary.

@@ -20,6 +20,7 @@
 This module contains the Project class.
 """
 
+import traceback
 import json
 import os
 from subprocess import PIPE
@@ -369,11 +370,14 @@ class Project:
 		startupTimeout = projectJSON["Application Information"]["Startup Timeout"]
 		
 		loadedProject = Project(name, description, exe, backend, projectDir, startupTimeout)
-		
-		with open(loadedProject.getTargetGUIModelFile(), 'r') as tguimFile:
-			d = json.loads(tguimFile.read())
-			tguim = TargetGuiModel.fromDict(d)
-			loadedProject.setTargetGUIModel(tguim)
+		try:
+			with open(loadedProject.getTargetGUIModelFile(), 'r') as tguimFile:
+				d = json.loads(tguimFile.read())
+				tguim = TargetGuiModel.fromDict(d)
+		except Exception as e:
+			traceback.print_exc()
+		else:
+			loadedProject._targetGUIModel = tguim
 			
 		# loadedProject.setAPIModel(["Model Files"]["API Model"] = self._APIModel)
 		

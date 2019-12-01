@@ -372,12 +372,12 @@ class Token:
 		d = self.__dict__.copy()
 		d['rectangle'] = [self.rectangle.left, self.rectangle.top, self.rectangle.width(),
 		                  self.rectangle.height()]
-		if 'picture' in d and d['picture'] is not None:
-			d['picture'] = np.array(self.picture).tolist()
+		if 'pic' in d and d['pic'] is not None:
+			d['pic'] = np.array(self.picture).tolist()
 			
 		return d
 	
-	@staticmethod()
+	@staticmethod
 	def fromDict(d: dict) -> 'Token':
 		"""
 		Creates a token from a dictionary.
@@ -393,10 +393,16 @@ class Token:
 		
 		t = Token.__new__(Token)
 		
-		if d['picture']:
-			d["picture"] = Image.fromarray(np.uint8(np.asarray(d["picture"])))
+		if d['pic']:
+			d["pic"] = Image.fromarray(np.uint8(np.asarray(d["picture"])))
 			
 		if d['rectangle']:
-			d['rectangle'] =
-		
+			r = RECT()
+			r.left = d['rectangle'][0]
+			r.top = d['rectangle'][1]
+			r.right = d['rectangle'][0] + d['rectangle'][2]
+			r.bottom = d['rectangle'][1] + d['rectangle'][3]
+			d['rectangle'] = r
+			
 		t.__dict__ = d
+		return t

@@ -154,7 +154,7 @@ class SuperToken:
 		d['relativePos'] = list(self.posRelativeToParent)
 		return d
 	
-	@staticmethod()
+	@staticmethod
 	def fromDict(d: dict) -> 'SuperToken':
 		"""
 		Creates a super token from a dictionary.
@@ -170,6 +170,8 @@ class SuperToken:
 		
 		st = SuperToken.__new__(SuperToken)
 		st._tokenListLock = Lock()
-		st.tokens = d['tokens']
+		st.tokens = [Token.fromDict(t) for t in d['tokens']]
 		st.ignoreFlag = d['ignoreFlag']
 		st.id = d['id']
+		st.posRelativeToParent = tuple(d['relativePos'])
+		return st
