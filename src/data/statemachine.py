@@ -362,6 +362,8 @@ class StateMachine:
 		ui.actionDetailed_View.setEnabled(True)
 		ui.actionShow_Behaviors.setEnabled(True)
 		ui.actionAdd_Behavior.setEnabled(True)
+		ui.actionManualExplore.setChecked(False)
+		ui.actionAutoExplore.setChecked(False)
 	
 	def _state_ADDING_VB(self, event: Event, previousState: State, *args, **kwargs) -> None:
 		"""
@@ -417,7 +419,7 @@ class StateMachine:
 		self.view.ui.actionDetailed_View.setEnabled(True)
 		self.view.ui.actionShow_Behaviors.setEnabled(True)
 		self.view.ui.actionAdd_Behavior.setEnabled(False)
-		self.view.ui.actionStart_App.setEnabled(True)
+		self.view.ui.actionStart_App.setEnabled(False)
 		self.view.ui.actionStop_App.setEnabled(True)
 	
 	############################################################################
@@ -474,6 +476,11 @@ class StateMachine:
 		:return: None
 		:rtype: NoneType
 		"""
+		if mode == StateMachine.ExplorationMode.AUTO:
+			self.view.ui.actionManualExplore.setChecked(False)
+		elif mode == StateMachine.ExplorationMode.MANUAL:
+			self.view.ui.actionAutoExplore.setChecked(False)
+			
 		self.tick(StateMachine.Event.START_EXPLORATION, mode=mode)
 	
 	@Slot()
