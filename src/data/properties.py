@@ -21,6 +21,7 @@ This module contains the Properties() class.
 """
 
 from collections import OrderedDict
+from enum import Enum
 
 from data.property import Property
 from qt_models.propeditormodel import PropModel
@@ -91,20 +92,24 @@ class Properties:
 		for i in range(len(predefinedCategories)):
 			newProperties.newCategory(predefinedCategories[i])
 			if predefinedCategories[i] == "Base":
+				newProperties.addProperty("Base", "ID", 0, int, True)
 				newProperties.addProperty("Base", "Name", "default", str)
 				newProperties.addProperty("Base", "Type", "Push Button", str, True)
-				newProperties.addProperty("Base", "Annotation", "", str)
+				newProperties.addProperty("Base", "Annotation", "Add a comment here...", str)
 			elif predefinedCategories[i] == "Visual":
-				newProperties.addProperty("Visual", "X", 0, int)
-				newProperties.addProperty("Visual", "Y", 0, int)
-				newProperties.addProperty("Visual", "Width", 100, int)
-				newProperties.addProperty("Visual", "Height", 100, int)
+				newProperties.addProperty("Visual", "X", 0, int, True)
+				newProperties.addProperty("Visual", "Y", 0, int, True)
+				newProperties.addProperty("Visual", "Width", 100, int, True)
+				newProperties.addProperty("Visual", "Height", 100, int, True)
 			elif predefinedCategories[i] == "GUI Component":
-				newProperties.addProperty("GUI Component", "Parent", 1, int, True)
-				newProperties.addProperty("GUI Component", "Children", [], list, True)
+				newProperties.addProperty("GUI Component", "Title", "default", str, True)
+				newProperties.addProperty("GUI Component", "Parent Title", "default", str, True)
+				newProperties.addProperty("GUI Component", "Class Name", "default", str, True)
+				newProperties.addProperty("GUI Component", "Is Dialog", True, bool, True)
 			elif predefinedCategories[i] == "Visibility Behavior":
-				newProperties.addProperty("Visibility Behavior", "From", 1, int, True)
-				newProperties.addProperty("Visibility Behavior", "To", 1, int, True)
+				newProperties.addProperty("Visibility Behavior", "Reaction Type", None, Enum)
+				newProperties.addProperty("Visibility Behavior", "Source ID", 1, int, True)
+				newProperties.addProperty("Visibility Behavior", "Destination ID", 1, int, True)
 		
 		for category in customCategories.keys():
 			newProperties.newCategory(category)
