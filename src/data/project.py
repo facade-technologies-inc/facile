@@ -370,12 +370,14 @@ class Project:
 		startupTimeout = projectJSON["Application Information"]["Startup Timeout"]
 		
 		loadedProject = Project(name, description, exe, backend, projectDir, startupTimeout)
+		
 		try:
 			with open(loadedProject.getTargetGUIModelFile(), 'r') as tguimFile:
 				d = json.loads(tguimFile.read())
 				tguim = TargetGuiModel.fromDict(d)
-		except Exception as e:
-			traceback.print_exc()
+		except:
+			print("Couldn't load from {}".format(loadedProject.getTargetGUIModelFile()))
+			#traceback.print_exc()
 		else:
 			loadedProject._targetGUIModel = tguim
 			

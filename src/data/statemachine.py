@@ -326,7 +326,7 @@ class StateMachine:
 		
 		if event == StateMachine.Event.PROJECT_OPENED:
 			v.setWindowTitle("Facile - " + self._project.getMainProjectFile())
-			p.save()
+			#p.save()
 			p.addToRecents()
 			p.getTargetGUIModel().getScene().itemSelected.connect(v.onItemSelected)
 			p.getTargetGUIModel().getScene().itemBlink.connect(v.onItemBlink)

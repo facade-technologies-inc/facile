@@ -406,7 +406,9 @@ class Component(Entity):
 		Creates a Component from a dictionary.
 
 		The created component isn't "complete" because it only holds the IDs of other components
-		and visibility behaviors. Outside of this function, the references are completed.
+		and visibility behaviors. Outside of this function, the references are completed. The
+		children references are not set here because they need to be set one at a time while the
+		graphics items are being created.
 
 		:param d: The dictionary that represents the Component.
 		:type d: dict
@@ -421,9 +423,11 @@ class Component(Entity):
 		
 		superToken = SuperToken.fromDict(d['superToken'])
 		comp = Component(tguim, superToken=superToken, createGraphics=False)
-		comp._children = d['children']
-		comp._srcVisibilityBehaviors = [vb['id'] for vb in d['srcBehaviors']]
-		comp._destVisibilityBehaviors = [vb['id'] for vb in d['destBehaviors']]
+		#comp._children = d['children'] # need to add children one at a time since graphics are
+										# created later
+		comp._id = d["id"]
+		comp._srcVisibilityBehaviors = d['srcBehaviors']
+		comp._destVisibilityBehaviors = d['destBehaviors']
 		comp.setProperties(Properties.fromDict(d['properties']))
 		comp._parent = d['parent']
 		

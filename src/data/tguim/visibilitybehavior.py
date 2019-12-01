@@ -27,8 +27,6 @@ from data.properties import Properties
 from data.tguim.condition import Condition
 from graphics.tguim.visibilitybehaviorgraphics import VBGraphics
 
-VALID_REACTION_TYPES = {"show", "hide"}
-
 
 class VisibilityBehavior(Entity):
 	"""
@@ -190,10 +188,6 @@ class VisibilityBehavior(Entity):
 		d["src"] = self._srcComponent.getId()
 		d["dest"] = self._destComponent.getId()
 		d['properties'] = self.getProperties().asDict()
-		if self._parent:
-			d["parent"] = None
-		else:
-			d["parent"] = self._parent.getId()
 		
 		return d
 	
@@ -208,18 +202,23 @@ class VisibilityBehavior(Entity):
 		.. note::
 			The graphics item will not be created here. It must be created later.
 
-		:param d: The dictionary that represents the Component.
+		:param d: The dictionary that represents the VisibilityBehavior.
 		:type d: dict
 		:param tguim: The target GUI model to add the component to
 		:type tguim: TargetGuiModel
-		:return: The Component object that was constructed from the dictionary
-		:rtype: Component
+		:return: The VisibilityBehavior object that was constructed from the dictionary
+		:rtype: VisibilityBehavior
 		"""
 		
 		if d is None:
 			return None
 		
 		vb = VisibilityBehavior(tguim)
-		vb._srcVisibilityBehaviors = d['srcBehaviors']
-		vb._destVisibilityBehaviors = d['destBehaviors']
-		vb.setProperties(Properties.fromDict(d['Properties']))
+		vb._id = d['id']
+		vb._srcComponent = d['src']
+		vb._destComponent = d['dest']
+		vb.setProperties(Properties.fromDict(d['properties']))
+		reactionType = vb.getProperties().getProperty("Reaction Type")[1].getValue()
+		vb.getProperties().getProperty("Reaction Type")[1].setValue(
+			VisibilityBehavior.ReactionType[reactionType])
+		return vb
