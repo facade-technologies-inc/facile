@@ -302,6 +302,7 @@ class StateMachine:
 		ui.actionAdd_Behavior.setEnabled(False)
 		ui.actionStart_App.setEnabled(False)
 		ui.actionStop_App.setEnabled(False)
+		ui.actionManage_Project.setEnabled(False)
 	
 	def _state_MODEL_MANIPULATION(self, event: Event, previousState: State, *args,
 	                              **kwargs) -> None:
@@ -339,6 +340,7 @@ class StateMachine:
 			ui.targetGUIModelView.setScene(v._project.getTargetGUIModel().getScene())
 			ui.actionStop_App.setEnabled(False)
 			ui.actionStart_App.setEnabled(True)
+			ui.actionManage_Project.setEnabled(True)
 		
 		if previousState == StateMachine.State.EXPLORATION:
 			o = self._project.getObserver()

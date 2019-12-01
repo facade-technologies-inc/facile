@@ -58,6 +58,7 @@ class NewProjectDialog(QDialog):
 		super(NewProjectDialog, self).__init__(parent)
 		self.ui = Ui_NewProjectDialog()
 		self.ui.setupUi(self)
+		self.setWindowTitle("Create New Project")
 		
 		# allow user to select folder to save project in
 		self.ui.browseFilesButton_folder.clicked.connect(self._browseProjectFolders)
