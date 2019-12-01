@@ -77,6 +77,7 @@ class Blinker(QThread):
 		app = Application(backend=self._backend)
 		app.setProcess(self._process)
 		
+		timestamp = app.getStartTime()
 		bestCertainty = 0
 		closestComponent = None
 		if self._process.is_running():
@@ -86,7 +87,7 @@ class Blinker(QThread):
 			while len(work) > 0:
 				curComponent = work.pop()
 				try:
-					token = Observer.createToken(curComponent)
+					token = Observer.createToken(timestamp, curComponent)
 				except Token.CreationException as e:
 					print(str(e))
 				else:
