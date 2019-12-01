@@ -20,7 +20,6 @@
 This module contains the Project class.
 """
 
-import traceback
 import json
 import os
 from subprocess import PIPE
@@ -377,10 +376,10 @@ class Project:
 				tguim = TargetGuiModel.fromDict(d)
 		except:
 			print("Couldn't load from {}".format(loadedProject.getTargetGUIModelFile()))
-			#traceback.print_exc()
+		# traceback.print_exc()
 		else:
 			loadedProject._targetGUIModel = tguim
-			
+		
 		# loadedProject.setAPIModel(["Model Files"]["API Model"] = self._APIModel)
 		
 		return loadedProject
@@ -409,7 +408,7 @@ class Project:
 		
 		with open(self.getMainProjectFile(), "w") as file:
 			file.write(json.dumps(projectDict, indent=4))
-			
+		
 		# save Target GUI Model
 		with open(self.getTargetGUIModelFile(), 'w') as tguimFile:
 			d = self._targetGUIModel.asDict()

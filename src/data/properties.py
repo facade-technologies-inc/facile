@@ -211,7 +211,7 @@ class Properties:
 			for property in self._categories[category]:
 				if property.getName() == name:
 					return category, property
-
+	
 	def asDict(self) -> dict:
 		"""
 		Get a dictionary representation of the visibility behavior.
@@ -240,12 +240,12 @@ class Properties:
 		
 		if d is None:
 			return None
-
+		
 		props = Properties()
-
+		
 		for cat in d:
 			props.newCategory(cat)
 			for prop in d[cat]:
 				props._categories[cat].append(Property.fromDict(prop))
-				
+		
 		return props

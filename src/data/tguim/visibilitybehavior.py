@@ -41,7 +41,7 @@ class VisibilityBehavior(Entity):
 	
 	def __init__(self, tguim: 'TargetGuiModel', srcComp: 'Component' = None,
 	             destComp: 'Component' = None, reactionType: ReactionType = ReactionType.Show) -> \
-				 'VisibilityBehavior':
+		'VisibilityBehavior':
 		"""
 		Constructs a VisibilityBehavior object.
 		
@@ -79,7 +79,7 @@ class VisibilityBehavior(Entity):
 			props.getProperty("Destination ID")[1].setValue(self._destComponent.getId())
 			
 			self.setProperties(props)
-			
+	
 	def createGraphics(self) -> None:
 		"""
 		Creates the graphics for the visibility component.

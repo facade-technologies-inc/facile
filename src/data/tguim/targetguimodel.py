@@ -22,13 +22,11 @@ This module contains the TargetGuiModel class.
 
 from collections import OrderedDict
 
-import json
-
 from PySide2.QtCore import QObject, Slot, Signal
 
+from data.entity import Entity
 from data.tguim.component import Component
 from data.tguim.visibilitybehavior import VisibilityBehavior
-from data.entity import Entity
 from graphics.tguim.tscene import TScene
 from tguiil.supertokens import SuperToken
 
@@ -179,7 +177,7 @@ class TargetGuiModel(QObject):
 		dest = newVisBehavior.getDestComponent()
 		src.addSrcVisibilityBehavior(newVisBehavior)
 		dest.addDestVisibilityBehavior(newVisBehavior)
-		
+	
 	def asDict(self) -> dict:
 		"""
 		Get a dictionary representation of the visibility behavior.
@@ -197,11 +195,11 @@ class TargetGuiModel(QObject):
 		tguimDict["components"] = {}
 		for id, comp in self._components.items():
 			tguimDict["components"][int(id)] = comp.asDict()
-			
+		
 		tguimDict["behaviors"] = {}
 		for id, vb in self._visibilityBehaviors.items():
 			tguimDict["behaviors"][int(id)] = vb.asDict()
-			
+		
 		tguimDict["Entity Count"] = Entity.count
 		tguimDict["SuperToken Count"] = SuperToken.id_counter
 		
@@ -236,7 +234,7 @@ class TargetGuiModel(QObject):
 		for id, vb in d['behaviors'].items():
 			newVB = VisibilityBehavior.fromDict(vb, tguim)
 			tguim._visibilityBehaviors[int(id)] = newVB
-			
+		
 		# connect root's children
 		for i in range(len(tguim._root._children)):
 			tguim._root._children[i] = tguim._components[tguim._root._children[i]]
@@ -250,19 +248,19 @@ class TargetGuiModel(QObject):
 			
 			for i in range(len(component._children)):
 				component._children[i] = tguim._components[component._children[i]]
-				
+			
 			for i in range(len(component._srcVisibilityBehaviors)):
 				component._srcVisibilityBehaviors[i] = tguim._visibilityBehaviors[
 					component._srcVisibilityBehaviors[i]]
-				
+			
 			for i in range(len(component._destVisibilityBehaviors)):
 				component._destVisibilityBehaviors[i] = tguim._visibilityBehaviors[
 					component._destVisibilityBehaviors[i]]
-				
+		
 		for vb in tguim._visibilityBehaviors.values():
 			vb._srcComponent = tguim._components[vb._srcComponent]
 			vb._destComponent = tguim._components[vb._destComponent]
-			
+		
 		# create graphics for all entities.
 		work = [(tguim._root, None)]
 		while work:
@@ -278,11 +276,11 @@ class TargetGuiModel(QObject):
 			else:
 				for child in [tguim._components[int(id)] for id in d["root"]["children"]]:
 					work.append((child, cur))
-
+		
 		for vb in tguim._visibilityBehaviors.values():
 			vb.createGraphics()
-			
+		
 		Entity.count = d["Entity Count"]
 		SuperToken.id_counter = d["SuperToken Count"]
-	
+		
 		return tguim

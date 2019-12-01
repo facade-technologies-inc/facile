@@ -22,6 +22,7 @@ The module contains the Property() class.
 
 from enum import Enum
 
+
 class Property:
 	"""
 	This class allows us to establish the data of our properties.
@@ -100,7 +101,7 @@ class Property:
 	
 	def __repr__(self):
 		return str(self)
-
+	
 	def asDict(self) -> dict:
 		"""
 		Get a dictionary representation of the visibility behavior.
@@ -118,7 +119,7 @@ class Property:
 		return d
 	
 	@staticmethod
-	def fromDict(d:dict) -> 'Property':
+	def fromDict(d: dict) -> 'Property':
 		"""
 		Creates a Property object from a dictionary.
 

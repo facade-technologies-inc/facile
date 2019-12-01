@@ -86,7 +86,7 @@ class Component(Entity):
 			props.getProperty("Height")[1].setValue(geometry[3])
 			
 			self.setProperties(props)
-			
+	
 	def createGraphics(self) -> None:
 		"""
 		Create the graphics for the component
@@ -392,7 +392,7 @@ class Component(Entity):
 			d['superToken'] = self._superToken.asDict()
 		else:
 			d['superToken'] = None
-			
+		
 		if self._parent:
 			d["parent"] = self._parent.getId()
 		else:
@@ -401,7 +401,7 @@ class Component(Entity):
 		return d
 	
 	@staticmethod
-	def fromDict(d: dict, tguim:'TargetGuiModel') -> 'Component':
+	def fromDict(d: dict, tguim: 'TargetGuiModel') -> 'Component':
 		"""
 		Creates a Component from a dictionary.
 
@@ -423,8 +423,8 @@ class Component(Entity):
 		
 		superToken = SuperToken.fromDict(d['superToken'])
 		comp = Component(tguim, superToken=superToken, createGraphics=False)
-		#comp._children = d['children'] # need to add children one at a time since graphics are
-										# created later
+		# comp._children = d['children'] # need to add children one at a time since graphics are
+		# created later
 		comp._id = d["id"]
 		comp._srcVisibilityBehaviors = d['srcBehaviors']
 		comp._destVisibilityBehaviors = d['destBehaviors']

@@ -374,7 +374,7 @@ class Token:
 		                  self.rectangle.height()]
 		if 'pic' in d and d['pic'] is not None:
 			d['pic'] = np.array(self.picture).tolist()
-			
+		
 		return d
 	
 	@staticmethod
@@ -395,7 +395,7 @@ class Token:
 		
 		if d['pic']:
 			d["pic"] = Image.fromarray(np.uint8(np.asarray(d["picture"])))
-			
+		
 		if d['rectangle']:
 			r = RECT()
 			r.left = d['rectangle'][0]
@@ -403,6 +403,6 @@ class Token:
 			r.right = d['rectangle'][0] + d['rectangle'][2]
 			r.bottom = d['rectangle'][1] + d['rectangle'][3]
 			d['rectangle'] = r
-			
+		
 		t.__dict__ = d
 		return t
