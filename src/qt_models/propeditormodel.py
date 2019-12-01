@@ -160,7 +160,7 @@ class PropModel(QAbstractItemModel):
 		
 		elif role == Qt.BackgroundRole:
 			if data in self._propData.getCategories():
-				return QColor(Qt.yellow)
+				return QColor(Qt.darkRed)
 			else:
 				shade = row % 2 * 25
 				return QColor(100 + shade, 150 + shade, 200 + shade)
