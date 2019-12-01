@@ -62,16 +62,17 @@ class Token:
 	MAX_WEIGHTS = sum(Weight.values())
 	THRESH_PERCENT = 50
 	
-	def __init__(self, identifier: int, isDialog: bool, isEnabled: bool, isVisible: bool,
-	             processID: int, typeOf: str,
-	             rectangle: RECT, texts: list, title: str, numControls: int, controlIDs: list,
-	             parentTitle: str, parentType: str, topLevelParentTitle: str,
-	             topLevelParentType: str,
+	def __init__(self, appTimeStamp: int, identifier: int, isDialog: bool, isEnabled: bool,
+	             isVisible: bool, processID: int, typeOf: str, rectangle: RECT, texts: list,
+	             title: str, numControls: int, controlIDs: list, parentTitle: str,
+	             parentType: str, topLevelParentTitle: str, topLevelParentType: str,
 	             childrenTexts: list, picture: Image = None, autoID: int = None,
 	             expandState: int = None, shownState: int = None):
 		"""
 		Checks if the tokens component state changed based on a random variable.
 		
+		:param appTimeStamp: The time that the application was started at.
+		:type appTimeStamp: int
 		:param identifier: stores the unique id number of the component
 		:type identifier: int
 		:param isDialog: stores if the component is a dialog
@@ -116,6 +117,7 @@ class Token:
 		:return: None
 		:rtype: NoneType
 		"""
+		self.appTimeStamp = appTimeStamp
 		self.identifier = identifier
 		self.isDialog = isDialog
 		self.isEnabled = isEnabled
@@ -172,10 +174,15 @@ class Token:
 		#   - Top Level Parent's Friendly Class Name
 		#   - Process ID
 		#####################################################################
-		if self.type != token2.type:
-			return Token.Match.NO, 0
 		
-		elif self.identifier != token2.identifier:
+		if self.appTimeStamp == token2.appTimeStamp:
+			if self.identifier != token2.identifier:
+				return Token.Match.NO, 0
+			
+			elif self.processID != token2.processID:
+				return Token.Match.NO, 0
+		
+		if self.type != token2.type:
 			return Token.Match.NO, 0
 		
 		elif self.autoid != token2.autoid:
@@ -185,9 +192,6 @@ class Token:
 			return Token.Match.NO, 0
 		
 		elif self.topLevelParentType != token2.topLevelParentType:
-			return Token.Match.NO, 0
-		
-		elif self.processID != token2.processID:
 			return Token.Match.NO, 0
 		
 		#####################################################################

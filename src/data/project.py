@@ -94,12 +94,24 @@ class Project:
 		:return: The project's observer
 		:rtype: Observer
 		"""
+		
 		if self._process is None or not self._process.is_running():
 			return None
 		else:
+			new = False
 			if self._observer is None:
 				self._observer = Observer(self._process.pid, self._backend)
 				self._observer.newSuperToken.connect(self._targetGUIModel.createComponent)
+				new = True
+			elif self._observer.getPID() != self._process.pid:
+				self._observer.pause()
+				self._observer = Observer(self._process.pid, self._backend)
+				self._observer.newSuperToken.connect(self._targetGUIModel.createComponent)
+				new = True
+			
+			if new:
+				self._observer.loadSuperTokens(self._targetGUIModel)
+			
 			return self._observer
 	
 	def getExplorer(self) -> 'Explorer':
@@ -112,8 +124,7 @@ class Project:
 		if self._process is None or not self._process.is_running():
 			return None
 		else:
-			if self._explorer is None:
-				self._explorer = Explorer(self._process.pid, self._backend)
+			self._explorer = Explorer(self._process.pid, self._backend)
 			return self._explorer
 	
 	def getTargetGUIModel(self) -> 'TargetGuiModel':

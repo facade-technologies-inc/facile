@@ -57,7 +57,7 @@ class TScene(QGraphicsScene):
 		:rtype: NoneType
 		"""
 		self.itemSelected.emit(id)
-
+	
 	def blinkComponent(self, id: int) -> None:
 		"""
 		emits the itemBlink signal which means that an item should be shown in the

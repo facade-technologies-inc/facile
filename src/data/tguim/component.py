@@ -21,12 +21,10 @@ This module contains the Component class.
 """
 
 from data.entity import Entity
+from data.properties import Properties
 from data.tguim.visibilitybehavior import VisibilityBehavior
 from graphics.tguim.componentgraphics import ComponentGraphics
 
-
-# TODO: Move some of the graphics stuff to the Entity class?
-# TODO: IMPORTANT. Change all the from -> src, all the to -> dest. Change variables, function names and docstrings.
 
 class Component(Entity):
 	"""
@@ -61,6 +59,31 @@ class Component(Entity):
 			                                       self.getParentGraphicsItem())
 		if parent is not None:
 			parent.addChild(self)
+			
+			propToken = superToken.getTokens()[0]
+			predefinedCategories = ["Base", "GUI Component", "Visual"]
+			customCategories = {}
+			props = Properties.createPropertiesObject(predefinedCategories, customCategories)
+			
+			# Set base property values
+			props.getProperty("ID")[1].setValue(self.getId())
+			props.getProperty("Name")[1].setValue(propToken.controlIDs[-1])
+			props.getProperty("Type")[1].setValue("Component")
+			
+			# Set component property values
+			props.getProperty("Title")[1].setValue(propToken.title)
+			props.getProperty("Parent Title")[1].setValue(propToken.parentTitle)
+			props.getProperty("Class Name")[1].setValue(propToken.type)
+			props.getProperty("Is Dialog")[1].setValue(propToken.isDialog)
+			
+			# Set visual property values
+			geometry = superToken.posRelativeToParent
+			props.getProperty("X")[1].setValue(geometry[0])
+			props.getProperty("Y")[1].setValue(geometry[1])
+			props.getProperty("Width")[1].setValue(geometry[2])
+			props.getProperty("Height")[1].setValue(geometry[3])
+			
+			self.setProperties(props)
 	
 	def getSuperToken(self) -> 'SuperToken':
 		"""
