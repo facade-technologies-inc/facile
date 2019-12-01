@@ -114,8 +114,9 @@ class VBGraphics(QGraphicsItem):
 	
 	def buildPath(self, x1, x2, y1, y2):
 		path = QPainterPath()
-		path.moveTo(x1, y1)
-		path.cubicTo(x1 + 100, y1 + 100, x2 - 200, y2 - 200, x2, y2)
+		# ComponentGraphics.MARGIN = 20
+		path.moveTo(x1 + 20, y1)
+		path.cubicTo(x1 + 100, y1 + 100, x2 - 200, y2 - 200, x2 + 20, y2)
 		
 		return path
 	
