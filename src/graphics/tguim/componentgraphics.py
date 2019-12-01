@@ -34,7 +34,9 @@ class ComponentGraphics(QGraphicsItem):
 	
 	MIN_WIDTH = 0
 	MIN_HEIGHT = 0
-	MARGIN = 0  # Currently removed margins since there are now component titlebars
+	MAX_MARGIN = 50
+	MIN_MARGIN = 10
+	MARGIN_PROP = 0.05
 	PEN_WIDTH = 1.0
 	
 	TRIM = 1
@@ -63,9 +65,25 @@ class ComponentGraphics(QGraphicsItem):
 		# force components to have at least the minimum size
 		self._x = rect[0]
 		self._y = rect[1]
-		self._width = max(rect[2], ComponentGraphics.MIN_WIDTH)
-		self._height = max(rect[3], ComponentGraphics.MIN_HEIGHT)
-		self.setPos(max(0, rect[0]), max(0, rect[1] + 10))  # +10 for titlebar
+		self._width = max(ComponentGraphics.MIN_WIDTH, 2 * rect[2])
+		self._height = max(ComponentGraphics.MIN_HEIGHT, 2 * rect[3])
+		
+		# --- This is where the components get resized to avoid collisions. ---
+		# Margin is dynamically assigned, with a max/min value to use
+		self._margin = max(ComponentGraphics.MIN_MARGIN, min(ComponentGraphics.MAX_MARGIN,
+		                                                     ComponentGraphics.MARGIN_PROP * min(rect[2], rect[3])))
+		
+		if self._dataComponent.getParent() is None:
+			pass
+		elif self._dataComponent.getParent().getParent() is None:
+			# No margin: we want the normal size
+			self.setPos(max(0, 2 * rect[0]), max(0, 2 * rect[1]))
+		else:
+			self._width = max(ComponentGraphics.MIN_WIDTH, 2 * (rect[2] - self._margin))
+			self._height = max(ComponentGraphics.MIN_HEIGHT, 2 * (rect[3] - self._margin / 2))
+			self.setPos(max(0, 2 * rect[0] + self._margin), max(0, 2 * rect[1] + self._margin / 2))
+			# margin/2 when setting y and height above is for titlebar
+		
 		self.adjustPositioning()
 		self.menu = QMenu()
 		showInGui = self.menu.addAction("Show in target GUI")
@@ -112,28 +130,35 @@ class ComponentGraphics(QGraphicsItem):
 			parentRect = parent.boundingRect()
 			parentIsScene = False
 		
-		siblings = [sibling.getGraphicsItem() for sibling in self._dataComponent.getSiblings()]
-		if self in siblings:
-			siblings.remove(self)
+		# self.update(max(0, 2 * self.x() + ComponentGraphics.MARGIN),
+		#             max(0, 2 * self.y() + (ComponentGraphics.MARGIN) / 2),
+		#             max(ComponentGraphics.MIN_WIDTH, 2 * (self._width - ComponentGraphics.MARGIN)),
+		#             max(ComponentGraphics.MIN_HEIGHT, 2 * (self._width - ComponentGraphics.MARGIN)))
+		
+		# siblings = [sibling.getGraphicsItem() for sibling in self._dataComponent.getSiblings()]
+		# if self in siblings:
+		# 	siblings.remove(self)
 		
 		# Resolve collisions with siblings
-		while True:
-			collidingSiblings, maxSibX, maxSibY = self.getCollidingComponents(siblings)
-			if collidingSiblings:
-				self.dumbCollisionResolution(maxSibX, maxSibY, closest=False)
-				# self.smartCollisionResolution(collidingSiblings)
-			else:
-				break
+		# while True:
+		# 	collidingSiblings, maxSibX, maxSibY = self.getCollidingComponents(siblings)
+		# 	if collidingSiblings:
+		# 		self.dumbCollisionResolution(maxSibX, maxSibY, closest=False)
+		# 		# self.smartCollisionResolution(collidingSiblings)
+		# 	else:
+		# 		break
+		maxSibX = 0.0
+		maxSibY = 0.0
 		
 		# If component isn't placed inside the parent, expand the parent
 		if not parentIsScene and not parent.contains(self):
 			width = max(maxSibX, self.x() + self._width)
 			height = max(maxSibY, self.y() + self._height)
 			parent.prepareGeometryChange()
-			if parentIsScene:
+			if parentIsScene:  # NOTE: This doesn't run due to parent if's conditions
 				parent.setSceneRect(self.scene().x(), self.scene().y(),
-				                    width + ComponentGraphics.MARGIN,
-				                    height + ComponentGraphics.MARGIN)
+				                    width + self._margin,
+				                    height + self._margin)
 			else:
 				parent._width = width
 				parent._height = height
@@ -172,13 +197,15 @@ class ComponentGraphics(QGraphicsItem):
 			else:
 				self.setPos(maxX, self.y())
 	
-	def smartCollisionResolution(self, collidingSiblings: list) -> None:
+	def smartCollisionResolution(self, maxX: float, maxY: float) -> None:
 		"""
 		This is an algorithm that resolves collisions in a smart way by always pushing one of
 		two colliding elements in a right/downward direction.
 
-		:param collidingSiblings: list of the colliding siiblings
-		:type collidingSiblings: list
+		:param maxX: The maximum x coordinate of all siblings.
+		:type maxX: float
+		:param maxY: The maximum y coordinate of all siblings
+		:type maxY: float
 		:return: None
 		:rtype: NoneType
 		"""
@@ -190,34 +217,34 @@ class ComponentGraphics(QGraphicsItem):
 		# or we'll move all the way to the right
 		else:
 			self.setPos(maxX, self.y())
-
+	
 	def itemChange(self, change: 'GraphicsItemChange', value):
 		if change == QGraphicsItem.ItemPositionChange:
 			delX = value.x() - self.x()
 			delY = value.y() - self.y()
-
+			
 			if delX == 0 and delY == 0:
 				return value
-
+			
 			translateX = copy.deepcopy(self.boundingRect())
 			translateX.translate(dx=delX, dy=0)
 			translateY = copy.deepcopy(self.boundingRect())
 			translateY.translate(dx=0, dy=delY)
-
+			
 			xOkay = True
 			yOkay = True
-
+			
 			# Checking if there's a collision in x or y direction
 			for sibling in self._dataComponent.getSiblings():
 				sib = sibling.getGraphicsItem()
 				if sib == self:
 					continue
-
+				
 				if translateX.intersects(sib.boundingRect()):
 					xOkay = False
 				if translateY.intersects(sib.boundingRect()):
 					yOkay = False
-
+			
 			# Decides where to place component based on collision detection
 			if xOkay and yOkay:
 				return
@@ -225,9 +252,9 @@ class ComponentGraphics(QGraphicsItem):
 				self.pos().setX(value.x())
 			elif yOkay:
 				self.pos().setY(value.y())
-
+		
 		return QGraphicsItem.itemChange(self, change, value)
-
+	
 	# def rectsCollide(self, a: QRectF, b: QRectF):
 	# 	ax1 = 0
 	# 	ay1 = 0
@@ -244,7 +271,7 @@ class ComponentGraphics(QGraphicsItem):
 	# 	print(bx1 + ' ' + by1)
 	#
 	# 	return ax1 < bx2 and ax2 > bx1 and ay1 < by2 and ay2 > by1
-
+	
 	def getCollidingComponents(self, components: list) -> tuple:
 		"""
 		Gets all of the components from a list that collide with this component.
@@ -289,18 +316,18 @@ class ComponentGraphics(QGraphicsItem):
 		:return: True if components overlap, False otherwise.
 		:rtype: bool
 		"""
-		selfBound = self.boundingRect(withMargins=False)  # withMargins=False
+		selfBound = self.boundingRect()
 		selfx = self.scenePos().x() + selfBound.x()
 		selfy = self.scenePos().y() + selfBound.y()
-
-		sibBound = sibling.boundingRect(withMargins=False)
+		
+		sibBound = sibling.boundingRect()
 		sibx = sibling.scenePos().x() + sibBound.x()
 		siby = sibling.scenePos().y() + sibBound.y()
-
+		
 		if (sibx < selfx + selfBound.width() and
-				sibx + sibBound.width() > selfx and
-				siby < selfy + selfBound.height() and
-				siby + sibBound.height() > selfy):
+			sibx + sibBound.width() > selfx and
+			siby < selfy + selfBound.height() and
+			siby + sibBound.height() > selfy):
 			return True
 		return False
 	
@@ -332,7 +359,7 @@ class ComponentGraphics(QGraphicsItem):
 			return True
 		return False
 	
-	def boundingRect(self, withMargins: bool = True):
+	def boundingRect(self, withMargins: bool = False):
 		"""
 		This pure virtual function defines the outer bounds of the item as a rectangle.
 		:return create the bounding of the item
@@ -340,15 +367,15 @@ class ComponentGraphics(QGraphicsItem):
 		"""
 		halfWidth = ComponentGraphics.PEN_WIDTH / 2
 		if withMargins:
-			marginAdjustment = -ComponentGraphics.TRIM + ComponentGraphics.MARGIN * 2 + ComponentGraphics.PEN_WIDTH
-			return QRectF(-halfWidth - ComponentGraphics.MARGIN,
-			              -halfWidth - ComponentGraphics.MARGIN,
+			marginAdjustment = -ComponentGraphics.TRIM + self._margin * 2 + ComponentGraphics.PEN_WIDTH
+			return QRectF(-halfWidth - self._margin,
+			              -halfWidth - self._margin,
 			              self._width + marginAdjustment,
 			              self._height + marginAdjustment)
 		else:
 			noMarginAdjustment = -ComponentGraphics.TRIM + ComponentGraphics.PEN_WIDTH
-			return QRectF(ComponentGraphics.MARGIN - halfWidth,
-			              ComponentGraphics.MARGIN - halfWidth,
+			return QRectF(-halfWidth,
+			              -halfWidth,
 			              self._width + noMarginAdjustment,
 			              self._height + noMarginAdjustment)
 	
@@ -361,7 +388,7 @@ class ComponentGraphics(QGraphicsItem):
 		:rtype QPainterPath
 		"""
 		path = QPainterPath()
-		path.addRect(self.boundingRect(withMargins=True))
+		path.addRect(self.boundingRect())
 		return path
 	
 	def paint(self, painter, option, widget):
@@ -377,7 +404,7 @@ class ComponentGraphics(QGraphicsItem):
 		:return None
 		:rtype NoneType
 		"""
-		boundingRect = self.boundingRect(withMargins=False)
+		boundingRect = self.boundingRect()
 		
 		if self.isRoot or boundingRect.width() == 0 and boundingRect.height() == 0:
 			painter.setPen(QPen(QColor(Qt.transparent)))
@@ -400,13 +427,13 @@ class ComponentGraphics(QGraphicsItem):
 		painter.drawRoundedRect(boundingRect, 5, 5)
 		
 		name = self.getLabel()
-		painter.drawText(int(ComponentGraphics.MARGIN * 1.5), int(ComponentGraphics.MARGIN + 30),
+		painter.drawText(int(self._margin * 1.5), int(self._margin + 30),
 		                 name)
 		
 		token_count = str(self.getNumberOfTokens())
-		rectBox = QRectF(self.boundingRect().width() - ComponentGraphics.MARGIN,
-		                 -ComponentGraphics.MARGIN,
-		                 ComponentGraphics.MARGIN * 2, ComponentGraphics.MARGIN * 2)
+		rectBox = QRectF(self.boundingRect().width() - self._margin,
+		                 -self._margin,
+		                 self._margin * 2, self._margin * 2)
 		
 		painter.setBrush(QColor(255, 0, 0, 127))
 		painter.drawRect(rectBox)
