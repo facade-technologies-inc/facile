@@ -21,7 +21,7 @@ This module contains the VBGraphics class.
 """
 
 from PySide2.QtCore import QRectF
-from PySide2.QtGui import QPainterPath, QPainter, QPen, Qt, QColor
+from PySide2.QtGui import QPainterPath, QPainter, QPen, Qt, QColor, QBrush
 from PySide2.QtWidgets import QGraphicsItem
 
 
@@ -99,48 +99,85 @@ class VBGraphics(QGraphicsItem):
 		desNodeIndex = self._dataVB.getDestComponent().getDestVisibilityBehaviors().index(
 			self._dataVB) + 1
 		
-		x1 = self._dataVB.getSrcComponent().getGraphicsItem().scenePos().x()  # x does not change, stay at the left most of the node
+		# ComponentGraphics.MARGIN = 20
+		x1 = self._dataVB.getSrcComponent().getGraphicsItem().scenePos().x() + 20  # x does not change, stay at the left most of the node
 		y1 = self._dataVB.getSrcComponent().getGraphicsItem().scenePos().y() + (
 			heightSrcNode / (lengthSrcNodeSrcEdgeList + 1)) * srcNodeIndex
-		x2 = self._dataVB.getDestComponent().getGraphicsItem().scenePos().x() + widthDesNode
+		x2 = self._dataVB.getDestComponent().getGraphicsItem().scenePos().x() + widthDesNode + 20
 		y2 = self._dataVB.getDestComponent().getGraphicsItem().scenePos().y() + (
 			heightDesNode / (lengthDesNodeDesEdgeList + 1)) * desNodeIndex
 		
-		# painter.drawLine(x1, y1, x2, y2)
-		path = self.buildPath(x1 + 20, x2 + 20, y1, y2)
+		# draw the arrow
+		path = self.buildPath(x1, x2, y1, y2)
 		painter.drawPath(path)
 		
-		#force re-draw when there's a new visibility behavior
+		# draw the arrow head
+		arrowHead = QPainterPath()
+		arrowHead.moveTo(x2 - 5, y2)
+		arrowHead.lineTo(x2 + 5, y2 - 5)
+		arrowHead.lineTo(x2 + 5, y2 + 5)
+		arrowHead.lineTo(x2 - 5, y2)
+		painter.drawPath(arrowHead)
+		painter.fillPath(arrowHead, QBrush(QColor(255, 255, 0)))
+		
+		#TODO: draw a small triangle as the arrow head
 	
 	def buildPath(self, x1, x2, y1, y2):
-		rootComponent = self.getRootComponent()
-		#1 src is at right, dest is at left, just cubic to it
-		#2 src is at left, dest is at right
-			#a distance is bigger than 1/3 * root.width, go around the root component
-			#b distance is smaller than 1/3 * root.width, zigzag to it
+		baseComponent = self.getOneComponentDownRoot()
+		baseComponentWidth = baseComponent.getGraphicsItem().boundingRect(withMargins=False).width()
+		baseComponentHeight = baseComponent.getGraphicsItem().boundingRect(withMargins=False).height()
+		# 1 src is at right, dest is at left, just cubic to it
+		# 2 src is at left, dest is at right
+			# a y is almost the same, cubic to it
+			# b distance is bigger than 1/3 * root.width, go around the root component
+				# ba src is higher than dest, go around from the top
+				# bb src is lower than dest, go around from the bottom
+			# c horizontal distance is smaller than 1/3 * root.width, zigzag to it
+
+		#TODO: Finish the algorithm
 		
 		path = QPainterPath()
-		# path.moveTo(x1, y1)
-		# path.lineTo(x1 - 200, y1)
-		# path.lineTo(x1 - 200, y2)
-		# path.lineTo(x2, y2)
-		# ComponentGraphics.MARGIN = 20
 		
 		if x1 > x2:
 			path.moveTo(x1, y1)
 			path.cubicTo(x1 + 100, y1 + 100, x2 - 200, y2 - 200, x2, y2)
-		else:
+		elif abs(y2 - y1) < 50:
+			path.moveTo(x1, y1)
+			path.cubicTo(x1 + 100, y1 + 100, x2 - 200, y2 - 200, x2, y2)
+		elif (x2 - x1) < (1/3 * baseComponentWidth):
 			path.moveTo(x1, y1)
 			path.lineTo(x1 - 200, y1)
 			path.lineTo(x1 - 200, y2)
 			path.lineTo(x2, y2)
+		elif (x2 - x1) > (1/3 * baseComponentWidth) and y1 <= y2:
+			path.moveTo(x1, y1)
+			path.lineTo(baseComponent.getGraphicsItem().scenePos().x() - x1/2, y1)
+			path.lineTo(baseComponent.getGraphicsItem().scenePos().x() - x1/2,
+			            baseComponent.getGraphicsItem().scenePos().y() - y1/2)
+			path.lineTo(baseComponentWidth + x1, baseComponent.getGraphicsItem().scenePos().y() - y1/2)
+			path.lineTo(baseComponentWidth + x1, y2)
+			path.lineTo(x2, y2)
+		elif (x2 - x1) > (1/3 * baseComponentWidth) and y1 > y2:
+			path.moveTo(x1, y1)
+			path.lineTo(baseComponent.getGraphicsItem().scenePos().x() - x1/2, y1)
+			path.lineTo(baseComponent.getGraphicsItem().scenePos().x() - x1/2,
+			            baseComponentHeight + y1/2)
+			path.lineTo(baseComponentWidth + x1, baseComponentHeight + y1/2)
+			path.lineTo(baseComponentWidth + x1, y2)
+			path.lineTo(x2, y2)
+		else:
+			#exception, then fix it
+			path.moveTo(x1, y1)
+			path.lineTo(x1, 30)
+			path.lineTo(x2, 30)
+			path.lineTo(x2, y2)
 		
 		return path
 	
-	def getRootComponent(self):
+	def getOneComponentDownRoot(self):
 		possibleRoot = self._dataVB.getSrcComponent()
 		
-		while possibleRoot.getParent() is not None:
+		while possibleRoot.getParent().getParent() is not None:
 			possibleRoot = possibleRoot.getParent()
 		
 		return possibleRoot
