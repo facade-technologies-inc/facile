@@ -21,7 +21,7 @@ This module contains the ComponentGraphics class.
 """
 
 from PySide2.QtCore import QRectF
-from PySide2.QtGui import QPainterPath, QColor, QPen, Qt
+from PySide2.QtGui import QPainterPath, QColor, QPen, Qt, QFont
 from PySide2.QtWidgets import QGraphicsScene, QGraphicsItem, QGraphicsSceneContextMenuEvent, QMenu
 
 
@@ -213,7 +213,7 @@ class ComponentGraphics(QGraphicsItem):
 		"""
 		try:
 			category, name = self._dataComponent.getProperties().getProperty("Name")
-			return name.value()
+			return name.getValue()
 		except:
 			return ""
 	
@@ -341,15 +341,35 @@ class ComponentGraphics(QGraphicsItem):
 		
 		painter.drawRoundedRect(boundingRect, 5, 5)
 		
+		# draw name label
 		name = self.getLabel()
-		painter.drawText(int(ComponentGraphics.MARGIN * 1.5), int(ComponentGraphics.MARGIN + 30),
-		                 name)
+		"""
+		painter.setBrush(QColor(127, 127, 0, 127))
+		labelBoxWidth = min(len(name) * 6, self.boundingRect(withMargins=False).width() - 6)
+		labelBoxHeight = min(15, self.boundingRect().height())
 		
+		LabelBox = QRectF(self.boundingRect(withMargins=False).x(), ComponentGraphics.MARGIN,
+		                  labelBoxWidth, labelBoxHeight)
+		painter.drawRect(LabelBox)
+		"""
+		# TODO: make a better algorithm on font size in the future
+		# 44 width -> only cover 12 words
+		if len(name) * 3.5 > self.boundingRect(withMargins=False).width():
+			nameFont = QFont("Times", 4)
+		else:
+			nameFont = QFont("Times", 5)
+		painter.setFont(nameFont)
+		
+		painter.setBrush(QColor(100, 200, 255))
+		painter.drawText(self.boundingRect(withMargins=False).x() + 2, ComponentGraphics.MARGIN + 10, name)
+		
+		# draw token tag
 		token_count = str(self.getNumberOfTokens())
 		rectBox = QRectF(self.boundingRect().width() - ComponentGraphics.MARGIN,
 		                 -ComponentGraphics.MARGIN,
 		                 ComponentGraphics.MARGIN * 2, ComponentGraphics.MARGIN * 2)
-		
+		tokenTagFont = QFont("Times", 10)
+		painter.setFont(tokenTagFont)
 		painter.setBrush(QColor(255, 0, 0, 127))
 		painter.drawRect(rectBox)
 		painter.setBrush(QColor(100, 200, 255))

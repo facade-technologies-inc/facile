@@ -82,6 +82,7 @@ class VBGraphics(QGraphicsItem):
 			pen.setStyle(Qt.DashDotLine)
 		else:
 			pen.setStyle(Qt.SolidLine)
+		pen.setWidth(3)
 		painter.setPen(pen)
 		
 		lengthSrcNodeSrcEdgeList = len(self._dataVB.getSrcComponent().getSrcVisibilityBehaviors())
@@ -114,16 +115,16 @@ class VBGraphics(QGraphicsItem):
 		# draw the arrow head
 		if leftInTrue:
 			arrowHead = QPainterPath()
-			arrowHead.moveTo(x2 + 5, y2)
-			arrowHead.lineTo(x2 - 5, y2 - 5)
-			arrowHead.lineTo(x2 - 5, y2 + 5)
-			arrowHead.lineTo(x2 + 5, y2)
+			arrowHead.moveTo(x2 + 8, y2)
+			arrowHead.lineTo(x2 - 8, y2 - 8)
+			arrowHead.lineTo(x2 - 8, y2 + 8)
+			arrowHead.lineTo(x2 + 8, y2)
 		else:
 			arrowHead = QPainterPath()
-			arrowHead.moveTo(x2 - 5, y2)
-			arrowHead.lineTo(x2 + 5, y2 - 5)
-			arrowHead.lineTo(x2 + 5, y2 + 5)
-			arrowHead.lineTo(x2 - 5, y2)
+			arrowHead.moveTo(x2 - 8, y2)
+			arrowHead.lineTo(x2 + 8, y2 - 8)
+			arrowHead.lineTo(x2 + 8, y2 + 8)
+			arrowHead.lineTo(x2 - 8, y2)
 		
 		painter.drawPath(arrowHead)
 		painter.fillPath(arrowHead, QBrush(QColor(255, 255, 0)))
@@ -175,19 +176,19 @@ class VBGraphics(QGraphicsItem):
 			leftInTrue = True
 		elif (x2 - x1) > (1/3 * baseComponentWidth) and y1 <= y2:
 			path.moveTo(x1, y1)
-			path.lineTo(baseComponent.getGraphicsItem().scenePos().x() - x1/2, y1)
-			path.lineTo(baseComponent.getGraphicsItem().scenePos().x() - x1/2,
-			            baseComponent.getGraphicsItem().scenePos().y() - y1/2)
-			path.lineTo(baseComponentWidth + x1, baseComponent.getGraphicsItem().scenePos().y() - y1/2)
+			path.lineTo(baseComponent.getGraphicsItem().scenePos().x() - x1/3, y1)
+			path.lineTo(baseComponent.getGraphicsItem().scenePos().x() - x1/3,
+			            baseComponent.getGraphicsItem().scenePos().y() - y1/3)
+			path.lineTo(baseComponentWidth + x1, baseComponent.getGraphicsItem().scenePos().y() - y1/3)
 			path.lineTo(baseComponentWidth + x1, y2)
 			path.lineTo(x2, y2)
 			leftInTrue = False
 		elif (x2 - x1) > (1/3 * baseComponentWidth) and y1 > y2:
 			path.moveTo(x1, y1)
-			path.lineTo(baseComponent.getGraphicsItem().scenePos().x() - x1/2, y1)
-			path.lineTo(baseComponent.getGraphicsItem().scenePos().x() - x1/2,
-			            baseComponentHeight + y1/2)
-			path.lineTo(baseComponentWidth + x1, baseComponentHeight + y1/2)
+			path.lineTo(baseComponent.getGraphicsItem().scenePos().x() - x1/3, y1)
+			path.lineTo(baseComponent.getGraphicsItem().scenePos().x() - x1/3,
+			            baseComponentHeight + y1/3)
+			path.lineTo(baseComponentWidth + x1, baseComponentHeight + y1/3)
 			path.lineTo(baseComponentWidth + x1, y2)
 			path.lineTo(x2, y2)
 			leftInTrue = False
