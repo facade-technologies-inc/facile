@@ -108,15 +108,23 @@ class VBGraphics(QGraphicsItem):
 			heightDesNode / (lengthDesNodeDesEdgeList + 1)) * desNodeIndex
 		
 		# draw the arrow
-		path = self.buildPath(x1, x2, y1, y2)
+		path, leftInTrue = self.buildPath(x1, x2, y1, y2)
 		painter.drawPath(path)
 		
 		# draw the arrow head
-		arrowHead = QPainterPath()
-		arrowHead.moveTo(x2 - 5, y2)
-		arrowHead.lineTo(x2 + 5, y2 - 5)
-		arrowHead.lineTo(x2 + 5, y2 + 5)
-		arrowHead.lineTo(x2 - 5, y2)
+		if leftInTrue:
+			arrowHead = QPainterPath()
+			arrowHead.moveTo(x2 + 5, y2)
+			arrowHead.lineTo(x2 - 5, y2 - 5)
+			arrowHead.lineTo(x2 - 5, y2 + 5)
+			arrowHead.lineTo(x2 + 5, y2)
+		else:
+			arrowHead = QPainterPath()
+			arrowHead.moveTo(x2 - 5, y2)
+			arrowHead.lineTo(x2 + 5, y2 - 5)
+			arrowHead.lineTo(x2 + 5, y2 + 5)
+			arrowHead.lineTo(x2 - 5, y2)
+		
 		painter.drawPath(arrowHead)
 		painter.fillPath(arrowHead, QBrush(QColor(255, 255, 0)))
 	
@@ -150,17 +158,21 @@ class VBGraphics(QGraphicsItem):
 		baseComponentHeight = baseComponent.getGraphicsItem().boundingRect(withMargins=False).height()
 		path = QPainterPath()
 		
+		#TODO: If the component is the root component, VBGraphics may overlap with other components easily.FIX IT
 		if x1 > x2:
 			path.moveTo(x1, y1)
 			path.cubicTo(x1 + 100, y1 + 100, x2 - 200, y2 - 200, x2, y2)
+			leftInTrue = False
 		elif abs(y2 - y1) < 50:
 			path.moveTo(x1, y1)
 			path.cubicTo(x1 + 100, y1 + 100, x2 - 200, y2 - 200, x2, y2)
+			leftInTrue = True
 		elif (x2 - x1) < (1/3 * baseComponentWidth):
 			path.moveTo(x1, y1)
 			path.lineTo(x1 - 200, y1)
 			path.lineTo(x1 - 200, y2)
 			path.lineTo(x2, y2)
+			leftInTrue = True
 		elif (x2 - x1) > (1/3 * baseComponentWidth) and y1 <= y2:
 			path.moveTo(x1, y1)
 			path.lineTo(baseComponent.getGraphicsItem().scenePos().x() - x1/2, y1)
@@ -169,6 +181,7 @@ class VBGraphics(QGraphicsItem):
 			path.lineTo(baseComponentWidth + x1, baseComponent.getGraphicsItem().scenePos().y() - y1/2)
 			path.lineTo(baseComponentWidth + x1, y2)
 			path.lineTo(x2, y2)
+			leftInTrue = False
 		elif (x2 - x1) > (1/3 * baseComponentWidth) and y1 > y2:
 			path.moveTo(x1, y1)
 			path.lineTo(baseComponent.getGraphicsItem().scenePos().x() - x1/2, y1)
@@ -177,14 +190,16 @@ class VBGraphics(QGraphicsItem):
 			path.lineTo(baseComponentWidth + x1, baseComponentHeight + y1/2)
 			path.lineTo(baseComponentWidth + x1, y2)
 			path.lineTo(x2, y2)
+			leftInTrue = False
 		else:
 			#exception, then fix it
 			path.moveTo(x1, y1)
 			path.lineTo(x1, 30)
 			path.lineTo(x2, 30)
 			path.lineTo(x2, y2)
+			leftInTrue = False
 		
-		return path
+		return path, leftInTrue
 	
 	def getOneComponentDownRoot(self):
 		"""
@@ -201,11 +216,33 @@ class VBGraphics(QGraphicsItem):
 		
 		return possibleRoot
 	
-	'''
+	"""
 	def shape(self):
-		path = QPainterPath()
-		path.moveTo(x1, y1)
-		path.cubicTo(x1 + 100, y1 + 100, x2 - 200, y2 - 200, x2, y2)
-		path.addRect(self.boundingRect())
+		lengthSrcNodeSrcEdgeList = len(self._dataVB.getSrcComponent().getSrcVisibilityBehaviors())
+		lengthDesNodeDesEdgeList = len(self._dataVB.getDestComponent().getDestVisibilityBehaviors())
+		heightSrcNode = self._dataVB.getSrcComponent().getGraphicsItem().boundingRect(
+			withMargins=False).height()
+		heightDesNode = self._dataVB.getDestComponent().getGraphicsItem().boundingRect(
+			withMargins=False).height()
+		widthDesNode = self._dataVB.getDestComponent().getGraphicsItem().boundingRect(
+			withMargins=False).width()
+		# This is the index(+1 avoid 0 in calculation) of the edge at the SourceNode's edgeSrcList
+		srcNodeIndex = self._dataVB.getSrcComponent().getSrcVisibilityBehaviors().index(
+			self._dataVB) + 1
+		# This is the index of the edge at the DesNode's _edgeDesList
+		desNodeIndex = self._dataVB.getDestComponent().getDestVisibilityBehaviors().index(
+			self._dataVB) + 1
+
+		# ComponentGraphics.MARGIN = 20
+		x1 = self._dataVB.getSrcComponent().getGraphicsItem().scenePos().x() + 20  # x does not change, stay at the left most of the node
+		y1 = self._dataVB.getSrcComponent().getGraphicsItem().scenePos().y() + (
+			heightSrcNode / (lengthSrcNodeSrcEdgeList + 1)) * srcNodeIndex
+		x2 = self._dataVB.getDestComponent().getGraphicsItem().scenePos().x() + widthDesNode + 20
+		y2 = self._dataVB.getDestComponent().getGraphicsItem().scenePos().y() + (
+			heightDesNode / (lengthDesNodeDesEdgeList + 1)) * desNodeIndex
+
+		path = self.buildPath(x1, x2, y1, y2)
+
 		return path
-	'''
+	"""
+
