@@ -107,18 +107,43 @@ class VBGraphics(QGraphicsItem):
 			heightDesNode / (lengthDesNodeDesEdgeList + 1)) * desNodeIndex
 		
 		# painter.drawLine(x1, y1, x2, y2)
-		path = self.buildPath(x1, x2, y1, y2)
+		path = self.buildPath(x1 + 20, x2 + 20, y1, y2)
 		painter.drawPath(path)
 		
 		#force re-draw when there's a new visibility behavior
 	
 	def buildPath(self, x1, x2, y1, y2):
+		rootComponent = self.getRootComponent()
+		#1 src is at right, dest is at left, just cubic to it
+		#2 src is at left, dest is at right
+			#a distance is bigger than 1/3 * root.width, go around the root component
+			#b distance is smaller than 1/3 * root.width, zigzag to it
+		
 		path = QPainterPath()
+		# path.moveTo(x1, y1)
+		# path.lineTo(x1 - 200, y1)
+		# path.lineTo(x1 - 200, y2)
+		# path.lineTo(x2, y2)
 		# ComponentGraphics.MARGIN = 20
-		path.moveTo(x1 + 20, y1)
-		path.cubicTo(x1 + 100, y1 + 100, x2 - 200, y2 - 200, x2 + 20, y2)
+		
+		if x1 > x2:
+			path.moveTo(x1, y1)
+			path.cubicTo(x1 + 100, y1 + 100, x2 - 200, y2 - 200, x2, y2)
+		else:
+			path.moveTo(x1, y1)
+			path.lineTo(x1 - 200, y1)
+			path.lineTo(x1 - 200, y2)
+			path.lineTo(x2, y2)
 		
 		return path
+	
+	def getRootComponent(self):
+		possibleRoot = self._dataVB.getSrcComponent()
+		
+		while possibleRoot.getParent() is not None:
+			possibleRoot = possibleRoot.getParent()
+		
+		return possibleRoot
 	
 	'''
 	def shape(self):
