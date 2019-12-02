@@ -34,10 +34,11 @@ class ComponentGraphics(QGraphicsItem):
 	
 	MIN_WIDTH = 0
 	MIN_HEIGHT = 0
-	MAX_MARGIN = 50
+	MAX_MARGIN = 30
 	MIN_MARGIN = 10
 	MARGIN_PROP = 0.05
 	PEN_WIDTH = 1.0
+	TITLEBAR_H = 20  # NOTE: Must be smaller than minimum margin
 	
 	TRIM = 1
 	
@@ -65,24 +66,32 @@ class ComponentGraphics(QGraphicsItem):
 		# force components to have at least the minimum size
 		self._x = rect[0]
 		self._y = rect[1]
-		self._width = max(ComponentGraphics.MIN_WIDTH, 2 * rect[2])
-		self._height = max(ComponentGraphics.MIN_HEIGHT, 2 * rect[3])
 		
 		# --- This is where the components get resized to avoid collisions. ---
-		# Margin is dynamically assigned, with a max/min value to use
-		self._margin = max(ComponentGraphics.MIN_MARGIN, min(ComponentGraphics.MAX_MARGIN,
-		                                                     ComponentGraphics.MARGIN_PROP * min(rect[2], rect[3])))
 		
 		if self._dataComponent.getParent() is None:
-			pass
-		elif self._dataComponent.getParent().getParent() is None:
 			# No margin: we want the normal size
+			# TODO: Might not do anything
+			self._margin = 0
+			self._width = max(ComponentGraphics.MIN_WIDTH, 2 * rect[2])
+			self._height = max(ComponentGraphics.MIN_HEIGHT, 2 * rect[3])
 			self.setPos(max(0, 2 * rect[0]), max(0, 2 * rect[1]))
+		elif self._dataComponent.getParent().getParent() is None:
+			# We want just a titlebar
+			self._margin = 0
+			self._width = max(ComponentGraphics.MIN_WIDTH, 2 * rect[2])
+			self._height = max(ComponentGraphics.MIN_HEIGHT, 2 * rect[3] + ComponentGraphics.TITLEBAR_H)
+			self.setPos(max(0, 2 * rect[0]), max(0, 2 * rect[1] + ComponentGraphics.TITLEBAR_H))
 		else:
+			# Margin is dynamically assigned, with a max/min value to use
+			self._margin = max(ComponentGraphics.MIN_MARGIN, min(ComponentGraphics.MAX_MARGIN,
+			                                                     ComponentGraphics.MARGIN_PROP * min(rect[2], rect[3])))
+			
 			self._width = max(ComponentGraphics.MIN_WIDTH, 2 * (rect[2] - self._margin))
-			self._height = max(ComponentGraphics.MIN_HEIGHT, 2 * (rect[3] - self._margin / 2))
-			self.setPos(max(0, 2 * rect[0] + self._margin), max(0, 2 * rect[1] + self._margin / 2))
-			# margin/2 when setting y and height above is for titlebar
+			self._height = max(ComponentGraphics.MIN_HEIGHT,
+			                   2 * (rect[3] - self._margin) + ComponentGraphics.TITLEBAR_H)
+			self.setPos(max(0, 2 * rect[0] + self._margin),
+			            max(0, 2 * rect[1] + self._margin + ComponentGraphics.TITLEBAR_H))
 		
 		self.adjustPositioning()
 		self.menu = QMenu()
@@ -90,7 +99,7 @@ class ComponentGraphics(QGraphicsItem):
 		showInGui.triggered.connect(
 			lambda: self.scene().blinkComponent(self._dataComponent.getId()))
 	
-	def getNumberOfTokens(self):
+	def getNumberOfTokens(self) -> int:
 		"""
 		Get the number of tokens.
 
@@ -122,104 +131,179 @@ class ComponentGraphics(QGraphicsItem):
 		# We're dealing with a top-level component
 		elif self._dataComponent.getParent().getParent() is None:
 			parent = self.scene()
-			parentRect = parent.sceneRect()
-			self.setFlag(QGraphicsItem.ItemIsMovable)
 			parentIsScene = True
+			self.setFlag(QGraphicsItem.ItemIsMovable)
 		else:
 			parent = self._dataComponent.getParent().getGraphicsItem()
-			parentRect = parent.boundingRect()
 			parentIsScene = False
 		
-		# self.update(max(0, 2 * self.x() + ComponentGraphics.MARGIN),
-		#             max(0, 2 * self.y() + (ComponentGraphics.MARGIN) / 2),
-		#             max(ComponentGraphics.MIN_WIDTH, 2 * (self._width - ComponentGraphics.MARGIN)),
-		#             max(ComponentGraphics.MIN_HEIGHT, 2 * (self._width - ComponentGraphics.MARGIN)))
-		
-		# siblings = [sibling.getGraphicsItem() for sibling in self._dataComponent.getSiblings()]
-		# if self in siblings:
-		# 	siblings.remove(self)
+		siblings = [sibling.getGraphicsItem() for sibling in self._dataComponent.getSiblings()]
+		if self in siblings:
+			siblings.remove(self)
 		
 		# Resolve collisions with siblings
-		# while True:
-		# 	collidingSiblings, maxSibX, maxSibY = self.getCollidingComponents(siblings)
-		# 	if collidingSiblings:
-		# 		self.dumbCollisionResolution(maxSibX, maxSibY, closest=False)
-		# 		# self.smartCollisionResolution(collidingSiblings)
-		# 	else:
-		# 		break
-		maxSibX = 0.0
-		maxSibY = 0.0
+		self.checkForCollisions(siblings)
 		
 		# If component isn't placed inside the parent, expand the parent
-		if not parentIsScene and not parent.contains(self):
-			width = max(maxSibX, self.x() + self._width)
-			height = max(maxSibY, self.y() + self._height)
-			parent.prepareGeometryChange()
-			if parentIsScene:  # NOTE: This doesn't run due to parent if's conditions
-				parent.setSceneRect(self.scene().x(), self.scene().y(),
-				                    width + self._margin,
-				                    height + self._margin)
-			else:
-				parent._width = width
-				parent._height = height
-				
-				if isinstance(parent, ComponentGraphics):
-					parent.adjustPositioning()
+		if parentIsScene:
+			self.expandSelf()
+		elif not parent.contains(self):
+			self.expandParent(parent)
 	
-	def dumbCollisionResolution(self, maxX: float, maxY: float, closest=True) -> None:
+	def checkForCollisions(self, siblings: list) -> None:
 		"""
-		This is a simple collision resolution function. It will move the component to
-		either the far right or far bottom of it's siblings.
+		Function that checks for collisions with self
 		
-		:param maxX: The maximum x coordinate of all siblings.
-		:type maxX: float
-		:param maxY: The maximum y coordinate of all siblings
-		:type maxY: float
-		:param closest: If True, the component will be moved either down or right depending
-		on what's closer. If False, the component will be moved depending on proportions of
-		the parent (we try to keep even proportions).
-		:type closest: bool
+		:param siblings: list of all components that are at the same level as self
+		:type siblings: list[ComponentGraphics]
 		:return: None
-		:rtype: NoneType
 		"""
-		if closest:
-			if maxX - self.x() <= maxY - self.y():
-				self.setPos(self.x(), maxY)
-			else:
-				self.setPos(maxX, self.y())
+		# while True: TODO: Uncomment after testing
+		collidingSiblings = self.getCollidingComponents(siblings)
+		if collidingSiblings:
+			self.resolveCollisions(collidingSiblings)
 		else:
-			moveRightSize = maxX + self._width
-			moveDownSize = maxY + self._height
-			# we'll move all the way to the bottom
-			if moveRightSize >= moveDownSize:
-				self.setPos(self.x(), maxY)
-			# or we'll move all the way to the right
-			else:
-				self.setPos(maxX, self.y())
+			return
 	
-	def smartCollisionResolution(self, maxX: float, maxY: float) -> None:
+	def expandSelf(self) -> None:
 		"""
-		This is an algorithm that resolves collisions in a smart way by always pushing one of
-		two colliding elements in a right/downward direction.
-
-		:param maxX: The maximum x coordinate of all siblings.
-		:type maxX: float
-		:param maxY: The maximum y coordinate of all siblings
-		:type maxY: float
+		Expands self based on children
+		
+		:return: None
+		"""
+		maxX = 0
+		maxY = 0
+		for child in self._dataComponent.getChildren():
+			c = child.getGraphicsItem()
+			maxX = max(maxX, c.x() + c.boundingRect(True).width())
+			maxY = max(maxY, c.y() + c.boundingRect(True).height())
+		
+		if maxX > self._width:
+			self._width = maxX + 10
+		if maxY > self._height:
+			self._height = maxY + 10
+	
+	def expandParent(self, parent: 'ComponentGraphics') -> None:
+		"""
+		This function expands the parent and is somewhat recursive, just for adaptability.
+		
+		:param parent: the parent component of self
+		:type parent: ComponentGraphics or scene
+		:return: None
+		"""
+		
+		width = parent._width + 1
+		height = parent._height + 1
+		parent.prepareGeometryChange()
+		
+		# if parentIsScene is None:
+		# 	parent.setSceneRect(self.scene().x(), self.scene().y(),
+		# 	                    width + self._margin,
+		# 	                    height + self._margin)
+		# else:
+		
+		parent._width = width
+		parent._height = height
+		
+		if not parent.contains(self):
+			self.expandParent(parent)
+		elif isinstance(parent, ComponentGraphics):
+			parent._height = height + ComponentGraphics.TITLEBAR_H
+			parent.adjustPositioning()
+	
+	def resolveYCollisions(self, collidingSiblings: list) -> None:
+		"""
+		This function will resolve y-axis collisions of a component with its siblings.
+		
+		:param collidingSiblings: list of siblings colliding with self
+		:type collidingSiblings: list
 		:return: None
 		:rtype: NoneType
 		"""
-		moveRightSize = maxX + self._width
-		moveDownSize = maxY + self._height
-		# we'll move all the way to the bottom
-		if moveRightSize >= moveDownSize:
-			self.setPos(self.x(), maxY)
-		# or we'll move all the way to the right
-		else:
-			self.setPos(maxX, self.y())
+		# If a sibling collides on top, move self down
+		newY = 0
+		# bottomCollidingSibs = []
+		for sib in collidingSiblings:
+			if sib.getY() <= self.getY():
+				newY = max(newY, sib.y() + sib.boundingRect(True).height())
+			else:
+				# bottomCollidingSibs.append(sib)
+				sib.resolveYCollisions([self])
+		
+		if newY != 0:
+			self.setY(newY + self._margin)
+			print(self.getLabel() + ' was moved in y direction.******************')
+	
+	def resolveXCollisions(self, collidingSiblings: list) -> None:
+		"""
+		This function will resolve x-axis collisions of a component with its siblings.
+
+		:param collidingSiblings: list of siblings colliding with self
+		:type collidingSiblings: list
+		:return: None
+		:rtype: NoneType
+		"""
+		# If a sibling collides left, move self right
+		newX = 0
+		rightCollidingSibs = []
+		for sib in collidingSiblings:
+			if sib.getX() <= self.getX():
+				newX = max(newX, sib.x() + sib.boundingRect(True).width())
+			else:
+				rightCollidingSibs.append(sib)
+				sib.resolveXCollisions([self, ])
+		
+		if newX != 0:
+			self.setX(newX + self._margin)
+			print(self.getLabel() + ' was moved in x direction.******************')
+			
+	def getX(self):
+		"""
+		
+		:return:
+		"""
+		return self._x
+	
+	def getY(self):
+		"""
+
+		:return:
+		"""
+		return self._y
+	
+	def resolveCollisions(self, collidingSiblings: list) -> None:
+		"""
+		This function will resolve collisions of a component with its siblings.
+
+		:param collidingSiblings: list of siblings colliding with self
+		:type collidingSiblings: list
+		:return: None
+		:rtype: NoneType
+		"""
+		# TODO: Implement diagonal movement (theres a case where this doesnt work)
+		self.resolveYCollisions(collidingSiblings)
+		# self.resolveXCollisions(collidingSiblings)
+	
+	def getMargin(self) -> float:
+		"""
+		Returns the margin of self
+		
+		:return: margin
+		:rtype: float
+		"""
+		return self._margin
 	
 	def itemChange(self, change: 'GraphicsItemChange', value):
-		if change == QGraphicsItem.ItemPositionChange:
+		"""
+		Overrides the default itemChange function by adding one extra conditional, otherwise normal behavior of the
+		function is returned. This function is what prevents top-level components from colliding
+		
+		:param change: the type of state change
+		:type change: GraphicsItemChange
+		:param value: information about the change
+		:return: None or Unknown (typeof(value))
+		"""
+		if change == QGraphicsItem.ItemPositionChange and self.scene():
 			delX = value.x() - self.x()
 			delY = value.y() - self.y()
 			
@@ -272,25 +356,20 @@ class ComponentGraphics(QGraphicsItem):
 	#
 	# 	return ax1 < bx2 and ax2 > bx1 and ay1 < by2 and ay2 > by1
 	
-	def getCollidingComponents(self, components: list) -> tuple:
+	def getCollidingComponents(self, components: list) -> list:
 		"""
 		Gets all of the components from a list that collide with this component.
 		
 		:param components: The components to detect collisions with
 		:type components: list[ComponentGraphics]
-		:return: All of the components that actually collide with this component and the maximum sibling x and y positions.
-		:rtype: list[ConponentGraphics], float, float
+		:return: All of the components that actually collide with this component
+		:rtype: list[ComponentGraphics]
 		"""
 		collidingSiblings = []
-		maxSibX = 0
-		maxSibY = 0
 		for sibling in components:
-			sibBound = sibling.boundingRect()
-			maxSibX = max(maxSibX, sibling.x() + sibBound.width())
-			maxSibY = max(maxSibY, sibling.y() + sibBound.height())
 			if self.overlapsWith(sibling):
 				collidingSiblings.append(sibling)
-		return collidingSiblings, maxSibX, maxSibY
+		return collidingSiblings
 	
 	def getLabel(self) -> str:
 		"""
@@ -316,11 +395,11 @@ class ComponentGraphics(QGraphicsItem):
 		:return: True if components overlap, False otherwise.
 		:rtype: bool
 		"""
-		selfBound = self.boundingRect()
+		selfBound = self.boundingRect(True)
 		selfx = self.scenePos().x() + selfBound.x()
 		selfy = self.scenePos().y() + selfBound.y()
 		
-		sibBound = sibling.boundingRect()
+		sibBound = sibling.boundingRect(True)
 		sibx = sibling.scenePos().x() + sibBound.x()
 		siby = sibling.scenePos().y() + sibBound.y()
 		
@@ -344,11 +423,11 @@ class ComponentGraphics(QGraphicsItem):
 		:return: True if child is visually in the current component
 		:rtype: bool
 		"""
-		pBound = self.boundingRect()
+		pBound = self.boundingRect(True)
 		px = self.scenePos().x() + pBound.x()
 		py = self.scenePos().y() + pBound.y()
 		
-		cBound = child.boundingRect()
+		cBound = child.boundingRect(True)
 		cx = child.scenePos().x() + cBound.x()
 		cy = child.scenePos().y() + cBound.y()
 		
@@ -367,11 +446,11 @@ class ComponentGraphics(QGraphicsItem):
 		"""
 		halfWidth = ComponentGraphics.PEN_WIDTH / 2
 		if withMargins:
-			marginAdjustment = -ComponentGraphics.TRIM + self._margin * 2 + ComponentGraphics.PEN_WIDTH
+			marginAdjustment = -ComponentGraphics.TRIM + self._margin + ComponentGraphics.PEN_WIDTH
 			return QRectF(-halfWidth - self._margin,
-			              -halfWidth - self._margin,
-			              self._width + marginAdjustment,
-			              self._height + marginAdjustment)
+			              -halfWidth - self._margin + ComponentGraphics.TITLEBAR_H,
+			              self._width + marginAdjustment + self._margin,
+			              self._height + marginAdjustment + ComponentGraphics.TITLEBAR_H)
 		else:
 			noMarginAdjustment = -ComponentGraphics.TRIM + ComponentGraphics.PEN_WIDTH
 			return QRectF(-halfWidth,

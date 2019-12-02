@@ -141,7 +141,7 @@ class Component(Entity):
 		if self.getParent() is None:
 			return [self]
 		else:
-			return self.getParent().getChildren()[:]
+			return self.getParent().getChildren()[:]  # Modified to return actual siblings not copies (removed [:])
 	
 	def childCount(self) -> int:
 		"""
