@@ -55,6 +55,7 @@ class ManageProjectDialog(QDialog):
 		super(ManageProjectDialog, self).__init__(parent)
 		self.ui = Ui_ManageProjectDialog()
 		self.ui.setupUi(self)
+		self.setWindowTitle("Manage Project")
 		
 		self._project = project
 		

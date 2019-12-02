@@ -58,6 +58,7 @@ class CopyProjectDialog(QDialog):
 		super(CopyProjectDialog, self).__init__(parent)
 		self.ui = Ui_CopyProjectDialog()
 		self.ui.setupUi(self)
+		self.setWindowTitle("Copy Existing Project")
 		
 		# set the old project to copy from
 		self._newProject = None
