@@ -119,23 +119,35 @@ class VBGraphics(QGraphicsItem):
 		arrowHead.lineTo(x2 - 5, y2)
 		painter.drawPath(arrowHead)
 		painter.fillPath(arrowHead, QBrush(QColor(255, 255, 0)))
-		
-		#TODO: draw a small triangle as the arrow head
 	
 	def buildPath(self, x1, x2, y1, y2):
+		"""
+		This function is used to build the path for the visibility behavior.
+		It has some basic arrow routing algorithm:
+			# 1 src is at right, dest is at left, just cubic to it
+			# 2 src is at left, dest is at right
+				# a y is almost the same, cubic to it
+				# b distance is bigger than 1/3 * root.width, go around the root component
+					# ba src is higher than dest, go around from the top
+					# bb src is lower than dest, go around from the bottom
+				# c horizontal distance is smaller than 1/3 * root.width, zigzag to it
+		#TODO: improve on the algorithm (add collision detector)
+		
+		:param x1: the x coordinate for the src component
+		:type x1: float
+		:param x2: the x coordinate for the dest component
+		:type x2: float
+		:param y1: the y coordinate for the src component
+		:type y1: float
+		:param y2: the x coordinate for the dest component
+		:type y2: float
+		:return path: return the path of the visibility behavior
+		:rtype path: QPainterPath
+		"""
+		
 		baseComponent = self.getOneComponentDownRoot()
 		baseComponentWidth = baseComponent.getGraphicsItem().boundingRect(withMargins=False).width()
 		baseComponentHeight = baseComponent.getGraphicsItem().boundingRect(withMargins=False).height()
-		# 1 src is at right, dest is at left, just cubic to it
-		# 2 src is at left, dest is at right
-			# a y is almost the same, cubic to it
-			# b distance is bigger than 1/3 * root.width, go around the root component
-				# ba src is higher than dest, go around from the top
-				# bb src is lower than dest, go around from the bottom
-			# c horizontal distance is smaller than 1/3 * root.width, zigzag to it
-
-		#TODO: Finish the algorithm
-		
 		path = QPainterPath()
 		
 		if x1 > x2:
@@ -175,6 +187,13 @@ class VBGraphics(QGraphicsItem):
 		return path
 	
 	def getOneComponentDownRoot(self):
+		"""
+		This function is used to locate the base component of the program.
+		
+		:return possibleRoot: the component with id = 2; the base component for the program; the component that is one
+			step down of the root component
+		:rype possibleRoot: Component
+		"""
 		possibleRoot = self._dataVB.getSrcComponent()
 		
 		while possibleRoot.getParent().getParent() is not None:
