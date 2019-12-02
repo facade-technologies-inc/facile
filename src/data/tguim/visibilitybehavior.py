@@ -27,8 +27,6 @@ from data.properties import Properties
 from data.tguim.condition import Condition
 from graphics.tguim.visibilitybehaviorgraphics import VBGraphics
 
-VALID_REACTION_TYPES = {"show", "hide"}
-
 
 class VisibilityBehavior(Entity):
 	"""
@@ -64,20 +62,32 @@ class VisibilityBehavior(Entity):
 		self._srcComponent = srcComp
 		self._condition = Condition()
 		self._tguim = tguim
-		self._graphicsItem = VBGraphics(self, tguim.getScene())
+		
 		# TODO: Add a "trigger action" data member?
 		
-		predefined = ["Base", "Visibility Behavior"]
-		custom = {}
-		props = Properties.createPropertiesObject(predefined, custom)
-		props.getProperty("ID")[1].setValue(self.getId())
-		props.getProperty("Reaction Type")[1].setValue(reactionType)
-		props.getProperty("Name")[1].setValue("VB #{}".format(self.getId()))
-		props.getProperty("Type")[1].setValue("Visibility Behavior")
-		props.getProperty("Source ID")[1].setValue(self._srcComponent.getId())
-		props.getProperty("Destination ID")[1].setValue(self._destComponent.getId())
+		if srcComp and destComp:
+			self.createGraphics()
+			
+			predefined = ["Base", "Visibility Behavior"]
+			custom = {}
+			props = Properties.createPropertiesObject(predefined, custom)
+			props.getProperty("ID")[1].setValue(self.getId())
+			props.getProperty("Reaction Type")[1].setValue(reactionType)
+			props.getProperty("Name")[1].setValue("VB #{}".format(self.getId()))
+			props.getProperty("Type")[1].setValue("Visibility Behavior")
+			props.getProperty("Source ID")[1].setValue(self._srcComponent.getId())
+			props.getProperty("Destination ID")[1].setValue(self._destComponent.getId())
+			
+			self.setProperties(props)
+	
+	def createGraphics(self) -> None:
+		"""
+		Creates the graphics for the visibility component.
 		
-		self.setProperties(props)
+		:return: None
+		:rtype: NoneType
+		"""
+		self._graphicsItem = VBGraphics(self, self._tguim.getScene())
 	
 	def getDestComponent(self) -> 'Component':
 		"""
@@ -159,3 +169,56 @@ class VisibilityBehavior(Entity):
 		:return:
 		"""
 		self.getProperties().getProperty("Reaction Type")[1].setValue(reactType)
+	
+	def asDict(self) -> dict:
+		"""
+		Get a dictionary representation of the visibility behavior.
+
+		.. note::
+			This is not just a getter of the __dict__ attribute.
+		
+		.. todo::
+			save the condition
+
+		:return: The dictionary representation of the object.
+		:rtype: dict
+		"""
+		d = {}
+		d["id"] = self._id
+		d["src"] = self._srcComponent.getId()
+		d["dest"] = self._destComponent.getId()
+		d['properties'] = self.getProperties().asDict()
+		
+		return d
+	
+	@staticmethod
+	def fromDict(d: dict, tguim: 'TargetGuiModel') -> 'Component':
+		"""
+		Creates a visibility behavior from a dictionary.
+
+		The created visibility behavior isn't "complete" because it only holds the IDs of other
+		components and visibility behaviors. Outside of this function, the references are completed.
+
+		.. note::
+			The graphics item will not be created here. It must be created later.
+
+		:param d: The dictionary that represents the VisibilityBehavior.
+		:type d: dict
+		:param tguim: The target GUI model to add the component to
+		:type tguim: TargetGuiModel
+		:return: The VisibilityBehavior object that was constructed from the dictionary
+		:rtype: VisibilityBehavior
+		"""
+		
+		if d is None:
+			return None
+		
+		vb = VisibilityBehavior(tguim)
+		vb._id = d['id']
+		vb._srcComponent = d['src']
+		vb._destComponent = d['dest']
+		vb.setProperties(Properties.fromDict(d['properties']))
+		reactionType = vb.getProperties().getProperty("Reaction Type")[1].getValue()
+		vb.getProperties().getProperty("Reaction Type")[1].setValue(
+			VisibilityBehavior.ReactionType[reactionType])
+		return vb

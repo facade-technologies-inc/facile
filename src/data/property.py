@@ -20,6 +20,8 @@
 The module contains the Property() class.
 """
 
+from enum import Enum
+
 
 class Property:
 	"""
@@ -99,3 +101,34 @@ class Property:
 	
 	def __repr__(self):
 		return str(self)
+	
+	def asDict(self) -> dict:
+		"""
+		Get a dictionary representation of the visibility behavior.
+
+		.. note::
+			This is not just a getter of the __dict__ attribute.
+
+		:return: The dictionary representation of the object.
+		:rtype: dict
+		"""
+		d = self.__dict__.copy()
+		d["_type"] = d["_type"].__name__
+		if isinstance(d["_value"], Enum):
+			d["_value"] = d["_value"].name
+		return d
+	
+	@staticmethod
+	def fromDict(d: dict) -> 'Property':
+		"""
+		Creates a Property object from a dictionary.
+
+		:param d: The dictionary that represents the Property object.
+		:type d: dict
+		:return: The Property object that was constructed from the dictionary
+		:rtype: Property
+		"""
+		p = Property.__new__(Property)
+		d["_type"] = eval(d["_type"])
+		p.__dict__ = d
+		return p

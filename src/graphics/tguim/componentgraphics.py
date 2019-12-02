@@ -20,9 +20,8 @@
 This module contains the ComponentGraphics class.
 """
 
-import copy
-from PySide2.QtCore import QRectF, QPointF
-from PySide2.QtGui import QPainterPath, QColor, QPen, Qt
+from PySide2.QtCore import QRectF
+from PySide2.QtGui import QPainterPath, QColor, QPen, Qt, QFont
 from PySide2.QtWidgets import QGraphicsScene, QGraphicsItem, QGraphicsSceneContextMenuEvent, QMenu
 
 
@@ -31,7 +30,7 @@ class ComponentGraphics(QGraphicsItem):
 	This class displays an individual GUI component in the target gui,
 	based on the component class.
 	"""
-	
+
 	MIN_WIDTH = 0
 	MIN_HEIGHT = 0
 	MAX_MARGIN = 30
@@ -39,9 +38,9 @@ class ComponentGraphics(QGraphicsItem):
 	MARGIN_PROP = 0.05
 	PEN_WIDTH = 1.0
 	TITLEBAR_H = 20  # NOTE: Must be smaller than minimum margin
-	
+
 	TRIM = 1
-	
+
 	def __init__(self, dataComponent: 'Component', rect: tuple = (), parent=None):
 		"""
 		Constructs a ComponentGraphics object
@@ -51,24 +50,24 @@ class ComponentGraphics(QGraphicsItem):
 		:param parent: parent ComponentGraphics
 		:type parent: ComponentGraphics
 		"""
-		
+
 		QGraphicsItem.__init__(self, parent)
 		self.setFlag(QGraphicsItem.ItemIsSelectable)
-		
+
 		if parent is None:
 			dataComponent.getModel().getScene().addItem(self)
 			self.isRoot = True  # TODO: Have to resize scene to smallest possible
 		else:
 			self.isRoot = False
-		
+
 		self._dataComponent = dataComponent
-		
+
 		# force components to have at least the minimum size
 		self._x = rect[0]
 		self._y = rect[1]
-		
+
 		# --- This is where the components get resized to avoid collisions. ---
-		
+
 		if self._dataComponent.getParent() is None:
 			# No margin: we want the normal size
 			# TODO: Might not do anything
@@ -86,19 +85,19 @@ class ComponentGraphics(QGraphicsItem):
 			# Margin is dynamically assigned, with a max/min value to use
 			self._margin = max(ComponentGraphics.MIN_MARGIN, min(ComponentGraphics.MAX_MARGIN,
 			                                                     ComponentGraphics.MARGIN_PROP * min(rect[2], rect[3])))
-			
+
 			self._width = max(ComponentGraphics.MIN_WIDTH, 2 * (rect[2] - self._margin))
 			self._height = max(ComponentGraphics.MIN_HEIGHT,
 			                   2 * (rect[3] - self._margin) + ComponentGraphics.TITLEBAR_H)
 			self.setPos(max(0, 2 * rect[0] + self._margin),
 			            max(0, 2 * rect[1] + self._margin + ComponentGraphics.TITLEBAR_H))
-		
+
 		self.adjustPositioning()
 		self.menu = QMenu()
 		showInGui = self.menu.addAction("Show in target GUI")
 		showInGui.triggered.connect(
 			lambda: self.scene().blinkComponent(self._dataComponent.getId()))
-	
+
 	def getNumberOfTokens(self) -> int:
 		"""
 		Get the number of tokens.
@@ -107,9 +106,9 @@ class ComponentGraphics(QGraphicsItem):
 		:rtype: int
 		"""
 		tokensCount = len(self._dataComponent.getSuperToken().tokens)
-		
+
 		return tokensCount
-	
+
 	def adjustPositioning(self) -> None:
 		"""
 		Places component using the following criteria:
@@ -117,17 +116,17 @@ class ComponentGraphics(QGraphicsItem):
 		2. If there is a collision with a sibling, the one that is on the bottom and/or right has to move.
 		3. Once all sibling collisions are resolved, the parent may need to expand to fit all children inside.
 		4. Once the parent is expanded, start at step 2 again, but his time with the parent.
-		
+
 		NOTE: This is a recursive algorithm.
-		
+
 		:return: None
 		:rtype: NoneType
 		"""
-		
+
 		# We're dealing with the root that should never be drawn.
 		if self._dataComponent.getParent() is None:
 			return
-		
+
 		# We're dealing with a top-level component
 		elif self._dataComponent.getParent().getParent() is None:
 			parent = self.scene()
@@ -136,24 +135,25 @@ class ComponentGraphics(QGraphicsItem):
 		else:
 			parent = self._dataComponent.getParent().getGraphicsItem()
 			parentIsScene = False
-		
-		siblings = [sibling.getGraphicsItem() for sibling in self._dataComponent.getSiblings()]
+
+		siblings = [sibling.getGraphicsItem() for sibling in self._dataComponent.getSiblings() if
+		            sibling is not self._dataComponent]
 		if self in siblings:
 			siblings.remove(self)
-		
+
 		# Resolve collisions with siblings
 		self.checkForCollisions(siblings)
-		
+
 		# If component isn't placed inside the parent, expand the parent
 		if parentIsScene:
 			self.expandSelf()
 		elif not parent.contains(self):
 			self.expandParent(parent)
-	
+
 	def checkForCollisions(self, siblings: list) -> None:
 		"""
 		Function that checks for collisions with self
-		
+
 		:param siblings: list of all components that are at the same level as self
 		:type siblings: list[ComponentGraphics]
 		:return: None
@@ -164,11 +164,11 @@ class ComponentGraphics(QGraphicsItem):
 			self.resolveCollisions(collidingSiblings)
 		else:
 			return
-	
+
 	def expandSelf(self) -> None:
 		"""
 		Expands self based on children
-		
+
 		:return: None
 		"""
 		maxX = 0
@@ -177,44 +177,44 @@ class ComponentGraphics(QGraphicsItem):
 			c = child.getGraphicsItem()
 			maxX = max(maxX, c.x() + c.boundingRect(True).width())
 			maxY = max(maxY, c.y() + c.boundingRect(True).height())
-		
+
 		if maxX > self._width:
 			self._width = maxX + 10
 		if maxY > self._height:
 			self._height = maxY + 10
-	
+
 	def expandParent(self, parent: 'ComponentGraphics') -> None:
 		"""
 		This function expands the parent and is somewhat recursive, just for adaptability.
-		
+
 		:param parent: the parent component of self
 		:type parent: ComponentGraphics or scene
 		:return: None
 		"""
-		
+
 		width = parent._width + 1
 		height = parent._height + 1
 		parent.prepareGeometryChange()
-		
+
 		# if parentIsScene is None:
 		# 	parent.setSceneRect(self.scene().x(), self.scene().y(),
 		# 	                    width + self._margin,
 		# 	                    height + self._margin)
 		# else:
-		
+
 		parent._width = width
 		parent._height = height
-		
+
 		if not parent.contains(self):
 			self.expandParent(parent)
 		elif isinstance(parent, ComponentGraphics):
 			parent._height = height + ComponentGraphics.TITLEBAR_H
 			parent.adjustPositioning()
-	
+
 	def resolveYCollisions(self, collidingSiblings: list) -> None:
 		"""
 		This function will resolve y-axis collisions of a component with its siblings.
-		
+
 		:param collidingSiblings: list of siblings colliding with self
 		:type collidingSiblings: list
 		:return: None
@@ -229,11 +229,11 @@ class ComponentGraphics(QGraphicsItem):
 			else:
 				# bottomCollidingSibs.append(sib)
 				sib.resolveYCollisions([self])
-		
+
 		if newY != 0:
 			self.setY(newY + self._margin)
 			print(self.getLabel() + ' was moved in y direction.******************')
-	
+
 	def resolveXCollisions(self, collidingSiblings: list) -> None:
 		"""
 		This function will resolve x-axis collisions of a component with its siblings.
@@ -252,25 +252,25 @@ class ComponentGraphics(QGraphicsItem):
 			else:
 				rightCollidingSibs.append(sib)
 				sib.resolveXCollisions([self, ])
-		
+
 		if newX != 0:
 			self.setX(newX + self._margin)
 			print(self.getLabel() + ' was moved in x direction.******************')
-			
+
 	def getX(self):
 		"""
-		
+
 		:return:
 		"""
 		return self._x
-	
+
 	def getY(self):
 		"""
 
 		:return:
 		"""
 		return self._y
-	
+
 	def resolveCollisions(self, collidingSiblings: list) -> None:
 		"""
 		This function will resolve collisions of a component with its siblings.
@@ -283,21 +283,21 @@ class ComponentGraphics(QGraphicsItem):
 		# TODO: Implement diagonal movement (theres a case where this doesnt work)
 		self.resolveYCollisions(collidingSiblings)
 		# self.resolveXCollisions(collidingSiblings)
-	
+
 	def getMargin(self) -> float:
 		"""
 		Returns the margin of self
-		
+
 		:return: margin
 		:rtype: float
 		"""
 		return self._margin
-	
+
 	def itemChange(self, change: 'GraphicsItemChange', value):
 		"""
 		Overrides the default itemChange function by adding one extra conditional, otherwise normal behavior of the
 		function is returned. This function is what prevents top-level components from colliding
-		
+
 		:param change: the type of state change
 		:type change: GraphicsItemChange
 		:param value: information about the change
@@ -306,29 +306,29 @@ class ComponentGraphics(QGraphicsItem):
 		if change == QGraphicsItem.ItemPositionChange and self.scene():
 			delX = value.x() - self.x()
 			delY = value.y() - self.y()
-			
+
 			if delX == 0 and delY == 0:
 				return value
-			
+
 			translateX = copy.deepcopy(self.boundingRect())
 			translateX.translate(dx=delX, dy=0)
 			translateY = copy.deepcopy(self.boundingRect())
 			translateY.translate(dx=0, dy=delY)
-			
+
 			xOkay = True
 			yOkay = True
-			
+
 			# Checking if there's a collision in x or y direction
 			for sibling in self._dataComponent.getSiblings():
 				sib = sibling.getGraphicsItem()
 				if sib == self:
 					continue
-				
+
 				if translateX.intersects(sib.boundingRect()):
 					xOkay = False
 				if translateY.intersects(sib.boundingRect()):
 					yOkay = False
-			
+
 			# Decides where to place component based on collision detection
 			if xOkay and yOkay:
 				return
@@ -336,9 +336,9 @@ class ComponentGraphics(QGraphicsItem):
 				self.pos().setX(value.x())
 			elif yOkay:
 				self.pos().setY(value.y())
-		
+
 		return QGraphicsItem.itemChange(self, change, value)
-	
+
 	# def rectsCollide(self, a: QRectF, b: QRectF):
 	# 	ax1 = 0
 	# 	ay1 = 0
@@ -355,11 +355,11 @@ class ComponentGraphics(QGraphicsItem):
 	# 	print(bx1 + ' ' + by1)
 	#
 	# 	return ax1 < bx2 and ax2 > bx1 and ay1 < by2 and ay2 > by1
-	
+
 	def getCollidingComponents(self, components: list) -> list:
 		"""
 		Gets all of the components from a list that collide with this component.
-		
+
 		:param components: The components to detect collisions with
 		:type components: list[ComponentGraphics]
 		:return: All of the components that actually collide with this component
@@ -370,7 +370,7 @@ class ComponentGraphics(QGraphicsItem):
 			if self.overlapsWith(sibling):
 				collidingSiblings.append(sibling)
 		return collidingSiblings
-	
+
 	def getLabel(self) -> str:
 		"""
 		Gets the label from this component.
@@ -379,17 +379,17 @@ class ComponentGraphics(QGraphicsItem):
 		"""
 		try:
 			category, name = self._dataComponent.getProperties().getProperty("Name")
-			return name.value()
+			return name.getValue()
 		except:
 			return ""
-	
+
 	def overlapsWith(self, sibling: 'ComponentGraphics') -> bool:
 		"""
 		Determines if this ComponentGraphics is overlapping with another one.
-		
+
 		Components that share an edge are not necessarily considered to be overlapping.
 		This method differs from collidesWithItem because of this.
-		
+
 		:param sibling: The other component to check collision with.
 		:type sibling: ComponentGraphics
 		:return: True if components overlap, False otherwise.
@@ -398,26 +398,26 @@ class ComponentGraphics(QGraphicsItem):
 		selfBound = self.boundingRect(True)
 		selfx = self.scenePos().x() + selfBound.x()
 		selfy = self.scenePos().y() + selfBound.y()
-		
+
 		sibBound = sibling.boundingRect(True)
 		sibx = sibling.scenePos().x() + sibBound.x()
 		siby = sibling.scenePos().y() + sibBound.y()
-		
+
 		if (sibx < selfx + selfBound.width() and
 			sibx + sibBound.width() > selfx and
 			siby < selfy + selfBound.height() and
 			siby + sibBound.height() > selfy):
 			return True
 		return False
-	
+
 	def contains(self, child: 'ComponentGraphics') -> bool:
 		"""
 		Determines if one ComponentGraphics item completely contains another one visually.
 		rectangles that match exactly are considered to be "containing" each other.
-		
+
 		This method is mostly used to determine if a parent component needs to be "grown" to fit its children
 		inside.
-		
+
 		:param child: The component that we would like to determine if it's in the current component.
 		:type child: ComponentGraphics
 		:return: True if child is visually in the current component
@@ -426,18 +426,18 @@ class ComponentGraphics(QGraphicsItem):
 		pBound = self.boundingRect(True)
 		px = self.scenePos().x() + pBound.x()
 		py = self.scenePos().y() + pBound.y()
-		
+
 		cBound = child.boundingRect(True)
 		cx = child.scenePos().x() + cBound.x()
 		cy = child.scenePos().y() + cBound.y()
-		
+
 		if (px <= cx and
 			py <= cy and
 			px + pBound.width() >= cx + cBound.width() and
 			py + pBound.height() >= cy + cBound.height()):
 			return True
 		return False
-	
+
 	def boundingRect(self, withMargins: bool = False):
 		"""
 		This pure virtual function defines the outer bounds of the item as a rectangle.
@@ -457,7 +457,7 @@ class ComponentGraphics(QGraphicsItem):
 			              -halfWidth,
 			              self._width + noMarginAdjustment,
 			              self._height + noMarginAdjustment)
-	
+
 	def shape(self):
 		"""
 		Returns the shape of this item as a QPainterPath in local coordinates.
@@ -469,7 +469,7 @@ class ComponentGraphics(QGraphicsItem):
 		path = QPainterPath()
 		path.addRect(self.boundingRect())
 		return path
-	
+
 	def paint(self, painter, option, widget):
 		"""
 		Paints the contents of the component. Override the parent paint function
@@ -484,12 +484,12 @@ class ComponentGraphics(QGraphicsItem):
 		:rtype NoneType
 		"""
 		boundingRect = self.boundingRect()
-		
+
 		if self.isRoot or boundingRect.width() == 0 and boundingRect.height() == 0:
 			painter.setPen(QPen(QColor(Qt.transparent)))
 			painter.setBrush(QColor(Qt.transparent))
 			return
-		
+
 		pen = QPen(QColor(100, 200, 255))
 		if self.isSelected():
 			pen.setStyle(Qt.DashDotLine)
@@ -498,27 +498,42 @@ class ComponentGraphics(QGraphicsItem):
 			pen.setStyle(Qt.SolidLine)
 			pen.setColor(QColor(0, 0, 0))
 		painter.setPen(pen)
-		
+
 		painter.setBrush(QColor(100, 200, 255))
-		
+
 		id = self._dataComponent.getId()
-		
+
 		painter.drawRoundedRect(boundingRect, 5, 5)
-		
+
+		# draw name label
 		name = self.getLabel()
-		painter.drawText(int(self._margin * 1.5), int(self._margin + 30),
-		                 name)
-		
+		# TODO: make a better algorithm on font size in the future
+		# 44 width -> only cover 12 words with 5 -> 5Fonts one is 3.6 (added 5)
+		# 48 width -> only cover 18 words with 4 -> 4Fonts one is 2.6 (added 5)
+		if len(name) * 3.5 > self.boundingRect(withMargins=False).width():
+			if len(name) * 2.5 > self.boundingRect(withMargins=False).width():
+				nameFont = QFont("Times", 2)
+			else:
+				nameFont = QFont("Times", 4)
+		else:
+			nameFont = QFont("Times", 5)
+		painter.setFont(nameFont)
+
+		painter.setBrush(QColor(100, 200, 255))
+		painter.drawText(self.boundingRect(withMargins=False).x() + 5, self._margin + 13, name)
+
+		# draw token tag
 		token_count = str(self.getNumberOfTokens())
 		rectBox = QRectF(self.boundingRect().width() - self._margin,
 		                 -self._margin,
 		                 self._margin * 2, self._margin * 2)
-		
+		tokenTagFont = QFont("Times", 10)
+		painter.setFont(tokenTagFont)
 		painter.setBrush(QColor(255, 0, 0, 127))
 		painter.drawRect(rectBox)
 		painter.setBrush(QColor(100, 200, 255))
 		painter.drawText(rectBox.center(), token_count)
-	
+
 	def mousePressEvent(self, event):
 		"""
 		This event handler is implemented to receive mouse press events for this item.
@@ -528,11 +543,11 @@ class ComponentGraphics(QGraphicsItem):
 		"""
 		self.setSelected(True)
 		self.scene().emitItemSelected(self._dataComponent.getId())
-	
+
 	def contextMenuEvent(self, event: QGraphicsSceneContextMenuEvent) -> None:
 		"""
 		Opens a context menu (right click menu) for the component.
-		
+
 		:param event: The event that was generated when the user right-clicked on this item.
 		:type event: QGraphicsSceneContextMenuEvent
 		:return: None
@@ -540,14 +555,14 @@ class ComponentGraphics(QGraphicsItem):
 		"""
 		self.setSelected(True)
 		selectedAction = self.menu.exec_(event.screenPos())
-	
+
 	def triggerSceneUpdate(self):
 		"""
 		Update the scene.
 
 		"""
 		self.scene().invalidate(self.scene().sceneRect(), QGraphicsScene.ItemLayer)
-	
+
 	def __repr__(self):
 		"""
 		Returns the componentView id as a string.
