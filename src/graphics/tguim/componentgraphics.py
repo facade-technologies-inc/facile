@@ -343,25 +343,20 @@ class ComponentGraphics(QGraphicsItem):
 		
 		# draw name label
 		name = self.getLabel()
-		"""
-		painter.setBrush(QColor(127, 127, 0, 127))
-		labelBoxWidth = min(len(name) * 6, self.boundingRect(withMargins=False).width() - 6)
-		labelBoxHeight = min(15, self.boundingRect().height())
-		
-		LabelBox = QRectF(self.boundingRect(withMargins=False).x(), ComponentGraphics.MARGIN,
-		                  labelBoxWidth, labelBoxHeight)
-		painter.drawRect(LabelBox)
-		"""
 		# TODO: make a better algorithm on font size in the future
-		# 44 width -> only cover 12 words
+		# 44 width -> only cover 12 words with 5 -> 5Fonts one is 3.6 (added 5)
+		# 48 width -> only cover 18 words with 4 -> 4Fonts one is 2.6 (added 5)
 		if len(name) * 3.5 > self.boundingRect(withMargins=False).width():
-			nameFont = QFont("Times", 4)
+			if len(name) * 2.5 > self.boundingRect(withMargins=False).width():
+				nameFont = QFont("Times", 2)
+			else:
+				nameFont = QFont("Times", 4)
 		else:
 			nameFont = QFont("Times", 5)
 		painter.setFont(nameFont)
 		
 		painter.setBrush(QColor(100, 200, 255))
-		painter.drawText(self.boundingRect(withMargins=False).x() + 2, ComponentGraphics.MARGIN + 10, name)
+		painter.drawText(self.boundingRect(withMargins=False).x() + 5, ComponentGraphics.MARGIN + 13, name)
 		
 		# draw token tag
 		token_count = str(self.getNumberOfTokens())
