@@ -211,3 +211,41 @@ class Properties:
 			for property in self._categories[category]:
 				if property.getName() == name:
 					return category, property
+	
+	def asDict(self) -> dict:
+		"""
+		Get a dictionary representation of the visibility behavior.
+
+		.. note::
+			This is not just a getter of the __dict__ attribute.
+
+		:return: The dictionary representation of the object.
+		:rtype: dict
+		"""
+		d = {}
+		for cat, props in self._categories.items():
+			d[cat] = [prop.asDict() for prop in props]
+		return d
+	
+	@staticmethod
+	def fromDict(d: dict) -> 'Properties':
+		"""
+		Creates a Properties object from a dictionary.
+
+		:param d: The dictionary that represents the Properties object.
+		:type d: dict
+		:return: The Properties object that was constructed from the dictionary
+		:rtype: Properties
+		"""
+		
+		if d is None:
+			return None
+		
+		props = Properties()
+		
+		for cat in d:
+			props.newCategory(cat)
+			for prop in d[cat]:
+				props._categories[cat].append(Property.fromDict(prop))
+		
+		return props

@@ -110,7 +110,8 @@ class ComponentGraphics(QGraphicsItem):
 			parentRect = parent.boundingRect()
 			parentIsScene = False
 		
-		siblings = [sibling.getGraphicsItem() for sibling in self._dataComponent.getSiblings()]
+		siblings = [sibling.getGraphicsItem() for sibling in self._dataComponent.getSiblings() if
+		            sibling is not self._dataComponent]
 		if self in siblings:
 			siblings.remove(self)
 		

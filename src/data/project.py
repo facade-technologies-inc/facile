@@ -370,8 +370,16 @@ class Project:
 		
 		loadedProject = Project(name, description, exe, backend, projectDir, startupTimeout)
 		
-		# TODO: Load models and put them in the project object
-		# loadedProject.setTargetGUIModel(projectJSON["Model Files"]["Target GUI Model"])
+		try:
+			with open(loadedProject.getTargetGUIModelFile(), 'r') as tguimFile:
+				d = json.loads(tguimFile.read())
+				tguim = TargetGuiModel.fromDict(d)
+		except:
+			print("Couldn't load from {}".format(loadedProject.getTargetGUIModelFile()))
+		# traceback.print_exc()
+		else:
+			loadedProject._targetGUIModel = tguim
+		
 		# loadedProject.setAPIModel(["Model Files"]["API Model"] = self._APIModel)
 		
 		return loadedProject
@@ -392,13 +400,20 @@ class Project:
 		projectDict["Application Information"]["Target Application"] = self._executable
 		projectDict["Application Information"]["Backend"] = self._backend
 		projectDict["Application Information"]["Startup Timeout"] = self._startupTimeout
-		projectDict["Model Files"] = {}
 		
-		# projectDict["Model Files"]["Target GUI Model"] = self._targetGUIModel
+		tguimFileName = self._name + ".tguim"
+		projectDict["Model Files"] = {}
+		projectDict["Model Files"]["Target GUI Model"] = tguimFileName
 		# projectDict["Model Files"]["API Model"] = self._APIModel
 		
 		with open(self.getMainProjectFile(), "w") as file:
 			file.write(json.dumps(projectDict, indent=4))
+		
+		# save Target GUI Model
+		with open(self.getTargetGUIModelFile(), 'w') as tguimFile:
+			d = self._targetGUIModel.asDict()
+			print(d)
+			tguimFile.write(json.dumps(d, indent=4))
 	
 	def addToRecents(self) -> None:
 		"""
