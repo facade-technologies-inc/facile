@@ -77,12 +77,13 @@ class VBGraphics(QGraphicsItem):
 		:return None
 		:rtype NoneType
 		"""
-		pen = QPen(QColor(255, 255, 0))
+		arrowColor = QColor(255, 200, 50)
+		pen = QPen(arrowColor)
 		if self.isSelected():
 			pen.setStyle(Qt.DashDotLine)
 		else:
 			pen.setStyle(Qt.SolidLine)
-		pen.setWidth(3)
+		pen.setWidth(10)
 		painter.setPen(pen)
 		
 		lengthSrcNodeSrcEdgeList = len(self._dataVB.getSrcComponent().getSrcVisibilityBehaviors())
@@ -113,21 +114,22 @@ class VBGraphics(QGraphicsItem):
 		painter.drawPath(path)
 		
 		# draw the arrow head
+		aSize = 20
 		if leftInTrue:
 			arrowHead = QPainterPath()
-			arrowHead.moveTo(x2 + 8, y2)
-			arrowHead.lineTo(x2 - 8, y2 - 8)
-			arrowHead.lineTo(x2 - 8, y2 + 8)
-			arrowHead.lineTo(x2 + 8, y2)
+			arrowHead.moveTo(x2 + aSize, y2)
+			arrowHead.lineTo(x2 - aSize, y2 - aSize)
+			arrowHead.lineTo(x2 - aSize, y2 + aSize)
+			arrowHead.lineTo(x2 + aSize, y2)
 		else:
 			arrowHead = QPainterPath()
-			arrowHead.moveTo(x2 - 8, y2)
-			arrowHead.lineTo(x2 + 8, y2 - 8)
-			arrowHead.lineTo(x2 + 8, y2 + 8)
-			arrowHead.lineTo(x2 - 8, y2)
+			arrowHead.moveTo(x2 - aSize, y2)
+			arrowHead.lineTo(x2 + aSize, y2 - aSize)
+			arrowHead.lineTo(x2 + aSize, y2 + aSize)
+			arrowHead.lineTo(x2 - aSize, y2)
 		
 		painter.drawPath(arrowHead)
-		painter.fillPath(arrowHead, QBrush(QColor(255, 255, 0)))
+		painter.fillPath(arrowHead, QBrush(arrowColor))
 	
 	def buildPath(self, x1, x2, y1, y2):
 		"""
