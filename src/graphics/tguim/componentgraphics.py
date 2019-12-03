@@ -225,16 +225,17 @@ class ComponentGraphics(QGraphicsItem):
 		if isinstance(parent, ComponentGraphics):
 			parent.adjustPositioning()
 
-	def getX(self):
+	def getX(self) -> int:
 		"""
-
-		:return:
+		Gets the original x value
+		
+		:return: int
 		"""
 		return self._x
 
 	def getY(self):
 		"""
-
+		
 		:return:
 		"""
 		return self._y
@@ -252,7 +253,7 @@ class ComponentGraphics(QGraphicsItem):
 		for sib in collidingSiblings:
 			angle = np.rad2deg(np.arctan2((sib.y() - self.y()), (sib.x() - self.x())))
 			
-			siblingWins = (angle >= 135 or angle <= -45) or (sib.getX() < self.getX() and sib.getY() < self.getY())
+			siblingWins = (angle > 135 or angle <= -45)  # or (sib.getX() < self.getX() and sib.getY() < self.getY())
 			
 			if siblingWins:
 				sib.resolveCollisions([self])
