@@ -250,33 +250,69 @@ class ComponentGraphics(QGraphicsItem):
 		:rtype: NoneType
 		"""
 		
-		for sib in collidingSiblings:
-			angle = np.rad2deg(np.arctan2((sib.y() - self.y()), (sib.x() - self.x())))
+		work = [(self, collidingSiblings)]
+		while work:
+			print(len(work))
+			cur, siblings = work.pop()
 			
-			siblingWins = (angle > 135 or angle <= -45)  # or (sib.getX() < self.getX() and sib.getY() < self.getY())
-			
-			if siblingWins:
-				sib.resolveCollisions([self])
-			
-			elif angle <= 0:
-				sib.setX(self.x() + self.boundingRect(True).width() + sib.getMargin())
-			
-			elif angle >= 90:
-				sib.setY(self.y() + self.boundingRect(True).height() + sib.getMargin())
-			
-			else:
-				slope = (sib.y() - self.y())/(sib.x() - self.x())
-				n = slope * self.boundingRect().height()  # Number of iterations of slope to reach bottom
-				m = self.boundingRect().width() / slope  # Number of iterations of slope to reach right
+			for sib in collidingSiblings:
 				
-				if n < m:  # bottom is closer
-					sib.setX(self.x() + n)
-					sib.setY(self.y() + self.boundingRect(True).height() + sib.getMargin())
+				sb = sib.boundingRect(False)
+				cb = cur.boundingRect(False)
+				if sib.x() == cur.x() and sib.y() == cur.y():
+					angle = 0
+					siblingWins = (sb.width()*sb.height() > cb.width()*cb.height())
 				else:
-					sib.setX(self.x() + self.boundingRect(True).width() + sib.getMargin())
-					sib.setY(self.y() + m)
+					angle = np.rad2deg(np.arctan2((sib.y() - cur.y()), (sib.x() - cur.x())))
+					siblingWins = (angle > 135 or angle <= -45)  # or (sib.getX() < self.getX() and sib.getY() < self.getY())
+				
+				if siblingWins:
+					winner = sib
+					loser = cur
+				else:
+					winner = cur
+					loser = sib
+					
+				if angle <= 0:
+					loser.setX(winner.x() + winner.boundingRect(True).width() + winner.getMargin())
+				
+				elif angle >= 90:
+					loser.setY(winner.y() + winner.boundingRect(True).height() + winner.getMargin())
+				
+				else:
+					slope = (loser.y() - winner.y())/(loser.x() - winner.x())
+					n = slope * winner.boundingRect().height()  # Number of iterations of slope to reach bottom
+					m = winner.boundingRect().width() / slope  # Number of iterations of slope to
+					# reach right
+					
+					lop = loser.pos() # loser old pos
+					if n < m:  # bottom is closer
+						loser.setX(winner.x() + n)
+						loser.setY(winner.y() + winner.boundingRect(True).height() + sib.getMargin())
+					else:
+						loser.setX(winner.x() + winner.boundingRect(True).width() + sib.getMargin())
+						loser.setY(winner.y() + m)
+					lnp = loser.pos() # loser new pos
+						
+				if winner.overlapsWith(loser):
+					print("=======================================================================")
+					print("WOAH THIS SHOULDN'T HAPPEN:")
+					wb = winner.boundingRect(withMargins=False)
+					lb = loser.boundingRect(withMargins=False)
+					print("Winner: ", wb.x(), wb.y(), wb.width(), wb.height())
+					print("Loser:  ", lb.x(),  lb.y(),  lb.width(),  lb.height())
+					print("         ({},{}) -> ({},{})".format(lop.x(), lop.y(), lnp.x(), lnp.y()))
+					print("=======================================================================")
+				
+				sibsibs = [sibling.getGraphicsItem() for sibling in
+				            sib._dataComponent.getSiblings() if
+				            sibling is not sib._dataComponent]
+				sibsibCollisions = self.getCollidingComponents(sibsibs)
+				
+				if sibsibCollisions:
+					work.insert(0, (sib, sibsibCollisions))
+					
 			
-			sib.adjustPositioning()
 
 	def getMargin(self) -> float:
 		"""
