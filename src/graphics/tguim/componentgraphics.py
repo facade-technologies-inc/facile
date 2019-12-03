@@ -67,6 +67,7 @@ class ComponentGraphics(QGraphicsItem):
 		# force components to have at least the minimum size
 		self._x = rect[0]
 		self._y = rect[1]
+		self._numMoves = 0
 
 		# --- This is where the components get resized to avoid collisions. ---
 
@@ -104,6 +105,14 @@ class ComponentGraphics(QGraphicsItem):
 			self.triggerSceneUpdate()
 		except:
 			pass
+		
+	def getNumMoves(self) -> int:
+		"""
+		Gets the number of times a component has moved
+		
+		:return: int
+		"""
+		return self._numMoves
 
 	def getNumberOfTokens(self) -> int:
 		"""
@@ -181,24 +190,6 @@ class ComponentGraphics(QGraphicsItem):
 				self.resolveCollisions(collidingSiblings)
 			else:
 				return
-
-	def expandSelf(self) -> None:
-		"""
-		Expands self based on children
-
-		:return: None
-		"""
-		maxX = 0
-		maxY = 0
-		for child in self._dataComponent.getChildren():
-			c = child.getGraphicsItem()
-			maxX = max(maxX, c.x() + c.boundingRect(True).width())
-			maxY = max(maxY, c.y() + c.boundingRect(True).height())
-
-		if maxX >= self._width:
-			self._width = maxX + 10
-		if maxY >= self._height:
-			self._height = maxY + 10
 
 	def expandParent(self, parent: 'ComponentGraphics', siblings: list) -> None:
 		"""
