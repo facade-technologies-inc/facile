@@ -21,6 +21,7 @@ This module contains the ComponentGraphics class.
 """
 
 import copy
+import numpy as np
 from PySide2.QtCore import QRectF
 from PySide2.QtGui import QPainterPath, QColor, QPen, Qt, QFont, QFontMetricsF
 from PySide2.QtWidgets import QGraphicsScene, QGraphicsItem, QGraphicsSceneContextMenuEvent, QMenu
@@ -224,52 +225,6 @@ class ComponentGraphics(QGraphicsItem):
 		if isinstance(parent, ComponentGraphics):
 			parent.adjustPositioning()
 
-	def resolveYCollisions(self, collidingSiblings: list) -> None:
-		"""
-		This function will resolve y-axis collisions of a component with its siblings.
-
-		:param collidingSiblings: list of siblings colliding with self
-		:type collidingSiblings: list
-		:return: None
-		:rtype: NoneType
-		"""
-		# If a sibling collides on top, move self down
-		newY = 0
-		# bottomCollidingSibs = []
-		for sib in collidingSiblings:
-			if sib.getY() <= self.getY():
-				newY = max(newY, sib.y() + sib.boundingRect(True).height())
-			else:
-				# bottomCollidingSibs.append(sib)
-				sib.resolveYCollisions([self])
-
-		if newY != 0:
-			self.setY(newY + self._margin)
-			print(self.getLabel() + ' was moved in y direction.******************')
-
-	def resolveXCollisions(self, collidingSiblings: list) -> None:
-		"""
-		This function will resolve x-axis collisions of a component with its siblings.
-
-		:param collidingSiblings: list of siblings colliding with self
-		:type collidingSiblings: list
-		:return: None
-		:rtype: NoneType
-		"""
-		# If a sibling collides left, move self right
-		newX = 0
-		rightCollidingSibs = []
-		for sib in collidingSiblings:
-			if sib.getX() <= self.getX():
-				newX = max(newX, sib.x() + sib.boundingRect(True).width())
-			else:
-				rightCollidingSibs.append(sib)
-				sib.resolveXCollisions([self, ])
-
-		if newX != 0:
-			self.setX(newX + self._margin)
-			print(self.getLabel() + ' was moved in x direction.******************')
-
 	def getX(self):
 		"""
 
@@ -293,9 +248,34 @@ class ComponentGraphics(QGraphicsItem):
 		:return: None
 		:rtype: NoneType
 		"""
-		# TODO: Implement diagonal movement (theres a case where this doesnt work)
-		self.resolveYCollisions(collidingSiblings)
-		# self.resolveXCollisions(collidingSiblings)
+		
+		for sib in collidingSiblings:
+			angle = np.rad2deg(np.arctan2((sib.y() - self.y()), (sib.x() - self.x())))
+			
+			siblingWins = (angle >= 135 or angle <= -45) or (sib.getX() < self.getX() and sib.getY() < self.getY())
+			
+			if siblingWins:
+				sib.resolveCollisions([self])
+			
+			elif angle <= 0:
+				sib.setX(self.x() + self.boundingRect(True).width() + sib.getMargin())
+			
+			elif angle >= 90:
+				sib.setY(self.y() + self.boundingRect(True).height() + sib.getMargin())
+			
+			else:
+				slope = (sib.y() - self.y())/(sib.x() - self.x())
+				n = slope * self.boundingRect().height()  # Number of iterations of slope to reach bottom
+				m = self.boundingRect().width() / slope  # Number of iterations of slope to reach right
+				
+				if n < m:  # bottom is closer
+					sib.setX(self.x() + n)
+					sib.setY(self.y() + self.boundingRect(True).height() + sib.getMargin())
+				else:
+					sib.setX(self.x() + self.boundingRect(True).width() + sib.getMargin())
+					sib.setY(self.y() + m)
+			
+			sib.adjustPositioning()
 
 	def getMargin(self) -> float:
 		"""
