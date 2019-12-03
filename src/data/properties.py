@@ -101,6 +101,7 @@ class Properties:
 				newProperties.addProperty("Visual", "Y", 0, int, True)
 				newProperties.addProperty("Visual", "Width", 100, int, True)
 				newProperties.addProperty("Visual", "Height", 100, int, True)
+				newProperties.addProperty("Visual", "Has Moved", False, bool, True)
 			elif predefinedCategories[i] == "GUI Component":
 				newProperties.addProperty("GUI Component", "Title", "default", str, True)
 				newProperties.addProperty("GUI Component", "Parent Title", "default", str, True)

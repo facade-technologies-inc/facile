@@ -610,24 +610,25 @@ class ComponentGraphics(QGraphicsItem):
 		painter.drawText(self.boundingRect(withMargins=False).x() + 5, self._margin + 13, name)
 
 		# draw token tag
-		token_count = str(self.getNumberOfTokens())
-		
-		ttX = br.x() + br.width() - ComponentGraphics.TITLEBAR_H
-		ttY = br.y()
-		ttWidth = ComponentGraphics.TITLEBAR_H
-		ttHeight = ComponentGraphics.TITLEBAR_H
-		
-		rectBox = QRectF(ttX, ttY, ttWidth, ttHeight)
-		tokenTagFont = QFont("Times", 10)
-		painter.setFont(tokenTagFont)
-		painter.setBrush(QColor(255, 0, 0, 127))
-		#painter.drawRect(rectBox)
-		painter.drawEllipse(rectBox.center(), ttWidth/2-1, ttHeight/2-1)
-		painter.setBrush(QColor(100, 200, 255))
-		fm = QFontMetricsF(tokenTagFont)
-		pixelsWide = fm.width(token_count)
-		pixelsHigh = fm.height()
-		painter.drawText(ttX+ttWidth/2-pixelsWide/2, ttY+ttHeight/2+pixelsHigh/4, token_count)
+		if br.width() >= ComponentGraphics.TITLEBAR_H:
+			token_count = str(self.getNumberOfTokens())
+			
+			ttX = br.x() + br.width() - ComponentGraphics.TITLEBAR_H
+			ttY = br.y()
+			ttWidth = ComponentGraphics.TITLEBAR_H
+			ttHeight = ComponentGraphics.TITLEBAR_H
+			
+			rectBox = QRectF(ttX, ttY, ttWidth, ttHeight)
+			tokenTagFont = QFont("Times", 10)
+			painter.setFont(tokenTagFont)
+			painter.setBrush(QColor(255, 0, 0, 127))
+			#painter.drawRect(rectBox)
+			painter.drawEllipse(rectBox.center(), ttWidth/2-1, ttHeight/2-1)
+			painter.setBrush(QColor(100, 200, 255))
+			fm = QFontMetricsF(tokenTagFont)
+			pixelsWide = fm.width(token_count)
+			pixelsHigh = fm.height()
+			painter.drawText(ttX+ttWidth/2-pixelsWide/2, ttY+ttHeight/2+pixelsHigh/4, token_count)
 
 	def mousePressEvent(self, event):
 		"""

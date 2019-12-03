@@ -81,8 +81,10 @@ class VBGraphics(QGraphicsItem):
 		pen = QPen(arrowColor)
 		if self.isSelected():
 			pen.setStyle(Qt.DashDotLine)
+			arrowColor = QColor(255, 0, 0)
 		else:
 			pen.setStyle(Qt.SolidLine)
+			arrowColor = QColor(255, 200, 50)
 		pen.setWidth(10)
 		painter.setPen(pen)
 		
