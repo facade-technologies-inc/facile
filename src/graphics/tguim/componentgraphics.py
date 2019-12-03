@@ -20,6 +20,7 @@
 This module contains the ComponentGraphics class.
 """
 
+import copy
 from PySide2.QtCore import QRectF
 from PySide2.QtGui import QPainterPath, QColor, QPen, Qt, QFont
 from PySide2.QtWidgets import QGraphicsScene, QGraphicsItem, QGraphicsSceneContextMenuEvent, QMenu
@@ -145,10 +146,19 @@ class ComponentGraphics(QGraphicsItem):
 		self.checkForCollisions(siblings)
 
 		# If component isn't placed inside the parent, expand the parent
-		if parentIsScene:
-			self.expandSelf()
-		elif not parent.contains(self):
-			self.expandParent(parent)
+		# if parentIsScene:
+		# 	self.expandSelf()
+		# el
+		allContained = True
+		for sib in siblings:
+			if not parent.contains(sib):
+				allContained = False
+				break
+		
+		allContained = parent.contains(self) and allContained
+		
+		if not parentIsScene and not allContained:
+			self.expandParent(parent, siblings)
 
 	def checkForCollisions(self, siblings: list) -> None:
 		"""
@@ -158,12 +168,12 @@ class ComponentGraphics(QGraphicsItem):
 		:type siblings: list[ComponentGraphics]
 		:return: None
 		"""
-		# while True: TODO: Uncomment after testing
-		collidingSiblings = self.getCollidingComponents(siblings)
-		if collidingSiblings:
-			self.resolveCollisions(collidingSiblings)
-		else:
-			return
+		while True:  # TODO: Uncomment after testing
+			collidingSiblings = self.getCollidingComponents(siblings)
+			if collidingSiblings:
+				self.resolveCollisions(collidingSiblings)
+			else:
+				return
 
 	def expandSelf(self) -> None:
 		"""
@@ -178,37 +188,39 @@ class ComponentGraphics(QGraphicsItem):
 			maxX = max(maxX, c.x() + c.boundingRect(True).width())
 			maxY = max(maxY, c.y() + c.boundingRect(True).height())
 
-		if maxX > self._width:
+		if maxX >= self._width:
 			self._width = maxX + 10
-		if maxY > self._height:
+		if maxY >= self._height:
 			self._height = maxY + 10
 
-	def expandParent(self, parent: 'ComponentGraphics') -> None:
+	def expandParent(self, parent: 'ComponentGraphics', siblings: list) -> None:
 		"""
 		This function expands the parent and is somewhat recursive, just for adaptability.
-
+		
+		:param siblings: list of all of self's siblings
+		:type siblings: list[ComponentGraphics]
 		:param parent: the parent component of self
 		:type parent: ComponentGraphics or scene
 		:return: None
 		"""
-
-		width = parent._width + 1
-		height = parent._height + 1
+		
 		parent.prepareGeometryChange()
-
-		# if parentIsScene is None:
-		# 	parent.setSceneRect(self.scene().x(), self.scene().y(),
-		# 	                    width + self._margin,
-		# 	                    height + self._margin)
-		# else:
-
-		parent._width = width
-		parent._height = height
-
-		if not parent.contains(self):
-			self.expandParent(parent)
-		elif isinstance(parent, ComponentGraphics):
-			parent._height = height + ComponentGraphics.TITLEBAR_H
+		
+		maxX = 0
+		maxY = 0
+		for sib in siblings:
+			maxX = max(maxX, sib.x() + sib.boundingRect(True).width())
+			maxY = max(maxY, sib.y() + sib.boundingRect(True).height())
+			
+		maxX = max(maxX, self.x() + self.boundingRect(True).width())
+		maxY = max(maxY, self.y() + self.boundingRect(True).height())
+			
+		parent._width = maxX
+		parent._height = maxY
+		
+		print(parent.getLabel() + ' was expanded.-------------')
+		
+		if isinstance(parent, ComponentGraphics):
 			parent.adjustPositioning()
 
 	def resolveYCollisions(self, collidingSiblings: list) -> None:
