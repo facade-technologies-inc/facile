@@ -512,11 +512,12 @@ class ComponentGraphics(QGraphicsItem):
 			pen.setColor(QColor(0, 0, 0))
 		painter.setPen(pen)
 
-		painter.setBrush(QColor(100, 200, 255))
+		painter.setBrush(QColor(88, 183, 255))
 
 		id = self._dataComponent.getId()
 
 		painter.drawRoundedRect(boundingRect, 5, 5)
+		br = self.boundingRect(withMargins=False)
 
 		# draw name label
 		name = self.getLabel()
@@ -531,6 +532,8 @@ class ComponentGraphics(QGraphicsItem):
 		else:
 			nameFont = QFont("Times", 5)
 		painter.setFont(nameFont)
+		fm = QFontMetricsF(nameFont)
+		name = fm.elidedText(name, Qt.ElideRight, br.width() - ComponentGraphics.TITLEBAR_H)
 
 		painter.setBrush(QColor(100, 200, 255))
 		painter.drawText(self.boundingRect(withMargins=False).x() + 5, self._margin + 13, name)
@@ -538,7 +541,6 @@ class ComponentGraphics(QGraphicsItem):
 		# draw token tag
 		token_count = str(self.getNumberOfTokens())
 		
-		br = self.boundingRect(withMargins=False)
 		ttX = br.x() + br.width() - ComponentGraphics.TITLEBAR_H
 		ttY = br.y()
 		ttWidth = ComponentGraphics.TITLEBAR_H
