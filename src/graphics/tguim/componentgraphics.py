@@ -149,16 +149,17 @@ class ComponentGraphics(QGraphicsItem):
 		# if parentIsScene:
 		# 	self.expandSelf()
 		# el
-		allContained = True
-		for sib in siblings:
-			if not parent.contains(sib):
-				allContained = False
-				break
-		
-		allContained = parent.contains(self) and allContained
-		
-		if not parentIsScene and not allContained:
-			self.expandParent(parent, siblings)
+		if not parentIsScene:
+			allContained = True
+			for sib in siblings:
+				if not parent.contains(sib):
+					allContained = False
+					break
+			
+			allContained = parent.contains(self) and allContained
+			
+			if not allContained:
+				self.expandParent(parent, siblings)
 
 	def checkForCollisions(self, siblings: list) -> None:
 		"""
