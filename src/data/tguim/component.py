@@ -66,7 +66,7 @@ class Component(Entity):
 			predefinedCategories = ["Base", "GUI Component", "Visual"]
 			customCategories = {}
 			props = Properties.createPropertiesObject(predefinedCategories, customCategories)
-			
+			assert(props is not None)
 			# Set base property values
 			props.getProperty("ID")[1].setValue(self.getId())
 			props.getProperty("Name")[1].setValue(propToken.controlIDs[-1])

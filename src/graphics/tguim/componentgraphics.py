@@ -250,25 +250,55 @@ class ComponentGraphics(QGraphicsItem):
 		:rtype: NoneType
 		"""
 		
-		if self in collidingSiblings:
-			print("self can't collide with itself")
-			sys.exit(10)    #exit with some error code
-		
 		work = [(self, collidingSiblings)]
 		while work:
 			cur, siblings = work.pop()
 			
 			for sib in siblings:
-				print("{} vs. {}:".format(cur.getLabel(), sib.getLabel()))
+				print("{} ({},{}) vs. {} ({},{}):".format(cur.getLabel(), cur.x(), cur.y(),
+				                                          sib.getLabel(), sib.x(), sib.y()))
 				sb = sib.boundingRect(False)
 				cb = cur.boundingRect(False)
-				if sib.x() == cur.x() and sib.y() == cur.y():
+				dx = cur.getX() - sib.getX()
+				dy = cur.getY() - sib.getY()
+				
+				# same corner
+				if dx == 0 and dy == 0:
+					print("\tCorner is same")
 					angle = 0
 					siblingWins = (sb.width()*sb.height() > cb.width()*cb.height())
-				else:
-					angle = np.rad2deg(np.arctan2((sib.y() - cur.y()), (sib.x() - cur.x())))
-					siblingWins = (angle > 135 or angle <= -45)  # or (sib.getX() < self.getX() and sib.getY() < self.getY())
 				
+				# corner is shifted vertically
+				elif dx == 0:
+					print("\tCorner is shifted vertically")
+					angle = 90
+					siblingWins = (sib.getY() < cur.getY())
+					
+				# corner is shifted horizontally
+				elif dy == 0:
+					print("\tCorner is shifted horizontally")
+					angle = 0
+					siblingWins = (sib.getX() < cur.getX())
+					
+				# slope is negative
+				elif dy/dx < 0:
+					print("\tThe slope is negative")
+					print("\t", dy, dx)
+					if abs(dx) >= abs(dy):
+						print("\tDecided to shift horizontally")
+						angle = 0
+						siblingWins = (sib.getX() < cur.getX())
+					else:
+						angle = 90
+						print("\tDecided to shift vertically")
+						siblingWins = (sib.getY() < cur.getY())
+				
+				# slope is positive
+				else:
+					angle = 45 # The exact number doesn't matter as long as it's not 0 or 90.
+					siblingWins = (sib.getX() < cur.getX()) and (sib.getY() < cur.getY())
+				
+				print("\tAngle:", angle)
 				if siblingWins:
 					winner = sib
 					loser = cur
@@ -277,13 +307,18 @@ class ComponentGraphics(QGraphicsItem):
 					loser = sib
 				
 				lop = loser.pos()  # loser old pos
-				if angle <= 0:
-					loser.setX(winner.x() + winner.boundingRect(True).width() + winner.getMargin())
+				if angle == 0:
+					print("\tShifting {} Right".format(loser.getLabel()))
+					loser.setX(winner.x() + winner.boundingRect(True).width() +
+					           max(winner.getMargin(), loser.getMargin()))
 				
-				elif angle >= 90:
-					loser.setY(winner.y() + winner.boundingRect(True).height() + winner.getMargin())
+				elif angle == 90:
+					print("\tShifting {} Down".format(loser.getLabel()))
+					loser.setY(winner.y() + winner.boundingRect(True).height() +
+					           max(winner.getMargin(), loser.getMargin()))
 				
 				else:
+					print("\tShifting {} Diagonally".format(loser.getLabel()))
 					slope = (loser.y() - winner.y())/(loser.x() - winner.x())
 					n = slope * winner.boundingRect().height()  # Number of iterations of slope to reach bottom
 					m = winner.boundingRect().width() / slope  # Number of iterations of slope to
@@ -291,32 +326,22 @@ class ComponentGraphics(QGraphicsItem):
 					
 					if n < m:  # bottom is closer
 						loser.setX(winner.x() + n)
-						loser.setY(winner.y() + winner.boundingRect(True).height() + sib.getMargin())
+						loser.setY(winner.y() + winner.boundingRect(True).height() +
+						           max(winner.getMargin(), loser.getMargin()))
 					else:
-						loser.setX(winner.x() + winner.boundingRect(True).width() + sib.getMargin())
+						loser.setX(winner.x() + winner.boundingRect(True).width() +
+						           max(winner.getMargin(), loser.getMargin()))
 						loser.setY(winner.y() + m)
 				lnp = loser.pos() # loser new pos
 				
 				print("\t{}: ({},{}) -> ({},{})".format(loser.getLabel(), lop.x(), lop.y(),
 				                                      lnp.x(), lnp.y()))
 				
-				if winner.overlapsWith(loser):
-					print("=======================================================================")
-					print("WOAH THIS SHOULDN'T HAPPEN:")
-					wb = winner.boundingRect(withMargins=False)
-					lb = loser.boundingRect(withMargins=False)
-					print("Winner: ", winner.x(), winner.y(), wb.width(), wb.height())
-					print("Loser:  ", loser.x(),  loser.y(),  lb.width(), lb.height())
-					print("         ({},{}) -> ({},{})".format(lop.x(), lop.y(), lnp.x(), lnp.y()))
-					print("=======================================================================")
+				assert(not winner.overlapsWith(loser))
 				
 				sibsibs = [sibling.getGraphicsItem() for sibling in
 				            sib._dataComponent.getSiblings() if
 				            sibling is not sib._dataComponent]
-				
-				if sib in sibsibs:
-					print("sib can't collide with itself")
-					sys.exit(10)  # exit with some error code
 				
 				sibsibCollisions = sib.getCollidingComponents(sibsibs)
 				
@@ -418,11 +443,17 @@ class ComponentGraphics(QGraphicsItem):
 		:return: The label for this component.
 		:rtype: str
 		"""
-		try:
-			category, name = self._dataComponent.getProperties().getProperty("Name")
-			return name.getValue()
-		except:
+		
+		if self._dataComponent.getParent() is None:
 			return ""
+		try:
+			return self._dataComponent.getSuperToken().getTokens()[0].controlIDs[-1]
+			# category, name = self._dataComponent.getProperties().getProperty("Name")
+			# return name.getValue()
+		except:
+			import traceback
+			traceback.print_exc()
+			return "No Label"
 
 	def overlapsWith(self, sibling: 'ComponentGraphics') -> bool:
 		"""
@@ -436,18 +467,20 @@ class ComponentGraphics(QGraphicsItem):
 		:return: True if components overlap, False otherwise.
 		:rtype: bool
 		"""
+		m = max(self.getMargin(), sibling.getMargin())
+		
 		selfBound = self.boundingRect(False)
-		selfx = self.scenePos().x() + selfBound.x()
-		selfy = self.scenePos().y() + selfBound.y()
+		selfx = self.scenePos().x() + selfBound.x() - m
+		selfy = self.scenePos().y() + selfBound.y() - m
 
 		sibBound = sibling.boundingRect(False)
-		sibx = sibling.scenePos().x() + sibBound.x()
-		siby = sibling.scenePos().y() + sibBound.y()
+		sibx = sibling.scenePos().x() + sibBound.x() - m
+		siby = sibling.scenePos().y() + sibBound.y() - m
 
-		if (sibx < selfx + selfBound.width() and
-			sibx + sibBound.width() > selfx and
-			siby < selfy + selfBound.height() and
-			siby + sibBound.height() > selfy):
+		if (sibx < selfx + selfBound.width() + m*2 and
+			sibx + sibBound.width() + m*2 > selfx and
+			siby < selfy + selfBound.height() + m*2 and
+			siby + sibBound.height() + m*2 > selfy):
 			return True
 		return False
 
