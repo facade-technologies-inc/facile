@@ -19,7 +19,7 @@
 
 This module contains the ComponentGraphics class.
 """
-
+import sys
 import copy
 import numpy as np
 from PySide2.QtCore import QRectF
@@ -250,12 +250,15 @@ class ComponentGraphics(QGraphicsItem):
 		:rtype: NoneType
 		"""
 		
+		if self in collidingSiblings:
+			print("self can't collide with itself")
+			sys.exit(10)    #exit with some error code
+		
 		work = [(self, collidingSiblings)]
 		while work:
-			print(len(work))
 			cur, siblings = work.pop()
 			
-			for sib in collidingSiblings:
+			for sib in siblings:
 				
 				sb = sib.boundingRect(False)
 				cb = cur.boundingRect(False)
@@ -272,7 +275,8 @@ class ComponentGraphics(QGraphicsItem):
 				else:
 					winner = cur
 					loser = sib
-					
+				
+				lop = loser.pos()  # loser old pos
 				if angle <= 0:
 					loser.setX(winner.x() + winner.boundingRect(True).width() + winner.getMargin())
 				
@@ -285,29 +289,33 @@ class ComponentGraphics(QGraphicsItem):
 					m = winner.boundingRect().width() / slope  # Number of iterations of slope to
 					# reach right
 					
-					lop = loser.pos() # loser old pos
 					if n < m:  # bottom is closer
 						loser.setX(winner.x() + n)
 						loser.setY(winner.y() + winner.boundingRect(True).height() + sib.getMargin())
 					else:
 						loser.setX(winner.x() + winner.boundingRect(True).width() + sib.getMargin())
 						loser.setY(winner.y() + m)
-					lnp = loser.pos() # loser new pos
-						
+				lnp = loser.pos() # loser new pos
+				
 				if winner.overlapsWith(loser):
 					print("=======================================================================")
 					print("WOAH THIS SHOULDN'T HAPPEN:")
 					wb = winner.boundingRect(withMargins=False)
 					lb = loser.boundingRect(withMargins=False)
-					print("Winner: ", wb.x(), wb.y(), wb.width(), wb.height())
-					print("Loser:  ", lb.x(),  lb.y(),  lb.width(),  lb.height())
+					print("Winner: ", winner.x(), winner.y(), wb.width(), wb.height())
+					print("Loser:  ", loser.x(),  loser.y(),  lb.width(), lb.height())
 					print("         ({},{}) -> ({},{})".format(lop.x(), lop.y(), lnp.x(), lnp.y()))
 					print("=======================================================================")
 				
 				sibsibs = [sibling.getGraphicsItem() for sibling in
 				            sib._dataComponent.getSiblings() if
 				            sibling is not sib._dataComponent]
-				sibsibCollisions = self.getCollidingComponents(sibsibs)
+				
+				if sib in sibsibs:
+					print("sib can't collide with itself")
+					sys.exit(10)  # exit with some error code
+				
+				sibsibCollisions = sib.getCollidingComponents(sibsibs)
 				
 				if sibsibCollisions:
 					work.insert(0, (sib, sibsibCollisions))
