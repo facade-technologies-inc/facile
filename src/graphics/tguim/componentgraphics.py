@@ -21,7 +21,7 @@ This module contains the ComponentGraphics class.
 """
 
 from PySide2.QtCore import QRectF
-from PySide2.QtGui import QPainterPath, QColor, QPen, Qt, QFont
+from PySide2.QtGui import QPainterPath, QColor, QPen, Qt, QFont, QFontMetricsF
 from PySide2.QtWidgets import QGraphicsScene, QGraphicsItem, QGraphicsSceneContextMenuEvent, QMenu
 
 
@@ -37,7 +37,7 @@ class ComponentGraphics(QGraphicsItem):
 	MIN_MARGIN = 10
 	MARGIN_PROP = 0.05
 	PEN_WIDTH = 1.0
-	TITLEBAR_H = 20  # NOTE: Must be smaller than minimum margin
+	TITLEBAR_H = 40  # NOTE: Must be smaller than minimum margin
 
 	TRIM = 1
 
@@ -524,15 +524,24 @@ class ComponentGraphics(QGraphicsItem):
 
 		# draw token tag
 		token_count = str(self.getNumberOfTokens())
-		rectBox = QRectF(self.boundingRect().width() - self._margin,
-		                 -self._margin,
-		                 self._margin * 2, self._margin * 2)
+		
+		br = self.boundingRect(withMargins=False)
+		ttX = br.x() + br.width() - ComponentGraphics.TITLEBAR_H
+		ttY = br.y()
+		ttWidth = ComponentGraphics.TITLEBAR_H
+		ttHeight = ComponentGraphics.TITLEBAR_H
+		
+		rectBox = QRectF(ttX, ttY, ttWidth, ttHeight)
 		tokenTagFont = QFont("Times", 10)
 		painter.setFont(tokenTagFont)
 		painter.setBrush(QColor(255, 0, 0, 127))
-		painter.drawRect(rectBox)
+		#painter.drawRect(rectBox)
+		painter.drawEllipse(rectBox.center(), ttWidth/2-1, ttHeight/2-1)
 		painter.setBrush(QColor(100, 200, 255))
-		painter.drawText(rectBox.center(), token_count)
+		fm = QFontMetricsF(tokenTagFont)
+		pixelsWide = fm.width(token_count)
+		pixelsHigh = fm.height()
+		painter.drawText(ttX+ttWidth/2-pixelsWide/2, ttY+ttHeight/2+pixelsHigh/4, token_count)
 
 	def mousePressEvent(self, event):
 		"""
