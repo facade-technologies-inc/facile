@@ -220,7 +220,7 @@ class ComponentGraphics(QGraphicsItem):
 		parent._width = maxX
 		parent._height = maxY
 		
-		print(parent.getLabel() + ' was expanded.-------------')
+		#print(parent.getLabel() + ' was expanded.-------------')
 		
 		if isinstance(parent, ComponentGraphics):
 			parent.adjustPositioning()
@@ -259,7 +259,7 @@ class ComponentGraphics(QGraphicsItem):
 			cur, siblings = work.pop()
 			
 			for sib in siblings:
-				
+				print("{} vs. {}:".format(cur.getLabel(), sib.getLabel()))
 				sb = sib.boundingRect(False)
 				cb = cur.boundingRect(False)
 				if sib.x() == cur.x() and sib.y() == cur.y():
@@ -296,6 +296,9 @@ class ComponentGraphics(QGraphicsItem):
 						loser.setX(winner.x() + winner.boundingRect(True).width() + sib.getMargin())
 						loser.setY(winner.y() + m)
 				lnp = loser.pos() # loser new pos
+				
+				print("\t{}: ({},{}) -> ({},{})".format(loser.getLabel(), lop.x(), lop.y(),
+				                                      lnp.x(), lnp.y()))
 				
 				if winner.overlapsWith(loser):
 					print("=======================================================================")
@@ -433,11 +436,11 @@ class ComponentGraphics(QGraphicsItem):
 		:return: True if components overlap, False otherwise.
 		:rtype: bool
 		"""
-		selfBound = self.boundingRect(True)
+		selfBound = self.boundingRect(False)
 		selfx = self.scenePos().x() + selfBound.x()
 		selfy = self.scenePos().y() + selfBound.y()
 
-		sibBound = sibling.boundingRect(True)
+		sibBound = sibling.boundingRect(False)
 		sibx = sibling.scenePos().x() + sibBound.x()
 		siby = sibling.scenePos().y() + sibBound.y()
 
