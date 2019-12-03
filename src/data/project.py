@@ -26,6 +26,7 @@ from subprocess import PIPE
 
 import psutil
 from PySide2.QtWidgets import QTreeView
+from PySide2.QtCore import Qt
 
 from data.tguim.targetguimodel import TargetGuiModel
 from qt_models.projectexplorermodel import ProjectExplorerModel
@@ -106,7 +107,8 @@ class Project:
 			elif self._observer.getPID() != self._process.pid:
 				self._observer.pause()
 				self._observer = Observer(self._process.pid, self._backend)
-				self._observer.newSuperToken.connect(self._targetGUIModel.createComponent)
+				self._observer.newSuperToken.connect(self._targetGUIModel.createComponent,
+				                                     type=Qt.BlockingQueuedConnection)
 				new = True
 			
 			if new:

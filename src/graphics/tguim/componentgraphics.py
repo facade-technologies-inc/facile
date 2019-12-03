@@ -100,6 +100,11 @@ class ComponentGraphics(QGraphicsItem):
 		showInGui.triggered.connect(
 			lambda: self.scene().blinkComponent(self._dataComponent.getId()))
 
+		try:
+			self.triggerSceneUpdate()
+		except:
+			pass
+
 	def getNumberOfTokens(self) -> int:
 		"""
 		Get the number of tokens.
@@ -319,7 +324,7 @@ class ComponentGraphics(QGraphicsItem):
 				
 				else:
 					print("\tShifting {} Diagonally".format(loser.getLabel()))
-					slope = (loser.y() - winner.y())/(loser.x() - winner.x())
+					slope = dy/dx
 					n = slope * winner.boundingRect().height()  # Number of iterations of slope to reach bottom
 					m = winner.boundingRect().width() / slope  # Number of iterations of slope to
 					# reach right
@@ -402,6 +407,11 @@ class ComponentGraphics(QGraphicsItem):
 				self.pos().setX(value.x())
 			elif yOkay:
 				self.pos().setY(value.y())
+
+		# try:
+		# 	self.triggerSceneUpdate()
+		# except:
+		# 	pass
 
 		return QGraphicsItem.itemChange(self, change, value)
 
