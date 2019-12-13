@@ -84,7 +84,7 @@ class Component(Entity):
 			props.getProperty("Y")[1].setValue(geometry[1])
 			props.getProperty("Width")[1].setValue(geometry[2])
 			props.getProperty("Height")[1].setValue(geometry[3])
-			#props.getProperty("Has Moved")[1].setValue()
+			#props.getProperty("Has Moved")[1].setValue(self._graphicsItem.getNumMoves() != 0)
 			
 			self.setProperties(props)
 	
