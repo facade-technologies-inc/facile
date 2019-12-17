@@ -66,7 +66,7 @@ class Component(Entity):
 			predefinedCategories = ["Base", "GUI Component", "Visual"]
 			customCategories = {}
 			props = Properties.createPropertiesObject(predefinedCategories, customCategories)
-			
+			assert(props is not None)
 			# Set base property values
 			props.getProperty("ID")[1].setValue(self.getId())
 			props.getProperty("Name")[1].setValue(propToken.controlIDs[-1])
@@ -84,6 +84,7 @@ class Component(Entity):
 			props.getProperty("Y")[1].setValue(geometry[1])
 			props.getProperty("Width")[1].setValue(geometry[2])
 			props.getProperty("Height")[1].setValue(geometry[3])
+			#props.getProperty("Has Moved")[1].setValue(self._graphicsItem.getNumMoves() != 0)
 			
 			self.setProperties(props)
 	
@@ -156,7 +157,7 @@ class Component(Entity):
 		if self.getParent() is None:
 			return [self]
 		else:
-			return self.getParent().getChildren()[:]
+			return self.getParent().getChildren()[:]  # Modified to return actual siblings not copies (removed [:])
 	
 	def childCount(self) -> int:
 		"""
