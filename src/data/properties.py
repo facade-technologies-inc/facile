@@ -22,199 +22,232 @@ This module contains the Properties() class.
 """
 
 from collections import OrderedDict
-from qt_models.propeditormodel import PropModel
-from data.property import Property
+from enum import Enum
 
-# TODO: Don't use object in type hints when there is a more specific type you could put
+from data.property import Property
+from qt_models.propeditormodel import PropModel
 
 
 class Properties:
-    """
-    This class allows to create data of our properties.
-    """
-    def __init__(self):
-        """
-        Constructs a Properties objects.
+	"""
+	This class allows to create data of our properties.
+	"""
+	
+	def __init__(self):
+		"""
+		Constructs a Properties objects.
 
-        :return: An ordered dictionary of properties.
-        :rtype: Properties
-        """
-        self._categories = OrderedDict()
-        self._model = PropModel(self)
+		:return: An ordered dictionary of properties.
+		:rtype: Properties
+		"""
+		self._categories = OrderedDict()
+		self._model = PropModel(self)
+	
+	def newCategory(self, category: str) -> None:
+		"""
+		Adds a new category to the dict of categories.
 
-    def getCategories(self) -> object:
-        """
-        Gets the categories of the properties object.
+		:param category: The category that will be added to the dict.
+		:type category: str
+		:return: None
+		:rtype: NoneType
+		"""
+		self._categories[category] = []
+	
+	def addProperty(self, category: str, name: str, value: object, type: object,
+	                readOnly: bool = False) -> None:
+		"""
+		To add a property to a certain category.
 
-        :return: The categories of the properties object.
-        :rtype: object
-        """
-        return self._categories
+		:param category: Specific category for that property.
+		:type category: str
+		:param name: Name of property.
+		:type name: str
+		:param value: Value of property.
+		:type value: object
+		:param type: Type of property.
+		:type type: object
+		:param readOnly: Data structure of property.
+		:type readOnly: bool
+		:return: None
+		:rtype: NoneType
+		"""
+		if category not in self._categories.keys():
+			raise Exception("{} does not exist".format(category))
+		self._categories[category].append(Property(name, value, type, readOnly))
+	
+	@staticmethod
+	def createPropertiesObject(predefinedCategories: list, customCategories: dict) -> 'Properties':
+		"""
+		Property Factory, that is a static method, that createes properties objects for predefined and custom categories.
 
-    def newCategory(self, category: object) -> None:
-        """
-        Adds a new category to the list of categories.
+		:param predefinedCategories: Category that was already defined from a list.
+		:type predefinedCategories: list
+		:param customCategories: Categories that can be made from a list.
+		:type customCategories: dict
+		:return: Properties objects.
+		:rtype: Properties
+		"""
+		newProperties = Properties()
+		
+		for i in range(len(predefinedCategories)):
+			newProperties.newCategory(predefinedCategories[i])
+			if predefinedCategories[i] == "Base":
+				newProperties.addProperty("Base", "ID", 0, int, True)
+				newProperties.addProperty("Base", "Name", "default", str)
+				newProperties.addProperty("Base", "Type", "Push Button", str, True)
+				newProperties.addProperty("Base", "Annotation", "Add a comment here...", str)
+			elif predefinedCategories[i] == "Visual":
+				newProperties.addProperty("Visual", "X", 0, int, True)
+				newProperties.addProperty("Visual", "Y", 0, int, True)
+				newProperties.addProperty("Visual", "Width", 100, int, True)
+				newProperties.addProperty("Visual", "Height", 100, int, True)
+				#newProperties.addProperty("Visual", "Has Moved", False, bool, True)
+			elif predefinedCategories[i] == "GUI Component":
+				newProperties.addProperty("GUI Component", "Title", "default", str, True)
+				newProperties.addProperty("GUI Component", "Parent Title", "default", str, True)
+				newProperties.addProperty("GUI Component", "Class Name", "default", str, True)
+				newProperties.addProperty("GUI Component", "Is Dialog", True, bool, True)
+			elif predefinedCategories[i] == "Visibility Behavior":
+				newProperties.addProperty("Visibility Behavior", "Reaction Type", None, Enum)
+				newProperties.addProperty("Visibility Behavior", "Source ID", 1, int, True)
+				newProperties.addProperty("Visibility Behavior", "Destination ID", 1, int, True)
+		
+		for category in customCategories.keys():
+			newProperties.newCategory(category)
+			properties = customCategories[category]
+			for property in properties:
+				name = property["name"]
+				type = property["type"]
+				default = property["default"]
+				readOnly = property["readOnly"]
+				newProperties.addProperty(category, name, default, type, readOnly)
+		
+		return newProperties
+	
+	def getModel(self) -> PropModel:
+		"""
+		Gets the properties's objects model.
 
-        :return: None
-        :rtype: NoneType
-        """
-        self._categories[category] = []
+		:return: Model of properties object.
+		:rtype: PropModel
+		"""
+		return self._model
+	
+	def getNumCategories(self) -> int:
+		"""
+		Gets the Number of Categories of the properties object.
 
-    def addProperty(self, category: object, name: str, value: object, type: object,
-                    readOnly: object = False) -> None:
-        """
-        To add a property to a certain category.
+		:return: Number of categories.
+		:rtype: int
+		"""
+		return len(self._categories)
+	
+	def getCategories(self) -> list:
+		"""
+		Gets the categories from the list of categories.
 
-        :param category: Specific category for that property.
-        :type category: object
-        :param name: Name of property.
-        :type name: str
-        :param value: Value of property.
-        :type value: object
-        :param type: Type of property.
-        :type type: object
-        :param readOnly: Data structure of property.
-        :type readOnly: object
-        :return: None
-        :rtype: NoneType
-        """
-        if category not in self._categories.keys():
-            raise Exception("{} does not exist".format(category))
-        self._categories[category].append(Property(name, value, type, readOnly))
+		:return: The categories from the list.
+		:rtype: list
+		"""
+		return list(self._categories.keys())
+	
+	def getCategoryProperties(self, category: str) -> list:
+		"""
+		Gets the properties from the category.
 
-    @staticmethod
-    def createPropertiesObject(predefinedCategories: object, customCategories: object) -> object:
-        """
-        Property Factory, that is a static method, that createes properties objects for predefined and custom categories.
+		:param category: Category from list of categories.
+		:type category: str
+		:return: The properties from that category.
+		:rtype: list
+		"""
+		return self._categories[category]
+	
+	def getPropertyCategory(self, property: 'Property') -> str:
+		"""
+		Gets the category of that property.
 
-        :param predefinedCategories: Category that was already defined.
-        :type predefinedCategories: object
-        :param customCategories: Categories that can be made.
-        :type customCategories: object
-        :return: Properties objects.
-        :rtype: object
-        """
-        newProperties = Properties()
+		:param property: Property of a particular category.
+		:type property: Property
+		:return: The category of a particular property.
+		:rtype: str
+		"""
+		for category in self.getCategories():
+			props = self.getCategoryProperties(category)
+			if property in props:
+				return category
+	
+	def getCategoryIndex(self, category: str) -> int:
+		"""
+		Gets the index of a category.
 
-        for i in range(len(predefinedCategories)):
-            newProperties.newCategory(predefinedCategories[i])
-            if predefinedCategories[i] == "Base":
-                newProperties.addProperty("Base", "Name", "default", str)
-                newProperties.addProperty("Base", "Type", "Push Button", str)
-                newProperties.addProperty("Base", "Annotation", "", str)
-                newProperties.addProperty("Base", "Read-Only", "", bool)
-                newProperties.addProperty("Base", "Size", 3.45, float)
-            elif predefinedCategories[i] == "Visual":
-                newProperties.addProperty("Visual", "BoxColor", "black", str)
-                newProperties.addProperty("Visual", "TextColor", "black", str)
-                newProperties.addProperty("Visual", "BorderWidth", 1, int)
-                newProperties.addProperty("Visual", "X", 0, int)
-                newProperties.addProperty("Visual", "Y", 0, int)
-                newProperties.addProperty("Visual", "Width", 100, int)
-                newProperties.addProperty("Visual", "Height", 100, int)
-            elif predefinedCategories[i] == "GUI Component":
-                newProperties.addProperty("GUI Component", "Parent", 1, int, True)
-                newProperties.addProperty("GUI Component", "Children", [], list, True)
-            elif predefinedCategories[i] == "Visibility Behaviors":
-                newProperties.addProperty("Visibility Behavior", "From", 1, int, True)
-                newProperties.addProperty("Visibility Behavior", "To", 1, int, True)
+		:param category: Category from list of categories.
+		:type category: str
+		:return: Index of the category.
+		:rtype: int
+		"""
+		categories = self.getCategories()
+		return categories.index(category)
+	
+	def getNumPropertiesInCategory(self, category: str) -> int:
+		"""
+		Gets the number of properties within a category.
 
-        # TODO: Fix this.
-        for i in range(len(customCategories)):
-            newProperties.newCategory(customCategories[i])
-            if customCategories[i] == "Custom":
-                newProperties.addProperty("Custom", "Name", "Value", "Type", str)
-                newProperties.addProperty("Custom", "Name", "Value", "Type", int)
-                newProperties.addProperty("Custom", "Name", "Value", "Type", float)
-                newProperties.addProperty("Custom", "Name", "Value", "Type", bool)
+		:param category: Category from list of categories.
+		:type category: str
+		:return: Number of properties within a category.
+		:rtype: int
+		"""
+		properties = self.getCategoryProperties(category)
+		return len(properties)
+	
+	def getProperty(self, name: str) -> tuple:
+		"""
+		Gets a property by name if it exists in the properties object
+		
+		:param name: the name of the property to get
+		:return: (A tuple containing the category name that the property is under and the property object) or None
+		:rtype: tuple[str, Property] or NoneType
+		"""
+		for category in self._categories:
+			for property in self._categories[category]:
+				if property.getName() == name:
+					return category, property
+	
+	def asDict(self) -> dict:
+		"""
+		Get a dictionary representation of the visibility behavior.
 
-        return newProperties
+		.. note::
+			This is not just a getter of the __dict__ attribute.
 
-    def getModel(self) -> PropModel:
-        """
-        Gets the properties's objects model.
+		:return: The dictionary representation of the object.
+		:rtype: dict
+		"""
+		d = {}
+		for cat, props in self._categories.items():
+			d[cat] = [prop.asDict() for prop in props]
+		return d
+	
+	@staticmethod
+	def fromDict(d: dict) -> 'Properties':
+		"""
+		Creates a Properties object from a dictionary.
 
-        :return: Model of properties object.
-        :rtype: PropModel
-        """
-        return self._model
-
-    def getNumCategories(self) -> int:
-        """
-        Gets the Number of Categories of the properties object.
-
-        :return: Number of categories.
-        :rtype: int
-        """
-        return len(self._categories)
-
-    def getCategories(self) -> object:
-        """
-        Gets the categories from the list of categories.
-
-        :return: The categories from the list.
-        :rtype: object
-        """
-        return list(self._categories.keys())
-
-    def getCategoryProperties(self, category: object) -> object:
-        """
-        Gets the properties from the category.
-
-        :param category: Category from list of categories.
-        :type category: object
-        :return: The properties from that category.
-        :rtype: object
-        """
-        return self._categories[category]
-
-    def getPropertyCategory(self, property: object) -> object:
-        """
-        Gets the category of that property.
-
-        :param property: Property of a particular category.
-        :type property: object
-        :return: The category of a particular property.
-        :rtype: object
-        """
-        for category in self.getCategories():
-            props = self.getCategoryProperties(category)
-            if property in props:
-                return category
-
-    def getCategoryIndex(self, category:object) -> object:
-        """
-        Gets the index of a category.
-
-        :param category: Category from list of categories.
-        :type category: object
-        :return: Index of the category.
-        :rtype: object
-        """
-        categories = self.getCategories()
-        return categories.index(category)
-
-    def getNumPropertiesInCategory(self, category:object) -> int:
-        """
-        Gets the number of properties within a category.
-
-        :param category: Category from list of categories.
-        :type category: object
-        :return: Number of properties within a category.
-        :rtype: int
-        """
-        properties = self.getCategoryProperties(category)
-        return len(properties)
-
-    def getProperty(self, name: str) -> tuple:
-        """
-        Gets a property by name if it exists in the properties object
-        
-        :param name: the name of the property to get
-        :return: (A tuple containing the category name that the property is under and the property object) or None
-        :rtype: tuple[str, Property] or NoneType
-        """
-        for category in self._categories:
-            for property in self._categories[category]:
-                if property.getName() == name:
-                    return tuple(category, property)
+		:param d: The dictionary that represents the Properties object.
+		:type d: dict
+		:return: The Properties object that was constructed from the dictionary
+		:rtype: Properties
+		"""
+		
+		if d is None:
+			return None
+		
+		props = Properties()
+		
+		for cat in d:
+			props.newCategory(cat)
+			for prop in d[cat]:
+				props._categories[cat].append(Property.fromDict(prop))
+		
+		return props

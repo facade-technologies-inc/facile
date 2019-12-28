@@ -24,13 +24,15 @@ the system.
 """
 
 import os
-import struct
-import win32file
 import platform
+import struct
+
 import pywintypes
 import win32api
+import win32file
 
-def isExecutable(filename:str) -> bool:
+
+def isExecutable(filename: str) -> bool:
 	"""
 	Determines if a file is executable or not. NOTE: Windows only
 	
@@ -41,12 +43,12 @@ def isExecutable(filename:str) -> bool:
 	:return: True if file is executable. False otherwise.
 	"""
 	
-	filename = filename.replace("/", "\\") # windows-style paths only
+	filename = filename.replace("/", "\\")  # windows-style paths only
 	if not os.path.exists(filename):
 		raise FileNotFoundError("{} does not exist.".format(filename))
 	
 	filename = win32api.GetLongPathName(filename)
-		
+	
 	try:
 		r, executable = win32api.FindExecutable(filename)
 		executable = win32api.GetLongPathName(executable)
@@ -59,7 +61,8 @@ def isExecutable(filename:str) -> bool:
 		else:
 			return False
 
-def getExeBitness(exeFile:str) -> int:
+
+def getExeBitness(exeFile: str) -> int:
 	"""NOTE: For windows only
 	
 	Solution found at
@@ -74,14 +77,16 @@ def getExeBitness(exeFile:str) -> int:
 		return 32
 	else:
 		return 64
-	
+
+
 def getPythonBitness() -> int:
 	"""
 	Solution found at:
 	https://stackoverflow.com/questions/1405913/how-do-i-determine-if-my-python-shell-is-executing-in-32bit-or-64bit-mode-on-os
 	"""
 	return struct.calcsize("P") * 8
-	
+
+
 def getSystemBitness() -> int:
 	"""
 	Solution adapted from
@@ -92,8 +97,9 @@ def getSystemBitness() -> int:
 		return 64
 	else:
 		return 32
-	
-def appBitnessMatches(exeFile:str) -> bool:
+
+
+def appBitnessMatches(exeFile: str) -> bool:
 	"""
 	Returns True if the executable and the currently running version of python are teh same bitness.
 	"""
@@ -102,11 +108,10 @@ def appBitnessMatches(exeFile:str) -> bool:
 
 if __name__ == "__main__":
 	# NOTE: I am running 32-bit python on a 64-bit windows 10 OS
-	assert(getSystemBitness() == 64)
-	assert(getPythonBitness() == 32)
-	assert(getExeBitness("C:/Program Files/PuTTY/putty.exe") == 64)
-	assert(getExeBitness("C:\\Program Files (x86)\\Notepad++\\notepad++.exe") == 32)
-	assert(appBitnessMatches("C:\\Program Files (x86)\\Notepad++\\notepad++.exe"))
-	assert(not appBitnessMatches("C:/Program Files/PuTTY/putty.exe"))
+	assert (getSystemBitness() == 64)
+	assert (getPythonBitness() == 32)
+	assert (getExeBitness("C:/Program Files/PuTTY/putty.exe") == 64)
+	assert (getExeBitness("C:\\Program Files (x86)\\Notepad++\\notepad++.exe") == 32)
+	assert (appBitnessMatches("C:\\Program Files (x86)\\Notepad++\\notepad++.exe"))
+	assert (not appBitnessMatches("C:/Program Files/PuTTY/putty.exe"))
 	print("SUCCESS!")
-	
