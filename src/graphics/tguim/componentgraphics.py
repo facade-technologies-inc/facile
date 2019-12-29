@@ -111,7 +111,8 @@ class ComponentGraphics(QGraphicsItem):
 		"""
 		Gets the number of times a component has moved
 		
-		:return: int
+		:return: The number of times the component graphics have been moved.
+		:rtype: int
 		"""
 		return self._numMoves
 
@@ -129,12 +130,13 @@ class ComponentGraphics(QGraphicsItem):
 	def adjustPositioning(self) -> None:
 		"""
 		Places component using the following criteria:
-		1. Place teh component where it actually is in the GUI.
-		2. If there is a collision with a sibling, the one that is on the bottom and/or right has to move.
-		3. Once all sibling collisions are resolved, the parent may need to expand to fit all children inside.
-		4. Once the parent is expanded, start at step 2 again, but his time with the parent.
+			1. Place the component where it actually is in the GUI.
+			2. If there is a collision with a sibling, the one that is on the bottom and/or right has to move.
+			3. Once all sibling collisions are resolved, the parent may need to expand to fit all children inside.
+			4. Once the parent is expanded, start at step 2 again, but his time with the parent.
 
-		NOTE: This is a recursive algorithm.
+		..note::
+			This is a recursive algorithm.
 
 		:return: None
 		:rtype: NoneType
@@ -201,6 +203,7 @@ class ComponentGraphics(QGraphicsItem):
 		:param parent: the parent component of self
 		:type parent: ComponentGraphics or scene
 		:return: None
+		:rtype: NoneType
 		"""
 		
 		parent.prepareGeometryChange()
@@ -226,14 +229,16 @@ class ComponentGraphics(QGraphicsItem):
 		"""
 		Gets the original x value
 		
-		:return: int
+		:return: The original x value of the component
+		:rtype: int
 		"""
 		return self._x
 
 	def getY(self):
 		"""
 		
-		:return:
+		:return: the original y value of the component
+		:rtype: int
 		"""
 		return self._y
 
@@ -241,7 +246,7 @@ class ComponentGraphics(QGraphicsItem):
 		"""
 		This function will resolve collisions of a component with its siblings.
 
-		:param collidingSiblings: list of siblings colliding with self
+		:param collidingSiblings: siblings colliding with this component
 		:type collidingSiblings: list
 		:return: None
 		:rtype: NoneType
@@ -349,9 +354,9 @@ class ComponentGraphics(QGraphicsItem):
 
 	def getMargin(self) -> float:
 		"""
-		Returns the margin of self
+		Returns the margin of this component
 
-		:return: margin
+		:return: The margin around the component
 		:rtype: float
 		"""
 		return self._margin
@@ -365,6 +370,7 @@ class ComponentGraphics(QGraphicsItem):
 		:type change: GraphicsItemChange
 		:param value: information about the change
 		:return: None or Unknown (typeof(value))
+		:rtype: NoneType
 		"""
 		if change == QGraphicsItem.ItemPositionChange and self.scene():
 			delX = value.x() - self.x()
@@ -517,8 +523,8 @@ class ComponentGraphics(QGraphicsItem):
 	def boundingRect(self, withMargins: bool = False):
 		"""
 		This pure virtual function defines the outer bounds of the item as a rectangle.
-		:return create the bounding of the item
-		:rtype QRectF
+		:return: create the bounding of the item
+		:rtype: QRectF
 		"""
 		halfWidth = ComponentGraphics.PEN_WIDTH / 2
 		if withMargins:
@@ -539,8 +545,8 @@ class ComponentGraphics(QGraphicsItem):
 		Returns the shape of this item as a QPainterPath in local coordinates.
 		The shape could be used for many things, like collision detection.
 
-		:return Returns the shape of this item as a QPainterPath in local coordinates.
-		:rtype QPainterPath
+		:return: Returns the shape of this item as a QPainterPath in local coordinates.
+		:rtype: QPainterPath
 		"""
 		path = QPainterPath()
 		path.addRect(self.boundingRect())
@@ -556,8 +562,8 @@ class ComponentGraphics(QGraphicsItem):
 		:type option: QStyleOptionGraphicsItem
 		:param widget: QWidget
 		:type widget: It points to the widget that is being painted on; or make it = None.
-		:return None
-		:rtype NoneType
+		:return: None
+		:rtype: NoneType
 		"""
 		boundingRect = self.boundingRect()
 
@@ -628,6 +634,8 @@ class ComponentGraphics(QGraphicsItem):
 
 		:param event: a mouse press event
 		:type event: QGraphicsSceneMouseEvent
+		:return: None
+		:rtype: NoneType
 		"""
 		self.setSelected(True)
 		self.scene().emitItemSelected(self._dataComponent.getId())
@@ -655,7 +663,7 @@ class ComponentGraphics(QGraphicsItem):
 		"""
 		Returns the componentView id as a string.
 
-		:return Returns the componentView id as a string.
-		:rtype str
+		:return: the componentView id as a string.
+		:rtype: str
 		"""
 		return "Component: {}".format(self._dataComponent.getId())

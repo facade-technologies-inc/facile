@@ -18,7 +18,7 @@
     |                                                                              |
     \------------------------------------------------------------------------------/
 
-This is module contains the Qt model for the project explorer.
+This module contains the Qt model for the project explorer.
 
 """
 
@@ -34,25 +34,6 @@ from data.tguim.visibilitybehavior import VisibilityBehavior
 class ProjectExplorerModel(QAbstractItemModel):
 	"""
 	This class is the Qt model that gets loaded into the project explorer view in Facile.
-	It has the following hierarchy:
-	
-	== Target GUI ==
-		== GUI Components ==
-			GUI COMPONENT TREE
-		== Visibility Behaviors ==
-			VISIBILITY BEHAVIOR LIST
-	== Action Pipelines ==
-		ACTION PIPELINE TREE
-		
-	The internal pointer of the model indexes can be
-		- str (for a label)
-		- Component
-		- Visibility Behavior
-		- Action Pipeline
-		- LeafIndex (see below)
-		
-	If an index in the Model has no children, it should hold a LeafIndex unless is is simply a leaf in one of the
-	underlying data structures.
 	"""
 	
 	componentSelected = Signal(Component)
@@ -463,7 +444,7 @@ class ProjectExplorerModel(QAbstractItemModel):
 		:param role: The role to use to get the data.
 		:type role: Qt.ItemDataRole
 		:return: The data for the given role
-		:rtype: str
+		:rtype: str or NoneType
 		"""
 		if not index.isValid():
 			return None
@@ -548,7 +529,7 @@ class ProjectExplorerModel(QAbstractItemModel):
 		:param role: the role to use to get the data.
 		:type role: Qt.ItemDataRole
 		:return: the data
-		;rtype: str
+		:rtype: str
 		"""
 		if orientation == Qt.Horizontal and role == Qt.DisplayRole:
 			return ["Name", "Description"][section]
@@ -557,10 +538,7 @@ class ProjectExplorerModel(QAbstractItemModel):
 	def selectionChanged(self, selected: QItemSelection, deselected: QItemSelection) -> None:
 		"""
 		Run this slot when an index is selected. This slot will emit the following 3 signals depending on what was
-		selected:
-			- componentSelected
-			- behaviorSelected
-			- pipelineSelected
+		selected: componentSelected, behaviorSelected, pipelineSelected
 			
 		:param selected: The new selection
 		:type selected: QItemSelection

@@ -119,7 +119,7 @@ class CopyProjectDialog(QDialog):
 		"""
 		Fills the text of the new project's location field
 
-		:param url: The path to the *.fcl file of the existing project
+		:param url: The path to the .fcl file of the existing project
 		:type url: str
 		:return: None
 		:rtype: NoneType
@@ -131,7 +131,7 @@ class CopyProjectDialog(QDialog):
 	def _browseForExistingProject(self) -> None:
 		"""
 		Opens a file dialog when the user clicks on the existing project's "..." button to choose an
-		existing *.fcl file.
+		existing .fcl file.
 		
 		:return: None
 		:rtype: NoneType

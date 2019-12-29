@@ -150,8 +150,7 @@ class PropertyEditorDelegate(QStyledItemDelegate):
 		:type option: QStyleOptionViewItem
 		:param index: Index of the events.
 		:type index: QModelIndex
-		:return: Returns true if the given editor is a valid QWidget
-		and the given event is handled; otherwise returns false.
+		:return: true if the given editor is a valid QWidget and the given event is handled; otherwise returns false.
 		:rtype: bool
 		"""
 		event.type()

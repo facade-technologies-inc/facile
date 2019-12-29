@@ -178,7 +178,7 @@ class FacileView(QMainWindow):
 		"""
 		This slot is run when the user elects to open an existing project.
 		
-		A file dialog is open with the *.fcl filter. Once the user selects a project, it will be loaded into Facile.
+		A file dialog is open with the .fcl filter. Once the user selects a project, it will be loaded into Facile.
 		
 		:return: None
 		:rtype: NoneType

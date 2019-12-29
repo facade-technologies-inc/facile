@@ -12,6 +12,17 @@
 #
 import os
 import sys
+sys.path.insert(0, os.path.abspath('../../src/data/apim'))
+sys.path.insert(0, os.path.abspath('../../src/data/tguim'))
+sys.path.insert(0, os.path.abspath('../../src/data'))
+sys.path.insert(0, os.path.abspath('../../src/graphics/apim'))
+sys.path.insert(0, os.path.abspath('../../src/graphics/tguim'))
+sys.path.insert(0, os.path.abspath('../../src/graphics'))
+sys.path.insert(0, os.path.abspath('../../src/gui/ui'))
+sys.path.insert(0, os.path.abspath('../../src/gui'))
+sys.path.insert(0, os.path.abspath('../../src/libs'))
+sys.path.insert(0, os.path.abspath('../../src/qt_models'))
+sys.path.insert(0, os.path.abspath('../../src/tguiil'))
 sys.path.insert(0, os.path.abspath('../../src/'))
 
 
@@ -47,7 +58,7 @@ templates_path = ['_templates']
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
-exclude_patterns = []
+exclude_patterns = ["**/ui"]
 
 # An RST string that will be included at the end of every page.
 rst_epilog = """
@@ -63,7 +74,9 @@ rst_prolog = """
 
 # -- Options for AutoAPI -----------------------------------------------------
 autoapi_add_toctree_entry = True
+autoapi_type = "python"
 autoapi_dirs = ['../../src']
+autoapi_template_dir = "templates"
 
 # -- Options for HTML output -------------------------------------------------
 
