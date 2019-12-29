@@ -40,13 +40,13 @@ class Project:
 	This class is the top level to a Facile Project.
 	It stores information about the target application, the target GUI model, the API model, compilation profiles, etc.
 	
-	..note::
+	.. note::
 		Only one project can be stored in each directory.
 		
-	..todo::
+	.. todo::
 		Create custom exceptions and check input in setters
 		
-	..todo::
+	.. todo::
 		Store backend as enum instead of string
 	"""
 	

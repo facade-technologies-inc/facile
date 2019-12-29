@@ -15,6 +15,12 @@ It uses and builds upon popular GUI automation frameworks such as pywinauto and 
 
    autoapi/index.rst
 
+
+TODO List
+=========
+
+.. todolist::
+
 Indices and tables
 ==================
 

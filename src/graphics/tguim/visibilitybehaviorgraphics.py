@@ -150,7 +150,7 @@ class VBGraphics(QGraphicsItem):
 					
 			#. horizontal distance is smaller than 1/3 * root.width, zigzag to it
 			
-		..todo::
+		.. todo::
 			Improve on the algorithm (add collision detector)
 		
 		:param x1: the x coordinate for the src component
