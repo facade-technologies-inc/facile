@@ -44,12 +44,12 @@ extensions = [
     'sphinx.ext.todo',
     'sphinx.ext.autodoc',
     'sphinx.ext.inheritance_diagram',
-    'autoapi.extension',
     'sphinx.ext.autosummary',
     'sphinx.ext.intersphinx',
     'sphinx.ext.mathjax',
     'sphinx.ext.viewcode',
-    'sphinx.ext.graphviz'
+    'sphinx.ext.graphviz',
+    'autoapi.extension'
 ]
 
 todo_include_todos = True
@@ -61,18 +61,6 @@ templates_path = ['_templates']
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
 exclude_patterns = ["**/ui"]
-
-# An RST string that will be included at the end of every page.
-rst_epilog = """
-.. note::
-    The contents of this document are proprietary.
-"""
-
-# An RST string that will be included at the beginning of every page.
-rst_prolog = """
-.. note::
-    The contents of this document are proprietary.
-"""
 
 # -- Options for AutoAPI -----------------------------------------------------
 autoapi_add_toctree_entry = True
@@ -101,3 +89,30 @@ html_favicon = "facade_logo_favicon.ico"
 # Set Facade Technologies Inc. logo
 latex_logo = "facade_logo_small.png"
 latex_favicon = "facade_logo_favicon.ico"
+
+# latex_engine = 'xelatex'
+# latex_elements = {
+#     'fontpkg':
+#         r'''
+#         \setmainfont{DejaVu Serif}
+#         \setsansfont{DejaVu Sans}
+#         \setmonofont{DejaVu Sans Mono}
+#         ''',
+#     'preamble':
+#         r'''
+#         \usepackage[titles]{tocloft}
+#         \cftsetpnumwidth {1.25cm}\cftsetrmarg{1.5cm}
+#         \setlength{\cftchapnumwidth}{0.75cm}
+#         \setlength{\cftsecindent}{\cftchapnumwidth}
+#         \setlength{\cftsecnumwidth}{1.25cm}
+#         ''',
+#     'fncychap':
+#         r'''
+#         \usepackage[Bjornstrup]{fncychap}
+#         ''',
+#     'printindex':
+#         r'''
+#         \footnotesize\raggedright\printindex
+#         ''',
+# }
+# latex_show_urls = 'footnote'

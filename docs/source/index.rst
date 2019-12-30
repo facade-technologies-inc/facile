@@ -13,6 +13,8 @@ It uses and builds upon popular GUI automation frameworks such as pywinauto and 
    :maxdepth: 2
    :caption: Table of Contents:
 
+   glossary/glossary.rst
+   accessibility/accessibility.rst
    autoapi/index.rst
 
 
