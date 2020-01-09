@@ -25,14 +25,25 @@ sys.path.insert(0, os.path.abspath('../../src/qt_models'))
 sys.path.insert(0, os.path.abspath('../../src/tguiil'))
 sys.path.insert(0, os.path.abspath('../../src/'))
 
+sys.path.append(os.path.abspath('_ext'))
+
 
 # -- Project information -----------------------------------------------------
 
-project = 'Facile'
-copyright = '2019, Facade Technologies Inc.'
-author = 'Facade Technologies Inc.'
+project = 'Facile Technical Data Package'
+copyright = '2020, Facade Technologies Inc.'
+
+author = """
+Andrew Kirima
+Nikhith Vankireddy
+Philippe Cutillas
+Ramos Chen
+Sam Badger
+Sean Farris
+"""
+
 version = "0.2.0"
-release = "0.2.0"
+release = version
 
 
 # -- General configuration ---------------------------------------------------
@@ -49,6 +60,7 @@ extensions = [
     'sphinx.ext.mathjax',
     'sphinx.ext.viewcode',
     'sphinx.ext.graphviz',
+    'numfig',
     'autoapi.extension'
 ]
 
@@ -62,11 +74,22 @@ templates_path = ['_templates']
 # This pattern also affects html_static_path and html_extra_path.
 exclude_patterns = ["**/ui"]
 
+# -- Options for numfig ------------------------------------------------------
+numfig_number_figures = True
+numfig_figure_caption_prefix = "Figure"
+
+
 # -- Options for AutoAPI -----------------------------------------------------
-autoapi_add_toctree_entry = True
+# See https://sphinx-autoapi.readthedocs.io/en/latest/reference/config.html# for details
+autoapi_add_toctree_entry = False
 autoapi_type = "python"
 autoapi_dirs = ['../../src']
 autoapi_template_dir = "templates"
+autoapi_root = "docs/SDD/autoapi"
+autoapi_include_summaries = True
+autoapi_python_class_content = "both"
+autoapi_keep_files = True
+
 
 # -- Options for HTML output -------------------------------------------------
 
@@ -81,14 +104,18 @@ html_theme = 'sphinx_rtd_theme'
 html_static_path = ['_static']
 
 # Set Facade Technologies Inc. logo
-html_logo = "Facade @0.5x.png"
-html_favicon = "facade_logo_favicon.ico"
+html_logo = "images/Facade @0.5x.png"
+html_favicon = "images/facade_logo_favicon.ico"
 
 # -- Options for LaTeX output -------------------------------------------------
 
 # Set Facade Technologies Inc. logo
-latex_logo = "facade_logo_small.png"
-latex_favicon = "facade_logo_favicon.ico"
+latex_logo = "images/facade_logo_small.png"
+latex_favicon = "images/facade_logo_favicon.ico"
+
+latex_show_pagerefs = True
+latex_show_urls = "footnote"
+
 
 # latex_engine = 'xelatex'
 # latex_elements = {

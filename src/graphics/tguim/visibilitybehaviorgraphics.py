@@ -37,8 +37,8 @@ class VBGraphics(QGraphicsItem):
 		:type dataVisibilityBehavior: VisibilityBehavior
 		:param parent: The parent of the visibility behavior (This will always be the scene)
 		:type parent: TScene
-		:return None
-		:rtype NoneType
+		:return: None
+		:rtype: NoneType
 		"""
 		QGraphicsItem.__init__(self)
 		self._dataVB = dataVisibilityBehavior

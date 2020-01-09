@@ -9,19 +9,23 @@ Welcome to Facile's documentation!
 Facile is a tool for generating APIs that control existing graphical user interfaces.
 It uses and builds upon popular GUI automation frameworks such as pywinauto and pyautogui.
 
+.. todo::
+   Add a better introduction here (Maybe even just take it from ConOps?)
+
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    :caption: Table of Contents:
 
-   glossary/glossary.rst
-   accessibility/accessibility.rst
-   autoapi/index.rst
+   docs/SCG/SCG.rst
+   docs/glossary/glossary.rst
+   docs/ConOps/ConOps.rst
+   docs/Proposal/Proposal.rst
+   docs/SRD/SRD.rst
+   docs/RiskAnalysis/RiskAnalysis.rst
+   docs/ATP/ATP.rst
+   docs/DataSheets/DataSheets.rst
+   docs/SDD/SDD.rst
 
-
-TODO List
-=========
-
-.. todolist::
 
 Indices and tables
 ==================
@@ -29,3 +33,8 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
+
+TODO List
+=========
+
+.. todolist::
