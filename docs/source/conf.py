@@ -33,14 +33,7 @@ sys.path.append(os.path.abspath('_ext'))
 project = 'Facile Technical Data Package'
 copyright = '2020, Facade Technologies Inc.'
 
-author = """
-Andrew Kirima
-Nikhith Vankireddy
-Philippe Cutillas
-Ramos Chen
-Sam Badger
-Sean Farris
-"""
+author = "Facade Technologies Inc."
 
 version = "0.2.0"
 release = version
@@ -52,16 +45,17 @@ release = version
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-    'sphinx.ext.todo',
-    'sphinx.ext.autodoc',
-    'sphinx.ext.inheritance_diagram',
-    'sphinx.ext.autosummary',
-    'sphinx.ext.intersphinx',
-    'sphinx.ext.mathjax',
-    'sphinx.ext.viewcode',
-    'sphinx.ext.graphviz',
-    'numfig',
-    'autoapi.extension'
+	'sphinx.ext.todo',
+	'sphinx.ext.autodoc',
+	'sphinx.ext.inheritance_diagram',
+	'sphinx.ext.autosummary',
+	'sphinx.ext.intersphinx',
+	'sphinx.ext.mathjax',
+	'sphinx.ext.viewcode',
+	'sphinx.ext.graphviz',
+	'autoapi.extension',
+	'numfig',
+	'test_procedure'
 ]
 
 todo_include_todos = True
@@ -117,6 +111,30 @@ latex_show_pagerefs = True
 latex_show_urls = "footnote"
 
 
+# ------------------------------------------------------------------------------
+# -- For some reason, this isn't working ---------------------------------------
+# ------------------------------------------------------------------------------
+latex_documents = [(
+	"index",
+
+	"19033_TDP.tex",
+
+	"Facile Technical Data Package",
+
+	"\\textbf{Team 19033:} \\\\"
+	"Andrew Kirima \\\\ "
+	"Jiuru Chen \\\\ "
+	"Nikhith Vankireddy \\\\ "
+	"Philippe Cutillas \\\\ "
+	"Sam Badger \\\\ "
+	"Sean Farris",
+
+	"manual",
+
+	"False"
+)]
+
+
 # latex_engine = 'xelatex'
 # latex_elements = {
 #     'fontpkg':
@@ -142,4 +160,3 @@ latex_show_urls = "footnote"
 #         \footnotesize\raggedright\printindex
 #         ''',
 # }
-# latex_show_urls = 'footnote'
