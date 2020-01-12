@@ -10,9 +10,15 @@ So I decided to make an extension that just directly writes the rst code in the 
 phase.
 '''
 
+import random
+import pandas as pd
+import numpy as np
+
+rchars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+
 # ATP file path relative to "facile/docs"
 atp_file_path = "./source/docs/ATP/ATP.rst"
-procedures_file = "./source/docs/ATP/ATP.xlsx"
+procedures_file = "./source/docs/ATP/procedures.xlsx"
 
 header = """
 *************************
@@ -58,46 +64,78 @@ Pre-Test Conditions
 
 """
 
-test_procedures = [
-    {
-        "title": "Operating System Acceptance Test",
-        "intro": "This acceptance test document verifies that the software system, Facile is "
-                 "functional on 64 Bit Windows 10 Home Version 1903.  This acceptance test "
-                 "establishes the framework used by the acceptance test team to plan, execute, "
-                 "and document acceptance testing.  It describes the scope of the work performed "
-                 "and the approach taken to execute the tests created to validate that the system "
-                 "performs as required with the intended operating system. The details of this "
-                 "acceptance test are developed according to the requirements specifications and "
-                 "show traceability back to those specifications.",
-        "refer": ["System Requirements Document, Rev B, 10/27/2019"],
-        "equip": ["PC (Personal Computer)"],
-        "summa": "To verify SR4.2.1 - Facile shall operate on 64-bit Windows 10 Home Version "
-                 "1903.",
-        "preco": [
-                 "Need to be running application on Operating system Windows 10 Home Version "
-                 "1903.",
-                 "Python 3.7.4 is installed and added to the PATH."
-                 ],
-        "steps": [
-            ("Right click on **Explorer**", "A context menu of items open up"),
-            ("Select **System**", "**Settings** is open"),
-            ("Scroll to **Device specifications,** and verify the System type, Edition, "
-             "and Version", "Refer to Figure 1.1"),
-            ("Click on **Windows Search Bar**", "Windows Search Bar comes into focus"),
-            ("Type cmd and press enter", "A **Command Prompt** terminal opens"),
-            ("Click on the **Command Prompt**", "The **Command Prompt** comes into focus"),
-            ('Type "python facile.py" in the **Command Prompt**', "Facile should run. Test Case "
-                                                                  "Completed.")
-        ]
-    }
-]
+figure_template = """
 
+.. _{}:
+
+.. figure:: ./images/{}
+    :alt: {}
+    
+    {}
+    
+"""
+
+
+def random_string_generator(str_size, allowed_chars):
+    return ''.join(random.choice(allowed_chars) for x in range(str_size))
+
+def read_procedure_data(filename):
+    wb = pd.ExcelFile(filename)
+    sheetnames = [name for name in wb.sheet_names if name != "Introduction"]
+    test_procedures = []
+    for name in sheetnames:
+        df = pd.read_excel(wb, name)
+        proc = {}
+        proc['title'] = df['Title'][0]
+        proc['intro'] = df['Introduction'][0]
+        proc['refer'] = [a for a in df['Referenced Documents'] if type(a) == str]
+        proc['equip'] = [b for b in df['Required Equipment'] if type(b) == str]
+        proc['summa'] = df['Requirements Summary'][0]
+        proc['preco'] = [c for c in df['Pre-Test Conditions'] if type(c) == str]
+        proc['steps'] = []
+        proc['figre'] = {}
+        
+        for i in range(len(df['Steps (Action)'])):
+            if type(df['Steps (Action)'][i]) == str and type(df['Steps (Expected Result)'][i]) == str:
+                crumbs = df['Steps (Expected Result)'][i].split()
+                for j in range(len(crumbs)):
+                    crumb = crumbs[j]
+                    if len(crumb) > 1:
+                        if crumb[0] == '@':
+                            img_filename = crumb[1:]
+                            if img_filename in proc['figre'].keys():
+                                ref_name = proc['figre'][img_filename][0]
+                            else:
+                                ref_name = crumb[1:].split('.')[0].replace("_", "")+random_string_generator(8, rchars)
+                                proc['figre'][img_filename] = (ref_name, "")
+                            df['Steps (Expected Result)'][i] = df['Steps (Expected Result)'][i].replace("@"+img_filename, ':num:`Fig. #{}`'.format(ref_name.lower()))
+                proc['steps'].append((df['Steps (Action)'][i], df['Steps (Expected Result)'][i]))
+            else:
+                break
+                
+                
+        for i in range(len(df['Figure (filename)'])):
+            if type(df['Figure (filename)'][i]) == str and type(df['Figure (caption)'][i]) == str:
+                fname = df['Figure (filename)'][i]
+                caption = df['Figure (caption)'][i]
+                if fname in proc['figre']:
+                    proc['figre'][fname] = (proc['figre'][fname][0], caption)
+                else:
+                    raise Exception("Figure {} cannot be included without refering to it using "
+                                    "'@' in testcase {}".format(fname, name))
+                proc['steps'].append((df['Steps (Action)'][i], df['Steps (Expected Result)'][i]))
+            else:
+                break
+                
+        test_procedures.append(proc)
+    return test_procedures
+    
 def build_table(steps:list) -> str:
     
     if len(steps) >= 30:
         raise Exception("Test Procedure must have less than 30 steps")
     
-    head = ("Steps", "Action", "Expected Result")
+    head = ("Step", "Action", "Expected Result")
     max_action_length = len(head[1])
     max_result_length = len(head[2])
     for action, result in steps:
@@ -105,10 +143,13 @@ def build_table(steps:list) -> str:
         max_result_length = max(max_result_length, len(result))
         
     widths = (len(head[0]), max_action_length, max_result_length)
-    table_horizontal = "+-{}-+-{}-+-{}-+\n".format("-"*widths[0], "-"*widths[1], "-"*widths[2])
+    table_horizontal = "\t+-{}-+-{}-+-{}-+\n".format("-"*widths[0], "-"*widths[1], "-"*widths[2])
     
-    table = table_horizontal
-    table += "| {}{} | {}{} | {}{} |\n".format(head[0], " "*(widths[0]-len(head[0])),
+    table =  ".. tabularcolumns:: |c|L|L|\n"
+    table += ".. table:: Test Procedure Steps\n\n"
+
+    table += table_horizontal
+    table += "\t| {}{} | {}{} | {}{} |\n".format(head[0], " "*(widths[0]-len(head[0])),
                                              head[1], " "*(widths[1]-len(head[1])),
                                              head[2], " "*(widths[2]-len(head[2])))
     table += table_horizontal.replace("-", "=")
@@ -116,14 +157,27 @@ def build_table(steps:list) -> str:
     step_count = 0
     for action, result in steps:
         step_count += 1
-        table += "| {:5} | {}{} | {}{} |\n".format(step_count,
+        table += "\t| {:4} | {}{} | {}{} |\n".format(step_count,
                                                  action, " "*(widths[1] - len(action)),
                                                  result, " "*(widths[2] - len(result)))
         table += table_horizontal
     
     return table
+
+def build_figs(fig_refs):
+    
+    fig_str = ""
+    
+    for ref in fig_refs:
+        fig_str += figure_template.format(fig_refs[ref][0], ref, fig_refs[ref][1], fig_refs[ref][1])
+        
+    return fig_str
     
 def setup(app):
+    global procedures_file
+    global test_procedures
+    test_procedures = read_procedure_data(procedures_file)
+    
     with open(atp_file_path, "w") as atp_file:
         atp_file.write(header)
         
@@ -133,19 +187,22 @@ def setup(app):
             refer = "\n".join(["- {}".format(r) for r in proc['refer']])
             equip = "\n".join(["- {}".format(e) for e in proc['equip']])
             summa = proc['summa']
-            preco = "\n".join(["- {}".format(p) for p in proc['equip']])
+            preco = "\n".join(["- {}".format(p) for p in proc['preco']])
             
             preamble = preamble_template.format(title, intro, refer, equip, summa, preco)
             
             atp_file.write(preamble)
             atp_file.write(build_table(proc['steps']))
-            # TODO: find images and create figures.
+            atp_file.write(build_figs(proc['figre']))
             
-        
-            
-
     return {
         'version': '0.1',
         'parallel_read_safe': True,
         'parallel_write_safe': True,
     }
+
+# For debugging only
+if __name__ == "__main__":
+    procedures_file = "../docs/ATP/procedures.xlsx"
+    atp_file_path = "../docs/ATP/ATP.rst"
+    setup(None)

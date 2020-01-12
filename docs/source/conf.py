@@ -45,6 +45,7 @@ release = version
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
+	'test_procedure',
 	'sphinx.ext.todo',
 	'sphinx.ext.autodoc',
 	'sphinx.ext.inheritance_diagram',
@@ -54,8 +55,7 @@ extensions = [
 	'sphinx.ext.viewcode',
 	'sphinx.ext.graphviz',
 	'autoapi.extension',
-	'numfig',
-	'test_procedure'
+	'numfig'
 ]
 
 todo_include_todos = True
