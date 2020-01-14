@@ -23,7 +23,7 @@ It uses and builds upon popular GUI automation frameworks such as pywinauto and 
    docs/SRD/SRD.rst
    docs/RiskAnalysis/RiskAnalysis.rst
    docs/ATP/ATP.rst
-   docs/DataSheets/DataSheets.rst
+   docs/ATP/DataSheets.rst
    docs/SDD/SDD.rst
 
 
