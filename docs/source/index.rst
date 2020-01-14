@@ -25,6 +25,8 @@ It uses and builds upon popular GUI automation frameworks such as pywinauto and 
    docs/ATP/ATP.rst
    docs/ATP/DataSheets.rst
    docs/SDD/SDD.rst
+   docs/UserManual/UserManual.rst
+
 
 
 Indices and tables

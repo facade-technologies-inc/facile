@@ -58,7 +58,7 @@ Pre-Test Conditions
 	+------+---------------------------------------------------------------------------------------+-----------------------------------------+
 	|    2 | Select **System**                                                                     | **Settings** is open                    |
 	+------+---------------------------------------------------------------------------------------+-----------------------------------------+
-	|    3 | Scroll to **Device specifications,** and verify the System type, Edition, and Version | Refer to :num:`Fig. #ostest01zccjryfu`  |
+	|    3 | Scroll to **Device specifications,** and verify the System type, Edition, and Version | Refer to :num:`Fig. #ostest01fovtondk`  |
 	+------+---------------------------------------------------------------------------------------+-----------------------------------------+
 	|    4 | Click on **Windows Search Bar**                                                       | Windows Search Bar comes into focus     |
 	+------+---------------------------------------------------------------------------------------+-----------------------------------------+
@@ -72,7 +72,7 @@ Pre-Test Conditions
 	+------+---------------------------------------------------------------------------------------+-----------------------------------------+
 
 
-.. _OStest01zcCjRyFu:
+.. _OStest01fOVtonDK:
 
 .. figure:: ./images/OS_test_01.png
     :alt: The Windows 10 system settings dialog showing that you're running Windows 10 version 1903
@@ -131,9 +131,9 @@ Pre-Test Conditions
 	+------+------------------------------------------------------------------------------------------------------+----------------------------------------------+
 	|    3 | Click on the command prompt                                                                          | The **Command Prompt** comes into focus      |
 	+------+------------------------------------------------------------------------------------------------------+----------------------------------------------+
-	|    4 | Type **python**                                                                                      | Refer to :num:`Fig. #languagetest01mozhxvyr` |
+	|    4 | Type **python**                                                                                      | Refer to :num:`Fig. #languagetest01iqxtcnag` |
 	+------+------------------------------------------------------------------------------------------------------+----------------------------------------------+
-	|    5 | Verify that the *Python 3.7.4* and *32-bit* exist in the resulting text from the previous step.      | Refer to :num:`Fig. #languagetest01mozhxvyr` |
+	|    5 | Verify that the *Python 3.7.4* and *32-bit* exist in the resulting text from the previous step.      | Refer to :num:`Fig. #languagetest01iqxtcnag` |
 	+------+------------------------------------------------------------------------------------------------------+----------------------------------------------+
 	|    6 | Navigate to the directory containing facile.py, then type "python facile.py" in the **Command line** | Facile should run. Test Case Completed.      |
 	+------+------------------------------------------------------------------------------------------------------+----------------------------------------------+
@@ -141,7 +141,7 @@ Pre-Test Conditions
 	+------+------------------------------------------------------------------------------------------------------+----------------------------------------------+
 
 
-.. _languagetest01MozhxVYr:
+.. _languagetest01iqXTcNaG:
 
 .. figure:: ./images/language_test_01.png
     :alt: A snippit of the Windows Command Prompt after typing *python* and pressing Enter. It shows the version and bitness of the Python interpreter being run.
@@ -205,13 +205,13 @@ Pre-Test Conditions
 	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------+
 	|    4 | Type "python facile.py" in the **Command Prompt**                                                                                                                                                       | Facile should run.                                                      |
 	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------+
-	|    5 | Click on **File**                                                                                                                                                                                       | Refer to :num:`Fig. #guitest01hdbxovhw`                                 |
+	|    5 | Click on **File**                                                                                                                                                                                       | Refer to :num:`Fig. #guitest01xdhxlsww`                                 |
 	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------+
-	|    6 | Click on **New Project**                                                                                                                                                                                | Refer to :num:`Fig. #guitest01hdbxovhw`                                 |
+	|    6 | Click on **New Project**                                                                                                                                                                                | Refer to :num:`Fig. #guitest01xdhxlsww`                                 |
 	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------+
-	|    7 | Click on **From Scratch**                                                                                                                                                                               | Refer to :num:`Fig. #guitest01hdbxovhw`                                 |
+	|    7 | Click on **From Scratch**                                                                                                                                                                               | Refer to :num:`Fig. #guitest01xdhxlsww`                                 |
 	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------+
-	|    8 | Fill in **Project Name** and **Project Description.** Upload your **Project Folder** and **Target Application.** Choose the category the **Target Application** best fits under. Finally, click **OK.** | Refer to :num:`Fig. #guitest02urcdepsu`                                 |
+	|    8 | Fill in **Project Name** and **Project Description.** Upload your **Project Folder** and **Target Application.** Choose the category the **Target Application** best fits under. Finally, click **OK.** | Refer to :num:`Fig. #guitest02emeaawum`                                 |
 	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------+
 	|    9 | Click on **Start App**                                                                                                                                                                                  | **Target Application** will pop up.                                     |
 	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------+
@@ -223,7 +223,7 @@ Pre-Test Conditions
 	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------+
 
 
-.. _GUItest01HdbXoVHW:
+.. _GUItest01xDHXlsww:
 
 .. figure:: ./images/GUI_test_01.png
     :alt: A snippit of the Facile software system that shows the menu path to create a new project from scratch.
@@ -232,7 +232,7 @@ Pre-Test Conditions
     
 
 
-.. _GUItest02urcDEPsu:
+.. _GUItest02emEAAWum:
 
 .. figure:: ./images/GUI_test_02.png
     :alt: A snippit of the Facile project creation dialog. This dialog allows the user to specify some basic information abou the project and application they wish to control.
@@ -294,11 +294,11 @@ Pre-Test Conditions
 	+------+--------------------------------------------------------+--------------------------------------------------------------------------------------+
 	|    4 | Type "python facile.py" in the **Command Prompt**      | Facile should run.                                                                   |
 	+------+--------------------------------------------------------+--------------------------------------------------------------------------------------+
-	|    5 | Click on **File** in the menu.                         | See :num:`Fig. #tguicitest01jmmvwwkm`                                                |
+	|    5 | Click on **File** in the menu.                         | See :num:`Fig. #tguicitest01skbgzsjj`                                                |
 	+------+--------------------------------------------------------+--------------------------------------------------------------------------------------+
-	|    6 | Click on **Recent Projects**                           | See :num:`Fig. #tguicitest01jmmvwwkm`                                                |
+	|    6 | Click on **Recent Projects**                           | See :num:`Fig. #tguicitest01skbgzsjj`                                                |
 	+------+--------------------------------------------------------+--------------------------------------------------------------------------------------+
-	|    7 | Click on a recent project that you created previously. | See :num:`Fig. #tguicitest01jmmvwwkm`                                                |
+	|    7 | Click on a recent project that you created previously. | See :num:`Fig. #tguicitest01skbgzsjj`                                                |
 	+------+--------------------------------------------------------+--------------------------------------------------------------------------------------+
 	|    8 | Click on **Start App**                                 | **Target Application** will run.                                                     |
 	+------+--------------------------------------------------------+--------------------------------------------------------------------------------------+
@@ -308,7 +308,7 @@ Pre-Test Conditions
 	+------+--------------------------------------------------------+--------------------------------------------------------------------------------------+
 
 
-.. _TGUICItest01JmMvWwkM:
+.. _TGUICItest01SKbgzsjj:
 
 .. figure:: ./images/TGUICI_test_01.png
     :alt: A snippit of the Facile software system that shows the menu path to open an existing project.
@@ -448,13 +448,13 @@ Pre-Test Conditions
 	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------+
 	|    4 | Type "python facile.py" in the **Command Prompt**                                                                                                                                                       | Facile should run.                                                                                           |
 	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------+
-	|    5 | Click on **File**                                                                                                                                                                                       | Refer to :num:`Fig. #ostest01gxwshbue`                                                                       |
+	|    5 | Click on **File**                                                                                                                                                                                       | Refer to :num:`Fig. #ostest01cltuuwie`                                                                       |
 	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------+
-	|    6 | Click on **New Project**                                                                                                                                                                                | Refer to :num:`Fig. #ostest01gxwshbue`                                                                       |
+	|    6 | Click on **New Project**                                                                                                                                                                                | Refer to :num:`Fig. #ostest01cltuuwie`                                                                       |
 	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------+
-	|    7 | Click on **From Scratch**                                                                                                                                                                               | Refer to :num:`Fig. #ostest01gxwshbue`                                                                       |
+	|    7 | Click on **From Scratch**                                                                                                                                                                               | Refer to :num:`Fig. #ostest01cltuuwie`                                                                       |
 	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------+
-	|    8 | Fill in **Project Name** and **Project Description.** Upload your **Project Folder** and **Target Application.** Choose the category the **Target Application** best fits under. Finally, click **OK.** | Project is saved with the *.fcl* extension in the selected folder. Refer to :num:`Fig. #guitest02jrswixyr`   |
+	|    8 | Fill in **Project Name** and **Project Description.** Upload your **Project Folder** and **Target Application.** Choose the category the **Target Application** best fits under. Finally, click **OK.** | Project is saved with the *.fcl* extension in the selected folder. Refer to :num:`Fig. #guitest02tjrkqwyj`   |
 	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------+
 	|    9 | Click on **Start App**                                                                                                                                                                                  | **Target Application** will pop up.                                                                          |
 	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------+
@@ -466,7 +466,7 @@ Pre-Test Conditions
 	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------+
 
 
-.. _OStest01GXWsHbUe:
+.. _OStest01clTUUwiE:
 
 .. figure:: ./images/OS_test_01.png
     :alt: The Windows 10 system settings dialog showing that you're running Windows 10 version 1903
@@ -475,7 +475,7 @@ Pre-Test Conditions
     
 
 
-.. _GUItest02JrswIXyr:
+.. _GUItest02TJrKQwyJ:
 
 .. figure:: ./images/GUI_test_02.png
     :alt: 
@@ -549,7 +549,7 @@ Pre-Test Conditions
 	+------+--------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------+
 	|   10 | Click on a component in the **Target GUI Model Graphics View**                             | Highlighted component will have its properties shown in the **Property Editor** view.      |
 	+------+--------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------+
-	|   11 | Click on a property in the **Property Editor** view                                        | The property will come into focus. Refer to :num:`Fig. #propertytest01ebocuogg`            |
+	|   11 | Click on a property in the **Property Editor** view                                        | The property will come into focus. Refer to :num:`Fig. #propertytest01leliwgdh`            |
 	+------+--------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------+
 	|   12 | Edit the property value (If editable)                                                      | The value of the property is edited.                                                       |
 	+------+--------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------+
@@ -559,7 +559,7 @@ Pre-Test Conditions
 	+------+--------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------+
 
 
-.. _propertytest01ebOCuogg:
+.. _propertytest01LElIWGDh:
 
 .. figure:: ./images/property_test_01.png
     :alt: Shows the Facile software with the *Name* property selected. The *Name* property is always editable.
@@ -629,7 +629,7 @@ Pre-Test Conditions
 	+------+--------------------------------------------------------+---------------------------------------------------------+
 	|    8 | Click on **File** again                                | Context menu of items will be shown                     |
 	+------+--------------------------------------------------------+---------------------------------------------------------+
-	|    9 | Click on **Project Settings**                          | Refer to :num:`Fig. #settingstest01trbcimur`            |
+	|    9 | Click on **Project Settings**                          | Refer to :num:`Fig. #settingstest01eszsulrj`            |
 	+------+--------------------------------------------------------+---------------------------------------------------------+
 	|   10 | Edit any project setting and click on **Save**         | Project setting is edited and saved.                    |
 	+------+--------------------------------------------------------+---------------------------------------------------------+
@@ -641,7 +641,7 @@ Pre-Test Conditions
 	+------+--------------------------------------------------------+---------------------------------------------------------+
 
 
-.. _settingstest01tRbciMUr:
+.. _settingstest01eSZsUlrj:
 
 .. figure:: ./images/settings_test_01.png
     :alt: Shows the Project Settings dialog.
@@ -702,21 +702,21 @@ Pre-Test Conditions
 	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------+
 	|    4 | Type "python facile.py" in the **Command Prompt**                                                                                                                                                       | Facile should run.                                                                                                                               |
 	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------+
-	|    5 | Click on **File**                                                                                                                                                                                       | Refer to :num:`Fig. #ostest01pgxxdaem`                                                                                                           |
+	|    5 | Click on **File**                                                                                                                                                                                       | Refer to :num:`Fig. #ostest01mebsdont`                                                                                                           |
 	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------+
-	|    6 | Click on **New Project**                                                                                                                                                                                | Refer to :num:`Fig. #ostest01pgxxdaem`                                                                                                           |
+	|    6 | Click on **New Project**                                                                                                                                                                                | Refer to :num:`Fig. #ostest01mebsdont`                                                                                                           |
 	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------+
-	|    7 | Click on **From Scratch**                                                                                                                                                                               | Refer to :num:`Fig. #ostest01pgxxdaem`                                                                                                           |
+	|    7 | Click on **From Scratch**                                                                                                                                                                               | Refer to :num:`Fig. #ostest01mebsdont`                                                                                                           |
 	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------+
-	|    8 | Fill in **Project Name** and **Project Description.** Upload your **Project Folder** and **Target Application.** Choose the category the **Target Application** best fits under. Finally, click **OK.** | Project is saved with the *.fcl* extension in the selected folder. Refer to :num:`Fig. #guitest02rybfmqpw`                                       |
+	|    8 | Fill in **Project Name** and **Project Description.** Upload your **Project Folder** and **Target Application.** Choose the category the **Target Application** best fits under. Finally, click **OK.** | Project is saved with the *.fcl* extension in the selected folder. Refer to :num:`Fig. #guitest02faoxkqdm`                                       |
 	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------+
-	|    9 | In the Windows taskbar, click on **File Explorer** and navigate to your project folder.                                                                                                                 | A variety of files are shown. The main file is the name of your project with the *.fcl* extension. Refer to :num:`Fig. #extensiontest01rmcayjwx` |
+	|    9 | In the Windows taskbar, click on **File Explorer** and navigate to your project folder.                                                                                                                 | A variety of files are shown. The main file is the name of your project with the *.fcl* extension. Refer to :num:`Fig. #extensiontest01orhcklgb` |
 	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------+
 	|   10 | Click on the **Windows Search Bar**                                                                                                                                                                     | **Windows Seach Bar** comes into focus.                                                                                                          |
 	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------+
 
 
-.. _OStest01pGxXDaEM:
+.. _OStest01meBSDont:
 
 .. figure:: ./images/OS_test_01.png
     :alt: 
@@ -725,7 +725,7 @@ Pre-Test Conditions
     
 
 
-.. _GUItest02rYBFmqPw:
+.. _GUItest02fAoXKqDm:
 
 .. figure:: ./images/GUI_test_02.png
     :alt: 
@@ -734,7 +734,7 @@ Pre-Test Conditions
     
 
 
-.. _extensiontest01rmCAYJWx:
+.. _extensiontest01orhCkLGb:
 
 .. figure:: ./images/extension_test_01.png
     :alt: Shows the files in your project. The filenames in your project may differ, but the extensions should remain the same.
@@ -795,15 +795,15 @@ Pre-Test Conditions
 	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------+
 	|    4 | Type "python facile.py" in the **Command Prompt**                                                                                                                                                       | Facile should run.                                                                                                                               |
 	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------+
-	|    5 | Click on **File**                                                                                                                                                                                       | Refer to :num:`Fig. #ostest01iwuyegnw`                                                                                                           |
+	|    5 | Click on **File**                                                                                                                                                                                       | Refer to :num:`Fig. #ostest01pfrqilbc`                                                                                                           |
 	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------+
-	|    6 | Click on **New Project**                                                                                                                                                                                | Refer to :num:`Fig. #ostest01iwuyegnw`                                                                                                           |
+	|    6 | Click on **New Project**                                                                                                                                                                                | Refer to :num:`Fig. #ostest01pfrqilbc`                                                                                                           |
 	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------+
-	|    7 | Click on **From Scratch**                                                                                                                                                                               | Refer to :num:`Fig. #ostest01iwuyegnw`                                                                                                           |
+	|    7 | Click on **From Scratch**                                                                                                                                                                               | Refer to :num:`Fig. #ostest01pfrqilbc`                                                                                                           |
 	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------+
-	|    8 | Fill in **Project Name** and **Project Description.** Upload your **Project Folder** and **Target Application.** Choose the category the **Target Application** best fits under. Finally, click **OK.** | Project is saved with the *.fcl* extension in the selected folder. Refer to :num:`Fig. #guitest02tcceuhwi`                                       |
+	|    8 | Fill in **Project Name** and **Project Description.** Upload your **Project Folder** and **Target Application.** Choose the category the **Target Application** best fits under. Finally, click **OK.** | Project is saved with the *.fcl* extension in the selected folder. Refer to :num:`Fig. #guitest02muezrlre`                                       |
 	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------+
-	|    9 | In the Windows taskbar, click on **File Explorer** and navigate to your project folder.                                                                                                                 | A variety of files are shown. The main file is the name of your project with the *.fcl* extension. Refer to :num:`Fig. #extensiontest01qlbpwiou` |
+	|    9 | In the Windows taskbar, click on **File Explorer** and navigate to your project folder.                                                                                                                 | A variety of files are shown. The main file is the name of your project with the *.fcl* extension. Refer to :num:`Fig. #extensiontest01bnmvrtzm` |
 	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------+
 	|   10 | Right click on the project file (*.fcl* extension) and select **Open with**. Select a text editor to open the file with.                                                                                | The content of the Project file is shown in human-readable format in the chosen text editor. Test case completed.                                |
 	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------+
@@ -811,7 +811,7 @@ Pre-Test Conditions
 	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------+
 
 
-.. _OStest01IwUyeGnW:
+.. _OStest01PfRQILbC:
 
 .. figure:: ./images/OS_test_01.png
     :alt: The Windows 10 system settings dialog showing that you're running Windows 10 version 1903
@@ -820,7 +820,7 @@ Pre-Test Conditions
     
 
 
-.. _GUItest02tcCEuhWi:
+.. _GUItest02muEzRlre:
 
 .. figure:: ./images/GUI_test_02.png
     :alt: 
@@ -829,7 +829,7 @@ Pre-Test Conditions
     
 
 
-.. _extensiontest01qlbpWIoU:
+.. _extensiontest01BnmvRtZm:
 
 .. figure:: ./images/extension_test_01.png
     :alt: 
