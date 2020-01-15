@@ -35,7 +35,11 @@ Module Contents
 
 .. py:class:: TargetGuiModel
 
-   Bases: :class:`PySide2.QtCore.QObject`
+   ..
+      Bases: :class:`PySide2.QtCore.QObject`
+
+   Inheritance Hierarchy:
+
    .. inheritance-diagram:: targetguimodel.TargetGuiModel
 
    This class models the structure and behavior of the target gui.

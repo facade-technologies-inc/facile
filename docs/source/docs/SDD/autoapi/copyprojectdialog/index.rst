@@ -35,7 +35,11 @@ Module Contents
 
 .. py:class:: CopyProjectDialog(parent: QWidget = None, oldProject: Project = None)
 
-   Bases: :class:`PySide2.QtWidgets.QDialog`
+   ..
+      Bases: :class:`PySide2.QtWidgets.QDialog`
+
+   Inheritance Hierarchy:
+
    .. inheritance-diagram:: copyprojectdialog.CopyProjectDialog
 
    This class is used to create a new project from an existing one. It is a dialog that pops up

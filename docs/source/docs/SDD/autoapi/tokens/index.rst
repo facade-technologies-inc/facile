@@ -87,7 +87,8 @@ Module Contents
 
    .. py:class:: Match
 
-      Bases: :class:`enum.Enum`
+      ..
+         Bases: :class:`enum.Enum`
 
       .. attribute:: EXACT
          :annotation: = 1

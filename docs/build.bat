@@ -1,6 +1,7 @@
 echo off
 
 echo Removing previously created build logs
+mkdir logs
 pushd logs
 del /S /Q *.*
 popd

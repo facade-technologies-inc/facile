@@ -35,7 +35,11 @@ Module Contents
 
 .. py:class:: Component(tguim: TargetGuiModel, parent: Component = None, superToken: SuperToken = None, createGraphics: ComponentGraphics = True)
 
-   Bases: :class:`data.entity.Entity`
+   ..
+      Bases: :class:`data.entity.Entity`
+
+   Inheritance Hierarchy:
+
    .. inheritance-diagram:: component.Component
 
    This class models an individual GUI component in the target gui.

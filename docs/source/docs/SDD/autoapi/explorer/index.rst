@@ -35,7 +35,11 @@ Module Contents
 
 .. py:class:: Explorer(processID: int, backend: str = 'uia')
 
-   Bases: :class:`PySide2.QtCore.QThread`
+   ..
+      Bases: :class:`PySide2.QtCore.QThread`
+
+   Inheritance Hierarchy:
+
    .. inheritance-diagram:: explorer.Explorer
 
    The explorer class makes use of recursive functions to break down the target gui into its smallest components,

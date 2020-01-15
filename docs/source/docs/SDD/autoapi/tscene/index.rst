@@ -35,7 +35,11 @@ Module Contents
 
 .. py:class:: TScene(targetGUIModel: TargetGuiModel)
 
-   Bases: :class:`PySide2.QtWidgets.QGraphicsScene`
+   ..
+      Bases: :class:`PySide2.QtWidgets.QGraphicsScene`
+
+   Inheritance Hierarchy:
+
    .. inheritance-diagram:: tscene.TScene
 
    Construct the TScene class

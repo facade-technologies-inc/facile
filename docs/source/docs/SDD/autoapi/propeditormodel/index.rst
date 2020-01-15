@@ -35,7 +35,11 @@ Module Contents
 
 .. py:class:: PropModel(propData: object)
 
-   Bases: :class:`PySide2.QtCore.QAbstractItemModel`
+   ..
+      Bases: :class:`PySide2.QtCore.QAbstractItemModel`
+
+   Inheritance Hierarchy:
+
    .. inheritance-diagram:: propeditormodel.PropModel
 
    A subclass that allows us to show the Data through QTreeView.

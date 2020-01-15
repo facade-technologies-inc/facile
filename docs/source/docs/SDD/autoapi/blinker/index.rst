@@ -36,7 +36,11 @@ Module Contents
 
 .. py:class:: Blinker(pid: int, backend: str, superToken: SuperToken)
 
-   Bases: :class:`PySide2.QtCore.QThread`
+   ..
+      Bases: :class:`PySide2.QtCore.QThread`
+
+   Inheritance Hierarchy:
+
    .. inheritance-diagram:: blinker.Blinker
 
    The Blinker class is used to draw a box around a given element at a specified frequency for a small

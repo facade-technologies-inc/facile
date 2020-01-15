@@ -53,7 +53,8 @@ Module Contents
 
    .. py:class:: State
 
-      Bases: :class:`enum.Enum`
+      ..
+         Bases: :class:`enum.Enum`
 
       .. attribute:: WAIT_FOR_PROJECT
          
@@ -78,7 +79,8 @@ Module Contents
 
    .. py:class:: Event
 
-      Bases: :class:`enum.Enum`
+      ..
+         Bases: :class:`enum.Enum`
 
       .. attribute:: UPDATE
          
@@ -128,7 +130,8 @@ Module Contents
 
    .. py:class:: ExplorationMode
 
-      Bases: :class:`enum.Enum`
+      ..
+         Bases: :class:`enum.Enum`
 
       .. attribute:: AUTO
          
