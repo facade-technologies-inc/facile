@@ -38,7 +38,11 @@ Module Contents
 
 .. py:class:: FacileGraphicsView(parent: QWidget = None)
 
-   Bases: :class:`PySide2.QtWidgets.QGraphicsView`
+   ..
+      Bases: :class:`PySide2.QtWidgets.QGraphicsView`
+
+   Inheritance Hierarchy:
+
    .. inheritance-diagram:: facilegraphicsview.FacileGraphicsView
 
    This class adds functionality to the QGraphicsView to zoom in and out.

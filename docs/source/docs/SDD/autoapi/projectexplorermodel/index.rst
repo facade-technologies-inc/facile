@@ -35,7 +35,11 @@ Module Contents
 
 .. py:class:: ProjectExplorerModel(project: Project, view: QTreeView)
 
-   Bases: :class:`PySide2.QtCore.QAbstractItemModel`
+   ..
+      Bases: :class:`PySide2.QtCore.QAbstractItemModel`
+
+   Inheritance Hierarchy:
+
    .. inheritance-diagram:: projectexplorermodel.ProjectExplorerModel
 
    This class is the Qt model that gets loaded into the project explorer view in Facile.

@@ -35,7 +35,11 @@ Module Contents
 
 .. py:class:: VisibilityBehavior(tguim: TargetGuiModel, srcComp: Component = None, destComp: Component = None, reactionType: ReactionType = ReactionType.Show)
 
-   Bases: :class:`data.entity.Entity`
+   ..
+      Bases: :class:`data.entity.Entity`
+
+   Inheritance Hierarchy:
+
    .. inheritance-diagram:: visibilitybehavior.VisibilityBehavior
 
    This class describes a visibility behavior in the target gui - how a component becomes visible
@@ -57,7 +61,8 @@ Module Contents
 
    .. py:class:: ReactionType
 
-      Bases: :class:`enum.Enum`
+      ..
+         Bases: :class:`enum.Enum`
 
       .. attribute:: Show
          

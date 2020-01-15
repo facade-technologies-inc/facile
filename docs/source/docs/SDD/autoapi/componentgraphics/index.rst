@@ -35,7 +35,11 @@ Module Contents
 
 .. py:class:: ComponentGraphics(dataComponent: Component, rect: tuple = (), parent=None)
 
-   Bases: :class:`PySide2.QtWidgets.QGraphicsItem`
+   ..
+      Bases: :class:`PySide2.QtWidgets.QGraphicsItem`
+
+   Inheritance Hierarchy:
+
    .. inheritance-diagram:: componentgraphics.ComponentGraphics
 
    This class displays an individual GUI component in the target gui,

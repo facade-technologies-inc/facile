@@ -36,7 +36,11 @@ Module Contents
 
 .. py:class:: Application(backend: str = 'uia')
 
-   Bases: :class:`pywinauto.Desktop`
+   ..
+      Bases: :class:`pywinauto.Desktop`
+
+   Inheritance Hierarchy:
+
    .. inheritance-diagram:: application.Application
 
    This class is an alternative to pywinauto's Application class that will detect windows in all of an application's

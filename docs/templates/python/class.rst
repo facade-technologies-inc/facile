@@ -3,10 +3,14 @@
 
 
    {% if obj.bases %}
-   Bases: {% for base in obj.bases %}:class:`{{ base }}`{% if not loop.last %}, {% endif %}{% endfor %}
+   ..
+      Bases: {% for base in obj.bases %}:class:`{{ base }}`{% if not loop.last %}, {% endif %}{% endfor %}
 
    {# This is a hacky way to eliminate import issues with inner classes #}
    {% if "enum.Enum" not in obj.bases %}
+
+   Inheritance Hierarchy:
+
    .. inheritance-diagram:: {{ obj.id }}
    {% endif %}
 

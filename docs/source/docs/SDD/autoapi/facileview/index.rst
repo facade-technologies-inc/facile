@@ -36,7 +36,11 @@ Module Contents
 
 .. py:class:: FacileView
 
-   Bases: :class:`PySide2.QtWidgets.QMainWindow`
+   ..
+      Bases: :class:`PySide2.QtWidgets.QMainWindow`
+
+   Inheritance Hierarchy:
+
    .. inheritance-diagram:: facileview.FacileView
 
    FacileView is the main window for Facile.

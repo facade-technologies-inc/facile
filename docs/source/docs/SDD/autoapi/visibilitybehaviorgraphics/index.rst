@@ -35,7 +35,11 @@ Module Contents
 
 .. py:class:: VBGraphics(dataVisibilityBehavior: VisibilityBehavior, parent: TScene)
 
-   Bases: :class:`PySide2.QtWidgets.QGraphicsItem`
+   ..
+      Bases: :class:`PySide2.QtWidgets.QGraphicsItem`
+
+   Inheritance Hierarchy:
+
    .. inheritance-diagram:: visibilitybehaviorgraphics.VBGraphics
 
    Construct the VBGraphics class.

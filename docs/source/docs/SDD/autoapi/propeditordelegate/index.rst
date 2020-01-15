@@ -35,7 +35,11 @@ Module Contents
 
 .. py:class:: PropertyEditorDelegate
 
-   Bases: :class:`PySide2.QtWidgets.QStyledItemDelegate`
+   ..
+      Bases: :class:`PySide2.QtWidgets.QStyledItemDelegate`
+
+   Inheritance Hierarchy:
+
    .. inheritance-diagram:: propeditordelegate.PropertyEditorDelegate
 
    A subclass that allows us to render our QTreeView and editing the Model

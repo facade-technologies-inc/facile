@@ -35,7 +35,11 @@ Module Contents
 
 .. py:class:: Observer(processID: int, backend: str = 'uia')
 
-   Bases: :class:`PySide2.QtCore.QThread`
+   ..
+      Bases: :class:`PySide2.QtCore.QThread`
+
+   Inheritance Hierarchy:
+
    .. inheritance-diagram:: observer.Observer
 
    The observer continually traverses the target GUI and notifies when new components are found.

@@ -40,7 +40,11 @@ Module Contents
 
 .. py:class:: ManageProjectDialog(project: Project, parent: QWidget = None)
 
-   Bases: :class:`PySide2.QtWidgets.QDialog`
+   ..
+      Bases: :class:`PySide2.QtWidgets.QDialog`
+
+   Inheritance Hierarchy:
+
    .. inheritance-diagram:: manageprojectdialog.ManageProjectDialog
 
    This class is used to create a new project from scratch. It is a dialog that pops up
