@@ -107,6 +107,32 @@ Property
 The Property class defines an individual property of an Entity.  A Property consists of a name, a
 value, and a type.  Properties can optionally be made read only.
 
+==========
+SuperToken
+==========
+
+The SuperToken class contains all the identifying information associated with a particular target GUI
+component. Every Component object has one SuperToken. The state of a target GUI component may change
+over time, and so information about all observed states of the component are stored in its associated
+SuperToken. The information of any one observed state is captured in a Token (see the Token class),
+and so a SuperToken is essentially an aggregation of Tokens.
+
+SuperTokens are created by the Observer and passed to the TargetGuiModel, which will create a Component
+object based on the new SuperToken.  The SuperToken acts as an identifier for a Component in the
+TargetGuiModel so that the Component can be re-associated with the actual component in the target GUI
+later.
+
+=====
+Token
+=====
+
+The Token class contains the identifying information associated with an individual target GUI component
+in a particular state. One or more Tokens will belong to an individual SuperToken. Some of the pieces of
+identifying information, which are stored as data members in the Token class, are assigned weights
+determining the relative importance of that piece of information in reidentifying the component in the
+target GUI. The Token class contains methods for deciding whether an observed component matches
+(or matches closely enough) a Component in the TargetGuiModel.
+
 .. todo::
     Link to figure below somewhere
 
