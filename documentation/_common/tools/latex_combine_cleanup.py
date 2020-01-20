@@ -47,8 +47,7 @@ for root, dirs, files in os.walk(DOC_DIR):
 					texcontents = read(file)
 					
 					if docname == "TDP":
-						texcontents = texcontents.replace(r"\sphinxtableofcontents",
-						                                  r"\tableofcontents")
+						texcontents = re.sub(r"\\sphinxtableofcontents\n", r"\\tableofcontents", texcontents)
 						
 					else:
 						o = r"\newcommand{\sphinxlogo}{\sphinxincludegraphics{facade_logo_small.png}\par}"

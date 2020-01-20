@@ -15,6 +15,7 @@ order = [
 ]
 
 docnames = {
+	"TDP":        "19033_Facile_Technical_Data_Package",
 	"CCL":        "19033_Facile_Change_Control_Log",
 	"SCG":        "19033_Facile_Security_Classification_Guide",
 	"ConOps":     "19033_Facile_Concept_of_Operations",
@@ -32,7 +33,7 @@ releases = {
 	"CCL":        "A",
 	"SCG":        "A",
 	"ConOps":     "B",
-	"Proposal":   "B",
+	"Proposal":   "A",
 	"SRD":        "C",
 	"Risk":       "A",
 	"ATP":        "A",
