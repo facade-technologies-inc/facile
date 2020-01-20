@@ -95,6 +95,17 @@ description_template = """
 Risk {num} - {title}
 ================================================================================
 
+.. table:: Likeliness, Consequence, and Severity
+
+	+-------------------+----------------------+----------------------+
+	| Likeliness (0-1)  | Consequence (0-1)    | Severity (0-1)       |
+	+===================+======================+======================+
+	|                   |                      |                      |
+	+-------------------+----------------------+----------------------+
+	
+	{likeliness:}
+	
+
 {statement}
 
 {description}
@@ -179,14 +190,20 @@ def capture_matrix():
 def create_descriptions(risks):
 	descriptions = ""
 	for index, row in risks.iterrows():
-		descriptions += description_template.fomat()
+		descriptions += description_template.format(num = index,
+		                                            title = row["Name"],
+		                                            statement = row["Statement"],
+		                                            description = row["Description"],
+		                                            action = actions[row["Action"]],
+		                                            plan = row["Action Plan"])
+	return descriptions
 	
 
-def write_rst_file():
+def write_rst_file(descriptions):
 	rst_contents = rst_template.format(summary_file=summary_sheet_csv,
 	                                   severity_file=severity_sheet_csv,
 	                                   risk_matrix_picture=matrix_picture_file,
-	                                   risk_descriptions="")
+	                                   risk_descriptions=descriptions)
 	
 	with open(risk_file_path, "w") as risk_file:
 		risk_file.write(rst_contents)
@@ -206,4 +223,5 @@ if __name__ == "__main__":
 	grid = categorize_risks(risks)
 	write_matrix(grid)
 	capture_matrix()
-	write_rst_file()
+	descriptions = create_descriptions(risks)
+	write_rst_file(descriptions)
