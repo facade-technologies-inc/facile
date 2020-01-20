@@ -52,6 +52,14 @@ summary_sheet_csv = os.path.abspath("../Risk/source/risk_summary.csv")
 severity_sheet_csv = os.path.abspath("../Risk/source/risk_severity.csv")
 matrix_picture_file = os.path.abspath("../Risk/source/risk_matrix.png")
 
+
+actions = {
+	"A": "Accept",
+	"M": "Mitigate",
+	"W": "Watch",
+	"R": "Research",
+}
+
 rst_template = """
 ***********************
 Risk Analysis
@@ -78,7 +86,23 @@ Risk Analysis
 ---------------------
 Risk Descriptions
 ---------------------
+
 {risk_descriptions}
+"""
+
+description_template = """
+================================================================================
+Risk {num} - {title}
+================================================================================
+
+{statement}
+
+{description}
+
+We plan to **{action}** this risk by following this plan:
+
+{plan}
+
 """
 
 def read_risks():
@@ -155,7 +179,7 @@ def capture_matrix():
 def create_descriptions(risks):
 	descriptions = ""
 	for index, row in risks.iterrows():
-		descriptions += """"""
+		descriptions += description_template.fomat()
 	
 
 def write_rst_file():
