@@ -21,7 +21,7 @@ Operating System Acceptance Test
 Introduction
 ============
 
-This acceptance test document verifies that the software system, Facile is functional on 64 Bit Windows 10 Home Version 1903.  This acceptance test establishes the framework used by the acceptance test team to plan, execute, and document acceptance testing.  It describes the scope of the work performed and the approach taken to execute the tests created to validate that the system performs as required with the intended operating system. The details of this acceptance test are developed according to the requirements specifications and show traceability back to those specifications.
+This acceptance test verifies that the software system, Facile is functional on 64 Bit Windows 10 Home Version 1903.  This acceptance test establishes the framework used by the acceptance test team to plan, execute, and document acceptance testing.  It describes the scope of the work performed and the approach taken to execute the tests created to validate that the system performs as required with the intended operating system. The details of this acceptance test are developed according to the requirements specifications and show traceability back to those specifications.
 
 ====================
 Referenced Documents
@@ -51,30 +51,41 @@ Pre-Test Conditions
 .. tabularcolumns:: |c|L|L|
 .. table:: Test Procedure Steps
 
-	+------+---------------------------------------------------------------------------------------+-----------------------------------------+
-	| Step | Action                                                                                | Expected Result                         |
-	+======+=======================================================================================+=========================================+
-	|    1 | Right click on **Explorer**                                                           | A context menu of items open up         |
-	+------+---------------------------------------------------------------------------------------+-----------------------------------------+
-	|    2 | Select **System**                                                                     | **Settings** is open                    |
-	+------+---------------------------------------------------------------------------------------+-----------------------------------------+
-	|    3 | Scroll to **Device specifications,** and verify the System type, Edition, and Version | Refer to :num:`Fig. #ostest01xyykmews`  |
-	+------+---------------------------------------------------------------------------------------+-----------------------------------------+
-	|    4 | Click on **Windows Search Bar**                                                       | Windows Search Bar comes into focus     |
-	+------+---------------------------------------------------------------------------------------+-----------------------------------------+
-	|    5 | Type cmd and press enter                                                              | A **Command Prompt** terminal opens     |
-	+------+---------------------------------------------------------------------------------------+-----------------------------------------+
-	|    6 | Click on the **Command Prompt**                                                       | The **Command Prompt** comes into focus |
-	+------+---------------------------------------------------------------------------------------+-----------------------------------------+
-	|    7 | Type "python facile.py" in the **Command Prompt**                                     | Facile should run. Test Case Completed. |
-	+------+---------------------------------------------------------------------------------------+-----------------------------------------+
-	|    8 | Right click on **Explorer**                                                           | A context menu of items open up         |
-	+------+---------------------------------------------------------------------------------------+-----------------------------------------+
+	+------+---------------------------------------------------------------------------------------+---------------------------------------------+
+	| Step | Action                                                                                | Expected Result                             |
+	+======+=======================================================================================+=============================================+
+	|    1 | Right click on **Explorer**                                                           | Refer to :num:`Fig. #ostest01yxveletr`      |
+	+------+---------------------------------------------------------------------------------------+---------------------------------------------+
+	|    2 | Select **System**                                                                     | **Settings** is open                        |
+	+------+---------------------------------------------------------------------------------------+---------------------------------------------+
+	|    3 | Scroll to **Device specifications**, and verify the System type, Edition, and Version | Refer to :num:`Fig. #ostest02yhhfnjsb`      |
+	+------+---------------------------------------------------------------------------------------+---------------------------------------------+
+	|    4 | Click on **Windows Search Bar**                                                       | Windows Search Bar comes into focus         |
+	+------+---------------------------------------------------------------------------------------+---------------------------------------------+
+	|    5 | Type **cmd** and press **Enter**                                                      | The **Command Prompt** opens                |
+	+------+---------------------------------------------------------------------------------------+---------------------------------------------+
+	|    6 | Click on the **Command Prompt**                                                       | The **Command Prompt** comes into focus     |
+	+------+---------------------------------------------------------------------------------------+---------------------------------------------+
+	|    7 | Type "python facile.py" in the **Command Prompt**                                     | **Facile** should run. Test Case Completed. |
+	+------+---------------------------------------------------------------------------------------+---------------------------------------------+
+	|    8 | Right click on **Explorer**                                                           | Refer to :num:`Fig. #ostest01yxveletr`      |
+	+------+---------------------------------------------------------------------------------------+---------------------------------------------+
+	|    9 | Select **System**                                                                     | **Settings** is open                        |
+	+------+---------------------------------------------------------------------------------------+---------------------------------------------+
 
 
-.. _OStest01XyykmEWS:
+.. _OStest01yXvElETR:
 
 .. figure:: ./images/OS_test_01.png
+    :alt: Drop box menu from the Explorer with a list of options
+    
+    Drop box menu from the Explorer with a list of options
+    
+
+
+.. _OStest02YHhfNJSb:
+
+.. figure:: ./images/OS_test_02.png
     :alt: The Windows 10 system settings dialog showing that you're running Windows 10 version 1903
     
     The Windows 10 system settings dialog showing that you're running Windows 10 version 1903
@@ -92,7 +103,7 @@ Programming Language Acceptance Test
 Introduction
 ============
 
-This acceptance test document verifies that the software system, Facile is functional while using a Python 3.7.4 interpreter.  This acceptance test establishes the framework used by the acceptance test team to plan, execute, and document acceptance testing.  It describes the scope of the work performed and the approach taken to execute the tests created to validate that the system performs as required with the intended programming language. The details of this acceptance test are developed according to the requirements specifications and show traceability back to those specifications.
+This acceptance test verifies that the software system, Facile is functional while using a Python 3.7.4 interpreter.  This acceptance test establishes the framework used by the acceptance test team to plan, execute, and document acceptance testing.  It describes the scope of the work performed and the approach taken to execute the tests created to validate that the system performs as required with the intended programming language. The details of this acceptance test are developed according to the requirements specifications and show traceability back to those specifications.
 
 ====================
 Referenced Documents
@@ -122,31 +133,50 @@ Pre-Test Conditions
 .. tabularcolumns:: |c|L|L|
 .. table:: Test Procedure Steps
 
-	+------+------------------------------------------------------------------------------------------------------+----------------------------------------------+
-	| Step | Action                                                                                               | Expected Result                              |
-	+======+======================================================================================================+==============================================+
-	|    1 | Click on the **Windows Search Bar**                                                                  | **Windows Search Bar** comes into focus      |
-	+------+------------------------------------------------------------------------------------------------------+----------------------------------------------+
-	|    2 | Type **cmd**                                                                                         | The sindows **Command Prompt** opens         |
-	+------+------------------------------------------------------------------------------------------------------+----------------------------------------------+
-	|    3 | Click on the command prompt                                                                          | The **Command Prompt** comes into focus      |
-	+------+------------------------------------------------------------------------------------------------------+----------------------------------------------+
-	|    4 | Type **python**                                                                                      | Refer to :num:`Fig. #languagetest01wbxjrcmo` |
-	+------+------------------------------------------------------------------------------------------------------+----------------------------------------------+
-	|    5 | Verify that the *Python 3.7.4* and *32-bit* exist in the resulting text from the previous step.      | Refer to :num:`Fig. #languagetest01wbxjrcmo` |
-	+------+------------------------------------------------------------------------------------------------------+----------------------------------------------+
-	|    6 | Navigate to the directory containing facile.py, then type "python facile.py" in the **Command line** | Facile should run. Test Case Completed.      |
-	+------+------------------------------------------------------------------------------------------------------+----------------------------------------------+
-	|    7 | Click on the **Windows Search Bar**                                                                  | **Windows Search Bar** comes into focus      |
-	+------+------------------------------------------------------------------------------------------------------+----------------------------------------------+
+	+------+-----------------------------------------------------------------------------------------------------+------------------------------------------------+
+	| Step | Action                                                                                              | Expected Result                                |
+	+======+=====================================================================================================+================================================+
+	|    1 | Click on the **Windows Search Bar**                                                                 | **Windows Search Bar** comes into focus        |
+	+------+-----------------------------------------------------------------------------------------------------+------------------------------------------------+
+	|    2 | Type **cmd**                                                                                        | The **Command Prompt** opens                   |
+	+------+-----------------------------------------------------------------------------------------------------+------------------------------------------------+
+	|    3 | Click on the **Command Prompt**                                                                     | The **Command Prompt** comes into focus        |
+	+------+-----------------------------------------------------------------------------------------------------+------------------------------------------------+
+	|    4 | Type **python**                                                                                     | Refer to :num:`Fig. #languagetest01bscppylr`   |
+	+------+-----------------------------------------------------------------------------------------------------+------------------------------------------------+
+	|    5 | Verify that the **Python 3.7.4** and **32 bit** exist in the resulting text from the previous step. | Refer to :num:`Fig. #languagetest01bscppylr`   |
+	+------+-----------------------------------------------------------------------------------------------------+------------------------------------------------+
+	|    6 | Navigate to the directory containing the **facile** folder with faciles source code                 | Refer to :num:`Fig. #languagetest02zskqjpux`   |
+	+------+-----------------------------------------------------------------------------------------------------+------------------------------------------------+
+	|    7 | Click on the **Windows Search Bar**                                                                 | **Windows Search Bar** comes into focus        |
+	+------+-----------------------------------------------------------------------------------------------------+------------------------------------------------+
+	|    8 | Type **cmd**                                                                                        | The **Command Prompt** opens                   |
+	+------+-----------------------------------------------------------------------------------------------------+------------------------------------------------+
+	|    9 | Click on the **Command Prompt**                                                                     | The **Command Prompt** comes into focus        |
+	+------+-----------------------------------------------------------------------------------------------------+------------------------------------------------+
+	|   10 | Type **python facile.py** in the **Command Prompot**                                                | **Facile** should run. Test case is completed. |
+	+------+-----------------------------------------------------------------------------------------------------+------------------------------------------------+
+	|   11 | Click on the **Windows Search Bar**                                                                 | **Windows Search Bar** comes into focus        |
+	+------+-----------------------------------------------------------------------------------------------------+------------------------------------------------+
+	|   12 | Type **cmd**                                                                                        | The **Command Prompt** opens                   |
+	+------+-----------------------------------------------------------------------------------------------------+------------------------------------------------+
 
 
-.. _languagetest01wBxJRcMo:
+.. _languagetest01bscPpYlr:
 
 .. figure:: ./images/language_test_01.png
     :alt: A snippit of the Windows Command Prompt after typing *python* and pressing Enter. It shows the version and bitness of the Python interpreter being run.
     
     A snippit of the Windows Command Prompt after typing *python* and pressing Enter. It shows the version and bitness of the Python interpreter being run.
+    
+
+
+.. _languagetest02zSkqJPux:
+
+.. figure:: ./images/language_test_02.png
+    :alt: A picture of the directory that contains facile.
+    
+    A picture of the directory that contains facile.
     
 
 .. raw:: latex
@@ -161,7 +191,7 @@ Graphical User Interface Acceptance Test
 Introduction
 ============
 
-This acceptance test document verifies that the software system, Facile has a functional GUI that interacts with the user.  This acceptance test establishes the framework used by the acceptance test team to plan, execute, and document acceptance testing.  It describes the scope of the work performed and the approach taken to execute the tests created to validate that the system performs as required in the GUI. The details of this acceptance test are developed according to the requirements specifications and show traceability back to those specifications.
+This acceptance test verifies that the software system, Facile has a functional GUI that interacts with the user.  This acceptance test establishes the framework used by the acceptance test team to plan, execute, and document acceptance testing.  It describes the scope of the work performed and the approach taken to execute the tests created to validate that the system performs as required in the GUI. The details of this acceptance test are developed according to the requirements specifications and show traceability back to those specifications.
 
 .. note::
     The requirement that this test case is verifying is not completed yet because sub-system and sub-assembly requirements must first be completed.
@@ -205,13 +235,13 @@ Pre-Test Conditions
 	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------+
 	|    4 | Type "python facile.py" in the **Command Prompt**                                                                                                                                                       | Facile should run.                                                      |
 	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------+
-	|    5 | Click on **File**                                                                                                                                                                                       | Refer to :num:`Fig. #guitest01hlbvmbgs`                                 |
+	|    5 | Click on **File**                                                                                                                                                                                       | Refer to :num:`Fig. #guitest01qhsmcaqc`                                 |
 	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------+
-	|    6 | Click on **New Project**                                                                                                                                                                                | Refer to :num:`Fig. #guitest01hlbvmbgs`                                 |
+	|    6 | Click on **New Project**                                                                                                                                                                                | Refer to :num:`Fig. #guitest01qhsmcaqc`                                 |
 	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------+
-	|    7 | Click on **From Scratch**                                                                                                                                                                               | Refer to :num:`Fig. #guitest01hlbvmbgs`                                 |
+	|    7 | Click on **From Scratch**                                                                                                                                                                               | Refer to :num:`Fig. #guitest01qhsmcaqc`                                 |
 	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------+
-	|    8 | Fill in **Project Name** and **Project Description.** Upload your **Project Folder** and **Target Application.** Choose the category the **Target Application** best fits under. Finally, click **OK.** | Refer to :num:`Fig. #guitest02kfuclsur`                                 |
+	|    8 | Fill in **Project Name** and **Project Description.** Upload your **Project Folder** and **Target Application.** Choose the category the **Target Application** best fits under. Finally, click **OK.** | Refer to :num:`Fig. #guitest02imdwjkrc`                                 |
 	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------+
 	|    9 | Click on **Start App**                                                                                                                                                                                  | **Target Application** will pop up.                                     |
 	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------+
@@ -223,7 +253,7 @@ Pre-Test Conditions
 	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------+
 
 
-.. _GUItest01hLBvmbgS:
+.. _GUItest01QHsmcAqc:
 
 .. figure:: ./images/GUI_test_01.png
     :alt: A snippit of the Facile software system that shows the menu path to create a new project from scratch.
@@ -232,7 +262,7 @@ Pre-Test Conditions
     
 
 
-.. _GUItest02kfucLsuR:
+.. _GUItest02iMdWJkRc:
 
 .. figure:: ./images/GUI_test_02.png
     :alt: A snippit of the Facile project creation dialog. This dialog allows the user to specify some basic information abou the project and application they wish to control.
@@ -252,7 +282,7 @@ Target GUI Component Identifier Acceptance Test
 Introduction
 ============
 
-This acceptance test document verifies that the software system, Facile has a view that will allow the user to identify components of a target GUI.  This acceptance test establishes the framework used by the acceptance test team to plan, execute, and document acceptance testing.  It describes the scope of the work performed and the approach taken to execute the tests created to validate that the system performs as required in the target GUI. The details of this acceptance test are developed according to the requirements specifications and show traceability back to those specifications.
+This acceptance test verifies that the software system, Facile has a view that will allow the user to identify components of a target GUI.  This acceptance test establishes the framework used by the acceptance test team to plan, execute, and document acceptance testing.  It describes the scope of the work performed and the approach taken to execute the tests created to validate that the system performs as required in the target GUI. The details of this acceptance test are developed according to the requirements specifications and show traceability back to those specifications.
 
 ====================
 Referenced Documents
@@ -294,11 +324,11 @@ Pre-Test Conditions
 	+------+--------------------------------------------------------+--------------------------------------------------------------------------------------+
 	|    4 | Type "python facile.py" in the **Command Prompt**      | Facile should run.                                                                   |
 	+------+--------------------------------------------------------+--------------------------------------------------------------------------------------+
-	|    5 | Click on **File** in the menu.                         | See :num:`Fig. #tguicitest01zixwfkrn`                                                |
+	|    5 | Click on **File** in the menu.                         | See :num:`Fig. #tguicitest01nnashhac`                                                |
 	+------+--------------------------------------------------------+--------------------------------------------------------------------------------------+
-	|    6 | Click on **Recent Projects**                           | See :num:`Fig. #tguicitest01zixwfkrn`                                                |
+	|    6 | Click on **Recent Projects**                           | See :num:`Fig. #tguicitest01nnashhac`                                                |
 	+------+--------------------------------------------------------+--------------------------------------------------------------------------------------+
-	|    7 | Click on a recent project that you created previously. | See :num:`Fig. #tguicitest01zixwfkrn`                                                |
+	|    7 | Click on a recent project that you created previously. | See :num:`Fig. #tguicitest01nnashhac`                                                |
 	+------+--------------------------------------------------------+--------------------------------------------------------------------------------------+
 	|    8 | Click on **Start App**                                 | **Target Application** will run.                                                     |
 	+------+--------------------------------------------------------+--------------------------------------------------------------------------------------+
@@ -308,7 +338,7 @@ Pre-Test Conditions
 	+------+--------------------------------------------------------+--------------------------------------------------------------------------------------+
 
 
-.. _TGUICItest01ZIxwFkRn:
+.. _TGUICItest01nnAshHaC:
 
 .. figure:: ./images/TGUICI_test_01.png
     :alt: A snippit of the Facile software system that shows the menu path to open an existing project.
@@ -328,7 +358,7 @@ Target GUI Behavior Mapper Acceptance Test
 Introduction
 ============
 
-This acceptance test document verifies that the software system, Facile has a GUI that contains a view that allows the users to specify 'Show/Hide' for relation between two components.  This acceptance test establishes the framework used by the acceptance test team to plan, execute, and document acceptance testing.  It describes the scope of the work performed and the approach taken to execute the tests created to validate that the system performs as required in the GUI. The details of this acceptance test are developed according to the requirements specifications and show traceability back to those specifications.
+This acceptance test verifies that the software system, Facile has a GUI that contains a view that allows the users to specify 'Show/Hide' for relation between two components.  This acceptance test establishes the framework used by the acceptance test team to plan, execute, and document acceptance testing.  It describes the scope of the work performed and the approach taken to execute the tests created to validate that the system performs as required in the GUI. The details of this acceptance test are developed according to the requirements specifications and show traceability back to those specifications.
 
 ====================
 Referenced Documents
@@ -407,7 +437,7 @@ Project Overview Sidebar Acceptance Test
 Introduction
 ============
 
-This acceptance test document verifies that the software system, Facile has a GUI, that will have a view of all model components of the API project.  This acceptance test establishes the framework used by the acceptance test team to plan, execute, and document acceptance testing.  It describes the scope of the work performed and the approach taken to execute the tests created to validate that the system performs as required in the GUI. The details of this acceptance test are developed according to the requirements specifications and show traceability back to those specifications.
+This acceptance test verifies that the software system, Facile has a GUI, that will have a view of all model components of the API project.  This acceptance test establishes the framework used by the acceptance test team to plan, execute, and document acceptance testing.  It describes the scope of the work performed and the approach taken to execute the tests created to validate that the system performs as required in the GUI. The details of this acceptance test are developed according to the requirements specifications and show traceability back to those specifications.
 
 ====================
 Referenced Documents
@@ -448,13 +478,13 @@ Pre-Test Conditions
 	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------+
 	|    4 | Type "python facile.py" in the **Command Prompt**                                                                                                                                                       | Facile should run.                                                                                           |
 	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------+
-	|    5 | Click on **File**                                                                                                                                                                                       | Refer to :num:`Fig. #ostest01eubqvtko`                                                                       |
+	|    5 | Click on **File**                                                                                                                                                                                       | Refer to :num:`Fig. #ostest01ucmzyydk`                                                                       |
 	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------+
-	|    6 | Click on **New Project**                                                                                                                                                                                | Refer to :num:`Fig. #ostest01eubqvtko`                                                                       |
+	|    6 | Click on **New Project**                                                                                                                                                                                | Refer to :num:`Fig. #ostest01ucmzyydk`                                                                       |
 	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------+
-	|    7 | Click on **From Scratch**                                                                                                                                                                               | Refer to :num:`Fig. #ostest01eubqvtko`                                                                       |
+	|    7 | Click on **From Scratch**                                                                                                                                                                               | Refer to :num:`Fig. #ostest01ucmzyydk`                                                                       |
 	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------+
-	|    8 | Fill in **Project Name** and **Project Description.** Upload your **Project Folder** and **Target Application.** Choose the category the **Target Application** best fits under. Finally, click **OK.** | Project is saved with the *.fcl* extension in the selected folder. Refer to :num:`Fig. #guitest02zloffuvk`   |
+	|    8 | Fill in **Project Name** and **Project Description.** Upload your **Project Folder** and **Target Application.** Choose the category the **Target Application** best fits under. Finally, click **OK.** | Project is saved with the *.fcl* extension in the selected folder. Refer to :num:`Fig. #guitest02vklbwifo`   |
 	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------+
 	|    9 | Click on **Start App**                                                                                                                                                                                  | **Target Application** will pop up.                                                                          |
 	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------+
@@ -466,7 +496,7 @@ Pre-Test Conditions
 	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------+
 
 
-.. _OStest01euBQVtKo:
+.. _OStest01UcMZyYDK:
 
 .. figure:: ./images/OS_test_01.png
     :alt: The Windows 10 system settings dialog showing that you're running Windows 10 version 1903
@@ -475,7 +505,7 @@ Pre-Test Conditions
     
 
 
-.. _GUItest02zloffuvK:
+.. _GUItest02vklbwIfO:
 
 .. figure:: ./images/GUI_test_02.png
     :alt: 
@@ -495,7 +525,7 @@ Property Editor Panel Acceptance Test
 Introduction
 ============
 
-This acceptance test document verifies that the software system, Facile has a functional GUI that shall contain a view that allows the user to edit specific properties. The properties will be for any model components of the project that are selected by the user.  This acceptance test establishes the framework used by the acceptance test team to plan, execute, and document acceptance testing.  It describes the scope of the work performed and the approach taken to execute the tests created to validate that the system performs as required in the GUI. The details of this acceptance test are developed according to the requirements specifications and show traceability back to those specifications.
+This acceptance test verifies that the software system, Facile has a functional GUI that shall contain a view that allows the user to edit specific properties. The properties will be for any model components of the project that are selected by the user.  This acceptance test establishes the framework used by the acceptance test team to plan, execute, and document acceptance testing.  It describes the scope of the work performed and the approach taken to execute the tests created to validate that the system performs as required in the GUI. The details of this acceptance test are developed according to the requirements specifications and show traceability back to those specifications.
 
 ====================
 Referenced Documents
@@ -549,7 +579,7 @@ Pre-Test Conditions
 	+------+--------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------+
 	|   10 | Click on a component in the **Target GUI Model Graphics View**                             | Highlighted component will have its properties shown in the **Property Editor** view.      |
 	+------+--------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------+
-	|   11 | Click on a property in the **Property Editor** view                                        | The property will come into focus. Refer to :num:`Fig. #propertytest01bvodjsmj`            |
+	|   11 | Click on a property in the **Property Editor** view                                        | The property will come into focus. Refer to :num:`Fig. #propertytest01ndfmwygn`            |
 	+------+--------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------+
 	|   12 | Edit the property value (If editable)                                                      | The value of the property is edited.                                                       |
 	+------+--------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------+
@@ -559,7 +589,7 @@ Pre-Test Conditions
 	+------+--------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------+
 
 
-.. _propertytest01BVodjsmj:
+.. _propertytest01NdFmwyGN:
 
 .. figure:: ./images/property_test_01.png
     :alt: Shows the Facile software with the *Name* property selected. The *Name* property is always editable.
@@ -579,7 +609,7 @@ Project Settings Dialog Acceptance Test
 Introduction
 ============
 
-This acceptance test document verifies that the software system, Facile has a functional GUI that contains a dialog that will allow the user to edit the setting of a specified project.  This acceptance test establishes the framework used by the acceptance test team to plan, execute, and document acceptance testing.  It describes the scope of the work performed and the approach taken to execute the tests created to validate that the system performs as required in the GUI. The details of this acceptance test are developed according to the requirements specifications and show traceability back to those specifications.
+This acceptance test verifies that the software system, Facile has a functional GUI that contains a dialog that will allow the user to edit the setting of a specified project.  This acceptance test establishes the framework used by the acceptance test team to plan, execute, and document acceptance testing.  It describes the scope of the work performed and the approach taken to execute the tests created to validate that the system performs as required in the GUI. The details of this acceptance test are developed according to the requirements specifications and show traceability back to those specifications.
 
 ====================
 Referenced Documents
@@ -629,7 +659,7 @@ Pre-Test Conditions
 	+------+--------------------------------------------------------+---------------------------------------------------------+
 	|    8 | Click on **File** again                                | Context menu of items will be shown                     |
 	+------+--------------------------------------------------------+---------------------------------------------------------+
-	|    9 | Click on **Project Settings**                          | Refer to :num:`Fig. #settingstest01okvosvsz`            |
+	|    9 | Click on **Project Settings**                          | Refer to :num:`Fig. #settingstest01spvcrryy`            |
 	+------+--------------------------------------------------------+---------------------------------------------------------+
 	|   10 | Edit any project setting and click on **Save**         | Project setting is edited and saved.                    |
 	+------+--------------------------------------------------------+---------------------------------------------------------+
@@ -641,7 +671,7 @@ Pre-Test Conditions
 	+------+--------------------------------------------------------+---------------------------------------------------------+
 
 
-.. _settingstest01okvOSVsZ:
+.. _settingstest01SpvcRrYY:
 
 .. figure:: ./images/settings_test_01.png
     :alt: Shows the Project Settings dialog.
@@ -661,7 +691,7 @@ Project File Extension Acceptance Test
 Introduction
 ============
 
-This acceptance test document verifies that the software system, Facile will have its project files saved with a .fcl extension.  This acceptance test establishes the framework used by the acceptance test team to plan, execute, and document acceptance testing.  It describes the scope of the work performed and the approach taken to execute the tests created to validate that the system performs as required in the GUI. The details of this acceptance test are developed according to the requirements specifications and show traceability back to those specifications.
+This acceptance test verifies that the software system, Facile will have its project files saved with a .fcl extension.  This acceptance test establishes the framework used by the acceptance test team to plan, execute, and document acceptance testing.  It describes the scope of the work performed and the approach taken to execute the tests created to validate that the system performs as required in the GUI. The details of this acceptance test are developed according to the requirements specifications and show traceability back to those specifications.
 
 ====================
 Referenced Documents
@@ -702,21 +732,21 @@ Pre-Test Conditions
 	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------+
 	|    4 | Type "python facile.py" in the **Command Prompt**                                                                                                                                                       | Facile should run.                                                                                                                               |
 	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------+
-	|    5 | Click on **File**                                                                                                                                                                                       | Refer to :num:`Fig. #ostest01xnnerggi`                                                                                                           |
+	|    5 | Click on **File**                                                                                                                                                                                       | Refer to :num:`Fig. #ostest01lymbnrbb`                                                                                                           |
 	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------+
-	|    6 | Click on **New Project**                                                                                                                                                                                | Refer to :num:`Fig. #ostest01xnnerggi`                                                                                                           |
+	|    6 | Click on **New Project**                                                                                                                                                                                | Refer to :num:`Fig. #ostest01lymbnrbb`                                                                                                           |
 	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------+
-	|    7 | Click on **From Scratch**                                                                                                                                                                               | Refer to :num:`Fig. #ostest01xnnerggi`                                                                                                           |
+	|    7 | Click on **From Scratch**                                                                                                                                                                               | Refer to :num:`Fig. #ostest01lymbnrbb`                                                                                                           |
 	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------+
-	|    8 | Fill in **Project Name** and **Project Description.** Upload your **Project Folder** and **Target Application.** Choose the category the **Target Application** best fits under. Finally, click **OK.** | Project is saved with the *.fcl* extension in the selected folder. Refer to :num:`Fig. #guitest02iztxtomq`                                       |
+	|    8 | Fill in **Project Name** and **Project Description.** Upload your **Project Folder** and **Target Application.** Choose the category the **Target Application** best fits under. Finally, click **OK.** | Project is saved with the *.fcl* extension in the selected folder. Refer to :num:`Fig. #guitest02luvrrdau`                                       |
 	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------+
-	|    9 | In the Windows taskbar, click on **File Explorer** and navigate to your project folder.                                                                                                                 | A variety of files are shown. The main file is the name of your project with the *.fcl* extension. Refer to :num:`Fig. #extensiontest01ncvfngep` |
+	|    9 | In the Windows taskbar, click on **File Explorer** and navigate to your project folder.                                                                                                                 | A variety of files are shown. The main file is the name of your project with the *.fcl* extension. Refer to :num:`Fig. #extensiontest01tqejdgvo` |
 	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------+
 	|   10 | Click on the **Windows Search Bar**                                                                                                                                                                     | **Windows Seach Bar** comes into focus.                                                                                                          |
 	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------+
 
 
-.. _OStest01xNNergGI:
+.. _OStest01LymBNrbB:
 
 .. figure:: ./images/OS_test_01.png
     :alt: 
@@ -725,7 +755,7 @@ Pre-Test Conditions
     
 
 
-.. _GUItest02IZtXTOMq:
+.. _GUItest02LUVRrdaU:
 
 .. figure:: ./images/GUI_test_02.png
     :alt: 
@@ -734,7 +764,7 @@ Pre-Test Conditions
     
 
 
-.. _extensiontest01nCVfNgEP:
+.. _extensiontest01tqeJDgVo:
 
 .. figure:: ./images/extension_test_01.png
     :alt: Shows the files in your project. The filenames in your project may differ, but the extensions should remain the same.
@@ -754,7 +784,7 @@ Project File Format Acceptance Test
 Introduction
 ============
 
-This acceptance test document verifies that the software system, Facile will have project files than be in a human-readable format such as JSON.  This acceptance test establishes the framework used by the acceptance test team to plan, execute, and document acceptance testing.  It describes the scope of the work performed and the approach taken to execute the tests created to validate that the system performs as required. The details of this acceptance test are developed according to the requirements specifications and show traceability back to those specifications.
+This acceptance test verifies that the software system, Facile will have project files than be in a human-readable format such as JSON.  This acceptance test establishes the framework used by the acceptance test team to plan, execute, and document acceptance testing.  It describes the scope of the work performed and the approach taken to execute the tests created to validate that the system performs as required. The details of this acceptance test are developed according to the requirements specifications and show traceability back to those specifications.
 
 ====================
 Referenced Documents
@@ -795,15 +825,15 @@ Pre-Test Conditions
 	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------+
 	|    4 | Type "python facile.py" in the **Command Prompt**                                                                                                                                                       | Facile should run.                                                                                                                               |
 	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------+
-	|    5 | Click on **File**                                                                                                                                                                                       | Refer to :num:`Fig. #ostest01kqtjgwvw`                                                                                                           |
+	|    5 | Click on **File**                                                                                                                                                                                       | Refer to :num:`Fig. #ostest01gebpyanf`                                                                                                           |
 	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------+
-	|    6 | Click on **New Project**                                                                                                                                                                                | Refer to :num:`Fig. #ostest01kqtjgwvw`                                                                                                           |
+	|    6 | Click on **New Project**                                                                                                                                                                                | Refer to :num:`Fig. #ostest01gebpyanf`                                                                                                           |
 	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------+
-	|    7 | Click on **From Scratch**                                                                                                                                                                               | Refer to :num:`Fig. #ostest01kqtjgwvw`                                                                                                           |
+	|    7 | Click on **From Scratch**                                                                                                                                                                               | Refer to :num:`Fig. #ostest01gebpyanf`                                                                                                           |
 	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------+
-	|    8 | Fill in **Project Name** and **Project Description.** Upload your **Project Folder** and **Target Application.** Choose the category the **Target Application** best fits under. Finally, click **OK.** | Project is saved with the *.fcl* extension in the selected folder. Refer to :num:`Fig. #guitest02pmkilioh`                                       |
+	|    8 | Fill in **Project Name** and **Project Description.** Upload your **Project Folder** and **Target Application.** Choose the category the **Target Application** best fits under. Finally, click **OK.** | Project is saved with the *.fcl* extension in the selected folder. Refer to :num:`Fig. #guitest02jlaokilu`                                       |
 	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------+
-	|    9 | In the Windows taskbar, click on **File Explorer** and navigate to your project folder.                                                                                                                 | A variety of files are shown. The main file is the name of your project with the *.fcl* extension. Refer to :num:`Fig. #extensiontest01sihnjlkf` |
+	|    9 | In the Windows taskbar, click on **File Explorer** and navigate to your project folder.                                                                                                                 | A variety of files are shown. The main file is the name of your project with the *.fcl* extension. Refer to :num:`Fig. #extensiontest01hmfihlsc` |
 	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------+
 	|   10 | Right click on the project file (*.fcl* extension) and select **Open with**. Select a text editor to open the file with.                                                                                | The content of the Project file is shown in human-readable format in the chosen text editor. Test case completed.                                |
 	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------+
@@ -811,7 +841,7 @@ Pre-Test Conditions
 	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------+
 
 
-.. _OStest01KQTjGWvw:
+.. _OStest01GEBpYAnf:
 
 .. figure:: ./images/OS_test_01.png
     :alt: The Windows 10 system settings dialog showing that you're running Windows 10 version 1903
@@ -820,7 +850,7 @@ Pre-Test Conditions
     
 
 
-.. _GUItest02pMKilioh:
+.. _GUItest02jLaokilu:
 
 .. figure:: ./images/GUI_test_02.png
     :alt: 
@@ -829,7 +859,7 @@ Pre-Test Conditions
     
 
 
-.. _extensiontest01sIHnjlkF:
+.. _extensiontest01HMFIhlSC:
 
 .. figure:: ./images/extension_test_01.png
     :alt: 
