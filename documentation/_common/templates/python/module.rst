@@ -1,5 +1,9 @@
 :orphan:
 
+.. raw:: latex
+
+    \newpage
+
 :mod:`{{ obj.name }}`
 ======={{ "=" * obj.name|length }}
 

@@ -81,7 +81,7 @@ run1_replacement = r"""
 \renewcommand{{\sphinxtableofcontents}}{{
     \newgeometry{{left=.75in,right=.75in,top=1in,bottom=1in}}
     \pagestyle{{empty}}
-    \includepdf[pages=2,pagecommand={{}},width=1.2\textwidth,offset=0in 0in]{{../../../{}/build/latex/{}.pdf}}
+    \includepdf[pages=2,pagecommand={{}},frame,width=\textwidth,offset=0in 0in]{{../../../{}/build/latex/{}.pdf}}
     \restoregeometry
 }}
 \newpage
@@ -127,8 +127,8 @@ copy_2 = copy_2.replace(r"\sphinxtableofcontents", run2_replacement_1)
 for abbrev in docs:
 	doc = docnames[abbrev]
 	copy_2 = copy_2.replace("INSERT_DOC=" + abbrev, run2_replacement_2.format(abbrev, doc))
-	
+
 write("./19033_Technical_Data_Package.tex", copy_2)
-	
+
 os.system("make")
 
