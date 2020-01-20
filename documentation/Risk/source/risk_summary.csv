@@ -1,0 +1,16 @@
+1,Old project incompatibility,Changes to the source code may result in old projects being incompatible with newer versions of Facile.,Operations
+2,GUI Component Reidentification,We may not be able to reidentify GUI components consistently.,Development
+3,Index Organization,We may fail to make sure the index that has been deleted is actually the index that was supposed to be deleted.,Development
+4,Reconstructing project structure,It is possible that not all internal data can be easily reconstructed when a project is loaded by simply using the pickle module.,Development
+5,Visibility Behavior Conditionals,We may fail to come up with a system for allowing the user to define logical conditions determining if visibility behaviors are followed.,Development
+6,Restoring graphics upon load,"When a project is loaded, it may be difficult to restore the graphics to their original state.",Development
+7,Target GUI Incompatability,We may fail to detect that a target GUI is incompatible.,Operations
+8,GUI Mapping Incompatability,We may fail to map one or more components and behaviors in the target GUI.,Operations
+9,Speed Requirement,We may fail to map the GUI under 1 min.,Operations
+10,Bad User-defined Visibility Conditionals,A user may define illogical visibility behavior conditionals.,Operations
+11,Overuse of RAM,We may fail to use less than or equal to 2 GB of RAM while operating.,Operations
+12,Input of Properties,We may fail to compact what a user can input into the property editor.,Development
+13,Property Values,We may fail to display values of a property as a drop down menu.,Development
+14,Size the component,The size of the parent node may not be able to hold the children nodes.,Development
+15,Arrow routing,The arrow may be directed to the target component in a straight line.,Development
+16,Visibility Behavior QtModel interface,We may fail to implement the QtModel for visibility behaviors.,Development
