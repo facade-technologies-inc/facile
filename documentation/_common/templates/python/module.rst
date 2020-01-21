@@ -2,7 +2,7 @@
 
 .. raw:: latex
 
-    \newpage
+    \noindent\makebox[\linewidth]{\rule{\paperwidth}{0.4pt}}
 
 :mod:`{{ obj.name }}`
 ======={{ "=" * obj.name|length }}
