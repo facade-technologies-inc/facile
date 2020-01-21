@@ -21,7 +21,7 @@ Operating System Acceptance Test
 Introduction
 ============
 
-This acceptance test document verifies that the software system, Facile is functional on 64 Bit Windows 10 Home Version 1903.  This acceptance test establishes the framework used by the acceptance test team to plan, execute, and document acceptance testing.  It describes the scope of the work performed and the approach taken to execute the tests created to validate that the system performs as required with the intended operating system. The details of this acceptance test are developed according to the requirements specifications and show traceability back to those specifications.
+This acceptance test verifies that the software system, Facile is functional on 64 Bit Windows 10 Home Version 1903.  This acceptance test establishes the framework used by the acceptance test team to plan, execute, and document acceptance testing.  It describes the scope of the work performed and the approach taken to execute the tests created to validate that the system performs as required with the intended operating system. The details of this acceptance test are developed according to the requirements specifications and show traceability back to those specifications.
 
 ====================
 Referenced Documents
@@ -51,30 +51,41 @@ Pre-Test Conditions
 .. tabularcolumns:: |c|L|L|
 .. table:: Test Procedure Steps
 
-	+------+---------------------------------------------------------------------------------------+-----------------------------------------+
-	| Step | Action                                                                                | Expected Result                         |
-	+======+=======================================================================================+=========================================+
-	|    1 | Right click on **Explorer**                                                           | A context menu of items open up         |
-	+------+---------------------------------------------------------------------------------------+-----------------------------------------+
-	|    2 | Select **System**                                                                     | **Settings** is open                    |
-	+------+---------------------------------------------------------------------------------------+-----------------------------------------+
-	|    3 | Scroll to **Device specifications,** and verify the System type, Edition, and Version | Refer to :num:`Fig. #ostest01xyykmews`  |
-	+------+---------------------------------------------------------------------------------------+-----------------------------------------+
-	|    4 | Click on **Windows Search Bar**                                                       | Windows Search Bar comes into focus     |
-	+------+---------------------------------------------------------------------------------------+-----------------------------------------+
-	|    5 | Type cmd and press enter                                                              | A **Command Prompt** terminal opens     |
-	+------+---------------------------------------------------------------------------------------+-----------------------------------------+
-	|    6 | Click on the **Command Prompt**                                                       | The **Command Prompt** comes into focus |
-	+------+---------------------------------------------------------------------------------------+-----------------------------------------+
-	|    7 | Type "python facile.py" in the **Command Prompt**                                     | Facile should run. Test Case Completed. |
-	+------+---------------------------------------------------------------------------------------+-----------------------------------------+
-	|    8 | Right click on **Explorer**                                                           | A context menu of items open up         |
-	+------+---------------------------------------------------------------------------------------+-----------------------------------------+
+	+------+---------------------------------------------------------------------------------------+---------------------------------------------+
+	| Step | Action                                                                                | Expected Result                             |
+	+======+=======================================================================================+=============================================+
+	|    1 | Right click on **Explorer**                                                           | Refer to :num:`Fig. #ostest01ikipjssx`      |
+	+------+---------------------------------------------------------------------------------------+---------------------------------------------+
+	|    2 | Select **System**                                                                     | **Settings** is open                        |
+	+------+---------------------------------------------------------------------------------------+---------------------------------------------+
+	|    3 | Scroll to **Device specifications**, and verify the System type, Edition, and Version | Refer to :num:`Fig. #ostest02pkbeufmb`      |
+	+------+---------------------------------------------------------------------------------------+---------------------------------------------+
+	|    4 | Click on **Windows Search Bar**                                                       | Windows Search Bar comes into focus         |
+	+------+---------------------------------------------------------------------------------------+---------------------------------------------+
+	|    5 | Type **cmd** and press **Enter**                                                      | The **Command Prompt** opens                |
+	+------+---------------------------------------------------------------------------------------+---------------------------------------------+
+	|    6 | Click on the **Command Prompt**                                                       | The **Command Prompt** comes into focus     |
+	+------+---------------------------------------------------------------------------------------+---------------------------------------------+
+	|    7 | Type "python facile.py" in the **Command Prompt**                                     | **Facile** should run. Test Case Completed. |
+	+------+---------------------------------------------------------------------------------------+---------------------------------------------+
+	|    8 | Right click on **Explorer**                                                           | Refer to :num:`Fig. #ostest01ikipjssx`      |
+	+------+---------------------------------------------------------------------------------------+---------------------------------------------+
+	|    9 | Select **System**                                                                     | **Settings** is open                        |
+	+------+---------------------------------------------------------------------------------------+---------------------------------------------+
 
 
-.. _OStest01XyykmEWS:
+.. _OStest01ikIPjSsX:
 
 .. figure:: ./images/OS_test_01.png
+    :alt: Drop box menu from the Explorer with a list of options
+    
+    Drop box menu from the Explorer with a list of options
+    
+
+
+.. _OStest02PkbEUfmB:
+
+.. figure:: ./images/OS_test_02.png
     :alt: The Windows 10 system settings dialog showing that you're running Windows 10 version 1903
     
     The Windows 10 system settings dialog showing that you're running Windows 10 version 1903
@@ -92,7 +103,7 @@ Programming Language Acceptance Test
 Introduction
 ============
 
-This acceptance test document verifies that the software system, Facile is functional while using a Python 3.7.4 interpreter.  This acceptance test establishes the framework used by the acceptance test team to plan, execute, and document acceptance testing.  It describes the scope of the work performed and the approach taken to execute the tests created to validate that the system performs as required with the intended programming language. The details of this acceptance test are developed according to the requirements specifications and show traceability back to those specifications.
+This acceptance test verifies that the software system, Facile is functional while using a Python 3.7.4 interpreter.  This acceptance test establishes the framework used by the acceptance test team to plan, execute, and document acceptance testing.  It describes the scope of the work performed and the approach taken to execute the tests created to validate that the system performs as required with the intended programming language. The details of this acceptance test are developed according to the requirements specifications and show traceability back to those specifications.
 
 ====================
 Referenced Documents
@@ -122,31 +133,50 @@ Pre-Test Conditions
 .. tabularcolumns:: |c|L|L|
 .. table:: Test Procedure Steps
 
-	+------+------------------------------------------------------------------------------------------------------+----------------------------------------------+
-	| Step | Action                                                                                               | Expected Result                              |
-	+======+======================================================================================================+==============================================+
-	|    1 | Click on the **Windows Search Bar**                                                                  | **Windows Search Bar** comes into focus      |
-	+------+------------------------------------------------------------------------------------------------------+----------------------------------------------+
-	|    2 | Type **cmd**                                                                                         | The sindows **Command Prompt** opens         |
-	+------+------------------------------------------------------------------------------------------------------+----------------------------------------------+
-	|    3 | Click on the command prompt                                                                          | The **Command Prompt** comes into focus      |
-	+------+------------------------------------------------------------------------------------------------------+----------------------------------------------+
-	|    4 | Type **python**                                                                                      | Refer to :num:`Fig. #languagetest01wbxjrcmo` |
-	+------+------------------------------------------------------------------------------------------------------+----------------------------------------------+
-	|    5 | Verify that the *Python 3.7.4* and *32-bit* exist in the resulting text from the previous step.      | Refer to :num:`Fig. #languagetest01wbxjrcmo` |
-	+------+------------------------------------------------------------------------------------------------------+----------------------------------------------+
-	|    6 | Navigate to the directory containing facile.py, then type "python facile.py" in the **Command line** | Facile should run. Test Case Completed.      |
-	+------+------------------------------------------------------------------------------------------------------+----------------------------------------------+
-	|    7 | Click on the **Windows Search Bar**                                                                  | **Windows Search Bar** comes into focus      |
-	+------+------------------------------------------------------------------------------------------------------+----------------------------------------------+
+	+------+-----------------------------------------------------------------------------------------------------+------------------------------------------------+
+	| Step | Action                                                                                              | Expected Result                                |
+	+======+=====================================================================================================+================================================+
+	|    1 | Click on the **Windows Search Bar**                                                                 | **Windows Search Bar** comes into focus        |
+	+------+-----------------------------------------------------------------------------------------------------+------------------------------------------------+
+	|    2 | Type **cmd**                                                                                        | The **Command Prompt** opens                   |
+	+------+-----------------------------------------------------------------------------------------------------+------------------------------------------------+
+	|    3 | Click on the **Command Prompt**                                                                     | The **Command Prompt** comes into focus        |
+	+------+-----------------------------------------------------------------------------------------------------+------------------------------------------------+
+	|    4 | Type **python**                                                                                     | Refer to :num:`Fig. #languagetest01enovzhdv`   |
+	+------+-----------------------------------------------------------------------------------------------------+------------------------------------------------+
+	|    5 | Verify that the **Python 3.7.4** and **32 bit** exist in the resulting text from the previous step. | Refer to :num:`Fig. #languagetest01enovzhdv`   |
+	+------+-----------------------------------------------------------------------------------------------------+------------------------------------------------+
+	|    6 | Navigate to the directory containing the **facile** folder with faciles source code                 | Refer to :num:`Fig. #languagetest02tzbdylxb`   |
+	+------+-----------------------------------------------------------------------------------------------------+------------------------------------------------+
+	|    7 | Click on the **Windows Search Bar**                                                                 | **Windows Search Bar** comes into focus        |
+	+------+-----------------------------------------------------------------------------------------------------+------------------------------------------------+
+	|    8 | Type **cmd**                                                                                        | The **Command Prompt** opens                   |
+	+------+-----------------------------------------------------------------------------------------------------+------------------------------------------------+
+	|    9 | Click on the **Command Prompt**                                                                     | The **Command Prompt** comes into focus        |
+	+------+-----------------------------------------------------------------------------------------------------+------------------------------------------------+
+	|   10 | Type **python facile.py** in the **Command Prompot**                                                | **Facile** should run. Test case is completed. |
+	+------+-----------------------------------------------------------------------------------------------------+------------------------------------------------+
+	|   11 | Click on the **Windows Search Bar**                                                                 | **Windows Search Bar** comes into focus        |
+	+------+-----------------------------------------------------------------------------------------------------+------------------------------------------------+
+	|   12 | Type **cmd**                                                                                        | The **Command Prompt** opens                   |
+	+------+-----------------------------------------------------------------------------------------------------+------------------------------------------------+
 
 
-.. _languagetest01wBxJRcMo:
+.. _languagetest01eNOVzhDv:
 
 .. figure:: ./images/language_test_01.png
     :alt: A snippit of the Windows Command Prompt after typing *python* and pressing Enter. It shows the version and bitness of the Python interpreter being run.
     
     A snippit of the Windows Command Prompt after typing *python* and pressing Enter. It shows the version and bitness of the Python interpreter being run.
+    
+
+
+.. _languagetest02TzbDYlXb:
+
+.. figure:: ./images/language_test_02.png
+    :alt: A picture of the directory that contains facile.
+    
+    A picture of the directory that contains facile.
     
 
 .. raw:: latex
@@ -161,7 +191,7 @@ Graphical User Interface Acceptance Test
 Introduction
 ============
 
-This acceptance test document verifies that the software system, Facile has a functional GUI that interacts with the user.  This acceptance test establishes the framework used by the acceptance test team to plan, execute, and document acceptance testing.  It describes the scope of the work performed and the approach taken to execute the tests created to validate that the system performs as required in the GUI. The details of this acceptance test are developed according to the requirements specifications and show traceability back to those specifications.
+This acceptance test verifies that the software system, Facile has a functional GUI that interacts with the user.  This acceptance test establishes the framework used by the acceptance test team to plan, execute, and document acceptance testing.  It describes the scope of the work performed and the approach taken to execute the tests created to validate that the system performs as required in the GUI. The details of this acceptance test are developed according to the requirements specifications and show traceability back to those specifications.
 
 .. note::
     The requirement that this test case is verifying is not completed yet because sub-system and sub-assembly requirements must first be completed.
@@ -197,33 +227,37 @@ Pre-Test Conditions
 	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------+
 	| Step | Action                                                                                                                                                                                                  | Expected Result                                                         |
 	+======+=========================================================================================================================================================================================================+=========================================================================+
-	|    1 | Click on the **Windows Search Bar**                                                                                                                                                                     | **Windows Seach Bar** comes into focus.                                 |
+	|    1 | Navigate to the directory containing the **facile** folder with faciles source code                                                                                                                     | **Facile** directory is open                                            |
 	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------+
-	|    2 | Type **cmd** and press Enter                                                                                                                                                                            | A **Command Prompt** opens                                              |
+	|    2 | Click on the **Windows Search Bar**                                                                                                                                                                     | **Windows Seach Bar** comes into focus.                                 |
 	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------+
-	|    3 | Click on the **Command Prompt**                                                                                                                                                                         | The **Command Prompt** comes into focus                                 |
+	|    3 | Type **cmd** and press **Enter**                                                                                                                                                                        | The **Command Prompt** opens                                            |
 	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------+
-	|    4 | Type "python facile.py" in the **Command Prompt**                                                                                                                                                       | Facile should run.                                                      |
+	|    4 | Click on the **Command Prompt**                                                                                                                                                                         | The **Command Prompt** comes into focus                                 |
 	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------+
-	|    5 | Click on **File**                                                                                                                                                                                       | Refer to :num:`Fig. #guitest01hlbvmbgs`                                 |
+	|    5 | Type **python facile.py** in the **Command Prompt**                                                                                                                                                     | **Facile** should run.                                                  |
 	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------+
-	|    6 | Click on **New Project**                                                                                                                                                                                | Refer to :num:`Fig. #guitest01hlbvmbgs`                                 |
+	|    6 | Click on **File**                                                                                                                                                                                       | Refer to :num:`Fig. #guitest01pwatkhuj`                                 |
 	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------+
-	|    7 | Click on **From Scratch**                                                                                                                                                                               | Refer to :num:`Fig. #guitest01hlbvmbgs`                                 |
+	|    7 | Click on **New Project**                                                                                                                                                                                | Refer to :num:`Fig. #guitest01pwatkhuj`                                 |
 	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------+
-	|    8 | Fill in **Project Name** and **Project Description.** Upload your **Project Folder** and **Target Application.** Choose the category the **Target Application** best fits under. Finally, click **OK.** | Refer to :num:`Fig. #guitest02kfuclsur`                                 |
+	|    8 | Click on **From Scratch**                                                                                                                                                                               | Refer to :num:`Fig. #guitest01pwatkhuj`                                 |
 	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------+
-	|    9 | Click on **Start App**                                                                                                                                                                                  | **Target Application** will pop up.                                     |
+	|    9 | Fill in **Project Name** and **Project Description.** Upload your **Project Folder** and **Target Application.** Choose the category the **Target Application** best fits under. Finally, click **OK.** | Refer to :num:`Fig. #guitest02ggsplelg`                                 |
 	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------+
-	|   10 | Click on **Auto Explore** or **Manual Explore**                                                                                                                                                         | A model of the target GUI is shown in the view. Test case is completed. |
+	|   10 | Click on **Start App**                                                                                                                                                                                  | Refer to :num:`Fig. #guitest03neerpdzs`                                 |
 	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------+
-	|   11 | Click on the **Windows Search Bar**                                                                                                                                                                     | **Windows Seach Bar** comes into focus.                                 |
+	|   11 | Click on **Auto Explore** or **Manual Explore**                                                                                                                                                         | A model of the target GUI is shown in the view. Test case is completed. |
 	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------+
-	|   12 | Type **cmd** and press Enter                                                                                                                                                                            | A **Command Prompt** opens                                              |
+	|   12 | Navigate to the directory containing the **facile** folder with faciles source code                                                                                                                     | **Facile** directory is open                                            |
+	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------+
+	|   13 | Click on the **Windows Search Bar**                                                                                                                                                                     | **Windows Seach Bar** comes into focus.                                 |
+	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------+
+	|   14 | Type **cmd** and press **Enter**                                                                                                                                                                        | The **Command Prompt** opens                                            |
 	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------+
 
 
-.. _GUItest01hLBvmbgS:
+.. _GUItest01PWatkhUj:
 
 .. figure:: ./images/GUI_test_01.png
     :alt: A snippit of the Facile software system that shows the menu path to create a new project from scratch.
@@ -232,12 +266,21 @@ Pre-Test Conditions
     
 
 
-.. _GUItest02kfucLsuR:
+.. _GUItest02gGSPLelg:
 
 .. figure:: ./images/GUI_test_02.png
     :alt: A snippit of the Facile project creation dialog. This dialog allows the user to specify some basic information abou the project and application they wish to control.
     
     A snippit of the Facile project creation dialog. This dialog allows the user to specify some basic information abou the project and application they wish to control.
+    
+
+
+.. _GUItest03NEERpDZs:
+
+.. figure:: ./images/GUI_test_03.png
+    :alt: A snippit of the Target Application being used for testing. In this case, it's the Notepad application.
+    
+    A snippit of the Target Application being used for testing. In this case, it's the Notepad application.
     
 
 .. raw:: latex
@@ -252,7 +295,7 @@ Target GUI Component Identifier Acceptance Test
 Introduction
 ============
 
-This acceptance test document verifies that the software system, Facile has a view that will allow the user to identify components of a target GUI.  This acceptance test establishes the framework used by the acceptance test team to plan, execute, and document acceptance testing.  It describes the scope of the work performed and the approach taken to execute the tests created to validate that the system performs as required in the target GUI. The details of this acceptance test are developed according to the requirements specifications and show traceability back to those specifications.
+This acceptance test verifies that the software system, Facile has a view that will allow the user to identify components of a target GUI.  This acceptance test establishes the framework used by the acceptance test team to plan, execute, and document acceptance testing.  It describes the scope of the work performed and the approach taken to execute the tests created to validate that the system performs as required in the target GUI. The details of this acceptance test are developed according to the requirements specifications and show traceability back to those specifications.
 
 ====================
 Referenced Documents
@@ -283,37 +326,54 @@ Pre-Test Conditions
 .. tabularcolumns:: |c|L|L|
 .. table:: Test Procedure Steps
 
-	+------+--------------------------------------------------------+--------------------------------------------------------------------------------------+
-	| Step | Action                                                 | Expected Result                                                                      |
-	+======+========================================================+======================================================================================+
-	|    1 | Click on the **Windows Search Bar**                    | **Windows Search Bar** comes into focus                                              |
-	+------+--------------------------------------------------------+--------------------------------------------------------------------------------------+
-	|    2 | Type **cmd** and press enter                           | A **Command Prompt** opens                                                           |
-	+------+--------------------------------------------------------+--------------------------------------------------------------------------------------+
-	|    3 | Click on the **Command Prompt**                        | The **Command Prompt** comes into focus                                              |
-	+------+--------------------------------------------------------+--------------------------------------------------------------------------------------+
-	|    4 | Type "python facile.py" in the **Command Prompt**      | Facile should run.                                                                   |
-	+------+--------------------------------------------------------+--------------------------------------------------------------------------------------+
-	|    5 | Click on **File** in the menu.                         | See :num:`Fig. #tguicitest01zixwfkrn`                                                |
-	+------+--------------------------------------------------------+--------------------------------------------------------------------------------------+
-	|    6 | Click on **Recent Projects**                           | See :num:`Fig. #tguicitest01zixwfkrn`                                                |
-	+------+--------------------------------------------------------+--------------------------------------------------------------------------------------+
-	|    7 | Click on a recent project that you created previously. | See :num:`Fig. #tguicitest01zixwfkrn`                                                |
-	+------+--------------------------------------------------------+--------------------------------------------------------------------------------------+
-	|    8 | Click on **Start App**                                 | **Target Application** will run.                                                     |
-	+------+--------------------------------------------------------+--------------------------------------------------------------------------------------+
-	|    9 | Click on **Auto Explore** or **Manual Explore**        | GUI is shown in the view with components highlighted in red. Test case is completed. |
-	+------+--------------------------------------------------------+--------------------------------------------------------------------------------------+
-	|   10 | Click on the **Windows Search Bar**                    | **Windows Search Bar** comes into focus                                              |
-	+------+--------------------------------------------------------+--------------------------------------------------------------------------------------+
+	+------+---------------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------------------------------------------+
+	| Step | Action                                                                                                  | Expected Result                                                                                                             |
+	+======+=========================================================================================================+=============================================================================================================================+
+	|    1 | Navigate to the directory containing the **facile** folder with faciles source code                     | **Facile** directory is open                                                                                                |
+	+------+---------------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------------------------------------------+
+	|    2 | Click on the **Windows Search Bar**                                                                     | **Windows Search Bar** comes into focus                                                                                     |
+	+------+---------------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------------------------------------------+
+	|    3 | Type **cmd** and press enter                                                                            | A **Command Prompt** opens                                                                                                  |
+	+------+---------------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------------------------------------------+
+	|    4 | Click on the **Command Prompt**                                                                         | The **Command Prompt** comes into focus                                                                                     |
+	+------+---------------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------------------------------------------+
+	|    5 | Type **python facile.py** in the **Command Prompt**                                                     | **Facile** should run.                                                                                                      |
+	+------+---------------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------------------------------------------+
+	|    6 | Click on **File** in the menu.                                                                          | See :num:`Fig. #tguicitest01ajgqgkrq`                                                                                       |
+	+------+---------------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------------------------------------------+
+	|    7 | Click on **Recent Projects**                                                                            | See :num:`Fig. #tguicitest01ajgqgkrq`                                                                                       |
+	+------+---------------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------------------------------------------+
+	|    8 | Click on a recent project that you created previously.                                                  | See :num:`Fig. #tguicitest01ajgqgkrq`                                                                                       |
+	+------+---------------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------------------------------------------+
+	|    9 | Click on **Start App**                                                                                  | **Target Application** will run                                                                                             |
+	+------+---------------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------------------------------------------+
+	|   10 | Click on **Auto Explore** or **Manual Explore**                                                         | **Target GUI** is shown in the view with components highlighted in red.                                                     |
+	+------+---------------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------------------------------------------+
+	|   11 | Click on any component of the **Target GUI*                                                             | See :num:`Fig. #tguicitest02yzqkvfff` .                                                                                     |
+	+------+---------------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------------------------------------------+
+	|   12 | Observe the **Project Explorer** view and **Property Editor** view on the left of the Target GUI view.  | Selected component of the **Target GUI**, it's properties, and its behavior are now shown in views. Test case is completed. |
+	+------+---------------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------------------------------------------+
+	|   13 | Navigate to the directory containing the **facile** folder with faciles source code                     | **Facile** directory is open                                                                                                |
+	+------+---------------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------------------------------------------+
+	|   14 | Click on the **Windows Search Bar**                                                                     | **Windows Search Bar** comes into focus                                                                                     |
+	+------+---------------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------------------------------------------+
 
 
-.. _TGUICItest01ZIxwFkRn:
+.. _TGUICItest01AJGQgKRq:
 
 .. figure:: ./images/TGUICI_test_01.png
     :alt: A snippit of the Facile software system that shows the menu path to open an existing project.
     
     A snippit of the Facile software system that shows the menu path to open an existing project.
+    
+
+
+.. _TGUICItest02yzQKvfff:
+
+.. figure:: ./images/TGUICI_test_02.png
+    :alt: A snippit of Target Application's, Notepad, Target GUI with a selected component highlighted in red. 
+    
+    A snippit of Target Application's, Notepad, Target GUI with a selected component highlighted in red. 
     
 
 .. raw:: latex
@@ -328,7 +388,7 @@ Target GUI Behavior Mapper Acceptance Test
 Introduction
 ============
 
-This acceptance test document verifies that the software system, Facile has a GUI that contains a view that allows the users to specify 'Show/Hide' for relation between two components.  This acceptance test establishes the framework used by the acceptance test team to plan, execute, and document acceptance testing.  It describes the scope of the work performed and the approach taken to execute the tests created to validate that the system performs as required in the GUI. The details of this acceptance test are developed according to the requirements specifications and show traceability back to those specifications.
+This acceptance test verifies that the software system, Facile has a GUI that contains a view that allows the users to specify 'Show/Hide' for relation between two components.  This acceptance test establishes the framework used by the acceptance test team to plan, execute, and document acceptance testing.  It describes the scope of the work performed and the approach taken to execute the tests created to validate that the system performs as required in the GUI. The details of this acceptance test are developed according to the requirements specifications and show traceability back to those specifications.
 
 ====================
 Referenced Documents
@@ -359,41 +419,65 @@ Pre-Test Conditions
 .. tabularcolumns:: |c|L|L|
 .. table:: Test Procedure Steps
 
-	+------+--------------------------------------------------------------------+---------------------------------------------------------------------------------------------+
-	| Step | Action                                                             | Expected Result                                                                             |
-	+======+====================================================================+=============================================================================================+
-	|    1 | Click on the **Windows Search Bar**                                | **Windows Search Bar** comes into focus                                                     |
-	+------+--------------------------------------------------------------------+---------------------------------------------------------------------------------------------+
-	|    2 | Type **cmd** and press enter                                       | A **Command Prompt** opens                                                                  |
-	+------+--------------------------------------------------------------------+---------------------------------------------------------------------------------------------+
-	|    3 | Click on the **Command Prompt**                                    | The **Command Prompt** comes into focus                                                     |
-	+------+--------------------------------------------------------------------+---------------------------------------------------------------------------------------------+
-	|    4 | Type "python facile.py" in the **Command Prompt**                  | Facile should run.                                                                          |
-	+------+--------------------------------------------------------------------+---------------------------------------------------------------------------------------------+
-	|    5 | Click on **File** in the menu.                                     | Context menu of items will be shown                                                         |
-	+------+--------------------------------------------------------------------+---------------------------------------------------------------------------------------------+
-	|    6 | Click on **Recent Projects**                                       | Context menu of recent projects will be shown.                                              |
-	+------+--------------------------------------------------------------------+---------------------------------------------------------------------------------------------+
-	|    7 | Click on a recent project that you created previously.             | The selected project will be opened.                                                        |
-	+------+--------------------------------------------------------------------+---------------------------------------------------------------------------------------------+
-	|    8 | Click on **Start App**                                             | **Target Application** will open                                                            |
-	+------+--------------------------------------------------------------------+---------------------------------------------------------------------------------------------+
-	|    9 | Click on **Auto Explore** or **Manual Explore**                    | GUI is shown in the view with the selected component highlighted in red.                    |
-	+------+--------------------------------------------------------------------+---------------------------------------------------------------------------------------------+
-	|   10 | Click on the same button that you clicked on in the previous step. | **Observer** (and **Explorer**) will stop running.                                          |
-	+------+--------------------------------------------------------------------+---------------------------------------------------------------------------------------------+
-	|   11 | Click on **Add Behavior**                                          | Facile will enter the **ADD_VB** state and wait for the user to select 2 components.        |
-	+------+--------------------------------------------------------------------+---------------------------------------------------------------------------------------------+
-	|   12 | Click on 2 highlighted components that are shown in the view.      | an arrow will be drawn going from the first component to the second component.              |
-	+------+--------------------------------------------------------------------+---------------------------------------------------------------------------------------------+
-	|   13 | Select the new visibility behavior in the **project explorer**.    | The properties for the selected visibility behavior will be shown in the Properties editor. |
-	+------+--------------------------------------------------------------------+---------------------------------------------------------------------------------------------+
-	|   14 | Double click on the right column of the Reaction Type property.    | Options of **Show** or **Hide** will appear in the dropdown menu.                           |
-	+------+--------------------------------------------------------------------+---------------------------------------------------------------------------------------------+
-	|   15 | Click on **Shows** or **Hides**                                    | Reaction Type property is altered                                                           |
-	+------+--------------------------------------------------------------------+---------------------------------------------------------------------------------------------+
-	|   16 | Select any behavior in the **Project Explorer**                    | Reaction Type property iis changed in the **Project Explorer**. Test case is completed.     |
-	+------+--------------------------------------------------------------------+---------------------------------------------------------------------------------------------+
+	+------+-------------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------+
+	| Step | Action                                                                              | Expected Result                                                                             |
+	+======+=====================================================================================+=============================================================================================+
+	|    1 | Navigate to the directory containing the **facile** folder with faciles source code | **Facile** directory is open                                                                |
+	+------+-------------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------+
+	|    2 | Click on the **Windows Search Bar**                                                 | **Windows Search Bar** comes into focus                                                     |
+	+------+-------------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------+
+	|    3 | Type **cmd** and press enter                                                        | A **Command Prompt** opens                                                                  |
+	+------+-------------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------+
+	|    4 | Click on the **Command Prompt**                                                     | The **Command Prompt** comes into focus                                                     |
+	+------+-------------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------+
+	|    5 | Type **python facile.py** in the **Command Prompt**                                 | **Facile** should run.                                                                      |
+	+------+-------------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------+
+	|    6 | Click on **File** in the menu.                                                      | Context menu of items will be shown                                                         |
+	+------+-------------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------+
+	|    7 | Click on **Recent Projects**                                                        | Context menu of recent projects will be shown.                                              |
+	+------+-------------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------+
+	|    8 | Click on a recent project that you created previously.                              | The selected project will be opened.                                                        |
+	+------+-------------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------+
+	|    9 | Click on **Start App**                                                              | **Target Application** will open                                                            |
+	+------+-------------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------+
+	|   10 | Click on **Auto Explore** or **Manual Explore**                                     | GUI is shown in the view with the selected component highlighted in red.                    |
+	+------+-------------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------+
+	|   11 | Click on the same button that you clicked on in the previous step.                  | **Observer** (and **Explorer**) will stop running.                                          |
+	+------+-------------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------+
+	|   12 | Click on **Add Behavior**                                                           | Facile will enter the **ADD_VB** state and wait for the user to select 2 components.        |
+	+------+-------------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------+
+	|   13 | Click on 2 highlighted components that are shown in the view.                       | Refer to :num:`Fig. #tguibmtest01utxogklk`                                                  |
+	+------+-------------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------+
+	|   14 | Select the new visibility behavior in the **project explorer**.                     | The properties for the selected visibility behavior will be shown in the Properties editor. |
+	+------+-------------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------+
+	|   15 | Double click on the right column of the Reaction Type property.                     | Refer to :num:`Fig. #tguibmtest02szawdfnc`                                                  |
+	+------+-------------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------+
+	|   16 | Click on **Shows** or **Hides**                                                     | Reaction Type property is altered                                                           |
+	+------+-------------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------+
+	|   17 | Select any behavior in the **Project Explorer**                                     | Reaction Type property is changed in the **Project Explorer**. Test case is completed.      |
+	+------+-------------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------+
+	|   18 | Navigate to the directory containing the **facile** folder with faciles source code | **Facile** directory is open                                                                |
+	+------+-------------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------+
+	|   19 | Click on the **Windows Search Bar**                                                 | **Windows Search Bar** comes into focus                                                     |
+	+------+-------------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------+
+
+
+.. _TGUIBMtest01uTXogklK:
+
+.. figure:: ./images/TGUIBM_test_01.png
+    :alt: A snippet of an arrow from the first component to the second component of the Target GUI. 
+    
+    A snippet of an arrow from the first component to the second component of the Target GUI. 
+    
+
+
+.. _TGUIBMtest02SzAwDfnC:
+
+.. figure:: ./images/TGUIBM_test_02.png
+    :alt: A snippet of the options of Show or Hide in the dropdown menu. 
+    
+    A snippet of the options of Show or Hide in the dropdown menu. 
+    
 
 .. raw:: latex
 
@@ -407,7 +491,7 @@ Project Overview Sidebar Acceptance Test
 Introduction
 ============
 
-This acceptance test document verifies that the software system, Facile has a GUI, that will have a view of all model components of the API project.  This acceptance test establishes the framework used by the acceptance test team to plan, execute, and document acceptance testing.  It describes the scope of the work performed and the approach taken to execute the tests created to validate that the system performs as required in the GUI. The details of this acceptance test are developed according to the requirements specifications and show traceability back to those specifications.
+This acceptance test verifies that the software system, Facile has a GUI, that will have a view of all model components of the API project.  This acceptance test establishes the framework used by the acceptance test team to plan, execute, and document acceptance testing.  It describes the scope of the work performed and the approach taken to execute the tests created to validate that the system performs as required in the GUI. The details of this acceptance test are developed according to the requirements specifications and show traceability back to those specifications.
 
 ====================
 Referenced Documents
@@ -437,50 +521,54 @@ Pre-Test Conditions
 .. tabularcolumns:: |c|L|L|
 .. table:: Test Procedure Steps
 
-	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------+
-	| Step | Action                                                                                                                                                                                                  | Expected Result                                                                                              |
-	+======+=========================================================================================================================================================================================================+==============================================================================================================+
-	|    1 | Click on the **Windows Search Bar**                                                                                                                                                                     | **Windows Seach Bar** comes into focus.                                                                      |
-	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------+
-	|    2 | Type **cmd** and press Enter                                                                                                                                                                            | A **Command Prompt** opens                                                                                   |
-	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------+
-	|    3 | Click on the **Command Prompt**                                                                                                                                                                         | The **Command Prompt** comes into focus                                                                      |
-	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------+
-	|    4 | Type "python facile.py" in the **Command Prompt**                                                                                                                                                       | Facile should run.                                                                                           |
-	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------+
-	|    5 | Click on **File**                                                                                                                                                                                       | Refer to :num:`Fig. #ostest01eubqvtko`                                                                       |
-	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------+
-	|    6 | Click on **New Project**                                                                                                                                                                                | Refer to :num:`Fig. #ostest01eubqvtko`                                                                       |
-	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------+
-	|    7 | Click on **From Scratch**                                                                                                                                                                               | Refer to :num:`Fig. #ostest01eubqvtko`                                                                       |
-	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------+
-	|    8 | Fill in **Project Name** and **Project Description.** Upload your **Project Folder** and **Target Application.** Choose the category the **Target Application** best fits under. Finally, click **OK.** | Project is saved with the *.fcl* extension in the selected folder. Refer to :num:`Fig. #guitest02zloffuvk`   |
-	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------+
-	|    9 | Click on **Start App**                                                                                                                                                                                  | **Target Application** will pop up.                                                                          |
-	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------+
-	|   10 | Click on **Auto Explore** or **Manual Explore**                                                                                                                                                         | A model of the target GUI is shown in the view.                                                              |
-	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------+
-	|   11 | In the left sidebar, expand **Project**, then expand **GUI Components**                                                                                                                                 | All of the GUI Components that make up the project are shown as a hierarchical view in the project explorer. |
-	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------+
-	|   12 | Click on the **Windows Search Bar**                                                                                                                                                                     | **Windows Seach Bar** comes into focus.                                                                      |
-	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------+
+	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------------------------------------------------------------------+
+	| Step | Action                                                                                                                                                                                                  | Expected Result                                                                                                                     |
+	+======+=========================================================================================================================================================================================================+=====================================================================================================================================+
+	|    1 | Navigate to the directory containing the **facile** folder with faciles source code                                                                                                                     | **Facile** directory is open                                                                                                        |
+	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------------------------------------------------------------------+
+	|    2 | Click on the **Windows Search Bar**                                                                                                                                                                     | **Windows Seach Bar** comes into focus.                                                                                             |
+	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------------------------------------------------------------------+
+	|    3 | Type **cmd** and press Enter                                                                                                                                                                            | A **Command Prompt** opens                                                                                                          |
+	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------------------------------------------------------------------+
+	|    4 | Click on the **Command Prompt**                                                                                                                                                                         | The **Command Prompt** comes into focus                                                                                             |
+	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------------------------------------------------------------------+
+	|    5 | Type **python facile.py** in the **Command Prompt**                                                                                                                                                     | **Facile** should run.                                                                                                              |
+	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------------------------------------------------------------------+
+	|    6 | Click on **File**                                                                                                                                                                                       | Refer to :num:`Fig. #guitest01zctkflry`                                                                                             |
+	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------------------------------------------------------------------+
+	|    7 | Click on **New Project**                                                                                                                                                                                | Refer to :num:`Fig. #guitest01zctkflry`                                                                                             |
+	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------------------------------------------------------------------+
+	|    8 | Click on **From Scratch**                                                                                                                                                                               | Refer to :num:`Fig. #guitest01zctkflry`                                                                                             |
+	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------------------------------------------------------------------+
+	|    9 | Fill in **Project Name** and **Project Description.** Upload your **Project Folder** and **Target Application.** Choose the category the **Target Application** best fits under. Finally, click **OK.** | Project is saved with the *.fcl* extension in the selected folder. Refer to :num:`Fig. #guitest02ssqeboiy`                          |
+	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------------------------------------------------------------------+
+	|   10 | Click on **Start App**                                                                                                                                                                                  | **Target Application** will pop up.                                                                                                 |
+	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------------------------------------------------------------------+
+	|   11 | Click on **Auto Explore** or **Manual Explore**                                                                                                                                                         | A model of the target GUI is shown in the view.                                                                                     |
+	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------------------------------------------------------------------+
+	|   12 | In the left sidebar, expand **Project**, then expand **GUI Components**                                                                                                                                 | All of the GUI Components that make up the project are shown as a hierarchical view in the project explorer.Test case is completed. |
+	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------------------------------------------------------------------+
+	|   13 | Navigate to the directory containing the **facile** folder with faciles source code                                                                                                                     | **Facile** directory is open                                                                                                        |
+	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------------------------------------------------------------------+
+	|   14 | Click on the **Windows Search Bar**                                                                                                                                                                     | **Windows Seach Bar** comes into focus.                                                                                             |
+	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------------------------------------------------------------------+
 
 
-.. _OStest01euBQVtKo:
+.. _GUItest01ZCtkFLry:
 
-.. figure:: ./images/OS_test_01.png
-    :alt: The Windows 10 system settings dialog showing that you're running Windows 10 version 1903
+.. figure:: ./images/GUI_test_01.png
+    :alt: A snippit of the Facile software system that shows the menu path to create a new project from scratch.
     
-    The Windows 10 system settings dialog showing that you're running Windows 10 version 1903
+    A snippit of the Facile software system that shows the menu path to create a new project from scratch.
     
 
 
-.. _GUItest02zloffuvK:
+.. _GUItest02ssQEBoIy:
 
 .. figure:: ./images/GUI_test_02.png
-    :alt: 
+    :alt: A snippit of the Facile project creation dialog. This dialog allows the user to specify some basic information about the project and application they wish to control.
     
-    
+    A snippit of the Facile project creation dialog. This dialog allows the user to specify some basic information about the project and application they wish to control.
     
 
 .. raw:: latex
@@ -495,7 +583,7 @@ Property Editor Panel Acceptance Test
 Introduction
 ============
 
-This acceptance test document verifies that the software system, Facile has a functional GUI that shall contain a view that allows the user to edit specific properties. The properties will be for any model components of the project that are selected by the user.  This acceptance test establishes the framework used by the acceptance test team to plan, execute, and document acceptance testing.  It describes the scope of the work performed and the approach taken to execute the tests created to validate that the system performs as required in the GUI. The details of this acceptance test are developed according to the requirements specifications and show traceability back to those specifications.
+This acceptance test verifies that the software system, Facile has a functional GUI that shall contain a view that allows the user to edit specific properties. The properties will be for any model components of the project that are selected by the user.  This acceptance test establishes the framework used by the acceptance test team to plan, execute, and document acceptance testing.  It describes the scope of the work performed and the approach taken to execute the tests created to validate that the system performs as required in the GUI. The details of this acceptance test are developed according to the requirements specifications and show traceability back to those specifications.
 
 ====================
 Referenced Documents
@@ -526,40 +614,42 @@ Pre-Test Conditions
 .. tabularcolumns:: |c|L|L|
 .. table:: Test Procedure Steps
 
-	+------+--------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------+
-	| Step | Action                                                                                     | Expected Result                                                                            |
-	+======+============================================================================================+============================================================================================+
-	|    1 | Click on the **Windows Search Bar**                                                        | **Windows Search Bar** comes into focus                                                    |
-	+------+--------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------+
-	|    2 | Type **cmd** and press enter                                                               | A **Command Prompt** opens                                                                 |
-	+------+--------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------+
-	|    3 | Click on the **Command Prompt**                                                            | The **Command Prompt** comes into focus                                                    |
-	+------+--------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------+
-	|    4 | Type "python facile.py" in the **Command Prompt**                                          | Facile should run.                                                                         |
-	+------+--------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------+
-	|    5 | Click on **File** in the menu.                                                             | Context menu of items will be shown                                                        |
-	+------+--------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------+
-	|    6 | Click on **Recent Projects**                                                               | Context menu of recent projects will be shown.                                             |
-	+------+--------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------+
-	|    7 | Click on a recent project that you created previously.                                     | The selected project will be opened.                                                       |
-	+------+--------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------+
-	|    8 | Click on **Start App**                                                                     | **Target Application** will open                                                           |
-	+------+--------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------+
-	|    9 | Click on **Auto Explore** or **Manual Explore**                                            | GUI is shown in the view with the selected component highlighted in red.                   |
-	+------+--------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------+
-	|   10 | Click on a component in the **Target GUI Model Graphics View**                             | Highlighted component will have its properties shown in the **Property Editor** view.      |
-	+------+--------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------+
-	|   11 | Click on a property in the **Property Editor** view                                        | The property will come into focus. Refer to :num:`Fig. #propertytest01bvodjsmj`            |
-	+------+--------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------+
-	|   12 | Edit the property value (If editable)                                                      | The value of the property is edited.                                                       |
-	+------+--------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------+
-	|   13 | Select a different component and then select the one that had the *Name* property changed. | The *Name* of the component has been updated in the **Project Explorer**. Test is complete |
-	+------+--------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------+
-	|   14 | Click on the **Windows Search Bar**                                                        | **Windows Search Bar** comes into focus                                                    |
-	+------+--------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------+
+	+------+--------------------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------+
+	| Step | Action                                                                                     | Expected Result                                                                             |
+	+======+============================================================================================+=============================================================================================+
+	|    1 | Navigate to the directory containing the **facile** folder with faciles source code        | **Facile** directory is open                                                                |
+	+------+--------------------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------+
+	|    2 | Click on the **Windows Search Bar**                                                        | **Windows Search Bar** comes into focus                                                     |
+	+------+--------------------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------+
+	|    3 | Type **cmd** and press enter                                                               | A **Command Prompt** opens                                                                  |
+	+------+--------------------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------+
+	|    4 | Click on the **Command Prompt**                                                            | The **Command Prompt** comes into focus                                                     |
+	+------+--------------------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------+
+	|    5 | Type**python facile.py** in the **Command Prompt**                                         | **Facile** should run.                                                                      |
+	+------+--------------------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------+
+	|    6 | Click on **File** in the menu.                                                             | Context menu of items will be shown                                                         |
+	+------+--------------------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------+
+	|    7 | Click on **Recent Projects**                                                               | Context menu of recent projects will be shown.                                              |
+	+------+--------------------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------+
+	|    8 | Click on a recent project that you created previously.                                     | The selected project will be opened.                                                        |
+	+------+--------------------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------+
+	|    9 | Click on **Start App**                                                                     | **Target Application** will open                                                            |
+	+------+--------------------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------+
+	|   10 | Click on **Auto Explore** or **Manual Explore**                                            | GUI is shown in the view with the selected component highlighted in red.                    |
+	+------+--------------------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------+
+	|   11 | Click on a component in the **Target GUI Model Graphics View**                             | Highlighted component will have its properties shown in the **Property Editor** view.       |
+	+------+--------------------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------+
+	|   12 | Click on a property in the **Property Editor** view                                        | The property will come into focus. Refer to :num:`Fig. #propertytest01ikxvavcu`             |
+	+------+--------------------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------+
+	|   13 | Edit the property value (If editable)                                                      | The value of the property is edited.                                                        |
+	+------+--------------------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------+
+	|   14 | Select a different component and then select the one that had the *Name* property changed. | The *Name* of the component has been updated in the **Project Explorer**. Test is complete. |
+	+------+--------------------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------+
+	|   15 | Navigate to the directory containing the **facile** folder with faciles source code        | **Facile** directory is open                                                                |
+	+------+--------------------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------+
 
 
-.. _propertytest01BVodjsmj:
+.. _propertytest01IkXVavCU:
 
 .. figure:: ./images/property_test_01.png
     :alt: Shows the Facile software with the *Name* property selected. The *Name* property is always editable.
@@ -579,7 +669,7 @@ Project Settings Dialog Acceptance Test
 Introduction
 ============
 
-This acceptance test document verifies that the software system, Facile has a functional GUI that contains a dialog that will allow the user to edit the setting of a specified project.  This acceptance test establishes the framework used by the acceptance test team to plan, execute, and document acceptance testing.  It describes the scope of the work performed and the approach taken to execute the tests created to validate that the system performs as required in the GUI. The details of this acceptance test are developed according to the requirements specifications and show traceability back to those specifications.
+This acceptance test verifies that the software system, Facile has a functional GUI that contains a dialog that will allow the user to edit the setting of a specified project.  This acceptance test establishes the framework used by the acceptance test team to plan, execute, and document acceptance testing.  It describes the scope of the work performed and the approach taken to execute the tests created to validate that the system performs as required in the GUI. The details of this acceptance test are developed according to the requirements specifications and show traceability back to those specifications.
 
 ====================
 Referenced Documents
@@ -610,38 +700,40 @@ Pre-Test Conditions
 .. tabularcolumns:: |c|L|L|
 .. table:: Test Procedure Steps
 
-	+------+--------------------------------------------------------+---------------------------------------------------------+
-	| Step | Action                                                 | Expected Result                                         |
-	+======+========================================================+=========================================================+
-	|    1 | Click on the **Windows Search Bar**                    | **Windows Search Bar** comes into focus                 |
-	+------+--------------------------------------------------------+---------------------------------------------------------+
-	|    2 | Type **cmd** and press enter                           | A **Command Prompt** opens                              |
-	+------+--------------------------------------------------------+---------------------------------------------------------+
-	|    3 | Click on the **Command Prompt**                        | The **Command Prompt** comes into focus                 |
-	+------+--------------------------------------------------------+---------------------------------------------------------+
-	|    4 | Type "python facile.py" in the **Command Prompt**      | Facile should run.                                      |
-	+------+--------------------------------------------------------+---------------------------------------------------------+
-	|    5 | Click on **File** in the menu.                         | Context menu of items will be shown                     |
-	+------+--------------------------------------------------------+---------------------------------------------------------+
-	|    6 | Click on **Recent Projects**                           | Context menu of recent projects will be shown.          |
-	+------+--------------------------------------------------------+---------------------------------------------------------+
-	|    7 | Click on a recent project that you created previously. | The selected project will be opened.                    |
-	+------+--------------------------------------------------------+---------------------------------------------------------+
-	|    8 | Click on **File** again                                | Context menu of items will be shown                     |
-	+------+--------------------------------------------------------+---------------------------------------------------------+
-	|    9 | Click on **Project Settings**                          | Refer to :num:`Fig. #settingstest01okvosvsz`            |
-	+------+--------------------------------------------------------+---------------------------------------------------------+
-	|   10 | Edit any project setting and click on **Save**         | Project setting is edited and saved.                    |
-	+------+--------------------------------------------------------+---------------------------------------------------------+
-	|   11 | Close the project settings dialog.                     | The project settings dialog is closed.                  |
-	+------+--------------------------------------------------------+---------------------------------------------------------+
-	|   12 | Open the project settings dialog again.                | The updated values should show. Test case is completed. |
-	+------+--------------------------------------------------------+---------------------------------------------------------+
-	|   13 | Click on the **Windows Search Bar**                    | **Windows Search Bar** comes into focus                 |
-	+------+--------------------------------------------------------+---------------------------------------------------------+
+	+------+-------------------------------------------------------------------------------------+---------------------------------------------------------+
+	| Step | Action                                                                              | Expected Result                                         |
+	+======+=====================================================================================+=========================================================+
+	|    1 | Navigate to the directory containing the **facile** folder with faciles source code | **Facile** directory is open                            |
+	+------+-------------------------------------------------------------------------------------+---------------------------------------------------------+
+	|    2 | Click on the **Windows Search Bar**                                                 | **Windows Search Bar** comes into focus                 |
+	+------+-------------------------------------------------------------------------------------+---------------------------------------------------------+
+	|    3 | Type **cmd** and press enter                                                        | A **Command Prompt** opens                              |
+	+------+-------------------------------------------------------------------------------------+---------------------------------------------------------+
+	|    4 | Click on the **Command Prompt**                                                     | The **Command Prompt** comes into focus                 |
+	+------+-------------------------------------------------------------------------------------+---------------------------------------------------------+
+	|    5 | Type **python facile.py** in the **Command Prompt**                                 | **Facile** should run.                                  |
+	+------+-------------------------------------------------------------------------------------+---------------------------------------------------------+
+	|    6 | Click on **File** in the menu.                                                      | Context menu of items will be shown                     |
+	+------+-------------------------------------------------------------------------------------+---------------------------------------------------------+
+	|    7 | Click on **Recent Projects**                                                        | Context menu of recent projects will be shown.          |
+	+------+-------------------------------------------------------------------------------------+---------------------------------------------------------+
+	|    8 | Click on a recent project that you created previously.                              | The selected project will be opened.                    |
+	+------+-------------------------------------------------------------------------------------+---------------------------------------------------------+
+	|    9 | Click on **File** again                                                             | Context menu of items will be shown                     |
+	+------+-------------------------------------------------------------------------------------+---------------------------------------------------------+
+	|   10 | Click on **Project Settings**                                                       | Refer to :num:`Fig. #settingstest01nkdhuzmx`            |
+	+------+-------------------------------------------------------------------------------------+---------------------------------------------------------+
+	|   11 | Edit any project setting and click on **Save**                                      | Project setting is edited and saved.                    |
+	+------+-------------------------------------------------------------------------------------+---------------------------------------------------------+
+	|   12 | Close the project settings dialog.                                                  | The project settings dialog is closed.                  |
+	+------+-------------------------------------------------------------------------------------+---------------------------------------------------------+
+	|   13 | Open the project settings dialog again.                                             | The updated values should show. Test case is completed. |
+	+------+-------------------------------------------------------------------------------------+---------------------------------------------------------+
+	|   14 | Navigate to the directory containing the **facile** folder with faciles source code | **Facile** directory is open                            |
+	+------+-------------------------------------------------------------------------------------+---------------------------------------------------------+
 
 
-.. _settingstest01okvOSVsZ:
+.. _settingstest01nkdHUZmX:
 
 .. figure:: ./images/settings_test_01.png
     :alt: Shows the Project Settings dialog.
@@ -661,7 +753,7 @@ Project File Extension Acceptance Test
 Introduction
 ============
 
-This acceptance test document verifies that the software system, Facile will have its project files saved with a .fcl extension.  This acceptance test establishes the framework used by the acceptance test team to plan, execute, and document acceptance testing.  It describes the scope of the work performed and the approach taken to execute the tests created to validate that the system performs as required in the GUI. The details of this acceptance test are developed according to the requirements specifications and show traceability back to those specifications.
+This acceptance test verifies that the software system, Facile will have its project files saved with a .fcl extension.  This acceptance test establishes the framework used by the acceptance test team to plan, execute, and document acceptance testing.  It describes the scope of the work performed and the approach taken to execute the tests created to validate that the system performs as required in the GUI. The details of this acceptance test are developed according to the requirements specifications and show traceability back to those specifications.
 
 ====================
 Referenced Documents
@@ -694,47 +786,53 @@ Pre-Test Conditions
 	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------+
 	| Step | Action                                                                                                                                                                                                  | Expected Result                                                                                                                                  |
 	+======+=========================================================================================================================================================================================================+==================================================================================================================================================+
-	|    1 | Click on the **Windows Search Bar**                                                                                                                                                                     | **Windows Seach Bar** comes into focus.                                                                                                          |
+	|    1 | Navigate to the directory containing the **facile** folder with faciles source code                                                                                                                     | **Facile** directory is open                                                                                                                     |
 	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------+
-	|    2 | Type **cmd** and press Enter                                                                                                                                                                            | A **Command Prompt** opens                                                                                                                       |
+	|    2 | Click on the **Windows Search Bar**                                                                                                                                                                     | **Windows Seach Bar** comes into focus.                                                                                                          |
 	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------+
-	|    3 | Click on the **Command Prompt**                                                                                                                                                                         | The **Command Prompt** comes into focus                                                                                                          |
+	|    3 | Type **cmd** and press Enter                                                                                                                                                                            | A **Command Prompt** opens                                                                                                                       |
 	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------+
-	|    4 | Type "python facile.py" in the **Command Prompt**                                                                                                                                                       | Facile should run.                                                                                                                               |
+	|    4 | Click on the **Command Prompt**                                                                                                                                                                         | The **Command Prompt** comes into focus                                                                                                          |
 	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------+
-	|    5 | Click on **File**                                                                                                                                                                                       | Refer to :num:`Fig. #ostest01xnnerggi`                                                                                                           |
+	|    5 | Type **python facile.py** in the **Command Prompt**                                                                                                                                                     | **Facile** should run.                                                                                                                           |
 	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------+
-	|    6 | Click on **New Project**                                                                                                                                                                                | Refer to :num:`Fig. #ostest01xnnerggi`                                                                                                           |
+	|    6 | Click on **File**                                                                                                                                                                                       | Refer to :num:`Fig. #guitest01arpfvfeh`                                                                                                          |
 	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------+
-	|    7 | Click on **From Scratch**                                                                                                                                                                               | Refer to :num:`Fig. #ostest01xnnerggi`                                                                                                           |
+	|    7 | Click on **New Project**                                                                                                                                                                                | Refer to :num:`Fig. #guitest01arpfvfeh`                                                                                                          |
 	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------+
-	|    8 | Fill in **Project Name** and **Project Description.** Upload your **Project Folder** and **Target Application.** Choose the category the **Target Application** best fits under. Finally, click **OK.** | Project is saved with the *.fcl* extension in the selected folder. Refer to :num:`Fig. #guitest02iztxtomq`                                       |
+	|    8 | Click on **From Scratch**                                                                                                                                                                               | Refer to :num:`Fig. #guitest01arpfvfeh`                                                                                                          |
 	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------+
-	|    9 | In the Windows taskbar, click on **File Explorer** and navigate to your project folder.                                                                                                                 | A variety of files are shown. The main file is the name of your project with the *.fcl* extension. Refer to :num:`Fig. #extensiontest01ncvfngep` |
+	|    9 | Fill in **Project Name** and **Project Description.** Upload your **Project Folder** and **Target Application.** Choose the category the **Target Application** best fits under. Finally, click **OK.** | Project is saved with the *.fcl* extension in the selected folder. Refer to :num:`Fig. #guitest02jsolwbhv`                                       |
 	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------+
-	|   10 | Click on the **Windows Search Bar**                                                                                                                                                                     | **Windows Seach Bar** comes into focus.                                                                                                          |
+	|   10 | In the Windows taskbar, click on **File Explorer** and navigate to your project folder.                                                                                                                 | A variety of files are shown. The main file is the name of your project with the *.fcl* extension. Refer to :num:`Fig. #extensiontest01oqnwqbzc` |
+	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------+
+	|   11 | Navigate to the directory containing the **facile** folder with faciles source code                                                                                                                     | **Facile** directory is open                                                                                                                     |
+	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------+
+	|   12 | Click on the **Windows Search Bar**                                                                                                                                                                     | **Windows Seach Bar** comes into focus.                                                                                                          |
+	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------+
+	|   13 | Type **cmd** and press Enter                                                                                                                                                                            | A **Command Prompt** opens                                                                                                                       |
 	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------+
 
 
-.. _OStest01xNNergGI:
+.. _GUItest01arPFvfeh:
 
-.. figure:: ./images/OS_test_01.png
-    :alt: 
+.. figure:: ./images/GUI_test_01.png
+    :alt: A snippit of the Facile software system that shows the menu path to create a new project from scratch.
     
-    
+    A snippit of the Facile software system that shows the menu path to create a new project from scratch.
     
 
 
-.. _GUItest02IZtXTOMq:
+.. _GUItest02jsOLWbHV:
 
 .. figure:: ./images/GUI_test_02.png
-    :alt: 
+    :alt: A snippit of the Facile project creation dialog. This dialog allows the user to specify some basic information abou the project and application they wish to control.
     
-    
+    A snippit of the Facile project creation dialog. This dialog allows the user to specify some basic information abou the project and application they wish to control.
     
 
 
-.. _extensiontest01nCVfNgEP:
+.. _extensiontest01oqNWQbzC:
 
 .. figure:: ./images/extension_test_01.png
     :alt: Shows the files in your project. The filenames in your project may differ, but the extensions should remain the same.
@@ -754,7 +852,7 @@ Project File Format Acceptance Test
 Introduction
 ============
 
-This acceptance test document verifies that the software system, Facile will have project files than be in a human-readable format such as JSON.  This acceptance test establishes the framework used by the acceptance test team to plan, execute, and document acceptance testing.  It describes the scope of the work performed and the approach taken to execute the tests created to validate that the system performs as required. The details of this acceptance test are developed according to the requirements specifications and show traceability back to those specifications.
+This acceptance test verifies that the software system, Facile will have project files than be in a human-readable format such as JSON.  This acceptance test establishes the framework used by the acceptance test team to plan, execute, and document acceptance testing.  It describes the scope of the work performed and the approach taken to execute the tests created to validate that the system performs as required. The details of this acceptance test are developed according to the requirements specifications and show traceability back to those specifications.
 
 ====================
 Referenced Documents
@@ -787,40 +885,44 @@ Pre-Test Conditions
 	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------+
 	| Step | Action                                                                                                                                                                                                  | Expected Result                                                                                                                                  |
 	+======+=========================================================================================================================================================================================================+==================================================================================================================================================+
-	|    1 | Click on the **Windows Search Bar**                                                                                                                                                                     | **Windows Seach Bar** comes into focus.                                                                                                          |
+	|    1 | Navigate to the directory containing the **facile** folder with faciles source code                                                                                                                     | **Facile** directory is open                                                                                                                     |
 	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------+
-	|    2 | Type **cmd** and press Enter                                                                                                                                                                            | A **Command Prompt** opens                                                                                                                       |
+	|    2 | Click on the **Windows Search Bar**                                                                                                                                                                     | **Windows Seach Bar** comes into focus.                                                                                                          |
 	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------+
-	|    3 | Click on the **Command Prompt**                                                                                                                                                                         | The **Command Prompt** comes into focus                                                                                                          |
+	|    3 | Type **cmd** and press Enter                                                                                                                                                                            | A **Command Prompt** opens                                                                                                                       |
 	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------+
-	|    4 | Type "python facile.py" in the **Command Prompt**                                                                                                                                                       | Facile should run.                                                                                                                               |
+	|    4 | Click on the **Command Prompt**                                                                                                                                                                         | The **Command Prompt** comes into focus                                                                                                          |
 	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------+
-	|    5 | Click on **File**                                                                                                                                                                                       | Refer to :num:`Fig. #ostest01kqtjgwvw`                                                                                                           |
+	|    5 | Type **python facile.py** in the **Command Prompt**                                                                                                                                                     | **Facile** should run.                                                                                                                           |
 	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------+
-	|    6 | Click on **New Project**                                                                                                                                                                                | Refer to :num:`Fig. #ostest01kqtjgwvw`                                                                                                           |
+	|    6 | Click on **File**                                                                                                                                                                                       | Refer to :num:`Fig. #guitest01bwqokayj`                                                                                                          |
 	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------+
-	|    7 | Click on **From Scratch**                                                                                                                                                                               | Refer to :num:`Fig. #ostest01kqtjgwvw`                                                                                                           |
+	|    7 | Click on **New Project**                                                                                                                                                                                | Refer to :num:`Fig. #guitest01bwqokayj`                                                                                                          |
 	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------+
-	|    8 | Fill in **Project Name** and **Project Description.** Upload your **Project Folder** and **Target Application.** Choose the category the **Target Application** best fits under. Finally, click **OK.** | Project is saved with the *.fcl* extension in the selected folder. Refer to :num:`Fig. #guitest02pmkilioh`                                       |
+	|    8 | Click on **From Scratch**                                                                                                                                                                               | Refer to :num:`Fig. #guitest01bwqokayj`                                                                                                          |
 	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------+
-	|    9 | In the Windows taskbar, click on **File Explorer** and navigate to your project folder.                                                                                                                 | A variety of files are shown. The main file is the name of your project with the *.fcl* extension. Refer to :num:`Fig. #extensiontest01sihnjlkf` |
+	|    9 | Fill in **Project Name** and **Project Description.** Upload your **Project Folder** and **Target Application.** Choose the category the **Target Application** best fits under. Finally, click **OK.** | Project is saved with the *.fcl* extension in the selected folder. Refer to :num:`Fig. #guitest02udrxpklv`                                       |
 	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------+
-	|   10 | Right click on the project file (*.fcl* extension) and select **Open with**. Select a text editor to open the file with.                                                                                | The content of the Project file is shown in human-readable format in the chosen text editor. Test case completed.                                |
+	|   10 | In the Windows taskbar, click on **File Explorer** and navigate to your project folder.                                                                                                                 | A variety of files are shown. The main file is the name of your project with the *.fcl* extension. Refer to :num:`Fig. #extensiontest01webhqylg` |
 	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------+
-	|   11 | Click on the **Windows Search Bar**                                                                                                                                                                     | **Windows Seach Bar** comes into focus.                                                                                                          |
+	|   11 | Right click on the project file (*.fcl* extension) and select **Open with**. Select a text editor to open the file with.                                                                                | Refer to :num:`Fig. #ppftest01mhqoahsc` Test case completed.                                                                                     |
+	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------+
+	|   12 | Navigate to the directory containing the **facile** folder with faciles source code                                                                                                                     | **Facile** directory is open                                                                                                                     |
+	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------+
+	|   13 | Click on the **Windows Search Bar**                                                                                                                                                                     | **Windows Seach Bar** comes into focus.                                                                                                          |
 	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------+
 
 
-.. _OStest01KQTjGWvw:
+.. _GUItest01bwQoKayj:
 
-.. figure:: ./images/OS_test_01.png
-    :alt: The Windows 10 system settings dialog showing that you're running Windows 10 version 1903
+.. figure:: ./images/GUI_test_01.png
+    :alt: A snippit of the Facile software system that shows the menu path to create a new project from scratch.
     
-    The Windows 10 system settings dialog showing that you're running Windows 10 version 1903
+    A snippit of the Facile software system that shows the menu path to create a new project from scratch.
     
 
 
-.. _GUItest02pMKilioh:
+.. _GUItest02UdrxPkLv:
 
 .. figure:: ./images/GUI_test_02.png
     :alt: 
@@ -829,10 +931,19 @@ Pre-Test Conditions
     
 
 
-.. _extensiontest01sIHnjlkF:
+.. _extensiontest01WEBHQylg:
 
 .. figure:: ./images/extension_test_01.png
     :alt: 
     
     
+    
+
+
+.. _PPFtest01mhQoaHSC:
+
+.. figure:: ./images/PPF_test_01.png
+    :alt: The content of the Project file is shown in human-readable format in the chosen text editor. In this case, we chose to use Notepad.
+    
+    The content of the Project file is shown in human-readable format in the chosen text editor. In this case, we chose to use Notepad.
     
