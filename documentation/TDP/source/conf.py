@@ -147,7 +147,7 @@ latex_elements = {
 		
 		\definecolor{myblue}{rgb}{0.4, 0.4, 0.5}
 		\titlecontents{chapter}[ 0em ]{ \vspace{0.75em} }
-              {Doc \, \contentslabel{0.2em} \hspace{0.75em}}{}
+              {(Doc \, \contentslabel{.2em} \hspace{.5em}) \hspace{.5em}}{}
               {\hfill \textbf{\contentspage}}[]
 		\titlecontents{section}[ 2em ]{  }
               {\hspace{3.5em} \contentslabel{2.5em}}{}

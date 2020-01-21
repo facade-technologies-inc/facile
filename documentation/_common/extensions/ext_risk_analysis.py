@@ -48,9 +48,9 @@ import csv
 risk_file_path = os.path.abspath("../Risk/source/contents.rst")
 risk_sheet_csv = os.path.abspath("../Risk/source/risks.csv")
 matrix_sheet_xlsx = os.path.abspath("../Risk/source/matrix.xlsx")
-summary_sheet_csv = os.path.abspath("../Risk/source/risk_summary.csv")
-severity_sheet_csv = os.path.abspath("../Risk/source/risk_severity.csv")
-matrix_picture_file = os.path.abspath("../Risk/source/risk_matrix.png")
+summary_sheet_csv = os.path.abspath("../Risk/source/auto_generated_risk_summary.csv")
+severity_sheet_csv = os.path.abspath("../Risk/source/auto_generated_risk_severity.csv")
+matrix_picture_file = os.path.abspath("../Risk/source/auto_generated_risk_matrix.png")
 
 
 actions = {
@@ -69,13 +69,13 @@ Risk Analysis
 	Insert Risk Analysis introduction
 	
 .. csv-table:: Risk summary
-	:widths: 20 100 100 50
+	:widths: 30 100 150 50
 	:header: "Risk #", "Name", "Statement", "Category"
 	:file: {summary_file}
 	
 .. csv-table:: Risk Severities
-	:widths: 20 100 100 100 50
-	:header: "Risk #", "Likelihood (0-1)", "Consequence (0-1)", "Criticality LxC (0-1)", "Action"
+	:widths: 30 70 70 70 50
+	:header: "Risk #", "Likelihood (0-1)", "Consequence (0-1)", "Criticality (0-1)", "Action"
 	:file: {severity_file}
 	
 .. figure:: {risk_matrix_picture}
@@ -87,6 +87,9 @@ Risk Analysis
 Risk Descriptions
 ---------------------
 
+An in-depth description of all documented risks is given below. The risks are sorted by
+criticality in descending order.
+
 {risk_descriptions}
 """
 
@@ -95,15 +98,13 @@ description_template = """
 Risk {num} - {title}
 ================================================================================
 
-.. table:: Likeliness, Consequence, and Severity
+.. table:: Likelihood, Consequence, and Criticality of risk {num}
 
 	+-------------------+----------------------+----------------------+
-	| Likeliness (0-1)  | Consequence (0-1)    | Severity (0-1)       |
+	| Likelihood (0-1)  | Consequence (0-1)    | Criticality (0-1)    |
 	+===================+======================+======================+
-	|                   |                      |                      |
+	| {likelihood:17.2} | {consequence:18.2}   | {criticality:18.2}   |
 	+-------------------+----------------------+----------------------+
-	
-	{likeliness:}
 	
 
 {statement}
@@ -122,17 +123,13 @@ def read_risks():
 	return data
 
 def calculate_criticality(data):
-	data['Criticality'] = data['Likelihood'] * data['Consequence']
+	data['Criticality'] = round(data['Likelihood'] * data['Consequence'], 2)
 	
 def write_summary_file(data):
-	print("writing summary")
 	data.to_csv(summary_sheet_csv, columns=["Name", "Statement", "Category"], header=False)
-	print("summary written")
 	
 def write_severity_file(data):
-	print("writing severity")
 	data.to_csv(severity_sheet_csv, columns=["Likelihood", "Consequence", "Criticality", "Action"], header=False)
-	print("severity written")
 	
 def categorize_risks(risks):
 	grid = []
@@ -195,29 +192,27 @@ def create_descriptions(risks):
 		                                            statement = row["Statement"],
 		                                            description = row["Description"],
 		                                            action = actions[row["Action"]],
-		                                            plan = row["Action Plan"])
+		                                            plan = row["Action Plan"],
+		                                            likelihood = row["Likelihood"],
+		                                            consequence = row["Consequence"],
+		                                            criticality = row["Criticality"])
 	return descriptions
 	
 
 def write_rst_file(descriptions):
-	rst_contents = rst_template.format(summary_file=summary_sheet_csv,
-	                                   severity_file=severity_sheet_csv,
-	                                   risk_matrix_picture=matrix_picture_file,
+	rst_contents = rst_template.format(summary_file=summary_sheet_csv.replace("\\", "/"),
+	                                   severity_file=severity_sheet_csv.replace("\\", "/"),
+	                                   risk_matrix_picture=matrix_picture_file.replace("\\", "/"),
 	                                   risk_descriptions=descriptions)
 	
 	with open(risk_file_path, "w") as risk_file:
 		risk_file.write(rst_contents)
 
-if __name__ == "__main__":
-	risk_file_path = os.path.abspath("./contents.rst")
-	risk_sheet_csv = os.path.abspath("./risks.csv")
-	matrix_sheet_xlsx = os.path.abspath("./matrix.xlsx")
-	summary_sheet_csv = os.path.abspath("./risk_summary.csv")
-	severity_sheet_csv = os.path.abspath("./risk_severity.csv")
-	matrix_picture_file = os.path.abspath("./risk_matrix.png")
-	
+
+def setup(app):
 	risks = read_risks()
 	calculate_criticality(risks)
+	risks.sort_values("Criticality")
 	write_summary_file(risks)
 	write_severity_file(risks)
 	grid = categorize_risks(risks)
@@ -225,3 +220,19 @@ if __name__ == "__main__":
 	capture_matrix()
 	descriptions = create_descriptions(risks)
 	write_rst_file(descriptions)
+
+	return {
+		'version': '0.1',
+		'parallel_read_safe': True,
+		'parallel_write_safe': True,
+	}
+
+if __name__ == "__main__":
+	risk_file_path = os.path.abspath("./contents.rst")
+	risk_sheet_csv = os.path.abspath("./risks.csv")
+	matrix_sheet_xlsx = os.path.abspath("./matrix.xlsx")
+	summary_sheet_csv = os.path.abspath("./auto_generated_risk_summary.csv")
+	severity_sheet_csv = os.path.abspath("./auto_generated_risk_severity.csv")
+	matrix_picture_file = os.path.abspath("./auto_generated_risk_matrix.png")
+	
+	setup(None)

@@ -49,6 +49,7 @@ release = version
 # ones.
 extensions = [
 	# 'ext_test_procedure',
+	'ext_risk_analysis',
 	'sphinx.ext.todo',
 	'sphinx.ext.autodoc',
 	'sphinx.ext.inheritance_diagram',
