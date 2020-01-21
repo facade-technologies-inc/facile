@@ -510,6 +510,14 @@ Security Classification Guide
 
     INSERT_DOC=SCG
 
+--------
+Drawings
+--------
+
+.. raw:: latex
+
+    INSERT_DOC=Drawings
+
 ---------------------
 Concept of Operations
 ---------------------

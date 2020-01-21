@@ -2,9 +2,9 @@
 # be spelt exactly the same as the folders.
 
 order = [
-	"Drawings",
 	"CCL",
 	"SCG",
+	"Drawings",
 	"ConOps",
 	"Proposal",
 	"SRD",

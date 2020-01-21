@@ -69,31 +69,37 @@ responsible for each document. For a comprehensive change log, see the next sect
     | 1      | Technical Data Package  | A               | 01/19/2020       | Sam Badger  |
     |        |                         |                 |                  |             |
     +--------+-------------------------+-----------------+------------------+-------------+
-    | 2      | Security Classification | A               | 01/19/2020       | Sam Badger  |
+    | 2      | Control Change Log      | A               | 01/19/2020       | Nikhith     |
+    |        |                         |                 |                  | Vankireddy  |
+    +--------+-------------------------+-----------------+------------------+-------------+
+    | 3      | Security Classification | A               | 01/19/2020       | Sam Badger  |
     |        | Guide                   |                 |                  |             |
     +--------+-------------------------+-----------------+------------------+-------------+
-    | 3      | Concept of Operations   | B               | 01/19/2020       | Nikhith     |
+    | 4      | Drawings                | A               | 01/19/2020       | Andrew      |
+    |        |                         |                 |                  | Kirima      |
+    +--------+-------------------------+-----------------+------------------+-------------+
+    | 5      | Concept of Operations   | B               | 01/19/2020       | Nikhith     |
     |        |                         |                 |                  | Vankireddy  |
     +--------+-------------------------+-----------------+------------------+-------------+
-    | 4      | Unsolicited Proposal    | A               | 01/19/2020       | Nikhith     |
+    | 6      | Unsolicited Proposal    | A               | 01/19/2020       | Nikhith     |
     |        |                         |                 |                  | Vankireddy  |
     +--------+-------------------------+-----------------+------------------+-------------+
-    | 5      | System Requirements     | C               | 01/19/2020       | Nikhith     |
+    | 7      | System Requirements     | C               | 01/19/2020       | Nikhith     |
     |        | Document                |                 |                  | Vankireddy  |
     +--------+-------------------------+-----------------+------------------+-------------+
-    | 6      | Risk Analysis           | A               | 01/19/2020       | Philippe    |
+    | 8      | Risk Analysis           | A               | 01/19/2020       | Philippe    |
     |        |                         |                 |                  | Cutillas    |
     +--------+-------------------------+-----------------+------------------+-------------+
-    | 7      | Acceptance Test         | A               | 01/19/2020       | Andrew      |
+    | 9      | Acceptance Test         | A               | 01/19/2020       | Andrew      |
     |        | Procedures              |                 |                  | Kirima      |
     +--------+-------------------------+-----------------+------------------+-------------+
-    | 8      | Acceptance Test Data    | A               | 01/19/2020       | Andrew      |
+    | 10     | Acceptance Test Data    | A               | 01/19/2020       | Andrew      |
     |        | Sheets                  |                 |                  | Kirima      |
     +--------+-------------------------+-----------------+------------------+-------------+
-    | 9      | Software Design         | A               | 01/19/2020       | Sean Farris |
+    | 11     | Software Design         | A               | 01/19/2020       | Sean Farris |
     |        | Document                |                 |                  |             |
     +--------+-------------------------+-----------------+------------------+-------------+
-    | 10     | User Manual             | A               | 01/19/2020       | Ramos Chen  |
+    | 12     | User Manual             | A               | 01/19/2020       | Ramos Chen  |
     |        |                         |                 |                  |             |
     +--------+-------------------------+-----------------+------------------+-------------+
 
@@ -111,8 +117,22 @@ Technical Data Package (Doc 1)
     | A        | Document Created                                       | 1/19/2020      | Sam Badger  |
     +----------+--------------------------------------------------------+----------------+-------------+
 
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Change Control Log (Doc 2)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. table:: Change Control Log Change Log
+
+    +----------+--------------------------------------------------------+----------------+-------------+
+    | Revision | Reason for Change                                      | Date of change | Responsible |
+    |          |                                                        |                | Engineer    |
+    +==========+========================================================+================+=============+
+    | A        | Document Created                                       | 1/19/2020      | Nikhith     |
+    |          |                                                        |                | Vankireddy  |
+    +----------+--------------------------------------------------------+----------------+-------------+
+
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Security Classification Guide (Doc 2)
+Security Classification Guide (Doc 3)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. table:: Security Classification Guide Change Log
@@ -124,8 +144,22 @@ Security Classification Guide (Doc 2)
     | A        | Document Created                                       | 1/19/2020      | Sam Badger  |
     +----------+--------------------------------------------------------+----------------+-------------+
 
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Drawings (Doc 4)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. table:: Drawings Change Log
+
+    +----------+--------------------------------------------------------+----------------+-------------+
+    | Revision | Reason for Change                                      | Date of change | Responsible |
+    |          |                                                        |                | Engineer    |
+    +==========+========================================================+================+=============+
+    | A        | Document Created                                       | 1/19/2020      | Andrew      |
+    |          |                                                        |                | Kirima      |
+    +----------+--------------------------------------------------------+----------------+-------------+
+
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Concept of Operations (Doc 3)
+Concept of Operations (Doc 5)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. table:: Concept of Operations Change Log
@@ -134,14 +168,15 @@ Concept of Operations (Doc 3)
     | Revision | Reason for Change                                      | Date of change | Responsible |
     |          |                                                        |                | Engineer    |
     +==========+========================================================+================+=============+
-    | A        | Document Created                                       | 9/1/2019       | Sam Badger  |
+    | A        | Document Created                                       | 9/1/2019       | Nikhith     |
+	|          |                                                        |                | Vankireddy  |
     +----------+--------------------------------------------------------+----------------+-------------+
-    | B        | Functionality that was built in the MVP was described  | 1/19/2020      | Sam Badger  |
-    |          | in depth.                                              |                |             |
+    | B        | Functionality that was built in the MVP was described  | 1/19/2020      | Nikhith     |
+    |          | in depth.                                              |                | Vankireddy  |
     +----------+--------------------------------------------------------+----------------+-------------+
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Unsolicited Proposal (Doc 4)
+Unsolicited Proposal (Doc 6)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. table:: Unsolicited Proposal Change Log
@@ -150,12 +185,13 @@ Unsolicited Proposal (Doc 4)
     | Revision | Reason for Change                                      | Date of change | Responsible |
     |          |                                                        |                | Engineer    |
     +==========+========================================================+================+=============+
-    | A        | Document Created                                       | 9/25/2019      | Sam Badger  |
+    | A        | Document Created                                       | 9/25/2019      | Nikhith     |
+	|          |                                                        |                | Vankireddy  |
     +----------+--------------------------------------------------------+----------------+-------------+
 
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-System Requirements Document (Doc 5)
+System Requirements Document (Doc 7)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. table:: System Requirements Document Change Log
@@ -164,15 +200,18 @@ System Requirements Document (Doc 5)
     | Revision | Reason for Change                                      | Date of change | Responsible |
     |          |                                                        |                | Engineer    |
     +==========+========================================================+================+=============+
-    | A        | Document Created                                       | 10/10/2019     | Sam Badger  |
+    | A        | Document Created                                       | 10/10/2019     | Nikhith     |
+	|          |                                                        |                | Vankireddy  |
     +----------+--------------------------------------------------------+----------------+-------------+
-    | B        | Changes to terminology and System Block Diagram.       | 1/19/2020      | Sam Badger  |
+    | B        | Changes to terminology and System Block Diagram.       | 1/19/2020      | Nikhith     |
+	|          |                                                        |                | Vankireddy  |
     +----------+--------------------------------------------------------+----------------+-------------+
-    | B        | Changes to terminology and System Block Diagram.       | 1/19/2020      | Sam Badger  |
+    | B        | Changes to terminology and System Block Diagram.       | 1/19/2020      | Nikhith     |
+	|          |                                                        |                | Vankireddy  |
     +----------+--------------------------------------------------------+----------------+-------------+
 
 ~~~~~~~~~~~~~~~~~~~~~
-Risk Analysis (Doc 6)
+Risk Analysis (Doc 8)
 ~~~~~~~~~~~~~~~~~~~~~
 
 .. table:: Risk Analysis Change Log
@@ -181,11 +220,12 @@ Risk Analysis (Doc 6)
     | Revision | Reason for Change                                      | Date of change | Responsible |
     |          |                                                        |                | Engineer    |
     +==========+========================================================+================+=============+
-    | A        | Document Created                                       | 9/16/2019      | Sam Badger  |
+    | A        | Document Created                                       | 9/16/2019      | Philippe    |
+	|          |                                                        |                | Cutillas    |
     +----------+--------------------------------------------------------+----------------+-------------+
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Acceptance Test Procedures (Doc 7)
+Acceptance Test Procedures (Doc 9)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. table:: Acceptance Test Procedures Change Log
@@ -194,12 +234,13 @@ Acceptance Test Procedures (Doc 7)
     | Revision | Reason for Change                                      | Date of change | Responsible |
     |          |                                                        |                | Engineer    |
     +==========+========================================================+================+=============+
-    | A        | Document Created                                       | 1/19/2020      | Sam Badger  |
+    | A        | Document Created                                       | 1/19/2020      | Andrew      |
+	|          |                                                        |                | Kirima      |
     +----------+--------------------------------------------------------+----------------+-------------+
 
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Acceptance Test Data Sheets (Doc 8)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Acceptance Test Data Sheets (Doc 10)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. table:: Acceptance Test Data Sheets Change Log
 
@@ -207,12 +248,13 @@ Acceptance Test Data Sheets (Doc 8)
     | Revision | Reason for Change                                      | Date of change | Responsible |
     |          |                                                        |                | Engineer    |
     +==========+========================================================+================+=============+
-    | A        | Document Created                                       | 1/19/2020      | Sam Badger  |
+    | A        | Document Created                                       | 1/19/2020      | Andrew      |
+	|          |                                                        |                | Kirima      |
     +----------+--------------------------------------------------------+----------------+-------------+
 
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Software Design Document (Doc 9)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Software Design Document (Doc 11)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. table:: Software Design Document Change Log
 
@@ -220,12 +262,12 @@ Software Design Document (Doc 9)
     | Revision | Reason for Change                                      | Date of change | Responsible |
     |          |                                                        |                | Engineer    |
     +==========+========================================================+================+=============+
-    | A        | Document Created                                       | 1/19/2020      | Sam Badger  |
+    | A        | Document Created                                       | 1/19/2020      | Sean Farris |
     +----------+--------------------------------------------------------+----------------+-------------+
 
-~~~~~~~~~~~~~~~~~~~~
-User Manual (Doc 10)
-~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~
+User Manual (Doc 12)
+~~~~~~~~~~~~~~~~~~~~~
 
 .. table:: User Manual Change Log
 
@@ -233,5 +275,5 @@ User Manual (Doc 10)
     | Revision | Reason for Change                                      | Date of change | Responsible |
     |          |                                                        |                | Engineer    |
     +==========+========================================================+================+=============+
-    | A        | Document Created                                       | 1/19/2020      | Sam Badger  |
+    | A        | Document Created                                       | 1/19/2020      | Ramos Chen  |
     +----------+--------------------------------------------------------+----------------+-------------+
