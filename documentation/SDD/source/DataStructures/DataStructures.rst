@@ -16,15 +16,27 @@ Target GUI Model (TGUIM)
 ------------------------
 
 The TargetGuiModel class models the structure and behavior of the target GUI.  It contains GUI
-components (from the Component class) organized in a tree structure, and stores visibility
-behaviors (from the VisibilityBehavior class) in an ordered dictionary.
+components (from the Component class) organized in a tree structure, and visibility
+behaviors (from the VisibilityBehavior class) which act as edges between arbitrary components.
+See :num:`Fig. #targetguimodel`.
 
 .. note::
     The root node of the Component tree is constructed at the time the TargetGuiModel object
     is constructed and remains constant through the TargetGuiModel object’s lifespan.  New components
     are constructed and added to the tree when it receives new SuperTokens from the Observer.
 
-The TargetGuiModel Class is composed of the following classes. (See the UML class diagram).
+.. _targetguimodel:
+.. figure:: ../../images/TargetGUIModel.png
+    :alt:   Target GUI Model diagram
+
+    The Target GUI Model.
+
+.. raw:: latex
+
+    \newpage
+
+The TargetGuiModel Class is composed of the following classes. See the UML class diagram:
+:num:`Fig. #tguimclassdiagram`.
 
 ======
 Entity
@@ -41,21 +53,13 @@ Component
 =========
 
 The Component class models an individual GUI component in the target GUI.  Components are organized
-in a tree in the TargetGuiModel class.
+in a tree in the TargetGuiModel class. See :num:`Fig. #component`.
 
-Components hold references (as data members) to:
+.. _component:
+.. figure:: ../../images/GUIComponent.png
+    :alt:   Component diagram.
 
-- Their parent Component in the tree hierarchy.
-
-- Their children Components in the tree hierarchy.
-
-- The VisibilityBehaviors triggered by the component.
-
-- The VisibilityBehaviors affecting the visibility of the component.
-
-- The ComponentGraphics object responsible for rendering the component in Facile.
-
-- The SuperToken associated with the component.
+    A diagram of the Component class.
 
 ==================
 VisibilityBehavior
@@ -63,18 +67,15 @@ VisibilityBehavior
 
 The VisibilityBehavior class describes a visibility behavior in the target GUI - how a component
 becomes visible or invisible to the user. E.g. clicking a button (the "source" component) causes
-a window (the "destination" component) to be shown.
+a window (the "destination" component) to be shown. See :num:`Fig. #visibilitybehavior`. A Condition object associated with the
+visibility behavior defines when the visibility behavior does or does not happen.
+(See the Condition class.)
 
-VisibilityBehaviors hold references (as data members) to:
+.. _visibilitybehavior:
+.. figure:: ../../images/VisibilityBehavior.png
+    :alt:   Visibility Behavior diagram.
 
-- The source Component – the one triggering the visibility behavior.
-
-- The destination Component – the one affected by the visibility behavior.
-
-- The Conditions object associated with the visibility behavior, which defines when the visibility
-  behavior does or does not happen. (See the Condition class.)
-
-- The VBGraphics object which renders the visibility behavior in Facile.
+    A diagram of the VisibilityBehavior class.
 
 =========
 Condition
@@ -91,6 +92,7 @@ Properties
 The Properties class holds the properties of a given Entity (a VisibilityBehavior or Component
 object).  It consists of an ordered dictionary where the keys are strings describing a category
 of properties, and the values are lists of Property objects (See the Property class).
+See :num:`Fig. #properties`.
 
 .. note::
     Properties objects are created in the VisibilityBehavior and Component class constructors
@@ -99,6 +101,12 @@ of properties, and the values are lists of Property objects (See the Property cl
 Predefined categories of properties include: “Base”, “Visual”, “GUI Component”, and “Visibility
 Behavior”.  Note that it is possible to add custom categories using the
 Properties.createPropertiesObject() method.
+
+.. _properties:
+.. figure:: ../../images/PropertiesObject.png
+    :alt:   Properties object diagram.
+
+    A diagram of a Properties Object.
 
 ========
 Property
@@ -120,7 +128,13 @@ and so a SuperToken is essentially an aggregation of Tokens.
 SuperTokens are created by the Observer and passed to the TargetGuiModel, which will create a Component
 object based on the new SuperToken.  The SuperToken acts as an identifier for a Component in the
 TargetGuiModel so that the Component can be re-associated with the actual component in the target GUI
-later.
+later. See :num:`Fig. #supertoken`.
+
+.. _supertoken:
+.. figure:: ../../images/SuperToken.png
+    :alt:   SuperToken diagram.
+
+    How a SuperToken relates to a single component in the target GUI.
 
 =====
 Token
@@ -132,6 +146,8 @@ identifying information, which are stored as data members in the Token class, ar
 determining the relative importance of that piece of information in reidentifying the component in the
 target GUI. The Token class contains methods for deciding whether an observed component matches
 (or matches closely enough) a Component in the TargetGuiModel.
+
+.. _tguimclassdiagram:
 
 .. figure:: ../../images/target_gui_model_class_diagram.jpg
     :alt: Target GUI Model class diagram
