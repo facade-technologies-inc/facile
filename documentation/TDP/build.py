@@ -118,7 +118,7 @@ os.rename(tdp_pdf, first_run_pdf)
 
 copy_2 = latex_source[:]
 
-run2_replacement_1 = r"\includepdf[pages={2,3},pagecommand={},fitpaper=true]{" + first_run_pdf + "}"
+run2_replacement_1 = r"\includepdf[pages={2,3,4},pagecommand={},fitpaper=true]{" + first_run_pdf + "}"
 run2_replacement_2 = r"""
 \includepdf[pages=-,frame,scale=0.872,offset=0 3.5,pagecommand={{\pagestyle{{plain}}}},fitpaper=true]{{../../../{}/build/latex/{}.pdf}}
 """

@@ -15,7 +15,57 @@ These algorithms are discussed in detail in the following sections.
 Token Comparison Algorithm
 --------------------------
 
-.. todo:: Fill out this part
+Token Comparison allows facile to detect if a new component has been found, or if a component has
+simply been rediscovered. While this may seem like a relatively trivial task, it is not. The
+dynamic nature of GUIs means that components can and will change sizes and appearances, either
+from computer to computer or due to interaction with the GUIs themselves. In order to solve this
+issue, Facile uses modules such as pywinauto and pyautogui to collect as much information as
+possible about a GUI and its components, and makes one of three decisions: exact, close, or no match
+between two tokens.
+
+The following algorithm is used in order to determine the correct decision:
+
+- An *EXACT* decision is immediately made if all of the following are identical for both tokens:
+
+    - Top-level Parent Components
+    - Parent Components
+    - Titles
+    - Sizes
+    - Number of Children Components
+    - Children Texts
+
+- A *NO MATCH* decision is immediately made if any of the following do not match between the two tokens:
+
+    - Class/Type of Component
+    - Process ID
+    - Automation ID (consistent component identifier supplied by pywinauto)
+    - Parent Component Class/Type
+    - Class/Type of Top-level Parent
+    - Control ID (another consistent component identifier supplied by pywinauto)
+
+- Otherwise, a more in-depth and probabilistic method of determining the match type is used.
+
+    - All of the following properties are taken into consideration, and they often have differing
+      impacts on the final decision, based on their importance.
+
+        - Control ID
+        - Picture (If given)
+        - Component Dimensions and Position On Screen
+        - Title
+        - Parent Title
+        - Top Level Parent Title
+        - Children Texts
+        - Enabled State
+        - Visible State
+        - Expanded State
+        - Shown State
+
+    - Additionally, if the component is a dialog type, such as a message box, Facile relies
+      much more heavily on these fields:
+
+        - Number Of Children
+        - Children Text
+        - Component Size
 
 ------------------
 Observer Algorithm
@@ -49,6 +99,9 @@ functionality, the observer is driven by the following behavior:
         - Handles to the current component's children are then added as (child,
           currentComponentSuperToken) to the list of components to be analyzed.
 
+.. figure:: ../../images/TC&Observer_Diagram.png
+    :alt: Token Comparison and Observer Algorithms Diagram
+
 ------------------
 Explorer Algorithm
 ------------------
@@ -76,9 +129,10 @@ functionality, the explorer is driven by the following behavior:
 Component Placement Algorithm
 -----------------------------
 
-Component Placement in Facile's target GUI view is crucial in order to get a visually recognizable result. Because
-Facile wants every component to be selectable, margins must be made around every component, and any collisions between
-sibling components must be resolved. In order to do this, Facile uses the following methods:
+Component Placement in Facile's target GUI view is crucial in order to get a visually recognizable
+result. Because Facile wants every component to be selectable, margins must be made around every
+component, and any collisions between sibling components must be resolved. In order to do this,
+Facile uses the following methods:
 
 - If a component has no parent, it is not displayed, because it represents a scene: the
   environment in which the application is running.
@@ -105,41 +159,3 @@ sibling components must be resolved. In order to do this, Facile uses the follow
            pushed  down until there is no longer an overlap with component 1.
         #. Otherwise, component 2 'wins' and the same rules are applied, but with component 1
            relative to component 2.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

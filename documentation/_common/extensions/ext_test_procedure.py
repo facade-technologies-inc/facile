@@ -47,16 +47,37 @@ warning = """
 """
 
 atp_header = warning + """
-************
+------------
 Introduction
-************
+------------
+
+This document contains the test procedures to verify every requirement that is at least
+partially verifiable at the current moment. Every test procedure has a corresponding data sheet
+that must be filled out and signed/delivered to the sponsor for every deliverable.
+:num:`Fig. #roadmap` shows the schedule of when each system requirement will be verified by.
+:num:`Fig. #reqschedule` shows a schedule of all system, subsystem, and subassembly requirement
+progress.
+
+.. _RoadMap:
+
+.. figure:: ../images/road_map.png
+	:alt: road map
+	
+	Visual schedule of system requirement verification
+
+.. _ReqSchedule:
+
+.. figure:: ../images/requirements_schedule.png
+	:alt: requirements schedule
+	
+	A detailed schedule for all requirements planned to date.
 
 """
 
 data_sheets_header = warning + """
-************
+------------
 Introduction
-************
+------------
 
 This document contains a data sheet for each test case in the acceptance test procedure document.
 The data sheets in this document are meant to be left unfilled. When the tests are carried out,

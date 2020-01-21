@@ -302,6 +302,15 @@ schedule. Instead, we have aligned 3 releases with the major project milestones.
 - Iteration 3 is released at FAR. The goal of iteration 3 is to allow the compilation of Python
   APIs. The release of this iteration constitutes the end of development for this project.
 
+:num:`Fig. #reqschedule` depicts which requirements will be verified at each iteration.
+
+.. _ReqSchedule:
+
+.. figure:: ../../ATP/images/requirements_schedule.png
+    :alt: requirements schedule
+
+    A detailed schedule for all requirements planned to date.
+
 ====================
 Summary of Documents
 ====================
@@ -494,90 +503,92 @@ Action Items from CDR
     | to the team.         |                      |              |                      |
     +----------------------+----------------------+--------------+----------------------+
 
------------------------------
-Change Control Log
------------------------------
+.. only:: latex
 
-.. raw:: latex
+    -----------------------------
+    Change Control Log
+    -----------------------------
 
-    INSERT_DOC=CCL
+    .. raw:: latex
 
------------------------------
-Security Classification Guide
------------------------------
+        INSERT_DOC=CCL
 
-.. raw:: latex
+    -----------------------------
+    Security Classification Guide
+    -----------------------------
 
-    INSERT_DOC=SCG
+    .. raw:: latex
 
---------
-Drawings
---------
+        INSERT_DOC=SCG
 
-.. raw:: latex
+    --------
+    Drawings
+    --------
 
-    INSERT_DOC=Drawings
+    .. raw:: latex
 
----------------------
-Concept of Operations
----------------------
+        INSERT_DOC=Drawings
 
-.. raw:: latex
+    ---------------------
+    Concept of Operations
+    ---------------------
 
-    INSERT_DOC=ConOps
+    .. raw:: latex
 
---------------------
-Unsolicited Proposal
---------------------
+        INSERT_DOC=ConOps
 
-.. raw:: latex
+    --------------------
+    Unsolicited Proposal
+    --------------------
 
-    INSERT_DOC=Proposal
+    .. raw:: latex
 
-----------------------------
-System Requirements Document
-----------------------------
+        INSERT_DOC=Proposal
 
-.. raw:: latex
+    ----------------------------
+    System Requirements Document
+    ----------------------------
 
-    INSERT_DOC=SRD
+    .. raw:: latex
 
--------------
-Risk Analysis
--------------
+        INSERT_DOC=SRD
 
-.. raw:: latex
+    -------------
+    Risk Analysis
+    -------------
 
-    INSERT_DOC=Risk
+    .. raw:: latex
 
---------------------------
-Acceptance Test Procedures
---------------------------
+        INSERT_DOC=Risk
 
-.. raw:: latex
+    --------------------------
+    Acceptance Test Procedures
+    --------------------------
 
-    INSERT_DOC=ATP
+    .. raw:: latex
 
------------
-Data Sheets
------------
+        INSERT_DOC=ATP
 
-.. raw:: latex
+    -----------
+    Data Sheets
+    -----------
 
-    INSERT_DOC=DataSheets
+    .. raw:: latex
 
-------------------------
-Software Design Document
-------------------------
+        INSERT_DOC=DataSheets
 
-.. raw:: latex
+    ------------------------
+    Software Design Document
+    ------------------------
 
-    INSERT_DOC=SDD
+    .. raw:: latex
 
------------
-User Manual
------------
+        INSERT_DOC=SDD
 
-.. raw:: latex
+    -----------
+    User Manual
+    -----------
 
-    INSERT_DOC=UserManual
+    .. raw:: latex
+
+        INSERT_DOC=UserManual
