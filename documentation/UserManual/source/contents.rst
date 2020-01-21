@@ -73,7 +73,7 @@ of the API that they want to generate.
 
 Once a model of the API has been built, the user can then generate the desired API.
 
-.. figure:: facile_activity_diagram.png
+.. figure:: ../images/facile_activity_diagram.png
     :alt: Facile Activity Diagram
 
     After a project is opened, a variety of actions can be performed.
