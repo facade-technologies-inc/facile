@@ -385,8 +385,9 @@ Action Items from CDR
     |                      | Tracking Number      |              |                      |
     +======================+======================+==============+======================+
     | Slide 14 -- you said | 033_cdr_01           | n/a          | Updated diagram for  |
-    | 3 options, diagram   |                      |              | use in ISR.          |
-    | only shows 2.        |                      |              |                      |
+    | 3 options, diagram   |                      |              | use in ISR. Also was |
+    | only shows 2.        |                      |              | put in the user      |
+    |                      |                      |              | manual               |
     +----------------------+----------------------+--------------+----------------------+
     | Use header charts    | 033_cdr_02           | ISR          | Inserted in ISR      |
     | for each section,    |                      |              | presentation.        |
@@ -492,12 +493,6 @@ Action Items from CDR
     | are using -- Kudos   |                      |              |                      |
     | to the team.         |                      |              |                      |
     +----------------------+----------------------+--------------+----------------------+
-
-.. todo::
-    update activity diagram to show "copy project" path.
-
-.. todo::
-    add exit state to state diagram and include in ConOps and SDD
 
 -----------------------------
 Change Control Log

@@ -30,12 +30,15 @@ sys.path.append(os.path.abspath('../../_common/extensions'))
 
 # -- Project information -----------------------------------------------------
 
-project = 'Security Classification Guide'
+project = 'Drawings'
 copyright = '2020, Facade Technologies Inc.'
 
 author = "Facade Technologies Inc."
 
-version = "A"
+import sys, os
+sys.path.append(os.path.abspath("../../_common/"))
+from documents import releases
+version = releases["Drawings"]
 release = version
 
 
@@ -110,18 +113,12 @@ latex_favicon = "../../_common/images/facade_logo_favicon.ico"
 latex_show_pagerefs = True
 latex_show_urls = "footnote"
 
-rst_prolog = """
-.. warning:: **This document contains proprietary information. Duplication and dissemination of these documents is prohibited without the prior written consent of Facade Technologies Inc.**
-"""
-
-rst_epilog = rst_prolog
-
 latex_documents = [(
 	"index",
 
-	"19033_Technical_Data_Package.tex",
+	"19033_Facile_Drawings.tex",
 
-	"Facile Technical Data Package",
+	"Facile Drawings",
 
 	"\\textbf{Team 19033:} \\\\"
 	"Andrew Kirima \\\\ "
@@ -136,29 +133,10 @@ latex_documents = [(
 	"False"
 )]
 
-#latex_toplevel_sectioning = 'section'
+latex_toplevel_sectioning = 'section'
 
 latex_elements = {
-	'extraclassoptions': r'oneside',
-	'preamble':          r'''
-		\usepackage{pdfpages}
-		\usepackage{standalone}
-		\usepackage{import}
-		\usepackage{titletoc}
-		\usepackage{fancyhdr}
-		
-		\rfoot{Proprietary - Limited Use and Access}
-		\cfoot{Duplication and dissemination of these documents is prohibited \\
-		without the prior written consent of Facade Technologies Inc.}
-		
-		\definecolor{myblue}{rgb}{0.4, 0.4, 0.5}
-		\titlecontents{chapter}[ 0em ]{ \vspace{0.75em} }
-              {(Doc \, \contentslabel{.2em} \hspace{.5em}) \hspace{.5em}}{}
-              {\hfill \textbf{\contentspage}}[]
-		\titlecontents{section}[ 2em ]{  }
-              {\hspace{3.5em} \contentslabel{2.5em}}{}
-              {\titlerule*[0.5pc]{.}\contentspage}[]
-	''',
+	'extraclassoptions': 'openany,oneside'
 }
 
 # latex_engine = 'xelatex'

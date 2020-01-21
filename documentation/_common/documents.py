@@ -2,6 +2,7 @@
 # be spelt exactly the same as the folders.
 
 order = [
+	"Drawings",
 	"CCL",
 	"SCG",
 	"ConOps",
@@ -15,6 +16,7 @@ order = [
 ]
 
 docnames = {
+	"Drawings":   "19033_Facile_Drawings",
 	"TDP":        "19033_Facile_Technical_Data_Package",
 	"CCL":        "19033_Facile_Change_Control_Log",
 	"SCG":        "19033_Facile_Security_Classification_Guide",
@@ -29,6 +31,7 @@ docnames = {
 }
 
 releases = {
+	"Drawings":   "A",
 	"TDP":        "A",
 	"CCL":        "A",
 	"SCG":        "A",
