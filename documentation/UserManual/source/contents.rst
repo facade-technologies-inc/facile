@@ -257,6 +257,28 @@ To add a visibility behavior after finishing exploring, follow these steps.
 
     A Visibility Behavior (yellow arrow).
 
+=======================================================
+Identifying A Model Component In The Target Application
+=======================================================
+Facile is able to show any component’s actual position in the target application’s GUI.
+After starting exploring, right click on any component, choose ‘Show in target GUI.’
+(Here we use NotePad as an example.)
+
+.. figure:: ../images/Blinker-Facile.png
+    :alt: The "Show in target GUI option"
+
+    The *Show in Target GUI* option allows the user to identify what part of the target GUI a
+    component represents.
+
+The target application’s GUI will pop up on the screen with a box around the component.
+Here we use the menu bar as an example.
+
+.. figure:: ../images/Blinker-TargetGUI.png
+    :alt: The Blinker working in action
+
+    The part of Facile responsible for drawing the box around the component is called the *Blinker*
+
+The box will blink for about 10 seconds before disappearing from the screen.
 
 
 

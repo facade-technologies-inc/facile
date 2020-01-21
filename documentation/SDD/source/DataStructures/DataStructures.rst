@@ -133,12 +133,6 @@ determining the relative importance of that piece of information in reidentifyin
 target GUI. The Token class contains methods for deciding whether an observed component matches
 (or matches closely enough) a Component in the TargetGuiModel.
 
-.. todo::
-    Link to figure below somewhere
-
-.. todo::
-    Update figure below to be most recent version.
-
 .. figure:: ../../images/target_gui_model_class_diagram.jpg
     :alt: Target GUI Model class diagram
 

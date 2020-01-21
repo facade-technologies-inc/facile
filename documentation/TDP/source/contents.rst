@@ -302,6 +302,15 @@ schedule. Instead, we have aligned 3 releases with the major project milestones.
 - Iteration 3 is released at FAR. The goal of iteration 3 is to allow the compilation of Python
   APIs. The release of this iteration constitutes the end of development for this project.
 
+:num:`Fig. #reqschedule` depicts which requirements will be verified at each iteration.
+
+.. _ReqSchedule:
+
+.. figure:: ../../ATP/images/requirements_schedule.png
+    :alt: requirements schedule
+
+    A detailed schedule for all requirements planned to date.
+
 ====================
 Summary of Documents
 ====================
