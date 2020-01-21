@@ -123,3 +123,6 @@ documentation/DataSheets/source/contents.rst
 # all autoapi stuff except index.rst
 documentation/SDD/source/autoapi/
 !documentation/SDD/source/autoapi/index.rst
+
+# all files that start with "auto_generated_"
+**/auto_generated_*
