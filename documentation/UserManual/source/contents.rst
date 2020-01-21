@@ -196,17 +196,38 @@ Here we use Zoom as the target application as an example.
     - Red circular box on the top right corner of each rectangle refers to the number of
       one GUI component’s token.
 
-- Analyze a GUI component
-    - Click on a GUI component to analyze. Its solid black border line will become a
-      dotted red line.
-    - On the left side of Facile, the component’s position in the tree is shown under
-      ‘Project Explorer.’ The component’s properties are shown under ‘Property Editor.’
-
 .. _TargetGUIModelViewZoom:
 .. figure:: ../images/TargetGUIModelView_Zoom.PNG
     :alt:   Target GUI Model View running Zoom pic
 
     The Target GUI Model View after the Zoom application has been explored.
+
+.. raw:: latex
+
+    \newpage
+
+- Analyze a GUI component
+    - Click on a GUI component to analyze. Its solid black border line will become a
+      dotted red line.
+    - On the left side of Facile, the component’s position in the tree is shown under
+      ‘Project Explorer.’ See :num:`Fig. #projectexplorer`. Here the component ‘JoinButton’
+      is used as an example. ‘JoinButton’ is included under GUI Components, and it’s the
+      child of the root component - ‘Zoom - Pro AccountDialog.’
+    - The component’s properties are shown under ‘Property Editor.’
+      See :num:`Fig. #propertyeditor`. There’re three categories of information shown under
+      property editor - Base, GUI Component and Visual.
+
+.. _projectexplorer:
+.. figure:: ../images/projectExplorer.PNG
+    :alt: Project Explorer pic
+
+    A selected component in the Project Explorer.
+
+.. _propertyeditor:
+.. figure:: ../images/propertyEditor.PNG
+    :alt: Property Editor pic
+
+    The Property Editor showing properties of a selected component.
 
 .. raw:: latex
 
@@ -221,12 +242,20 @@ To add a visibility behavior after finishing exploring, follow these steps.
     - Click on a component as the source of the added behavior.
     - Click on another component as the destination of the added visibility behavior.
       An arrow will show up on the screen representing the added visibility behavior.
+    - See :num:`Fig. #visibilitybehavior` to see what a visibility behavior may look like.
+      It's also shown in the ‘Project Explorer’ and ‘Property Editor.’
 
 .. _toolbarafterstartappaddvb:
 .. figure:: ../images/toolBarAfterStartApp.PNG
     :alt:   Tool Bar After Start App pic
 
     The Tool Bar (after the application has been started and explored).
+
+.. _visibilitybehavior:
+.. figure:: ../images/visibilityBehavior.PNG
+    :alt:   Visibility Behavior pic
+
+    A Visibility Behavior (yellow arrow).
 
 
 
