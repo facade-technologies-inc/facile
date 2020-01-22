@@ -1,21 +1,22 @@
 """
-/------------------------------------------------------------------------------\
-|                 -- FACADE TECHNOLOGIES INC.  CONFIDENTIAL --                 |
-|------------------------------------------------------------------------------|
-|                                                                              |
-|    Copyright [2019] Facade Technologies Inc.                                 |
-|    All Rights Reserved.                                                      |
-|                                                                              |
-| NOTICE:  All information contained herein is, and remains the property of    |
-| Facade Technologies Inc. and its suppliers if any.  The intellectual and     |
-| and technical concepts contained herein are proprietary to Facade            |
-| Technologies Inc. and its suppliers and may be covered by U.S. and Foreign   |
-| Patents, patents in process, and are protected by trade secret or copyright  |
-| law.  Dissemination of this information or reproduction of this material is  |
-| strictly forbidden unless prior written permission is obtained from Facade   |
-| Technologies Inc.                                                            |
-|                                                                              |
-\------------------------------------------------------------------------------/
+..
+    /------------------------------------------------------------------------------\
+    |                 -- FACADE TECHNOLOGIES INC.  CONFIDENTIAL --                 |
+    |------------------------------------------------------------------------------|
+    |                                                                              |
+    |    Copyright [2019] Facade Technologies Inc.                                 |
+    |    All Rights Reserved.                                                      |
+    |                                                                              |
+    | NOTICE:  All information contained herein is, and remains the property of    |
+    | Facade Technologies Inc. and its suppliers if any.  The intellectual and     |
+    | and technical concepts contained herein are proprietary to Facade            |
+    | Technologies Inc. and its suppliers and may be covered by U.S. and Foreign   |
+    | Patents, patents in process, and are protected by trade secret or copyright  |
+    | law.  Dissemination of this information or reproduction of this material is  |
+    | strictly forbidden unless prior written permission is obtained from Facade   |
+    | Technologies Inc.                                                            |
+    |                                                                              |
+    \------------------------------------------------------------------------------/
 
 This module contains the VBGraphics class.
 """
@@ -36,8 +37,8 @@ class VBGraphics(QGraphicsItem):
 		:type dataVisibilityBehavior: VisibilityBehavior
 		:param parent: The parent of the visibility behavior (This will always be the scene)
 		:type parent: TScene
-		:return None
-		:rtype NoneType
+		:return: None
+		:rtype: NoneType
 		"""
 		QGraphicsItem.__init__(self)
 		self._dataVB = dataVisibilityBehavior
@@ -50,8 +51,8 @@ class VBGraphics(QGraphicsItem):
 		"""
 		This pure virtual function defines the outer bounds of the item as a rectangle.
 
-		:return create the bounding of the item
-		:rtype QRectF
+		:return: create the bounding of the item
+		:rtype: QRectF
 		"""
 		
 		leftCornerX = min(self._dataVB.getSrcComponent().getGraphicsItem().scenePos().x(),
@@ -74,8 +75,8 @@ class VBGraphics(QGraphicsItem):
 		:type option: QStyleOptionGraphicsItem
 		:param widget: QWidget
 		:type widget: It points to the widget that is being painted on; or make it = None.
-		:return None
-		:rtype NoneType
+		:return: None
+		:rtype: NoneType
 		"""
 		arrowColor = QColor(255, 200, 50)
 		pen = QPen(arrowColor)
@@ -137,14 +138,20 @@ class VBGraphics(QGraphicsItem):
 		"""
 		This function is used to build the path for the visibility behavior.
 		It has some basic arrow routing algorithm:
-			# 1 src is at right, dest is at left, just cubic to it
-			# 2 src is at left, dest is at right
-				# a y is almost the same, cubic to it
-				# b distance is bigger than 1/3 * root.width, go around the root component
-					# ba src is higher than dest, go around from the top
-					# bb src is lower than dest, go around from the bottom
-				# c horizontal distance is smaller than 1/3 * root.width, zigzag to it
-		#TODO: improve on the algorithm (add collision detector)
+		
+		1. src is at right, dest is at left, just cubic to it
+		#. src is at left, dest is at right
+		
+			a. y is almost the same, cubic to it
+			#. distance is bigger than 1/3 * root.width, go around the root component
+			
+					i. src is higher than dest, go around from the top
+					#. bb src is lower than dest, go around from the bottom
+					
+			#. horizontal distance is smaller than 1/3 * root.width, zigzag to it
+			
+		.. todo::
+			Improve on the algorithm (add collision detector)
 		
 		:param x1: the x coordinate for the src component
 		:type x1: float
@@ -210,9 +217,8 @@ class VBGraphics(QGraphicsItem):
 		"""
 		This function is used to locate the base component of the program.
 		
-		:return possibleRoot: the component with id = 2; the base component for the program; the component that is one
-			step down of the root component
-		:rype possibleRoot: Component
+		:return: the component with id = 2; the base component for the program; the component that is one step down of the root component
+		:rtype: Component
 		"""
 		possibleRoot = self._dataVB.getSrcComponent()
 		

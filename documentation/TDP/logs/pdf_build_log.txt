@@ -1,0 +1,343 @@
+Latexmk: This is Latexmk, John Collins, 26 Dec. 2019, version: 4.67.
+Rule 'pdflatex': The following rules & subrules became out-of-date:
+      'pdflatex'
+------------
+Run number 1 of rule 'pdflatex'
+------------
+------------
+Running 'pdflatex    -recorder  "19033_Technical_Data_Package.tex"'
+------------
+Latexmk: applying rule 'pdflatex'...
+This is pdfTeX, Version 3.14159265-2.6-1.40.20 (MiKTeX 2.9.7250 64-bit)
+entering extended mode
+(19033_Technical_Data_Package.tex
+LaTeX2e <2019-10-01> patch level 3
+(sphinxmanual.cls
+Document Class: sphinxmanual 2019/12/01 v2.3.0 Document class (Sphinx manual)
+("C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9\tex/latex/base\report.cls"
+Document Class: report 2019/10/25 v1.4k Standard LaTeX document class
+("C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9\tex/latex/base\size10.clo"))
+) ("C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9\tex/latex/base\inputenc.st
+y") ("C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9\tex/latex/cmap\cmap.sty"
+) ("C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9\tex/latex/base\fontenc.sty
+" ("C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9\tex/latex/base\t1enc.def")
+<<t1.cmap>>)
+("C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9\tex/latex/amsmath\amsmath.st
+y"
+For additional information on amsmath, use the `?' option.
+
+("C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9\tex/latex/amsmath\amstext.st
+y"
+("C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9\tex/latex/amsmath\amsgen.sty
+"))
+("C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9\tex/latex/amsmath\amsbsy.sty
+")
+("C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9\tex/latex/amsmath\amsopn.sty
+"))
+("C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9\tex/latex/amsfonts\amssymb.s
+ty"
+("C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9\tex/latex/amsfonts\amsfonts.
+sty"))
+("C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9\tex/generic/babel\babel.sty"
+("C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9\tex/generic/babel\switch.def
+")
+*************************************
+* Local config file bblopts.cfg used
+*
+("C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9\tex/latex/arabi\bblopts.cfg"
+)
+("C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9\tex/latex/babel-english\engl
+ish.ldf"
+("C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9\tex/generic/babel\babel.def"
+
+("C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9\tex/generic/babel\txtbabel.d
+ef"))))
+("C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9\tex/latex/psnfss\times.sty")
+
+("C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9\tex/latex/fncychap\fncychap.
+sty") (sphinx.sty
+("C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9\tex/generic/oberdiek\ltxcmds
+.sty")
+("C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9\tex/latex/graphics\graphicx.
+sty"
+("C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9\tex/latex/graphics\keyval.st
+y")
+("C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9\tex/latex/graphics\graphics.
+sty"
+("C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9\tex/latex/graphics\trig.sty"
+)
+("C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9\tex/latex/graphics-cfg\graph
+ics.cfg")
+("C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9\tex/latex/graphics-def\pdfte
+x.def")))
+("C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9\tex/latex/fancyhdr\fancyhdr.
+sty")
+("C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9\tex/latex/base\textcomp.sty"
+("C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9\tex/latex/base\ts1enc.def"
+("C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9\tex/latex/base\ts1enc.dfu"))
+)
+("C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9\tex/latex/titlesec\titlesec.
+sty")
+("C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9\tex/latex/tabulary\tabulary.
+sty"
+("C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9\tex/latex/tools\array.sty"))
+
+("C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9\tex/latex/tools\longtable.st
+y")
+("C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9\tex/latex/varwidth\varwidth.
+sty") (sphinxmulticell.sty)
+("C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9\tex/latex/base\makeidx.sty")
+ ("C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9\tex/latex/framed\framed.sty
+")
+("C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9\tex/latex/xcolor\xcolor.sty"
+
+("C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9\tex/latex/graphics-cfg\color
+.cfg"))
+("C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9\tex/latex/fancyvrb\fancyvrb.
+sty" Style option: `fancyvrb' v3.4 <2019/11/09> (tvz))
+(footnotehyper-sphinx.sty)
+("C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9\tex/latex/float\float.sty")
+("C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9\tex/latex/wrapfig\wrapfig.st
+y")
+("C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9\tex/latex/parskip\parskip.st
+y"
+("C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9\tex/latex/parskip\parskip-20
+01-04-09.sty"))
+("C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9\tex/latex/base\alltt.sty")
+("C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9\tex/latex/upquote\upquote.st
+y")
+("C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9\tex/latex/capt-of\capt-of.st
+y")
+("C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9\tex/latex/needspace\needspac
+e.sty") (sphinxhighlight.sty)
+("C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9\tex/latex/oberdiek\kvoptions
+.sty"
+("C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9\tex/generic/oberdiek\kvsetke
+ys.sty"
+("C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9\tex/generic/oberdiek\infware
+rr.sty")
+("C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9\tex/generic/oberdiek\etexcmd
+s.sty"
+("C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9\tex/generic/iftex\ifluatex.s
+ty"
+("C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9\tex/generic/iftex\iftex.sty"
+))))))
+("C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9\tex/latex/geometry\geometry.
+sty"
+("C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9\tex/generic/iftex\ifvtex.sty
+")
+("C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9\tex/latex/geometry\geometry.
+cfg"))
+("C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9\tex/latex/hyperref\hyperref.
+sty"
+("C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9\tex/latex/pdftexcmds\pdftexc
+mds.sty")
+("C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9\tex/generic/oberdiek\kvdefin
+ekeys.sty")
+("C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9\tex/generic/oberdiek\pdfesca
+pe.sty")
+("C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9\tex/latex/oberdiek\hycolor.s
+ty"
+("C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9\tex/latex/oberdiek\xcolor-pa
+tch.sty"
+("C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9\tex/latex/oberdiek\hopatch.s
+ty")))
+("C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9\tex/latex/oberdiek\letltxmac
+ro.sty")
+("C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9\tex/latex/oberdiek\auxhook.s
+ty")
+("C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9\tex/latex/hyperref\pd1enc.de
+f")
+("C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9\tex/generic/oberdiek\intcalc
+.sty")
+("C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9\tex/latex/00miktex\hyperref.
+cfg")
+("C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9\tex/latex/hyperref\puenc.def
+") ("C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9\tex/latex/url\url.sty")
+("C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9\tex/generic/oberdiek\bitset.
+sty"
+("C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9\tex/generic/oberdiek\bigintc
+alc.sty"))
+("C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9\tex/generic/oberdiek\atbegsh
+i.sty"
+("C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9\tex/generic/iftex\ifpdf.sty"
+)))
+("C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9\tex/latex/hyperref\hpdftex.d
+ef"
+("C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9\tex/latex/oberdiek\atveryend
+.sty")
+("C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9\tex/latex/oberdiek\rerunfile
+check.sty"
+("C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9\tex/generic/oberdiek\uniquec
+ounter.sty")))
+("C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9\tex/latex/oberdiek\hypcap.st
+y") (sphinxmessages.sty)
+======================================================================
+starting package maintenance...
+installation directory: "C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9"
+package repository: http://mirrors.rit.edu/CTAN/systems/win32/miktex/tm/packages/
+visiting repository http://mirrors.rit.edu/CTAN/systems/win32/miktex/tm/packages/...
+repository type: remote package repository
+loading package repository manifest...
+downloading http://mirrors.rit.edu/CTAN/systems/win32/miktex/tm/packages/miktex-zzdb1-2.9.tar.lzma...
+0.20 MB, 1.93 Mbit/s
+package repository digest: 1dda22dbe70b3237a8431670882f34df
+going to download 364074 bytes
+going to install 16 file(s) (1 package(s))
+downloading http://mirrors.rit.edu/CTAN/systems/win32/miktex/tm/packages/pdfpages.tar.lzma...
+0.36 MB, 8.42 Mbit/s
+extracting files from pdfpages.tar.lzma...
+======================================================================
+
+("C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9\tex/latex/pdfpages\pdfpages.
+sty"
+("C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9\tex/latex/base\ifthen.sty")
+("C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9\tex/latex/tools\calc.sty")
+======================================================================
+starting package maintenance...
+installation directory: "C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9"
+package repository: http://mirrors.rit.edu/CTAN/systems/win32/miktex/tm/packages/
+visiting repository http://mirrors.rit.edu/CTAN/systems/win32/miktex/tm/packages/...
+repository type: remote package repository
+loading package repository manifest...
+downloading http://mirrors.rit.edu/CTAN/systems/win32/miktex/tm/packages/miktex-zzdb1-2.9.tar.lzma...
+0.20 MB, 10.30 Mbit/s
+package repository digest: 1dda22dbe70b3237a8431670882f34df
+going to download 263309 bytes
+going to install 11 file(s) (1 package(s))
+downloading http://mirrors.rit.edu/CTAN/systems/win32/miktex/tm/packages/eso-pic.tar.lzma...
+0.26 MB, 11.57 Mbit/s
+extracting files from eso-pic.tar.lzma...
+======================================================================
+
+("C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9\tex/latex/eso-pic\eso-pic.st
+y")
+("C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9\tex/latex/pdfpages\pppdftex.
+def"))
+("C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9\tex/latex/standalone\standal
+one.sty"
+("C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9\tex/latex/tools\shellesc.sty
+")
+("C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9\tex/latex/xkeyval\xkeyval.st
+y"
+("C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9\tex/generic/xkeyval\xkeyval.
+tex"
+("C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9\tex/generic/xkeyval\xkvutils
+.tex")))
+======================================================================
+starting package maintenance...
+installation directory: "C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9"
+package repository: http://mirrors.rit.edu/CTAN/systems/win32/miktex/tm/packages/
+visiting repository http://mirrors.rit.edu/CTAN/systems/win32/miktex/tm/packages/...
+repository type: remote package repository
+loading package repository manifest...
+downloading http://mirrors.rit.edu/CTAN/systems/win32/miktex/tm/packages/miktex-zzdb1-2.9.tar.lzma...
+0.20 MB, 10.65 Mbit/s
+package repository digest: 1dda22dbe70b3237a8431670882f34df
+going to download 186064 bytes
+going to install 6 file(s) (1 package(s))
+downloading http://mirrors.rit.edu/CTAN/systems/win32/miktex/tm/packages/currfile.tar.lzma...
+0.19 MB, 10.56 Mbit/s
+extracting files from currfile.tar.lzma...
+======================================================================
+
+("C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9\tex/latex/currfile\currfile.
+sty"
+======================================================================
+starting package maintenance...
+installation directory: "C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9"
+package repository: http://mirrors.rit.edu/CTAN/systems/win32/miktex/tm/packages/
+visiting repository http://mirrors.rit.edu/CTAN/systems/win32/miktex/tm/packages/...
+repository type: remote package repository
+loading package repository manifest...
+downloading http://mirrors.rit.edu/CTAN/systems/win32/miktex/tm/packages/miktex-zzdb1-2.9.tar.lzma...
+0.20 MB, 10.58 Mbit/s
+package repository digest: 1dda22dbe70b3237a8431670882f34df
+going to download 281928 bytes
+going to install 10 file(s) (1 package(s))
+downloading http://mirrors.rit.edu/CTAN/systems/win32/miktex/tm/packages/filehook.tar.lzma...
+0.28 MB, 11.81 Mbit/s
+extracting files from filehook.tar.lzma...
+======================================================================
+
+("C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9\tex/latex/filehook\filehook.
+sty"))
+======================================================================
+starting package maintenance...
+installation directory: "C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9"
+package repository: http://mirrors.rit.edu/CTAN/systems/win32/miktex/tm/packages/
+visiting repository http://mirrors.rit.edu/CTAN/systems/win32/miktex/tm/packages/...
+repository type: remote package repository
+loading package repository manifest...
+downloading http://mirrors.rit.edu/CTAN/systems/win32/miktex/tm/packages/miktex-zzdb1-2.9.tar.lzma...
+0.20 MB, 11.10 Mbit/s
+package repository digest: 1dda22dbe70b3237a8431670882f34df
+going to download 175934 bytes
+going to install 5 file(s) (1 package(s))
+downloading http://mirrors.rit.edu/CTAN/systems/win32/miktex/tm/packages/gincltex.tar.lzma...
+0.18 MB, 10.83 Mbit/s
+extracting files from gincltex.tar.lzma...
+======================================================================
+
+("C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9\tex/latex/gincltex\gincltex.
+sty"
+======================================================================
+starting package maintenance...
+installation directory: "C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9"
+package repository: http://mirrors.rit.edu/CTAN/systems/win32/miktex/tm/packages/
+visiting repository http://mirrors.rit.edu/CTAN/systems/win32/miktex/tm/packages/...
+repository type: remote package repository
+loading package repository manifest...
+downloading http://mirrors.rit.edu/CTAN/systems/win32/miktex/tm/packages/miktex-zzdb1-2.9.tar.lzma...
+0.20 MB, 11.26 Mbit/s
+package repository digest: 1dda22dbe70b3237a8431670882f34df
+going to download 254706 bytes
+going to install 4 file(s) (1 package(s))
+downloading http://mirrors.rit.edu/CTAN/systems/win32/miktex/tm/packages/svn-prov.tar.lzma...
+0.25 MB, 11.58 Mbit/s
+extracting files from svn-prov.tar.lzma...
+======================================================================
+
+("C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9\tex/latex/svn-prov\svn-prov.
+sty")
+======================================================================
+starting package maintenance...
+installation directory: "C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9"
+package repository: http://mirrors.rit.edu/CTAN/systems/win32/miktex/tm/packages/
+visiting repository http://mirrors.rit.edu/CTAN/systems/win32/miktex/tm/packages/...
+repository type: remote package repository
+loading package repository manifest...
+downloading http://mirrors.rit.edu/CTAN/systems/win32/miktex/tm/packages/miktex-zzdb1-2.9.tar.lzma...
+0.20 MB, 11.10 Mbit/s
+package repository digest: 1dda22dbe70b3237a8431670882f34df
+going to download 790035 bytes
+going to install 13 file(s) (1 package(s))
+downloading http://mirrors.rit.edu/CTAN/systems/win32/miktex/tm/packages/adjustbox.tar.lzma...
+0.79 MB, 25.49 Mbit/s
+extracting files from adjustbox.tar.lzma...
+======================================================================
+
+("C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9\tex/latex/adjustbox\adjustbo
+x.sty"
+("C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9\tex/latex/adjustbox\adjcalc.
+sty")
+("C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9\tex/latex/adjustbox\trimclip
+.sty"
+======================================================================
+starting package maintenance...
+installation directory: "C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9"
+package repository: http://mirrors.rit.edu/CTAN/systems/win32/miktex/tm/packages/
+visiting repository http://mirrors.rit.edu/CTAN/systems/win32/miktex/tm/packages/...
+repository type: remote package repository
+loading package repository manifest...
+downloading http://mirrors.rit.edu/CTAN/systems/win32/miktex/tm/packages/miktex-zzdb1-2.9.tar.lzma...
+0.20 MB, 13.15 Mbit/s
+package repository digest: 1dda22dbe70b3237a8431670882f34df
+going to download 282583 bytes
+going to install 5 file(s) (1 package(s))
+downloading http://mirrors.rit.edu/CTAN/systems/win32/miktex/tm/packages/collectbox.tar.lzma...
+0.28 MB, 17.80 Mbit/s
+extracting files from collectbox.tar.lzma...
+Can't spawn "pdflatex    -recorder  "19033_Technical_Data_Package.tex"": Inappropriate I/O control operation at C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9\scripts/latexmk\latexmk.pl line 9808.
+Terminating on signal SIGHUP(1)
+^CTerminate batch job (Y/N)? 

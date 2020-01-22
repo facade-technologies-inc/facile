@@ -1,21 +1,22 @@
 """
-/------------------------------------------------------------------------------\
-|                 -- FACADE TECHNOLOGIES INC.  CONFIDENTIAL --                 |
-|------------------------------------------------------------------------------|
-|                                                                              |
-|    Copyright [2019] Facade Technologies Inc.                                 |
-|    All Rights Reserved.                                                      |
-|                                                                              |
-| NOTICE:  All information contained herein is, and remains the property of    |
-| Facade Technologies Inc. and its suppliers if any.  The intellectual and     |
-| and technical concepts contained herein are proprietary to Facade            |
-| Technologies Inc. and its suppliers and may be covered by U.S. and Foreign   |
-| Patents, patents in process, and are protected by trade secret or copyright  |
-| law.  Dissemination of this information or reproduction of this material is  |
-| strictly forbidden unless prior written permission is obtained from Facade   |
-| Technologies Inc.                                                            |
-|                                                                              |
-\------------------------------------------------------------------------------/
+..
+    /------------------------------------------------------------------------------\
+    |                 -- FACADE TECHNOLOGIES INC.  CONFIDENTIAL --                 |
+    |------------------------------------------------------------------------------|
+    |                                                                              |
+    |    Copyright [2019] Facade Technologies Inc.                                 |
+    |    All Rights Reserved.                                                      |
+    |                                                                              |
+    | NOTICE:  All information contained herein is, and remains the property of    |
+    | Facade Technologies Inc. and its suppliers if any.  The intellectual and     |
+    | and technical concepts contained herein are proprietary to Facade            |
+    | Technologies Inc. and its suppliers and may be covered by U.S. and Foreign   |
+    | Patents, patents in process, and are protected by trade secret or copyright  |
+    | law.  Dissemination of this information or reproduction of this material is  |
+    | strictly forbidden unless prior written permission is obtained from Facade   |
+    | Technologies Inc.                                                            |
+    |                                                                              |
+    \------------------------------------------------------------------------------/
 
 This module contains the Project class.
 """
@@ -39,11 +40,15 @@ class Project:
 	This class is the top level to a Facile Project.
 	It stores information about the target application, the target GUI model, the API model, compilation profiles, etc.
 	
-	NOTE: Only one project can be stored in each directory.
+	.. note::
+		Only one project can be stored in each directory.
+		
+	.. todo::
+		Create custom exceptions and check input in setters
+		
+	.. todo::
+		Store backend as enum instead of string
 	"""
-	
-	# TODO: create custom exceptions and check input in setters.
-	# TODO: Store backend as enum instead of string
 	
 	def __init__(self, name: str, description: str, exe: str, backend: str,
 	             projectDir: str = "~/", startupTimeout: int = 10) -> 'Project':
@@ -309,7 +314,7 @@ class Project:
 		Starts the target application
 		
 		:return: None
-		:rtype: None
+		:rtype: NoneType
 		"""
 		self._process = psutil.Popen([self._executable], stdout=PIPE)
 	
@@ -388,7 +393,7 @@ class Project:
 	
 	def save(self) -> None:
 		"""
-		Writes a project out to disk as a set of files. (*.fcl, *.tguim, *.apim)
+		Writes a project out to disk as a set of files. (.fcl, .tguim, .apim)
 		
 		:return: None
 		:rtype: NoneType
@@ -446,8 +451,7 @@ class Project:
 		Gets a list of project files that have recently been opened. The number of returned project locations will be
 		limited iff the limit is set to an integer greater than 0.
 		
-		:param limit: The maximum number of recent projects to return. If limit is less than or equal to zero, the list
-		will not be limited.
+		:param limit: The maximum number of recent projects to return. If limit is less than or equal to zero, the list will not be limited.
 		:type limit: int
 		:return: a list of all recent project file names
 		:rtype: list[str]
