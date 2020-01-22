@@ -23,8 +23,7 @@ is started up.
 
 """
 from PySide2.QtWidgets import QSplashScreen, QApplication
-from PySide2.QtCore import QTimer
-from PySide2.QtGui import QPixmap
+from PySide2.QtGui import QPixmap, Qt
 
 class FacileSplashScreen(QSplashScreen):
 	"""
@@ -32,22 +31,10 @@ class FacileSplashScreen(QSplashScreen):
 	"""
 	def __init__(self):
 		QSplashScreen.__init__(self)
-		height = QApplication.instance().primaryScreen().size().height() * .5
-		self.setPixmap(QPixmap('../resources/facade_logo.png').scaledToHeight(height))
+		self.setWindowFlags(self.windowFlags() | Qt.WindowStaysOnTopHint)
+		height = QApplication.instance().primaryScreen().size().height() * .25
+		width = QApplication.instance().primaryScreen().size().width() * .25
 		
-
-
-"""
-		progress_bar = QProgressBar(splash)
-		progress_bar.setMaximum(10)
-		progress_bar.setGeometry(0,splash_pix.height() - 50, splash_pix.width(), 20)
-		splash.show()
-		splash.showMessage()
-
-if __name__ == "__main__":
-	app = QApplication([])
-	FacileSplashScreen = fSS
-	fSS.show()
-	QTimer.singleShot(2500,fSS,SLOT(close()))
-"""
-
+		logo = QPixmap('../resources/facile_logo.png').scaledToHeight(height)
+		
+		self.setPixmap(logo)

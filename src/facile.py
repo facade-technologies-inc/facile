@@ -23,6 +23,7 @@ user and never imported.
 """
 import sys
 import warnings
+import time
 
 # These lines are needed to integrate Qt and pywinauto
 warnings.simplefilter("ignore", UserWarning)
@@ -64,10 +65,8 @@ if __name__ == "__main__":
 
     splash = FacileSplashScreen()
     splash.show()
-
     window = FacileView()
-
-    QTimer.singleShot(2500, splash.close)
-    QTimer.singleShot(2500, window.show)
-    QTimer.singleShot(2501, window.showMaximized)
+    splash.finish(window)
+    window.showMaximized()
+    
     sys.exit(app.exec_())
