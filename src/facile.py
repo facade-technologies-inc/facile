@@ -1,21 +1,22 @@
 """
-/------------------------------------------------------------------------------\
-|                 -- FACADE TECHNOLOGIES INC.  CONFIDENTIAL --                 |
-|------------------------------------------------------------------------------|
-|                                                                              |
-|    Copyright [2019] Facade Technologies Inc.                                 |
-|    All Rights Reserved.                                                      |
-|                                                                              |
-| NOTICE:  All information contained herein is, and remains the property of    |
-| Facade Technologies Inc. and its suppliers if any.  The intellectual and     |
-| and technical concepts contained herein are proprietary to Facade            |
-| Technologies Inc. and its suppliers and may be covered by U.S. and Foreign   |
-| Patents, patents in process, and are protected by trade secret or copyright  |
-| law.  Dissemination of this information or reproduction of this material is  |
-| strictly forbidden unless prior written permission is obtained from Facade   |
-| Technologies Inc.                                                            |
-|                                                                              |
-\------------------------------------------------------------------------------/
+..
+    /------------------------------------------------------------------------------\
+    |                 -- FACADE TECHNOLOGIES INC.  CONFIDENTIAL --                 |
+    |------------------------------------------------------------------------------|
+    |                                                                              |
+    |    Copyright [2019] Facade Technologies Inc.                                 |
+    |    All Rights Reserved.                                                      |
+    |                                                                              |
+    | NOTICE:  All information contained herein is, and remains the property of    |
+    | Facade Technologies Inc. and its suppliers if any.  The intellectual and     |
+    | and technical concepts contained herein are proprietary to Facade            |
+    | Technologies Inc. and its suppliers and may be covered by U.S. and Foreign   |
+    | Patents, patents in process, and are protected by trade secret or copyright  |
+    | law.  Dissemination of this information or reproduction of this material is  |
+    | strictly forbidden unless prior written permission is obtained from Facade   |
+    | Technologies Inc.                                                            |
+    |                                                                              |
+    \------------------------------------------------------------------------------/
 
 This is the main file that launches Facile. This module should only be run by the
 user and never imported.
@@ -35,6 +36,7 @@ from PySide2.QtCore import QTimer
 
 from gui.facileview import FacileView
 from gui.splashscreen import FacileSplashScreen
+import psutil
 
 if __name__ == "__main__":
     
@@ -59,7 +61,11 @@ if __name__ == "__main__":
         dark_palette.setColor(QPalette.Disabled, QPalette.ButtonText, Qt.darkGray)
         qApp.setPalette(dark_palette)
         qApp.setStyleSheet("QToolTip { color: #ffffff; background-color: #2a82da; border: 1px solid white; }")
-        
+
+    # increases performance by hogging more processor time
+    p = psutil.Process()
+    p.nice(psutil.HIGH_PRIORITY_CLASS)
+    
     app = QApplication([])
     stylize(app)
 

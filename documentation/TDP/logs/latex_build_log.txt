@@ -1,0 +1,19 @@
+Running Sphinx v2.3.1
+making output directory... done
+building [mo]: targets for 0 po files that are out of date
+building [latex]: all documents
+updating environment: [new config] 2 added, 0 changed, 0 removed
+reading sources... [ 50%] contents                                             reading sources... [100%] index                                                
+looking for now-outdated files... none found
+pickling environment... done
+checking consistency... done
+processing 19033_Technical_Data_Package.tex... index contents 
+resolving references...
+done
+writing... done
+copying images... [ 50%] ../../SRD/images/system_block_diagram.png             copying images... [100%] ../images/system_architecture_diagram.png             
+copying TeX support files... copying TeX support files...
+done
+build succeeded.
+
+The LaTeX files are in build\latex.

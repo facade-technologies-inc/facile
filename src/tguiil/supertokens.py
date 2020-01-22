@@ -1,36 +1,41 @@
 """
-/------------------------------------------------------------------------------\
-|                 -- FACADE TECHNOLOGIES INC.  CONFIDENTIAL --                 |
-|------------------------------------------------------------------------------|
-|                                                                              |
-|    Copyright [2019] Facade Technologies Inc.                                 |
-|    All Rights Reserved.                                                      |
-|                                                                              |
-| NOTICE:  All information contained herein is, and remains the property of    |
-| Facade Technologies Inc. and its suppliers if any.  The intellectual and     |
-| and technical concepts contained herein are proprietary to Facade            |
-| Technologies Inc. and its suppliers and may be covered by U.S. and Foreign   |
-| Patents, patents in process, and are protected by trade secret or copyright  |
-| law.  Dissemination of this information or reproduction of this material is  |
-| strictly forbidden unless prior written permission is obtained from Facade   |
-| Technologies Inc.                                                            |
-|                                                                              |
-\------------------------------------------------------------------------------/
+..
+    /------------------------------------------------------------------------------\
+    |                 -- FACADE TECHNOLOGIES INC.  CONFIDENTIAL --                 |
+    |------------------------------------------------------------------------------|
+    |                                                                              |
+    |    Copyright [2019] Facade Technologies Inc.                                 |
+    |    All Rights Reserved.                                                      |
+    |                                                                              |
+    | NOTICE:  All information contained herein is, and remains the property of    |
+    | Facade Technologies Inc. and its suppliers if any.  The intellectual and     |
+    | and technical concepts contained herein are proprietary to Facade            |
+    | Technologies Inc. and its suppliers and may be covered by U.S. and Foreign   |
+    | Patents, patents in process, and are protected by trade secret or copyright  |
+    | law.  Dissemination of this information or reproduction of this material is  |
+    | strictly forbidden unless prior written permission is obtained from Facade   |
+    | Technologies Inc.                                                            |
+    |                                                                              |
+    \------------------------------------------------------------------------------/
 
 This file contains the super tokens class that initializes tokens as a list and a function that
 iterates through the tokens in the token list.
 """
 
+from threading import Lock
+
 from tguiil.tokens import Token
 
-class SuperToken: 
+
+class SuperToken:
 	"""
 	A super token is used to identify a component in multiple states. They can be ignored if the user
 	does not care about specific components.
 	"""
 	id_counter = 1
+	
 	def __init__(self, token, parent: 'SuperToken'):
-		""" 
+		"""
 		Constructs a unique identifier and a way to hide certain components
 
 		:param token: The first token to be added to the SuperToken that's being created.
@@ -40,6 +45,7 @@ class SuperToken:
 		:return: None
 		:rtype: NoneType
 		"""
+		self._tokenListLock = Lock()
 		self.tokens = [token]
 		self.id = SuperToken.id_counter
 		SuperToken.id_counter += 1
@@ -53,9 +59,10 @@ class SuperToken:
 		else:
 			px = parent.tokens[0].rectangle.left
 			py = parent.tokens[0].rectangle.top
-		self.posRelativeToParent = (token.rectangle.left - px, token.rectangle.top - py, width, height)
-
-	def addToken(self, tokenA): 
+		self.posRelativeToParent = (
+			token.rectangle.left - px, token.rectangle.top - py, width, height)
+	
+	def addToken(self, tokenA):
 		"""
 		The addToken function adds a token to the supertoken.
 
@@ -64,23 +71,45 @@ class SuperToken:
 		:return: None
 		:rtype: SuperToken
 		"""
-		self.tokens.append(tokenA)
-
+		self._tokenListLock.acquire()
+		try:
+			self.tokens.append(tokenA)
+		finally:
+			self._tokenListLock.release()
+	
+	def getTokens(self) -> list:
+		"""
+		Gets a copy of the token list. It's important that this is a copy because 2 threads may access token
+		data at a time.
+		
+		This function shares a common mutex with the addToken function.
+		
+		:return: list of tokens
+		:rtype: list[Token]
+		"""
+		copy = []
+		self._tokenListLock.acquire()
+		try:
+			copy = self.tokens[:]
+		finally:
+			self._tokenListLock.release()
+			return copy
+	
 	def shouldContain(self, token2):
 		"""
-		The shouldContain function iterates through the tokens in a list to see if the token
-		belongs to a supertoken.
+		determines if this SuperToken should contain the token provided
 
-		:param token2: Adds the tokens together if they are equal
+		:param token2: The token that we would like to add to the super token
 		:type token2: Token
-		:return: Token
-		:rtype: Token
+		:return: The decision about whether it should be contained or not and the certainty
+		:rtype: Token.Match, float
 		"""
-		DEBUG_TOKEN_COMPARISON = True
+		DEBUG_TOKEN_COMPARISON = False
 		
 		bestCloseScore = 0
 		for token in self.tokens:
-			decision, score = token.isEqualTo(token2)
+			result = token.isEqualTo(token2)
+			decision, score = result
 			
 			if DEBUG_TOKEN_COMPARISON:
 				print()
@@ -108,3 +137,42 @@ class SuperToken:
 	
 	def __repr__(self):
 		return self.__str__()
+	
+	def asDict(self) -> dict:
+		"""
+		Get a dictionary representation of the visibility behavior.
+
+		.. note::
+			This is not just a getter of the __dict__ attribute.
+
+		:return: The dictionary representation of the object.
+		:rtype: dict
+		"""
+		d = {}
+		d["id"] = self.id
+		d["tokens"] = [t.asDict() for t in self.tokens]
+		d["ignoreFlag"] = self.ignoreFlag
+		d['relativePos'] = list(self.posRelativeToParent)
+		return d
+	
+	@staticmethod
+	def fromDict(d: dict) -> 'SuperToken':
+		"""
+		Creates a super token from a dictionary.
+
+		:param d: The dictionary that represents the Component.
+		:type d: dict
+		:return: The SuperToken object that was constructed from the dictionary
+		:rtype: SuperToken
+		"""
+		
+		if d is None:
+			return None
+		
+		st = SuperToken.__new__(SuperToken)
+		st._tokenListLock = Lock()
+		st.tokens = [Token.fromDict(t) for t in d['tokens']]
+		st.ignoreFlag = d['ignoreFlag']
+		st.id = d['id']
+		st.posRelativeToParent = tuple(d['relativePos'])
+		return st

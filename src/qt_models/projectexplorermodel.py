@@ -1,54 +1,39 @@
 """
-/------------------------------------------------------------------------------\
-|                 -- FACADE TECHNOLOGIES INC.  CONFIDENTIAL --                 |
-|------------------------------------------------------------------------------|
-|                                                                              |
-|    Copyright [2019] Facade Technologies Inc.                                 |
-|    All Rights Reserved.                                                      |
-|                                                                              |
-| NOTICE:  All information contained herein is, and remains the property of    |
-| Facade Technologies Inc. and its suppliers if any.  The intellectual and     |
-| and technical concepts contained herein are proprietary to Facade            |
-| Technologies Inc. and its suppliers and may be covered by U.S. and Foreign   |
-| Patents, patents in process, and are protected by trade secret or copyright  |
-| law.  Dissemination of this information or reproduction of this material is  |
-| strictly forbidden unless prior written permission is obtained from Facade   |
-| Technologies Inc.                                                            |
-|                                                                              |
-\------------------------------------------------------------------------------/
+..
+    /------------------------------------------------------------------------------\
+    |                 -- FACADE TECHNOLOGIES INC.  CONFIDENTIAL --                 |
+    |------------------------------------------------------------------------------|
+    |                                                                              |
+    |    Copyright [2019] Facade Technologies Inc.                                 |
+    |    All Rights Reserved.                                                      |
+    |                                                                              |
+    | NOTICE:  All information contained herein is, and remains the property of    |
+    | Facade Technologies Inc. and its suppliers if any.  The intellectual and     |
+    | and technical concepts contained herein are proprietary to Facade            |
+    | Technologies Inc. and its suppliers and may be covered by U.S. and Foreign   |
+    | Patents, patents in process, and are protected by trade secret or copyright  |
+    | law.  Dissemination of this information or reproduction of this material is  |
+    | strictly forbidden unless prior written permission is obtained from Facade   |
+    | Technologies Inc.                                                            |
+    |                                                                              |
+    \------------------------------------------------------------------------------/
 
-This is module contains the Qt model for the project explorer.
+This module contains the Qt model for the project explorer.
 
 """
 
 from PySide2.QtCore import QAbstractItemModel, QModelIndex, Qt, Signal, Slot, QItemSelection
+from PySide2.QtCore import QItemSelectionModel
+from PySide2.QtWidgets import QTreeView
+
+from data.apim.actionpipeline import ActionPipeline
 from data.tguim.component import Component
 from data.tguim.visibilitybehavior import VisibilityBehavior
-from data.apim.actionpipeline import ActionPipeline
 
 
 class ProjectExplorerModel(QAbstractItemModel):
 	"""
 	This class is the Qt model that gets loaded into the project explorer view in Facile.
-	It has the following hierarchy:
-	
-	== Target GUI ==
-		== GUI Components ==
-			GUI COMPONENT TREE
-		== Visibility Behaviors ==
-			VISIBILITY BEHAVIOR LIST
-	== Action Pipelines ==
-		ACTION PIPELINE TREE
-		
-	The internal pointer of the model indexes can be
-		- str (for a label)
-		- Component
-		- Visibility Behavior
-		- Action Pipeline
-		- LeafIndex (see below)
-		
-	If an index in the Model has no children, it should hold a LeafIndex unless is is simply a leaf in one of the
-	underlying data structures.
 	"""
 	
 	componentSelected = Signal(Component)
@@ -138,7 +123,7 @@ class ProjectExplorerModel(QAbstractItemModel):
 				return False
 			else:
 				return True
-			
+		
 		def __ne__(self, other: 'LeafIndex') -> bool:
 			"""
 			Determine if 2 LeafIndex objects are not equal. This is the inverse of the __eq__ function
@@ -158,7 +143,7 @@ class ProjectExplorerModel(QAbstractItemModel):
 			:rtype: int
 			"""
 			return hash(frozenset((self._data, self._parentData, self._parentIndex)))
-
+	
 	#################################################
 	#          BEGIN EXCEPTION DEFINITIONS          #
 	#################################################
@@ -175,7 +160,7 @@ class ProjectExplorerModel(QAbstractItemModel):
 			:type msg: str
 			"""
 			Exception.__init__(self, msg)
-			
+	
 	class UnsupportedTypeException(Exception):
 		"""
 		This exception should be thrown when an unsupported type is carried in a QModelIndex
@@ -189,7 +174,7 @@ class ProjectExplorerModel(QAbstractItemModel):
 			:type msg: str
 			"""
 			Exception.__init__(self, msg)
-			
+	
 	class InvalidSelectionException(Exception):
 		"""
 		This exception should be thrown when an a selection is illegal
@@ -203,11 +188,12 @@ class ProjectExplorerModel(QAbstractItemModel):
 			:type msg: str
 			"""
 			Exception.__init__(self, msg)
+	
 	#################################################
 	#           END EXCEPTION DEFINITIONS           #
 	#################################################
 	
-	def __init__(self, project: 'Project') -> 'ProjectExplorerModel':
+	def __init__(self, project: 'Project', view: QTreeView) -> 'ProjectExplorerModel':
 		"""
 		Constructs a ProjectExplorerModel exception
 		
@@ -216,6 +202,7 @@ class ProjectExplorerModel(QAbstractItemModel):
 		"""
 		QAbstractItemModel.__init__(self)
 		self._project = project
+		self._view = view
 		
 		# Data structures that let us efficiently store references to internal data without hogging exorbitant amounts
 		# of memory.
@@ -238,70 +225,84 @@ class ProjectExplorerModel(QAbstractItemModel):
 		"""
 		if not self.hasIndex(row, column, parent):
 			return QModelIndex()
-
+		
 		# If the parent is the ghost root, return an index with the appropriate string.
 		if not parent.isValid():
 			if row == ProjectExplorerModel.TARGET_GUI_ROW:
-				return self.registerAndCreateIndex(row, column, ProjectExplorerModel.TARGET_GUI_LABEL)
+				return self.registerAndCreateIndex(row, column,
+				                                   ProjectExplorerModel.TARGET_GUI_LABEL)
 			
 			elif row == ProjectExplorerModel.PIPELINE_ROW:
 				return self.registerAndCreateIndex(row, column, ProjectExplorerModel.PIPELINE_LABEL)
 			
 			else:
 				return QModelIndex()
-
+		
 		parentData = parent.internalPointer()
 		if isinstance(parentData, str):
 			if parentData == ProjectExplorerModel.TARGET_GUI_LABEL:
 				if row == ProjectExplorerModel.COMPONENT_ROW:
-					return self.registerAndCreateIndex(row, column, ProjectExplorerModel.COMPONENT_LABEL)
+					return self.registerAndCreateIndex(row, column,
+					                                   ProjectExplorerModel.COMPONENT_LABEL)
 				
 				elif row == ProjectExplorerModel.BEHAVIOR_ROW:
-					return self.registerAndCreateIndex(row, column, ProjectExplorerModel.BEHAVIOR_LABEL)
+					return self.registerAndCreateIndex(row, column,
+					                                   ProjectExplorerModel.BEHAVIOR_LABEL)
 				
 				else:
 					return QModelIndex()
-	
+			
 			elif parentData == ProjectExplorerModel.COMPONENT_LABEL:
 				if self._project.getTargetGUIModel().getRoot().childCount() == 0:
-					return self.registerAndCreateIndex(row, column, ProjectExplorerModel.LeafIndex(ProjectExplorerModel.NO_COMPONENTS_LABEL, parentData, 0))
+					return self.registerAndCreateIndex(row, column, ProjectExplorerModel.LeafIndex(
+						ProjectExplorerModel.NO_COMPONENTS_LABEL, parentData, 0))
 				
-				return self.registerAndCreateIndex(row, column, self._project.getTargetGUIModel().getRoot().getNthChild(row))
+				return self.registerAndCreateIndex(row, column,
+				                                   self._project.getTargetGUIModel().getRoot().getNthChild(
+					                                   row))
 			
 			elif parentData == ProjectExplorerModel.BEHAVIOR_LABEL:
 				if len(self._project.getTargetGUIModel().getVisibilityBehaviors()) == 0:
-					return self.registerAndCreateIndex(row, column, ProjectExplorerModel.LeafIndex(ProjectExplorerModel.NO_BEHAVIORS_LABEL, parentData, 0))
+					return self.registerAndCreateIndex(row, column, ProjectExplorerModel.LeafIndex(
+						ProjectExplorerModel.NO_BEHAVIORS_LABEL, parentData, 0))
 				
-				return self.registerAndCreateIndex(row, column, self._project.getTargetGUIModel().getNthBehavior(row))
+				return self.registerAndCreateIndex(row, column,
+				                                   self._project.getTargetGUIModel().getNthVisibilityBehavior(
+					                                   row))
 			
 			elif parentData == ProjectExplorerModel.PIPELINE_LABEL:
 				# TODO: replace this once action pipelines are implemented
-				return self.registerAndCreateIndex(row, column, ProjectExplorerModel.LeafIndex(ProjectExplorerModel.NO_PIPELINES_LABEL, parentData, 1))
+				return self.registerAndCreateIndex(row, column, ProjectExplorerModel.LeafIndex(
+					ProjectExplorerModel.NO_PIPELINES_LABEL, parentData, 1))
 			
 			else:
-				raise ProjectExplorerModel.InvalidLabelException("Unsupported data string: {}".format(parentData))
-			
+				raise ProjectExplorerModel.InvalidLabelException(
+					"Unsupported data string: {}".format(parentData))
+		
 		elif isinstance(parentData, Component):
 			return self.registerAndCreateIndex(row, column, parentData.getNthChild(row))
-			
+		
 		elif isinstance(parentData, VisibilityBehavior):
 			if row == 0:
-				return self.registerAndCreateIndex(row, column, ProjectExplorerModel.LeafIndex(parentData.getFromComponent(), parentData))
+				return self.registerAndCreateIndex(row, column, ProjectExplorerModel.LeafIndex(
+					parentData.getSrcComponent(), parentData))
 			
 			if row == 1:
-				return self.registerAndCreateIndex(row, column, ProjectExplorerModel.LeafIndex(parentData.getToComponent(), parentData))
-			
+				return self.registerAndCreateIndex(row, column, ProjectExplorerModel.LeafIndex(
+					parentData.getDestComponent(), parentData))
+		
 		elif isinstance(parentData, ActionPipeline):
 			# TODO: replace this once action pipelines are implemented
 			pass
-			
+		
 		elif isinstance(parentData, ProjectExplorerModel.LeafIndex):
 			# Should never get into here
 			pass
 		
 		else:
-			raise ProjectExplorerModel.UnsupportedTypeException("Unsupported data type in index: {}".format(type(parentData)))
-		
+			raise ProjectExplorerModel.UnsupportedTypeException(
+				"Unsupported data type in index: {}".format(type(parentData)))
+	
 	def parent(self, index: QModelIndex) -> QModelIndex:
 		"""
 		Creates a model index for the parent of the given index.
@@ -313,26 +314,29 @@ class ProjectExplorerModel(QAbstractItemModel):
 		"""
 		if not index.isValid():
 			return QModelIndex()
-
+		
 		data = index.internalPointer()
 		if isinstance(data, str):
 			if data in (ProjectExplorerModel.TARGET_GUI_LABEL, ProjectExplorerModel.PIPELINE_LABEL):
 				return QModelIndex()
-	
-			elif data in (ProjectExplorerModel.COMPONENT_LABEL, ProjectExplorerModel.BEHAVIOR_LABEL):
+			
+			elif data in (
+				ProjectExplorerModel.COMPONENT_LABEL, ProjectExplorerModel.BEHAVIOR_LABEL):
 				return self.registerAndCreateIndex(0, 0, ProjectExplorerModel.TARGET_GUI_LABEL)
 			
 			else:
-				raise ProjectExplorerModel.InvalidLabelException("Unsupported label: {}".format(data))
-			
+				raise ProjectExplorerModel.InvalidLabelException(
+					"Unsupported label: {}".format(data))
+		
 		elif isinstance(data, Component):
 			parentComponent = data.getParent()
 			if parentComponent is self._project.getTargetGUIModel().getRoot():
 				return self.registerAndCreateIndex(0, 0, ProjectExplorerModel.COMPONENT_LABEL)
 			
 			else:
-				return self.registerAndCreateIndex(parentComponent.getPositionInSiblings(), 0, parentComponent)
-			
+				return self.registerAndCreateIndex(parentComponent.getPositionInSiblings(), 0,
+				                                   parentComponent)
+		
 		elif isinstance(data, VisibilityBehavior):
 			return self.registerAndCreateIndex(1, 0, ProjectExplorerModel.BEHAVIOR_LABEL)
 		
@@ -347,14 +351,19 @@ class ProjectExplorerModel(QAbstractItemModel):
 				return self.registerAndCreateIndex(data.getParentIndex(), 0, parentData)
 			
 			elif isinstance(innerData, Component):
-				return self.registerAndCreateIndex(parentData.getPositionInSiblings(), 0, parentData)
+				visBehaviors = list(
+					self._project.getTargetGUIModel().getVisibilityBehaviors().values())
+				visBehaviorIdx = visBehaviors.index(parentData)
+				return self.registerAndCreateIndex(visBehaviorIdx, 0, parentData)
 			
 			else:
-				raise ProjectExplorerModel.UnsupportedTypeException("Unsupported data type in LeafIndex: {}".format(innerData))
-			
+				raise ProjectExplorerModel.UnsupportedTypeException(
+					"Unsupported data type in LeafIndex: {}".format(innerData))
+		
 		else:
-			raise ProjectExplorerModel.UnsupportedTypeException("Unsupported data type in index: {}".format(type(data)))
-
+			raise ProjectExplorerModel.UnsupportedTypeException(
+				"Unsupported data type in index: {}".format(type(data)))
+	
 	def rowCount(self, parent: QModelIndex) -> int:
 		"""
 		Get the number of rows for a given index.
@@ -366,22 +375,22 @@ class ProjectExplorerModel(QAbstractItemModel):
 		"""
 		if not parent.isValid():
 			return 2
-
+		
 		data = parent.internalPointer()
 		if isinstance(data, str):
 			if data == ProjectExplorerModel.TARGET_GUI_LABEL:
 				return 2
-	
+			
 			elif data == ProjectExplorerModel.COMPONENT_LABEL:
 				return max(1, self._project.getTargetGUIModel().getRoot().childCount())
-	
+			
 			elif data == ProjectExplorerModel.BEHAVIOR_LABEL:
 				return max(1, len(self._project.getTargetGUIModel().getVisibilityBehaviors()))
-	
+			
 			elif data == ProjectExplorerModel.PIPELINE_LABEL:
 				# TODO: replace this once action pipelines are implemented
 				return 1
-			
+		
 		elif isinstance(data, Component):
 			return data.childCount()
 		
@@ -390,14 +399,15 @@ class ProjectExplorerModel(QAbstractItemModel):
 		
 		elif isinstance(data, ProjectExplorerModel.LeafIndex):
 			return 0
-			
+		
 		elif isinstance(data, ActionPipeline):
 			# TODO: replace this once action pipelines are implemented
 			pass
 		
 		else:
-			raise ProjectExplorerModel.UnsupportedTypeException("Unsupported data type in index: {}".format(type(data)))
-
+			raise ProjectExplorerModel.UnsupportedTypeException(
+				"Unsupported data type in index: {}".format(type(data)))
+	
 	def columnCount(self, parent: QModelIndex) -> int:
 		"""
 		Gets the number of columns on the next level of a given index.
@@ -409,7 +419,7 @@ class ProjectExplorerModel(QAbstractItemModel):
 		:rtype: int
 		"""
 		return 2
-
+	
 	def flags(self, index: QModelIndex) -> Qt.ItemFlags:
 		"""
 		Get the flags associated with the given index
@@ -421,10 +431,10 @@ class ProjectExplorerModel(QAbstractItemModel):
 		"""
 		if not index.isValid():
 			return Qt.NoItemFlags
-
+		
 		else:
 			return Qt.ItemIsEnabled | Qt.ItemIsSelectable
-
+	
 	def data(self, index: QModelIndex, role: Qt.ItemDataRole) -> str:
 		"""
 		Gets the data associated with a specific index and the specific role.
@@ -434,18 +444,18 @@ class ProjectExplorerModel(QAbstractItemModel):
 		:param role: The role to use to get the data.
 		:type role: Qt.ItemDataRole
 		:return: The data for the given role
-		:rtype: str
+		:rtype: str or NoneType
 		"""
 		if not index.isValid():
 			return None
-
+		
 		elif role != Qt.DisplayRole:
 			return None
-
+		
 		data = index.internalPointer()
 		col = index.column()
 		row = index.row()
-
+		
 		if isinstance(data, str):
 			if col == 0:
 				return data
@@ -454,7 +464,7 @@ class ProjectExplorerModel(QAbstractItemModel):
 		
 		elif isinstance(data, Component):
 			category, name = data.getProperties().getProperty("Name")
-			category, typeOf = data.getProperties().getProperty("Type")
+			category, typeOf = data.getProperties().getProperty("Class Name")
 			if col == 0:
 				return name.getValue()
 			elif col == 1:
@@ -464,9 +474,9 @@ class ProjectExplorerModel(QAbstractItemModel):
 		
 		elif isinstance(data, VisibilityBehavior):
 			if col == 0:
-				return data.getName()
+				return data.getProperties().getProperty("Name")[1].getValue()
 			elif col == 1:
-				return data.getType()
+				return data.getProperties().getProperty("Reaction Type")[1].getValue().name
 			else:
 				return None
 		
@@ -477,7 +487,7 @@ class ProjectExplorerModel(QAbstractItemModel):
 				return data.getType()
 			else:
 				return None
-			
+		
 		elif isinstance(data, ProjectExplorerModel.LeafIndex):
 			innerData = data.getData()
 			if isinstance(innerData, str):
@@ -485,28 +495,30 @@ class ProjectExplorerModel(QAbstractItemModel):
 					return innerData
 				else:
 					return None
-				
+			
 			if isinstance(innerData, Component):
 				if row == 0:
 					if col == 0:
 						return "From"
 					elif col == 1:
-						return innerData.getName()
+						return innerData.getProperties().getProperty("Name")[1].getValue()
 					else:
 						return None
-					
+				
 				if row == 1:
 					if col == 0:
 						return "To"
 					elif col == 1:
-						return innerData.getName()
+						return innerData.getProperties().getProperty("Name")[1].getValue()
 					else:
 						return None
 		
 		else:
-			raise ProjectExplorerModel.UnsupportedTypeException("Unsupported data type in index: {}".format(type(data)))
-		
-	def headerData(self, section: int, orientation: Qt.Orientation, role: Qt.ItemDataRole = Qt.DisplayRole) -> str:
+			raise ProjectExplorerModel.UnsupportedTypeException(
+				"Unsupported data type in index: {}".format(type(data)))
+	
+	def headerData(self, section: int, orientation: Qt.Orientation,
+	               role: Qt.ItemDataRole = Qt.DisplayRole) -> str:
 		"""
 		Gets the header data.
 		
@@ -517,19 +529,16 @@ class ProjectExplorerModel(QAbstractItemModel):
 		:param role: the role to use to get the data.
 		:type role: Qt.ItemDataRole
 		:return: the data
-		;rtype: str
+		:rtype: str
 		"""
 		if orientation == Qt.Horizontal and role == Qt.DisplayRole:
 			return ["Name", "Description"][section]
-
+	
 	@Slot()
 	def selectionChanged(self, selected: QItemSelection, deselected: QItemSelection) -> None:
 		"""
 		Run this slot when an index is selected. This slot will emit the following 3 signals depending on what was
-		selected:
-			- componentSelected
-			- behaviorSelected
-			- pipelineSelected
+		selected: componentSelected, behaviorSelected, pipelineSelected
 			
 		:param selected: The new selection
 		:type selected: QItemSelection
@@ -539,7 +548,7 @@ class ProjectExplorerModel(QAbstractItemModel):
 		:rtype: NoneType
 		"""
 		listSelected = selected.indexes()
-
+		
 		if len(listSelected) > 0:
 			rows = set()
 			for i in listSelected:
@@ -547,26 +556,27 @@ class ProjectExplorerModel(QAbstractItemModel):
 			if len(rows) == 1:
 				index = listSelected[0]
 				data = index.internalPointer()
-
+				
 				if isinstance(data, str):
 					return None
-
+				
 				elif isinstance(data, Component):
 					self.componentSelected.emit(data)
 				
 				elif isinstance(data, VisibilityBehavior):
 					self.behaviorSelected.emit(data)
-					
+				
 				elif isinstance(data, ActionPipeline):
 					self.pipelineSelected.emit(data)
-					
+				
 				elif isinstance(data, ProjectExplorerModel.LeafIndex):
 					data = data.getData()
 					if isinstance(data, Component):
 						self.componentSelected.emit(data)
 			else:
-				raise ProjectExplorerModel.InvalidSelectionException("Multiple row selection is not supported")
-			
+				raise ProjectExplorerModel.InvalidSelectionException(
+					"Multiple row selection is not supported")
+	
 	def registerAndCreateIndex(self, row, col, data):
 		"""
 		Keep a reference to the internal data of all QModelIndex objects. This allows us to avoid memory access errors.
@@ -593,3 +603,59 @@ class ProjectExplorerModel(QAbstractItemModel):
 			self._backwardRegistry[self._registryCounter] = data
 		
 		return self.createIndex(row, col, data)
+	
+	def selectComponent(self, component: 'Component') -> None:
+		"""
+		Selects a component in the project explorer by expanding all parents recursively.
+		
+		:param component: The component to select
+		:type component: Component
+		:return: None
+		:rtype: NoneType
+		"""
+		path = component.getPathFromRoot()
+		# remove ghost root
+		path.pop()
+		
+		indexPath = [0, 0]
+		
+		cur = QModelIndex()
+		cur = self.index(0, 0, cur)
+		self._view.expand(cur)
+		cur = self.index(0, 0, cur)
+		self._view.expand(cur)
+		while len(path) > 0:
+			comp, idx = path.pop()
+			cur = self.index(idx, 0, cur)
+			self._view.expand(cur)
+		
+		qism = QItemSelectionModel
+		f = qism.ClearAndSelect | qism.Current | qism.Rows
+		self._view.selectionModel().select(cur, f)
+		self._view.selectionModel().setCurrentIndex(cur, f)
+	
+	def selectBehavior(self, visibilityBehavior: 'VisibilityBehavior') -> None:
+		"""
+		Select a visibility behavior in the project explorer.
+		
+		:param visibilityBehavior: The visibility behavior to select.
+		:type visibilityBehavior: VisibilityBehavior
+		:return: None
+		:rtype: NoneType
+		"""
+		cur = QModelIndex()
+		cur = self.index(0, 0, cur)
+		self._view.expand(cur)
+		cur = self.index(1, 0, cur)
+		self._view.collapse(cur)
+		self._view.expand(cur)
+		
+		visBehaviors = list(self._project.getTargetGUIModel().getVisibilityBehaviors().values())
+		visBehaviorIdx = visBehaviors.index(visibilityBehavior)
+		cur = self.index(visBehaviorIdx, 0, cur)
+		self._view.expand(cur)
+		
+		qism = QItemSelectionModel
+		f = qism.ClearAndSelect | qism.Current | qism.Rows
+		self._view.selectionModel().select(cur, f)
+		self._view.selectionModel().setCurrentIndex(cur, f)
