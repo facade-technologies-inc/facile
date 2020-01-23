@@ -27,6 +27,9 @@ from PySide2.QtCore import QRectF
 from PySide2.QtGui import QPainterPath, QColor, QPen, Qt, QFont, QFontMetricsF
 from PySide2.QtWidgets import QGraphicsScene, QGraphicsItem, QGraphicsSceneContextMenuEvent, QMenu
 
+from data.statemachine import StateMachine
+from qt_models.componentmenu import ComponentMenu
+
 
 class ComponentGraphics(QGraphicsItem):
 	"""
@@ -97,10 +100,8 @@ class ComponentGraphics(QGraphicsItem):
 			            max(0, 2 * rect[1] + self._margin + ComponentGraphics.TITLEBAR_H))
 
 		self.adjustPositioning()
-		self.menu = QMenu()
-		showInGui = self.menu.addAction("Show in target GUI")
-		showInGui.triggered.connect(
-			lambda: self.scene().blinkComponent(self._dataComponent.getId()))
+		self.menu = ComponentMenu()
+		self.menu.onBlink(lambda: self.scene().blinkComponent(self._dataComponent.getId()))
 
 		try:
 			self.triggerSceneUpdate()
@@ -650,6 +651,7 @@ class ComponentGraphics(QGraphicsItem):
 		:rtype: NoneType
 		"""
 		self.setSelected(True)
+		self.menu.prerequest()
 		selectedAction = self.menu.exec_(event.screenPos())
 
 	def triggerSceneUpdate(self):

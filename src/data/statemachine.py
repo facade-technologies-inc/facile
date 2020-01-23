@@ -28,7 +28,6 @@ from enum import Enum, auto
 from PySide2.QtCore import Slot, QTimer
 from PySide2.QtGui import QStandardItem, QStandardItemModel, Qt
 
-from data.project import Project
 from data.tguim.visibilitybehavior import VisibilityBehavior
 from gui.facilegraphicsview import FacileGraphicsView
 from qt_models.propeditordelegate import PropertyEditorDelegate
@@ -65,6 +64,11 @@ class StateMachine:
 	class ExplorationMode(Enum):
 		AUTO = auto()
 		MANUAL = auto()
+		
+	# We can get the State machine instance from anywhere in the code using StateMachine.instance
+	# NOTE: This is not supposed to act as a Singleton because we make new state machines
+	#       whenever we open new project.
+	instance = None
 	
 	def __init__(self, facileView, curState: State = State.WAIT_FOR_PROJECT):
 		"""
@@ -93,6 +97,8 @@ class StateMachine:
 			StateMachine.State.ADDING_VB: self._state_ADDING_VB,
 			StateMachine.State.EXPLORATION: self._state_EXPLORATION
 		}
+		
+		StateMachine.instance = self
 	
 	def tick(self, event: Event, *args, **kwargs) -> None:
 		"""
@@ -268,7 +274,8 @@ class StateMachine:
 		
 		# Create actions for recent projects
 		try:
-			recentProjects = Project.getRecents(limit=10)
+			import data.project as proj
+			recentProjects = proj.Project.getRecents(limit=10)
 		except json.JSONDecodeError as e:
 			ui.menuRecent_Projects.addAction("Error loading recent projects.")
 		else:
