@@ -27,11 +27,13 @@ from enum import Enum, auto
 
 from PySide2.QtCore import Slot, QTimer
 from PySide2.QtGui import QStandardItem, QStandardItemModel, Qt
+from PySide2.QtWidgets import QGraphicsScene
 
 from data.project import Project
 from data.tguim.visibilitybehavior import VisibilityBehavior
 from gui.facilegraphicsview import FacileGraphicsView
 from qt_models.propeditordelegate import PropertyEditorDelegate
+from data.configvars import ConfigVars
 
 
 class StateMachine:
@@ -93,6 +95,9 @@ class StateMachine:
 			StateMachine.State.ADDING_VB: self._state_ADDING_VB,
 			StateMachine.State.EXPLORATION: self._state_EXPLORATION
 		}
+
+		# Initialize configuration variables (that affect what gets displayed in the Facile GUI)
+		self.configVars = ConfigVars()
 	
 	def tick(self, event: Event, *args, **kwargs) -> None:
 		"""
@@ -278,6 +283,10 @@ class StateMachine:
 				for proj in recentProjects[:10]:
 					action = ui.menuRecent_Projects.addAction(proj)
 					action.triggered.connect(v.onOpenRecentProject)
+
+		# Connecting the configVars' change signal to logic that will update the TGUIM View
+		self.configVars.updateTGUIMView.connect(lambda: v.ui.targetGUIModelView.scene().invalidate(
+			self.scene().sceneRect(), QGraphicsScene.ItemLayer))
 		
 		# Connect Facile's actions (At least all of the ones that are static)
 		ui.actionFrom_Scratch.triggered.connect(v.onNewProjectFromScratchTriggered)
@@ -291,7 +300,9 @@ class StateMachine:
 		ui.actionAdd_Behavior.triggered.connect(v.onAddBehaviorTriggered)
 		ui.actionStart_App.triggered.connect(v.onStartAppTriggered)
 		ui.actionStop_App.triggered.connect(lambda: v.onStopAppTriggered(confirm=True))
-		
+		ui.actionShow_Behaviors.triggered.connect(self.configVars.setShowBehaviors)
+		ui.actionShow_Token_Tags.triggered.connect(self.configVars.setShowTokenTags)
+
 		# Disable actions
 		ui.actionSave_Project.setEnabled(False)
 		ui.actionSave_as.setEnabled(False)
@@ -299,6 +310,7 @@ class StateMachine:
 		ui.actionManualExplore.setEnabled(False)
 		ui.actionDetailed_View.setEnabled(False)
 		ui.actionShow_Behaviors.setEnabled(False)
+		ui.actionShow_Token_Tags.setEnabled(False)
 		ui.actionAdd_Behavior.setEnabled(False)
 		ui.actionStart_App.setEnabled(False)
 		ui.actionStop_App.setEnabled(False)
@@ -363,6 +375,7 @@ class StateMachine:
 		ui.actionSave_as.setEnabled(True)
 		ui.actionDetailed_View.setEnabled(True)
 		ui.actionShow_Behaviors.setEnabled(True)
+		ui.actionShow_Token_Tags.setEnabled(True)
 		ui.actionAdd_Behavior.setEnabled(True)
 		ui.actionManualExplore.setChecked(False)
 		ui.actionAutoExplore.setChecked(False)
@@ -386,6 +399,7 @@ class StateMachine:
 		self.view.ui.actionManualExplore.setEnabled(False)
 		self.view.ui.actionDetailed_View.setEnabled(True)
 		self.view.ui.actionShow_Behaviors.setEnabled(True)
+		self.view.ui.actionShow_Token_Tags.setEnabled(True)
 		self.view.ui.actionAdd_Behavior.setEnabled(True)
 		self.view.ui.actionStart_App.setEnabled(True)
 		self.view.ui.actionStop_App.setEnabled(True)
@@ -420,6 +434,7 @@ class StateMachine:
 		self.view.ui.actionManualExplore.setEnabled(True)
 		self.view.ui.actionDetailed_View.setEnabled(True)
 		self.view.ui.actionShow_Behaviors.setEnabled(True)
+		self.view.ui.actionShow_Token_Tags.setEnabled(True)
 		self.view.ui.actionAdd_Behavior.setEnabled(False)
 		self.view.ui.actionStart_App.setEnabled(False)
 		self.view.ui.actionStop_App.setEnabled(True)

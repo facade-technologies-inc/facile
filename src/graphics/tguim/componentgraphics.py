@@ -26,6 +26,7 @@ import numpy as np
 from PySide2.QtCore import QRectF
 from PySide2.QtGui import QPainterPath, QColor, QPen, Qt, QFont, QFontMetricsF
 from PySide2.QtWidgets import QGraphicsScene, QGraphicsItem, QGraphicsSceneContextMenuEvent, QMenu
+import data.statemachine as sm
 
 
 class ComponentGraphics(QGraphicsItem):
@@ -607,15 +608,19 @@ class ComponentGraphics(QGraphicsItem):
 		painter.setBrush(QColor(100, 200, 255))
 		painter.drawText(self.boundingRect(withMargins=False).x() + 5, self._margin + 13, name)
 
-		# draw token tag
+		if sm.StateMachine.instance.configVars.showTokenTags:
+			self.drawTokenTag(br, painter)
+
+	# draw token tag
+	def drawTokenTag(self, br, painter):
 		if br.width() >= ComponentGraphics.TITLEBAR_H:
 			token_count = str(self.getNumberOfTokens())
-			
+
 			ttX = br.x() + br.width() - ComponentGraphics.TITLEBAR_H
 			ttY = br.y()
 			ttWidth = ComponentGraphics.TITLEBAR_H
 			ttHeight = ComponentGraphics.TITLEBAR_H
-			
+
 			rectBox = QRectF(ttX, ttY, ttWidth, ttHeight)
 			tokenTagFont = QFont("Times", 10)
 			painter.setFont(tokenTagFont)
