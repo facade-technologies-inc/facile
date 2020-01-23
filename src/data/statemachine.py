@@ -39,6 +39,17 @@ class StateMachine:
 	which takes in an event. Depending on the current state and the event, the
 	next event is decided. and some code associated with that state is executed.
 	
+	Because only one state machine will exist at a time, it's relatively safe to
+	keep the instance in a static variable that can be accessed anywhere in Facile.
+	However, this means that the state machine shouldn't be stored anywhere long-term
+	except in the FacileView - maybe not even there. To access the StateMachine
+	instance, use the following:
+	
+	.. code-block:: python
+		
+		import data.statemachine as sm
+		state_machine = sm.StateMachine.instance
+	
 	.. note::
 		As Facile grows, this class will too, so it's important to keep the
 		code clean and modular as much as possible.
