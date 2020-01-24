@@ -30,6 +30,9 @@ from data.apim.actionpipeline import ActionPipeline
 from data.tguim.component import Component
 from data.tguim.visibilitybehavior import VisibilityBehavior
 
+from qt_models.componentmenu import ComponentMenu
+
+import data.statemachine as sm
 
 class ProjectExplorerModel(QAbstractItemModel):
 	"""
@@ -660,8 +663,23 @@ class ProjectExplorerModel(QAbstractItemModel):
 		self._view.selectionModel().select(cur, f)
 		self._view.selectionModel().setCurrentIndex(cur, f)
 
-	def onContextMenuRequested(self, point: QPoint):
-		index = self._view.indexAt(point);
-		if (index.isValid() & & index.row() % 2 == 0):
-			contextMenu->exec(ui->treeView->viewport()->mapToGlobal(point));
-		 
+	def onContextMenuRequested(self, point: QPoint) -> None:
+		"""
+		This function is responsible for producing the context menu when an item is right-clicked
+		in the project explorer.
+		
+		:param point: The point where the click occurred
+		:type point: QPoint
+		:return: None
+		"""
+		index = self._view.indexAt(point)
+		data = index.internalPointer()
+		
+		if isinstance(data, ProjectExplorerModel.LeafIndex):
+			data = data.getData()
+		
+		v = sm.StateMachine.instance.view
+		if isinstance(data, Component):
+			menu = ComponentMenu()
+			menu.onBlink(lambda: v.onItemBlink(data.getId()))
+			menu.exec_(self._view.viewport().mapToGlobal(point))
