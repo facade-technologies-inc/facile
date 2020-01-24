@@ -682,4 +682,5 @@ class ProjectExplorerModel(QAbstractItemModel):
 		if isinstance(data, Component):
 			menu = ComponentMenu()
 			menu.onBlink(lambda: v.onItemBlink(data.getId()))
+			menu.prerequest()
 			menu.exec_(self._view.viewport().mapToGlobal(point))
