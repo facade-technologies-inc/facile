@@ -23,7 +23,7 @@ This module contains the Qt model for the project explorer.
 """
 
 from PySide2.QtCore import QAbstractItemModel, QModelIndex, Qt, Signal, Slot, QItemSelection
-from PySide2.QtCore import QItemSelectionModel
+from PySide2.QtCore import QItemSelectionModel, QPoint
 from PySide2.QtWidgets import QTreeView
 
 from data.apim.actionpipeline import ActionPipeline
@@ -659,3 +659,9 @@ class ProjectExplorerModel(QAbstractItemModel):
 		f = qism.ClearAndSelect | qism.Current | qism.Rows
 		self._view.selectionModel().select(cur, f)
 		self._view.selectionModel().setCurrentIndex(cur, f)
+
+	def onContextMenuRequested(self, point: QPoint):
+		index = self._view.indexAt(point);
+		if (index.isValid() & & index.row() % 2 == 0):
+			contextMenu->exec(ui->treeView->viewport()->mapToGlobal(point));
+		 
