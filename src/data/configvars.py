@@ -5,6 +5,7 @@ class ConfigVars(QObject):
     updateTGUIMView = Signal()
 
     def __init__(self):
+        QObject.__init__(self)
         self.showBehaviors = True
         self.showTokenTags = True
 

@@ -29,7 +29,6 @@ from PySide2.QtCore import Slot, QTimer
 from PySide2.QtGui import QStandardItem, QStandardItemModel, Qt
 from PySide2.QtWidgets import QGraphicsScene
 
-from data.project import Project
 from data.tguim.visibilitybehavior import VisibilityBehavior
 from gui.facilegraphicsview import FacileGraphicsView
 from qt_models.propeditordelegate import PropertyEditorDelegate
@@ -41,6 +40,17 @@ class StateMachine:
 	This is an event-driven state machine. The state machine has a "tick" method
 	which takes in an event. Depending on the current state and the event, the
 	next event is decided. and some code associated with that state is executed.
+	
+	Because only one state machine will exist at a time, it's relatively safe to
+	keep the instance in a static variable that can be accessed anywhere in Facile.
+	However, this means that the state machine shouldn't be stored anywhere long-term
+	except in the FacileView - maybe not even there. To access the StateMachine
+	instance, use the following:
+	
+	.. code-block:: python
+		
+		import data.statemachine as sm
+		state_machine = sm.StateMachine.instance
 	
 	.. note::
 		As Facile grows, this class will too, so it's important to keep the
@@ -67,6 +77,11 @@ class StateMachine:
 	class ExplorationMode(Enum):
 		AUTO = auto()
 		MANUAL = auto()
+		
+	# We can get the State machine instance from anywhere in the code using StateMachine.instance
+	# NOTE: This is not supposed to act as a Singleton because we make new state machines
+	#       whenever we open new project.
+	instance = None
 	
 	def __init__(self, facileView, curState: State = State.WAIT_FOR_PROJECT):
 		"""
@@ -98,6 +113,8 @@ class StateMachine:
 
 		# Initialize configuration variables (that affect what gets displayed in the Facile GUI)
 		self.configVars = ConfigVars()
+
+		StateMachine.instance = self
 	
 	def tick(self, event: Event, *args, **kwargs) -> None:
 		"""
@@ -273,7 +290,8 @@ class StateMachine:
 		
 		# Create actions for recent projects
 		try:
-			recentProjects = Project.getRecents(limit=10)
+			import data.project as proj
+			recentProjects = proj.Project.getRecents(limit=10)
 		except json.JSONDecodeError as e:
 			ui.menuRecent_Projects.addAction("Error loading recent projects.")
 		else:
@@ -286,7 +304,7 @@ class StateMachine:
 
 		# Connecting the configVars' change signal to logic that will update the TGUIM View
 		self.configVars.updateTGUIMView.connect(lambda: v.ui.targetGUIModelView.scene().invalidate(
-			self.scene().sceneRect(), QGraphicsScene.ItemLayer))
+			v.ui.targetGUIModelView.scene().sceneRect(), QGraphicsScene.ItemLayer))
 		
 		# Connect Facile's actions (At least all of the ones that are static)
 		ui.actionFrom_Scratch.triggered.connect(v.onNewProjectFromScratchTriggered)
