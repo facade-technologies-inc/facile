@@ -128,8 +128,7 @@ class VBGraphics(QGraphicsItem):
 		brWidth = brTRx - brTLx
 		self._boundingRect = QRectF(brTLx, brTLy, brWidth, brHeight)
 		
-		painter.drawRect(self.boundingRect())
-		
+		#painter.drawRect(self.boundingRect())
 		painter.drawPath(path)
 		painter.drawPath(arrowHead)
 		painter.fillPath(arrowHead, QBrush(arrowColor))
