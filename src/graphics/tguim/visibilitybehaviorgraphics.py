@@ -68,7 +68,8 @@ class VBGraphics(QGraphicsItem):
 	
 	def paint(self, painter: QPainter, option, widget):
 		"""
-		Paints the contents of the visibilitybehavior. Override the parent paint function
+		Paints the contents of the visibilitybehavior. Override the parent paint function.
+		Only renders the visibility behavior if the configuration variable, showBehaviors, is true.
 		
 		:param painter: Use a Qpainter object.
 		:type painter: QPainter

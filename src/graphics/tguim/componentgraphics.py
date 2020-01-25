@@ -612,8 +612,19 @@ class ComponentGraphics(QGraphicsItem):
 		if sm.StateMachine.instance.configVars.showTokenTags:
 			self.drawTokenTag(br, painter)
 
-	# draw token tag
-	def drawTokenTag(self, br, painter):
+	def drawTokenTag(self, br: QRectF, painter: 'QPainter'):
+		"""
+		This is a helper function for the paint function.
+		It renders "Token Tags" in the corners of the GUI Components displayed in the TGUIM View.
+		Token Tags show how many Tokens are associated with the associated component.
+
+		:param br: The bounding rectangle of the component.
+		:type br: QRectF
+		:param painter: A QPainter object.
+		:type painter: QPainter
+		:return: None
+		:rtype: NoneType
+		"""
 		if br.width() >= ComponentGraphics.TITLEBAR_H:
 			token_count = str(self.getNumberOfTokens())
 
