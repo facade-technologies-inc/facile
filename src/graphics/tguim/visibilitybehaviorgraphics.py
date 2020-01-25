@@ -227,7 +227,6 @@ class VBGraphics(QGraphicsItem):
 		
 		return possibleRoot
 	
-	"""
 	def shape(self):
 		lengthSrcNodeSrcEdgeList = len(self._dataVB.getSrcComponent().getSrcVisibilityBehaviors())
 		lengthDesNodeDesEdgeList = len(self._dataVB.getDestComponent().getDestVisibilityBehaviors())
@@ -255,5 +254,4 @@ class VBGraphics(QGraphicsItem):
 		path = self.buildPath(x1, x2, y1, y2)
 
 		return path
-	"""
 
