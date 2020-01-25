@@ -251,7 +251,7 @@ class Token:
 			idSequence1 = ''.join(self.controlIDs)
 			idSequence2 = ''.join(token2.controlIDs)
 			controlSimilarity = SequenceMatcher(None, idSequence1, idSequence2).ratio()
-			total += Token.Weight["CONTROL_ID"]
+			total += Token.Weight["CONTROL_ID"] * controlSimilarity
 			
 			# compare pictures
 			if self.pic != None and token2.pic != None:
