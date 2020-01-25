@@ -29,7 +29,7 @@ from PySide2.QtCore import Slot, QTimer
 from PySide2.QtGui import QStandardItem, QStandardItemModel, Qt
 from PySide2.QtWidgets import QGraphicsScene
 
-from data.tguim.visibilitybehavior import VisibilityBehavior
+import data.tguim.visibilitybehavior as vb
 from gui.facilegraphicsview import FacileGraphicsView
 from qt_models.propeditordelegate import PropertyEditorDelegate
 from data.configvars import ConfigVars
@@ -197,7 +197,7 @@ class StateMachine:
 					srcComp = self.vbComponents[0]
 					destComp = self.vbComponents[1]
 					tguim = self._project.getTargetGUIModel()
-					newVB = VisibilityBehavior(tguim, srcComp, destComp)
+					newVB = vb.VisibilityBehavior(tguim, srcComp, destComp)
 					self.view._project.getTargetGUIModel().addVisibilityBehavior(newVB)
 					self.view.ui.projectExplorerView.update()
 					self.view.ui.projectExplorerView.model().selectBehavior(newVB)
@@ -305,7 +305,11 @@ class StateMachine:
 		# Connecting the configVars' change signal to logic that will update the TGUIM View
 		self.configVars.updateTGUIMView.connect(lambda: v.ui.targetGUIModelView.scene().invalidate(
 			v.ui.targetGUIModelView.scene().sceneRect(), QGraphicsScene.ItemLayer))
-		
+
+		# Sync actions to their associated configuration variables (configVars).
+		ui.actionShow_Behaviors.setChecked(self.configVars.showBehaviors)
+		ui.actionShow_Token_Tags.setChecked(self.configVars.showTokenTags)
+
 		# Connect Facile's actions (At least all of the ones that are static)
 		ui.actionFrom_Scratch.triggered.connect(v.onNewProjectFromScratchTriggered)
 		ui.actionFrom_Existing_Project.triggered.connect(v.onNewProjectFromExistingTriggered)

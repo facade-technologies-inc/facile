@@ -3,7 +3,7 @@
 # Form implementation generated from reading ui file 'facileview.ui',
 # licensing of 'facileview.ui' applies.
 #
-# Created: Thu Jan 23 14:15:47 2020
+# Created: Sat Jan 25 13:49:31 2020
 #      by: pyside2-uic  running on PySide2 5.13.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -115,6 +115,7 @@ class Ui_MainWindow(object):
         self.actionValidator.setObjectName("actionValidator")
         self.actionShow_Behaviors = QtWidgets.QAction(MainWindow)
         self.actionShow_Behaviors.setCheckable(True)
+        self.actionShow_Behaviors.setChecked(True)
         self.actionShow_Behaviors.setObjectName("actionShow_Behaviors")
         self.actionDetailed_View = QtWidgets.QAction(MainWindow)
         self.actionDetailed_View.setCheckable(True)

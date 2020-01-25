@@ -24,6 +24,7 @@ This module contains the VBGraphics class.
 from PySide2.QtCore import QRectF
 from PySide2.QtGui import QPainterPath, QPainter, QPen, Qt, QColor, QBrush
 from PySide2.QtWidgets import QGraphicsItem
+import data.statemachine as sm
 
 
 class VBGraphics(QGraphicsItem):
@@ -78,61 +79,63 @@ class VBGraphics(QGraphicsItem):
 		:return: None
 		:rtype: NoneType
 		"""
-		arrowColor = QColor(255, 200, 50)
-		pen = QPen(arrowColor)
-		if self.isSelected():
-			pen.setStyle(Qt.DashDotLine)
-			arrowColor = QColor(255, 0, 0)
-		else:
-			pen.setStyle(Qt.SolidLine)
+		# Only draw visibility behaviors if "Show Visibility Behaviors" action is checked in the View drop down.
+		if sm.StateMachine.instance.configVars.showBehaviors:
 			arrowColor = QColor(255, 200, 50)
-		pen.setWidth(10)
-		painter.setPen(pen)
-		
-		lengthSrcNodeSrcEdgeList = len(self._dataVB.getSrcComponent().getSrcVisibilityBehaviors())
-		lengthDesNodeDesEdgeList = len(self._dataVB.getDestComponent().getDestVisibilityBehaviors())
-		heightSrcNode = self._dataVB.getSrcComponent().getGraphicsItem().boundingRect(
-			withMargins=False).height()
-		heightDesNode = self._dataVB.getDestComponent().getGraphicsItem().boundingRect(
-			withMargins=False).height()
-		widthDesNode = self._dataVB.getDestComponent().getGraphicsItem().boundingRect(
-			withMargins=False).width()
-		# This is the index(+1 avoid 0 in calculation) of the edge at the SourceNode's edgeSrcList
-		srcNodeIndex = self._dataVB.getSrcComponent().getSrcVisibilityBehaviors().index(
-			self._dataVB) + 1
-		# This is the index of the edge at the DesNode's _edgeDesList
-		desNodeIndex = self._dataVB.getDestComponent().getDestVisibilityBehaviors().index(
-			self._dataVB) + 1
-		
-		# ComponentGraphics.MARGIN = 20
-		x1 = self._dataVB.getSrcComponent().getGraphicsItem().scenePos().x() + 20  # x does not change, stay at the left most of the node
-		y1 = self._dataVB.getSrcComponent().getGraphicsItem().scenePos().y() + (
-			heightSrcNode / (lengthSrcNodeSrcEdgeList + 1)) * srcNodeIndex
-		x2 = self._dataVB.getDestComponent().getGraphicsItem().scenePos().x() + widthDesNode + 20
-		y2 = self._dataVB.getDestComponent().getGraphicsItem().scenePos().y() + (
-			heightDesNode / (lengthDesNodeDesEdgeList + 1)) * desNodeIndex
-		
-		# draw the arrow
-		path, leftInTrue = self.buildPath(x1, x2, y1, y2)
-		painter.drawPath(path)
-		
-		# draw the arrow head
-		aSize = 20
-		if leftInTrue:
-			arrowHead = QPainterPath()
-			arrowHead.moveTo(x2 + aSize, y2)
-			arrowHead.lineTo(x2 - aSize, y2 - aSize)
-			arrowHead.lineTo(x2 - aSize, y2 + aSize)
-			arrowHead.lineTo(x2 + aSize, y2)
-		else:
-			arrowHead = QPainterPath()
-			arrowHead.moveTo(x2 - aSize, y2)
-			arrowHead.lineTo(x2 + aSize, y2 - aSize)
-			arrowHead.lineTo(x2 + aSize, y2 + aSize)
-			arrowHead.lineTo(x2 - aSize, y2)
-		
-		painter.drawPath(arrowHead)
-		painter.fillPath(arrowHead, QBrush(arrowColor))
+			pen = QPen(arrowColor)
+			if self.isSelected():
+				pen.setStyle(Qt.DashDotLine)
+				arrowColor = QColor(255, 0, 0)
+			else:
+				pen.setStyle(Qt.SolidLine)
+				arrowColor = QColor(255, 200, 50)
+			pen.setWidth(10)
+			painter.setPen(pen)
+
+			lengthSrcNodeSrcEdgeList = len(self._dataVB.getSrcComponent().getSrcVisibilityBehaviors())
+			lengthDesNodeDesEdgeList = len(self._dataVB.getDestComponent().getDestVisibilityBehaviors())
+			heightSrcNode = self._dataVB.getSrcComponent().getGraphicsItem().boundingRect(
+				withMargins=False).height()
+			heightDesNode = self._dataVB.getDestComponent().getGraphicsItem().boundingRect(
+				withMargins=False).height()
+			widthDesNode = self._dataVB.getDestComponent().getGraphicsItem().boundingRect(
+				withMargins=False).width()
+			# This is the index(+1 avoid 0 in calculation) of the edge at the SourceNode's edgeSrcList
+			srcNodeIndex = self._dataVB.getSrcComponent().getSrcVisibilityBehaviors().index(
+				self._dataVB) + 1
+			# This is the index of the edge at the DesNode's _edgeDesList
+			desNodeIndex = self._dataVB.getDestComponent().getDestVisibilityBehaviors().index(
+				self._dataVB) + 1
+
+			# ComponentGraphics.MARGIN = 20
+			x1 = self._dataVB.getSrcComponent().getGraphicsItem().scenePos().x() + 20  # x does not change, stay at the left most of the node
+			y1 = self._dataVB.getSrcComponent().getGraphicsItem().scenePos().y() + (
+				heightSrcNode / (lengthSrcNodeSrcEdgeList + 1)) * srcNodeIndex
+			x2 = self._dataVB.getDestComponent().getGraphicsItem().scenePos().x() + widthDesNode + 20
+			y2 = self._dataVB.getDestComponent().getGraphicsItem().scenePos().y() + (
+				heightDesNode / (lengthDesNodeDesEdgeList + 1)) * desNodeIndex
+
+			# draw the arrow
+			path, leftInTrue = self.buildPath(x1, x2, y1, y2)
+			painter.drawPath(path)
+
+			# draw the arrow head
+			aSize = 20
+			if leftInTrue:
+				arrowHead = QPainterPath()
+				arrowHead.moveTo(x2 + aSize, y2)
+				arrowHead.lineTo(x2 - aSize, y2 - aSize)
+				arrowHead.lineTo(x2 - aSize, y2 + aSize)
+				arrowHead.lineTo(x2 + aSize, y2)
+			else:
+				arrowHead = QPainterPath()
+				arrowHead.moveTo(x2 - aSize, y2)
+				arrowHead.lineTo(x2 + aSize, y2 - aSize)
+				arrowHead.lineTo(x2 + aSize, y2 + aSize)
+				arrowHead.lineTo(x2 - aSize, y2)
+
+			painter.drawPath(arrowHead)
+			painter.fillPath(arrowHead, QBrush(arrowColor))
 	
 	def buildPath(self, x1, x2, y1, y2):
 		"""

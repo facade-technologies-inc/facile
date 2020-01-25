@@ -6,6 +6,7 @@ class ConfigVars(QObject):
 
     def __init__(self):
         QObject.__init__(self)
+        #TODO:
         self.showBehaviors = True
         self.showTokenTags = True
 
