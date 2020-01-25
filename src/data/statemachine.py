@@ -350,10 +350,11 @@ class StateMachine:
 			p.getTargetGUIModel().getScene().itemSelected.connect(v.onItemSelected)
 			p.getTargetGUIModel().getScene().itemBlink.connect(v.onItemBlink)
 			p.getTargetGUIModel().dataChanged.connect(lambda: ui.projectExplorerView.update())
-			ui.projectExplorerView.setModel(
-				v._project.getProjectExplorerModel(ui.projectExplorerView))
-			ui.projectExplorerView.selectionModel().selectionChanged.connect(
-				v.onProjectExplorerIndexSelected)
+			projectExplorerModel = v._project.getProjectExplorerModel(ui.projectExplorerView)
+			ui.projectExplorerView.setModel(projectExplorerModel)
+			ui.projectExplorerView.selectionModel().selectionChanged.connect(v.onProjectExplorerIndexSelected)
+			ui.projectExplorerView.setContextMenuPolicy(Qt.CustomContextMenu)
+			ui.projectExplorerView.customContextMenuRequested.connect(projectExplorerModel.onContextMenuRequested)
 			ui.propertyEditorView.setItemDelegate(PropertyEditorDelegate())
 			ui.targetGUIModelView.setScene(v._project.getTargetGUIModel().getScene())
 			ui.actionStop_App.setEnabled(False)
