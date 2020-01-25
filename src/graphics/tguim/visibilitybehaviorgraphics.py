@@ -22,11 +22,11 @@ This module contains the VBGraphics class.
 """
 
 from PySide2.QtCore import QRectF
-from PySide2.QtGui import QPainterPath, QPainter, QPen, Qt, QColor, QBrush
-from PySide2.QtWidgets import QGraphicsItem
+from PySide2.QtGui import QPainterPath, QPainter, QPen, Qt, QColor, QBrush, QPainterPathStroker
+from PySide2.QtWidgets import QGraphicsItem, QAbstractGraphicsShapeItem
 
 
-class VBGraphics(QGraphicsItem):
+class VBGraphics(QAbstractGraphicsShapeItem):
 	def __init__(self, dataVisibilityBehavior: 'VisibilityBehavior', parent: 'TScene'):
 		"""
 		Construct the VBGraphics class.
@@ -40,13 +40,14 @@ class VBGraphics(QGraphicsItem):
 		:return: None
 		:rtype: NoneType
 		"""
-		QGraphicsItem.__init__(self)
+		QAbstractGraphicsShapeItem.__init__(self)
 		self._dataVB = dataVisibilityBehavior
 		self.setFlag(QGraphicsItem.ItemIsSelectable)
 		self._srcComponentCenterPoint = self._dataVB.getSrcComponent().getGraphicsItem().boundingRect().center()
 		self._destComponentCenterPoint = self._dataVB.getDestComponent().getGraphicsItem().boundingRect().center()
 		parent.addItem(self)
 		self._boundingRect = None
+		self._x1, self._x2, self._y1, self._y2 = 0, 0, 0, 0
 	
 	def boundingRect(self):
 		"""
@@ -114,6 +115,10 @@ class VBGraphics(QGraphicsItem):
 		x2 = self._dataVB.getDestComponent().getGraphicsItem().scenePos().x() + widthDesNode + 20
 		y2 = self._dataVB.getDestComponent().getGraphicsItem().scenePos().y() + (
 			heightDesNode / (lengthDesNodeDesEdgeList + 1)) * desNodeIndex
+		self._x1 = x1
+		self._x2 = x2
+		self._y1 = y1
+		self._y2 = y2
 		
 		# build the path and arrowhead
 		path, leftInTrue, pathBoundingRect = self.buildPath(x1, x2, y1, y2)
@@ -126,7 +131,8 @@ class VBGraphics(QGraphicsItem):
 		brTRx = max(pathBoundingRect.topRight().x(), arrowHeadBoundingRect.topRight().x())
 		brHeight = brBLy - brTLy
 		brWidth = brTRx - brTLx
-		self._boundingRect = QRectF(brTLx, brTLy, brWidth, brHeight)
+		margin = 10
+		self._boundingRect = QRectF(brTLx - margin, brTLy - margin, brWidth + margin * 2, brHeight + margin * 2)
 		
 		#painter.drawRect(self.boundingRect())
 		painter.drawPath(path)
@@ -249,30 +255,16 @@ class VBGraphics(QGraphicsItem):
 		return possibleRoot
 	
 	def shape(self):
-		lengthSrcNodeSrcEdgeList = len(self._dataVB.getSrcComponent().getSrcVisibilityBehaviors())
-		lengthDesNodeDesEdgeList = len(self._dataVB.getDestComponent().getDestVisibilityBehaviors())
-		heightSrcNode = self._dataVB.getSrcComponent().getGraphicsItem().boundingRect(
-			withMargins=False).height()
-		heightDesNode = self._dataVB.getDestComponent().getGraphicsItem().boundingRect(
-			withMargins=False).height()
-		widthDesNode = self._dataVB.getDestComponent().getGraphicsItem().boundingRect(
-			withMargins=False).width()
-		# This is the index(+1 avoid 0 in calculation) of the edge at the SourceNode's edgeSrcList
-		srcNodeIndex = self._dataVB.getSrcComponent().getSrcVisibilityBehaviors().index(
-			self._dataVB) + 1
-		# This is the index of the edge at the DesNode's _edgeDesList
-		desNodeIndex = self._dataVB.getDestComponent().getDestVisibilityBehaviors().index(
-			self._dataVB) + 1
+		"""
+		Stroke the shape of the line.
+		
+		:return: the arrow path
+		:rtype: QPainterPathStroker
+		"""
+		path, buffer, buffer2 = self.buildPath(self._x1, self._x2, self._y1, self._y2)
+		
+		stroker = QPainterPathStroker()
+		stroker.setWidth(50)
 
-		# ComponentGraphics.MARGIN = 20
-		x1 = self._dataVB.getSrcComponent().getGraphicsItem().scenePos().x() + 20  # x does not change, stay at the left most of the node
-		y1 = self._dataVB.getSrcComponent().getGraphicsItem().scenePos().y() + (
-			heightSrcNode / (lengthSrcNodeSrcEdgeList + 1)) * srcNodeIndex
-		x2 = self._dataVB.getDestComponent().getGraphicsItem().scenePos().x() + widthDesNode + 20
-		y2 = self._dataVB.getDestComponent().getGraphicsItem().scenePos().y() + (
-			heightDesNode / (lengthDesNodeDesEdgeList + 1)) * desNodeIndex
-
-		path = self.buildPath(x1, x2, y1, y2)
-
-		return path
+		return stroker.createStroke(path).simplified()
 
