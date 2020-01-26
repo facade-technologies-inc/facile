@@ -131,6 +131,7 @@ class VBGraphics(QAbstractGraphicsShapeItem):
 		brTRx = max(pathBoundingRect.topRight().x(), arrowHeadBoundingRect.topRight().x())
 		brHeight = brBLy - brTLy
 		brWidth = brTRx - brTLx
+
 		margin = 10
 		self._boundingRect = QRectF(brTLx - margin, brTLy - margin, brWidth + margin * 2, brHeight + margin * 2)
 		
