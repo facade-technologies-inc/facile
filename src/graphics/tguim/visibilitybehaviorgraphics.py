@@ -46,6 +46,7 @@ class VBGraphics(QGraphicsItem):
 		self._srcComponentCenterPoint = self._dataVB.getSrcComponent().getGraphicsItem().boundingRect().center()
 		self._destComponentCenterPoint = self._dataVB.getDestComponent().getGraphicsItem().boundingRect().center()
 		parent.addItem(self)
+		self._boundingRect = None
 	
 	def boundingRect(self):
 		"""
@@ -54,6 +55,8 @@ class VBGraphics(QGraphicsItem):
 		:return: create the bounding of the item
 		:rtype: QRectF
 		"""
+		if self._boundingRect:
+			return self._boundingRect
 		
 		leftCornerX = min(self._dataVB.getSrcComponent().getGraphicsItem().scenePos().x(),
 		                  self._dataVB.getDestComponent().getGraphicsItem().scenePos().x())
@@ -88,7 +91,7 @@ class VBGraphics(QGraphicsItem):
 			arrowColor = QColor(255, 200, 50)
 		pen.setWidth(10)
 		painter.setPen(pen)
-		
+
 		lengthSrcNodeSrcEdgeList = len(self._dataVB.getSrcComponent().getSrcVisibilityBehaviors())
 		lengthDesNodeDesEdgeList = len(self._dataVB.getDestComponent().getDestVisibilityBehaviors())
 		heightSrcNode = self._dataVB.getSrcComponent().getGraphicsItem().boundingRect(
@@ -112,10 +115,25 @@ class VBGraphics(QGraphicsItem):
 		y2 = self._dataVB.getDestComponent().getGraphicsItem().scenePos().y() + (
 			heightDesNode / (lengthDesNodeDesEdgeList + 1)) * desNodeIndex
 		
-		# draw the arrow
-		path, leftInTrue = self.buildPath(x1, x2, y1, y2)
-		painter.drawPath(path)
+		# build the path and arrowhead
+		path, leftInTrue, pathBoundingRect = self.buildPath(x1, x2, y1, y2)
+		arrowHead, arrowHeadBoundingRect = self.buildArrowHead(x1, x2, y1, y2, leftInTrue)
 		
+		brTLx = min(pathBoundingRect.topLeft().x(), arrowHeadBoundingRect.topLeft().x())
+		brTLy = min(pathBoundingRect.topLeft().y(), arrowHeadBoundingRect.topLeft().y())
+		brBLx = min(pathBoundingRect.bottomLeft().x(), arrowHeadBoundingRect.bottomLeft().x())
+		brBLy = max(pathBoundingRect.bottomLeft().y(), arrowHeadBoundingRect.bottomLeft().y())
+		brTRx = max(pathBoundingRect.topRight().x(), arrowHeadBoundingRect.topRight().x())
+		brHeight = brBLy - brTLy
+		brWidth = brTRx - brTLx
+		self._boundingRect = QRectF(brTLx, brTLy, brWidth, brHeight)
+		
+		#painter.drawRect(self.boundingRect())
+		painter.drawPath(path)
+		painter.drawPath(arrowHead)
+		painter.fillPath(arrowHead, QBrush(arrowColor))
+	
+	def buildArrowHead(self, x1, x2, y1, y2, leftInTrue):
 		# draw the arrow head
 		aSize = 20
 		if leftInTrue:
@@ -131,8 +149,9 @@ class VBGraphics(QGraphicsItem):
 			arrowHead.lineTo(x2 + aSize, y2 + aSize)
 			arrowHead.lineTo(x2 - aSize, y2)
 		
-		painter.drawPath(arrowHead)
-		painter.fillPath(arrowHead, QBrush(arrowColor))
+		boundingRect = arrowHead.boundingRect()
+		
+		return arrowHead, boundingRect
 	
 	def buildPath(self, x1, x2, y1, y2):
 		"""
@@ -211,7 +230,9 @@ class VBGraphics(QGraphicsItem):
 			path.lineTo(x2, y2)
 			leftInTrue = False
 		
-		return path, leftInTrue
+		boundingRect = path.boundingRect()
+		
+		return path, leftInTrue, boundingRect
 	
 	def getOneComponentDownRoot(self):
 		"""
@@ -227,7 +248,6 @@ class VBGraphics(QGraphicsItem):
 		
 		return possibleRoot
 	
-	"""
 	def shape(self):
 		lengthSrcNodeSrcEdgeList = len(self._dataVB.getSrcComponent().getSrcVisibilityBehaviors())
 		lengthDesNodeDesEdgeList = len(self._dataVB.getDestComponent().getDestVisibilityBehaviors())
@@ -255,5 +275,4 @@ class VBGraphics(QGraphicsItem):
 		path = self.buildPath(x1, x2, y1, y2)
 
 		return path
-	"""
 
