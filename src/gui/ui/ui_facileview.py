@@ -9,6 +9,7 @@
 # WARNING! All changes made in this file will be lost!
 
 from PySide2 import QtCore, QtWidgets
+from PySide2.QtGui import QIcon, QPixmap
 
 
 class Ui_MainWindow(object):
@@ -249,8 +250,10 @@ class Ui_MainWindow(object):
 		self.actionStart_App.setToolTip(QtWidgets.QApplication.translate("MainWindow",
 		                                                                 "Start running this project\'s target application",
 		                                                                 None, -1))
+		self.actionStart_App.setIcon(QIcon(QPixmap("Icons/icons8-start-64.png")))
 		self.actionStop_App.setText(
 			QtWidgets.QApplication.translate("MainWindow", "Stop App", None, -1))
 		self.actionStop_App.setToolTip(QtWidgets.QApplication.translate("MainWindow",
 		                                                                "Stop running this project\'s target application",
 		                                                                None, -1))
+		self.actionStop_App.setIcon(QIcon(QPixmap("Icons/icons8-stop-64.png")))
