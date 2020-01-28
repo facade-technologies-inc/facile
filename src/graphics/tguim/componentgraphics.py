@@ -456,9 +456,8 @@ class ComponentGraphics(QGraphicsItem):
 		if self._dataComponent.getParent() is None:
 			return ""
 		try:
-			return self._dataComponent.getSuperToken().getTokens()[0].controlIDs[-1]
-			# category, name = self._dataComponent.getProperties().getProperty("Name")
-			# return name.getValue()
+			category, name = self._dataComponent.getProperties().getProperty("Name")
+			return name.getValue()
 		except:
 			import traceback
 			traceback.print_exc()

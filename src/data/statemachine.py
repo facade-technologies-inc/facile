@@ -343,6 +343,20 @@ class StateMachine:
 		ui = self.view.ui
 		p = self.view._project
 		
+		
+		def onPropUpdate() -> None:
+			"""
+			This is a handler that refreshes both the project explorer and TGUIM when a property
+			is edited.
+			
+			:return: None
+			:rtype: NoneType
+			"""
+			index = ui.projectExplorerView.selectionModel().currentIndex()
+			ui.projectExplorerView.collapse(index)
+			ui.projectExplorerView.expand(index)
+			p.getTargetGUIModel().getScene().update()
+		
 		if event == StateMachine.Event.PROJECT_OPENED:
 			v.setWindowTitle("Facile - " + self._project.getMainProjectFile())
 			# p.save()
@@ -355,7 +369,9 @@ class StateMachine:
 			ui.projectExplorerView.selectionModel().selectionChanged.connect(v.onProjectExplorerIndexSelected)
 			ui.projectExplorerView.setContextMenuPolicy(Qt.CustomContextMenu)
 			ui.projectExplorerView.customContextMenuRequested.connect(projectExplorerModel.onContextMenuRequested)
-			ui.propertyEditorView.setItemDelegate(PropertyEditorDelegate())
+			propertyDelegate = PropertyEditorDelegate()
+			propertyDelegate.propertyUpdated.connect(onPropUpdate)
+			ui.propertyEditorView.setItemDelegate(propertyDelegate)
 			ui.targetGUIModelView.setScene(v._project.getTargetGUIModel().getScene())
 			ui.actionStop_App.setEnabled(False)
 			ui.actionStart_App.setEnabled(True)

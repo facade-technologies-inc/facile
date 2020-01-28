@@ -24,7 +24,7 @@ This module contains the PropertyEditorDelegate() Class.
 from enum import Enum
 
 from PySide2 import QtCore, QtWidgets
-from PySide2.QtCore import QModelIndex, QRect, QEvent
+from PySide2.QtCore import QModelIndex, QRect, QEvent, Signal
 from PySide2.QtWidgets import QStyleOptionViewItem, QStylePainter
 from PySide2.QtWidgets import QStyledItemDelegate, QLineEdit, QSpinBox, \
 	QCheckBox, QDoubleSpinBox, QWidget, QComboBox
@@ -37,6 +37,8 @@ class PropertyEditorDelegate(QStyledItemDelegate):
 	"""
 	A subclass that allows us to render our QTreeView and editing the Model
 	"""
+	
+	propertyUpdated = Signal()
 	
 	def getCheckBoxRect(self, option: QStyleOptionViewItem) -> QRect:
 		"""
@@ -235,6 +237,7 @@ class PropertyEditorDelegate(QStyledItemDelegate):
 				t = data.getType()
 				if t == str:
 					data.setValue(editor.text())
+					self.propertyUpdated.emit()
 				elif t == int:
 					data.setValue(editor.value())
 				elif t == bool:
