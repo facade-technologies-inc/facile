@@ -3,7 +3,7 @@
 # Form implementation generated from reading ui file '../src/gui/ui/copyprojectdialog.ui',
 # licensing of '../src/gui/ui/copyprojectdialog.ui' applies.
 #
-# Created: Wed Jan 29 21:42:57 2020
+# Created: Wed Jan 29 22:26:29 2020
 #      by: pyside2-uic  running on PySide2 5.13.0
 #
 # WARNING! All changes made in this file will be lost!

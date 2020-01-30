@@ -3,7 +3,7 @@
 # Form implementation generated from reading ui file '../src/gui/ui/facileview.ui',
 # licensing of '../src/gui/ui/facileview.ui' applies.
 #
-# Created: Wed Jan 29 21:42:56 2020
+# Created: Wed Jan 29 22:26:26 2020
 #      by: pyside2-uic  running on PySide2 5.13.0
 #
 # WARNING! All changes made in this file will be lost!
@@ -14,6 +14,9 @@ class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(872, 634)
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap(":/icon/resources/icons/facade_logo.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        MainWindow.setWindowIcon(icon)
         MainWindow.setUnifiedTitleAndToolBarOnMac(True)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
@@ -132,14 +135,14 @@ class Ui_MainWindow(object):
         self.actionAdd_Behavior = QtWidgets.QAction(MainWindow)
         self.actionAdd_Behavior.setObjectName("actionAdd_Behavior")
         self.actionStart_App = QtWidgets.QAction(MainWindow)
-        icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap(":/icon/resources/icons/start_app.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        self.actionStart_App.setIcon(icon)
+        icon1 = QtGui.QIcon()
+        icon1.addPixmap(QtGui.QPixmap(":/icon/resources/icons/start_app.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.actionStart_App.setIcon(icon1)
         self.actionStart_App.setObjectName("actionStart_App")
         self.actionStop_App = QtWidgets.QAction(MainWindow)
-        icon1 = QtGui.QIcon()
-        icon1.addPixmap(QtGui.QPixmap(":/icon/resources/icons/stop_app.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        self.actionStop_App.setIcon(icon1)
+        icon2 = QtGui.QIcon()
+        icon2.addPixmap(QtGui.QPixmap(":/icon/resources/icons/stop_app.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.actionStop_App.setIcon(icon2)
         self.actionStop_App.setObjectName("actionStop_App")
         self.menuNew_Project.addAction(self.actionFrom_Scratch)
         self.menuNew_Project.addAction(self.actionFrom_Existing_Project)

@@ -3,7 +3,7 @@
 # Form implementation generated from reading ui file '../src/gui/ui/newprojectdialog.ui',
 # licensing of '../src/gui/ui/newprojectdialog.ui' applies.
 #
-# Created: Wed Jan 29 21:42:59 2020
+# Created: Wed Jan 29 22:26:30 2020
 #      by: pyside2-uic  running on PySide2 5.13.0
 #
 # WARNING! All changes made in this file will be lost!

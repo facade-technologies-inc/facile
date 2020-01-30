@@ -13,6 +13,10 @@
   <property name="windowTitle">
    <string>Facile</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="../../../icons.qrc">
+    <normaloff>:/icon/resources/icons/facade_logo.png</normaloff>:/icon/resources/icons/facade_logo.png</iconset>
+  </property>
   <property name="unifiedTitleAndToolBarOnMac">
    <bool>true</bool>
   </property>
