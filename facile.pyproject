@@ -1,0 +1,3 @@
+{
+    "files": ["src/gui/ui/facileview.ui","src/gui/ui/manageprojectdialog.ui","icons.qrc","src/gui/ui/newprojectdialog.ui","src/facile.py","src/gui/ui/copyprojectdialog.ui"]
+}
