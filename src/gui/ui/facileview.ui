@@ -13,10 +13,6 @@
   <property name="windowTitle">
    <string>Facile</string>
   </property>
-  <property name="windowIcon">
-   <iconset resource="../../../icons.qrc">
-    <normaloff>:/icon/resources/icons/facade_logo.png</normaloff>:/icon/resources/icons/facade_logo.png</iconset>
-  </property>
   <property name="unifiedTitleAndToolBarOnMac">
    <bool>true</bool>
   </property>
@@ -38,7 +34,7 @@
      <x>0</x>
      <y>0</y>
      <width>872</width>
-     <height>26</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -86,6 +82,8 @@
     <property name="title">
      <string>View</string>
     </property>
+    <addaction name="actionShow_Behaviors"/>
+    <addaction name="actionShow_Token_Tags"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuView"/>
@@ -184,7 +182,6 @@
    <addaction name="actionManualExplore"/>
    <addaction name="separator"/>
    <addaction name="actionDetailed_View"/>
-   <addaction name="actionShow_Behaviors"/>
    <addaction name="actionAdd_Behavior"/>
    <addaction name="separator"/>
   </widget>
@@ -242,21 +239,22 @@
    <property name="checkable">
     <bool>true</bool>
    </property>
-   <property name="icon">
-    <iconset resource="../../../icons.qrc">
-     <normaloff>:/icon/resources/icons/icons8-show-property-64.png</normaloff>:/icon/resources/icons/icons8-show-property-64.png</iconset>
+   <property name="checked">
+    <bool>true</bool>
    </property>
    <property name="text">
     <string>Show Behaviors</string>
+   </property>
+   <property name="toolTip">
+    <string>Show Visibility Behaviors in the TGUIM View</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+B</string>
    </property>
   </action>
   <action name="actionDetailed_View">
    <property name="checkable">
     <bool>true</bool>
-   </property>
-   <property name="icon">
-    <iconset resource="../../../icons.qrc">
-     <normaloff>:/icon/resources/icons/icons8-database-view-64.png</normaloff>:/icon/resources/icons/icons8-database-view-64.png</iconset>
    </property>
    <property name="text">
     <string>Detailed View</string>
@@ -265,10 +263,6 @@
   <action name="actionAutoExplore">
    <property name="checkable">
     <bool>true</bool>
-   </property>
-   <property name="icon">
-    <iconset resource="../../../icons.qrc">
-     <normaloff>:/icon/resources/icons/icons8-ophthalmology-64.png</normaloff>:/icon/resources/icons/icons8-ophthalmology-64.png</iconset>
    </property>
    <property name="text">
     <string>Auto Explore</string>
@@ -283,10 +277,6 @@
   <action name="actionManualExplore">
    <property name="checkable">
     <bool>true</bool>
-   </property>
-   <property name="icon">
-    <iconset resource="../../../icons.qrc">
-     <normaloff>:/icon/resources/icons/icons8-search-property-64.png</normaloff>:/icon/resources/icons/icons8-search-property-64.png</iconset>
    </property>
    <property name="text">
     <string>Manual Explore</string>
@@ -309,10 +299,6 @@
    </property>
   </action>
   <action name="actionAdd_Behavior">
-   <property name="icon">
-    <iconset resource="../../../icons.qrc">
-     <normaloff>:/icon/resources/icons/icons8-add-property-64.png</normaloff>:/icon/resources/icons/icons8-add-property-64.png</iconset>
-   </property>
    <property name="text">
     <string>Add Behavior</string>
    </property>
@@ -321,10 +307,6 @@
    </property>
   </action>
   <action name="actionStart_App">
-   <property name="icon">
-    <iconset resource="../../../icons.qrc">
-     <normaloff>:/icon/resources/icons/start_app.png</normaloff>:/icon/resources/icons/start_app.png</iconset>
-   </property>
    <property name="text">
     <string>Start App</string>
    </property>
@@ -333,10 +315,6 @@
    </property>
   </action>
   <action name="actionStop_App">
-   <property name="icon">
-    <iconset resource="../../../icons.qrc">
-     <normaloff>:/icon/resources/icons/stop_app.png</normaloff>:/icon/resources/icons/stop_app.png</iconset>
-   </property>
    <property name="text">
     <string>Stop App</string>
    </property>
@@ -344,9 +322,21 @@
     <string>Stop running this project's target application</string>
    </property>
   </action>
+  <action name="actionShow_Token_Tags">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Show Token Tags</string>
+   </property>
+   <property name="toolTip">
+    <string>Show Token Tags in the TGUIM View</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+T</string>
+   </property>
+  </action>
  </widget>
- <resources>
-  <include location="../../../icons.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>
