@@ -38,7 +38,7 @@
      <x>0</x>
      <y>0</y>
      <width>872</width>
-     <height>25</height>
+     <height>26</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -242,6 +242,10 @@
    <property name="checkable">
     <bool>true</bool>
    </property>
+   <property name="icon">
+    <iconset resource="../../../icons.qrc">
+     <normaloff>:/icon/resources/icons/icons8-show-property-64.png</normaloff>:/icon/resources/icons/icons8-show-property-64.png</iconset>
+   </property>
    <property name="text">
     <string>Show Behaviors</string>
    </property>
@@ -250,6 +254,10 @@
    <property name="checkable">
     <bool>true</bool>
    </property>
+   <property name="icon">
+    <iconset resource="../../../icons.qrc">
+     <normaloff>:/icon/resources/icons/icons8-database-view-64.png</normaloff>:/icon/resources/icons/icons8-database-view-64.png</iconset>
+   </property>
    <property name="text">
     <string>Detailed View</string>
    </property>
@@ -257,6 +265,10 @@
   <action name="actionAutoExplore">
    <property name="checkable">
     <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../../../icons.qrc">
+     <normaloff>:/icon/resources/icons/icons8-ophthalmology-64.png</normaloff>:/icon/resources/icons/icons8-ophthalmology-64.png</iconset>
    </property>
    <property name="text">
     <string>Auto Explore</string>
@@ -271,6 +283,10 @@
   <action name="actionManualExplore">
    <property name="checkable">
     <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../../../icons.qrc">
+     <normaloff>:/icon/resources/icons/icons8-search-property-64.png</normaloff>:/icon/resources/icons/icons8-search-property-64.png</iconset>
    </property>
    <property name="text">
     <string>Manual Explore</string>
@@ -293,6 +309,10 @@
    </property>
   </action>
   <action name="actionAdd_Behavior">
+   <property name="icon">
+    <iconset resource="../../../icons.qrc">
+     <normaloff>:/icon/resources/icons/icons8-add-property-64.png</normaloff>:/icon/resources/icons/icons8-add-property-64.png</iconset>
+   </property>
    <property name="text">
     <string>Add Behavior</string>
    </property>

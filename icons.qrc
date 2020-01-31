@@ -3,5 +3,10 @@
         <file alias="../resources/icons/start_app.png">resources/icons/start_app.png</file>
         <file alias="../resources/icons/stop_app.png">resources/icons/stop_app.png</file>
         <file alias="../resources/icons/facade_logo.png">resources/icons/facade_logo.png</file>
+        <file alias="../resources/icons/icons8-add-property-64.png">resources/icons/icons8-add-property-64.png</file>
+        <file alias="../resources/icons/icons8-database-view-64.png">resources/icons/icons8-database-view-64.png</file>
+        <file alias="../resources/icons/icons8-ophthalmology-64.png">resources/icons/icons8-ophthalmology-64.png</file>
+        <file alias="../resources/icons/icons8-search-property-64.png">resources/icons/icons8-search-property-64.png</file>
+        <file alias="../resources/icons/icons8-show-property-64.png">resources/icons/icons8-show-property-64.png</file>
     </qresource>
 </RCC>
