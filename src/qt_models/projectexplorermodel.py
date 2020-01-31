@@ -607,6 +607,26 @@ class ProjectExplorerModel(QAbstractItemModel):
 		
 		return self.createIndex(row, col, data)
 	
+	def select(self, item):
+		"""
+		Selects a component, visibility behavior, or action pipeline. It will also refresh the
+		index so that the text updates.
+		
+		:param item: the component, visibility behavior, or action pipeline to select
+		:type ite: Component, VisibilityBehavior, or ActionPipeline
+		:return: None
+		:rtype: NoneType
+		"""
+		
+		if type(item) == Component:
+			self.selectComponent(item)
+		elif type(item) == VisibilityBehavior:
+			self.selectBehavior(item)
+		elif type(item) == ActionPipeline:
+			pass
+		else:
+			pass
+	
 	def selectComponent(self, component: 'Component') -> None:
 		"""
 		Selects a component in the project explorer by expanding all parents recursively.
