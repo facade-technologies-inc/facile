@@ -65,6 +65,7 @@ instance/
 
 # Sphinx documentation
 docs/_build/
+docs/logs/
 
 # PyBuilder
 target/
@@ -102,3 +103,26 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+
+# PyCharm
+.idea/
+
+#temp folder
+**/temp/
+
+###########################################
+# auto generated documentation files
+###########################################
+
+# compiled ATP contents
+documentation/ATP/source/contents.rst
+
+# compiled DataSheets contents
+documentation/DataSheets/source/contents.rst
+
+# all autoapi stuff except index.rst
+documentation/SDD/source/autoapi/
+!documentation/SDD/source/autoapi/index.rst
+
+# all files that start with "auto_generated_"
+**/auto_generated_*
