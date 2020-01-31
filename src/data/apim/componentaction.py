@@ -36,6 +36,7 @@ class ComponentAction(Action):
 		:param targetComponent:
 		:param codeSpec:
 		"""
+		
 		self.target = targetComponent
 		self.codeSpec = codeSpec
 	
