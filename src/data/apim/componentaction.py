@@ -25,10 +25,13 @@ component from the TGUIM.
 from typecheck import typecheck
 
 from data.apim.action import Action
+from data.tguim.component import Component
 
 class ComponentAction(Action):
 	
-	def __init__(self):
-		pass
+	@typecheck
+	def __init__(self, targetComponent: Component, codeSpec: str):
+		self.target = targetComponent
+		self.codeSpec = codeSpec
 	
-	
+	# TODO: Add more methods once we've clearly defined what we're doing with this class.
