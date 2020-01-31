@@ -126,3 +126,11 @@ documentation/SDD/source/autoapi/
 
 # all files that start with "auto_generated_"
 **/auto_generated_*
+
+
+###########################################
+# Qt Creator files
+###########################################
+
+# user file
+facile.pyproject.user
