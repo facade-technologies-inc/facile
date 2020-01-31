@@ -20,7 +20,7 @@
 
 This module contains the Port class.
 """
-import data.apim.action as actionModule
+from data.apim.wire import Wire #TODO: this will probably cause a circular import.
 
 
 class PortException(Exception):
@@ -45,21 +45,43 @@ class Port:
         :param isOptional: Boolean specifying if the Port must be connected for the Port's Action to remain valid.
         :type isOptional: bool
         """
-        #Check if the input parameter types are incorrect.
-        if type(action) != actionModule.Action or type(dataType) != type or type(isOptional) != bool:
-            raise TypeError("Incorrect parameter types. See doc string")
-
         self._input: 'Wire' = None
         self._outputs: list = None  # list of wires.
         self._dataType: type = dataType
         self._optional: bool = isOptional
         self._Action: 'Action' = action
 
-    def addOutputWire(self, newWire):
-        pass
+    def addOutputWire(self, newWire: 'Wire') -> None:
+        """
+        Connects a wire to the output of the port by adding it to the list of output wires. If a wire is passed in that
+        is redundant with one already in the list, it is ignored.
 
-    def addInputWire(self, newWire):
-        pass
+        :param newWire: A wire to be connected to the output of the port.
+        :type newWire: Wire
+        :return: None
+        :rtype: NoneType
+        """
+        # Check if the new wire is redundant (has the same ports) with a wire already in the list.
+        newWireAlreadyInList = False
+        for wire in self._outputs:
+            if newWire.asTuple() == wire.asTuple():
+                newWireAlreadyInList = True
+                break
+
+        # Add the new wire to the list of outputs if it's not redundant.
+        if not newWireAlreadyInList:
+            self._outputs.append(newWire)
+            newWire.setSourcePort(self)  # Connect the wire to the port from the wire's perspective.
+
+    def addInputWire(self, newWire: 'Wire') -> None:
+        """
+        Connects the given wire to the input of the port. (There can be only one input wire)
+
+        :param newWire: A wire which
+        :type newWire: Wire
+        :return: None
+        :rtype: NoneType
+        """
 
     def removeOutputWire(self, ):
         pass

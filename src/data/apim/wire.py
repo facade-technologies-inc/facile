@@ -64,9 +64,9 @@ class Wire:
         """
         return self._dest
 
-    def changeSourcePort(self, newSourcePort: 'Port'):
+    def setSourcePort(self, newSourcePort: 'Port'):
         """
-        Change the Port connected to the input of the wire.
+        Sets the Port connected to the input of the wire.
 
         :param newSourcePort: The desired output Port of the Action that is to be connected to the input of the wire.
         :type newSourcePort: Port
@@ -76,9 +76,9 @@ class Wire:
         self._src = newSourcePort
 
 
-    def changeDestPort(self, newDestPort: 'Port'):
+    def setDestPort(self, newDestPort: 'Port'):
         """
-        Change the Port connected to the output of the wire.
+        Sets the Port connected to the output of the wire.
 
         :param newDestPort: The desired input Port of the Action that is to be connected to the output of the wire.
         :type newDestPort: Port
@@ -86,3 +86,14 @@ class Wire:
         :rtype: NoneType
         """
         self._dest = newDestPort
+
+    def asTuple(self) -> tuple:
+        """
+        Returns the source port and destination port as a tuple. Useful for quickly comparing wires when checking
+        for duplicates.
+
+        :return: A tuple like: (source_port, destination_port)
+        :rtype: tuple
+        """
+
+        return (self._src, self._dest)
