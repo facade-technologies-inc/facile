@@ -21,7 +21,7 @@
 This module contains the TScene class.
 """
 
-from PySide2.QtCore import Signal
+from PySide2.QtCore import Signal, QTimer
 from PySide2.QtWidgets import QGraphicsScene
 
 
@@ -38,6 +38,13 @@ class TScene(QGraphicsScene):
 		"""
 		QGraphicsScene.__init__(self)
 		self._targetGuiModel = targetGUIModel
+		
+		def snap():
+			self.setSceneRect(self.itemsBoundingRect())
+			
+		snapTimer = QTimer(self)
+		snapTimer.timeout.connect(snap)
+		snapTimer.start(1000)
 	
 	def getTargetGUIModel(self) -> 'TargetGuiModel':
 		"""

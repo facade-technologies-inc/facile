@@ -100,6 +100,23 @@ class TargetGuiModel(QObject):
 		else:
 			return None
 	
+	def getEntity(self, iD: int) -> 'Component':
+		"""
+		Gets the entity with the specified id.
+
+		:param iD: The entity's unique identifier. See Entity class.
+		:type iD: int
+		:return: Entity with the given id
+		:rtype: Entity
+		"""
+		
+		if iD in self._components:
+			return self._components[iD]
+		elif iD in self._visibilityBehaviors:
+			return self._visibilityBehaviors[iD]
+		else:
+			return None
+	
 	@Slot()
 	def createComponent(self, newSuperToken: 'SuperToken',
 	                    parentToken: 'SuperToken') -> 'Component':

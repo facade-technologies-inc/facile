@@ -48,12 +48,19 @@ class FacileGraphicsView(QGraphicsView):
 		:rtype: NoneType
 		"""
 		super(FacileGraphicsView, self).__init__(parent)
+		
+		# set flags
+		self.setDragMode(QGraphicsView.ScrollHandDrag)
+		self.setViewportUpdateMode(QGraphicsView.FullViewportUpdate)
+		
+		# show initial message
 		scene = QGraphicsScene()
 		box = QGraphicsRectItem(0, 0, 100, 100)
 		box.setPen(QColor(Qt.transparent))
 		box.setBrush(QColor(Qt.transparent))
 		QGraphicsTextItem("Nothing to show here yet!", box)
 		scene.addItem(box)
+		
 		self.setScene(scene)
 	
 	def wheelEvent(self, event: QWheelEvent) -> None:
@@ -86,8 +93,8 @@ class FacileGraphicsView(QGraphicsView):
 		newPos = self.mapToScene(pos)
 		
 		# Set Anchors
-		self.setTransformationAnchor(QGraphicsView.NoAnchor)
-		self.setResizeAnchor(QGraphicsView.NoAnchor)
+		self.setTransformationAnchor(QGraphicsView.AnchorUnderMouse)
+		self.setResizeAnchor(QGraphicsView.AnchorUnderMouse)
 		
 		# Move scene to old position
 		delta = newPos - oldPos
@@ -108,8 +115,8 @@ class FacileGraphicsView(QGraphicsView):
 		newPos = self.mapToScene(pos)
 		
 		# Set Anchors
-		self.setTransformationAnchor(QGraphicsView.NoAnchor)
-		self.setResizeAnchor(QGraphicsView.NoAnchor)
+		self.setTransformationAnchor(QGraphicsView.AnchorUnderMouse)
+		self.setResizeAnchor(QGraphicsView.AnchorUnderMouse)
 		
 		# Move scene to old position
 		delta = newPos - oldPos
