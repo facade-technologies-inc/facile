@@ -460,8 +460,6 @@ class ComponentGraphics(QGraphicsItem):
 			category, name = self._dataComponent.getProperties().getProperty("Name")
 			return name.getValue()
 		except:
-			import traceback
-			traceback.print_exc()
 			return "No Label"
 
 	def overlapsWith(self, sibling: 'ComponentGraphics') -> bool:

@@ -25,7 +25,10 @@ component is right-clicked.
 
 
 from PySide2.QtWidgets import QMenu
+from PySide2.QtGui import QIcon, QPixmap
+import icons_rc
 import data.statemachine as sm
+
 
 class ComponentMenu(QMenu):
 	
@@ -42,6 +45,9 @@ class ComponentMenu(QMenu):
 		QMenu.__init__(self)
 		
 		self.blinkAction = self.addAction("Show in target GUI")
+		blinkIcon = QIcon()
+		blinkIcon.addPixmap(QPixmap(":/icon/resources/icons/pastel/flash_light.png"), QIcon.Normal, QIcon.Off)
+		self.blinkAction.setIcon(blinkIcon)
 		
 	def onBlink(self, func) -> None:
 		"""
