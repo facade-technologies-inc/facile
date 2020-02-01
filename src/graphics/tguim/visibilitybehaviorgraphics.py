@@ -50,6 +50,7 @@ class VBGraphics(QAbstractGraphicsShapeItem):
 		parent.addItem(self)
 		self._boundingRect = None
 		self._x1, self._x2, self._y1, self._y2 = 0, 0, 0, 0
+		
 	
 	def boundingRect(self):
 		"""
@@ -134,13 +135,25 @@ class VBGraphics(QAbstractGraphicsShapeItem):
 			brHeight = brBLy - brTLy
 			brWidth = brTRx - brTLx
 			
-			margin = 10
+			margin = 100
+			
+			
 			self._boundingRect = QRectF(brTLx - margin, brTLy - margin, brWidth + margin * 2, brHeight + margin * 2)
 			
-			#painter.drawRect(self.boundingRect())
+			# Either of these lines will fix the drawing issue
+			#self.prepareGeometryChange()
+			self.scene().setSceneRect(self.scene().itemsBoundingRect())
+			
 			painter.drawPath(path)
 			painter.drawPath(arrowHead)
 			painter.fillPath(arrowHead, QBrush(arrowColor))
+			
+			# pen.setStyle(Qt.SolidLine)
+			# pen.setColor(QColor(50, 255, 50))
+			# painter.setPen(pen)
+			# # painter.drawRect(self.boundingRect())
+			# painter.drawPath(self.shape())
+			# painter.drawRect(self.scene().sceneRect())
 
 	def buildArrowHead(self, x1, x2, y1, y2, leftInTrue):
 		# draw the arrow head
@@ -271,4 +284,15 @@ class VBGraphics(QAbstractGraphicsShapeItem):
 		stroker.setWidth(50)
 
 		return stroker.createStroke(path).simplified()
+	
+	def mousePressEvent(self, event):
+		"""
+		This event handler is implemented to receive mouse press events for this item.
 
+		:param event: a mouse press event
+		:type event: QGraphicsSceneMouseEvent
+		:return: None
+		:rtype: NoneType
+		"""
+		self.setSelected(True)
+		self.scene().emitItemSelected(self._dataVB.getId())
