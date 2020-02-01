@@ -126,3 +126,17 @@ documentation/SDD/source/autoapi/
 
 # all files that start with "auto_generated_"
 **/auto_generated_*
+
+
+###########################################
+# Qt Creator files
+###########################################
+
+# user file
+facile.pyproject.user
+
+# all auto-generated python files from pyside2-uic
+src/gui/ui/ui_*.py
+
+# all auto-generated python files from pyside2-rcc
+src/gui/rc/*_rc.py
