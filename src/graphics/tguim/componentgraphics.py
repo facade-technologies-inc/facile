@@ -26,6 +26,7 @@ import numpy as np
 from PySide2.QtCore import QRectF
 from PySide2.QtGui import QPainterPath, QColor, QPen, Qt, QFont, QFontMetricsF
 from PySide2.QtWidgets import QGraphicsScene, QGraphicsItem, QGraphicsSceneContextMenuEvent, QMenu
+import data.statemachine as sm
 
 from data.statemachine import StateMachine
 from qt_models.componentmenu import ComponentMenu
@@ -456,9 +457,8 @@ class ComponentGraphics(QGraphicsItem):
 		if self._dataComponent.getParent() is None:
 			return ""
 		try:
-			return self._dataComponent.getSuperToken().getTokens()[0].controlIDs[-1]
-			# category, name = self._dataComponent.getProperties().getProperty("Name")
-			# return name.getValue()
+			category, name = self._dataComponent.getProperties().getProperty("Name")
+			return name.getValue()
 		except:
 			import traceback
 			traceback.print_exc()
@@ -608,15 +608,30 @@ class ComponentGraphics(QGraphicsItem):
 		painter.setBrush(QColor(100, 200, 255))
 		painter.drawText(self.boundingRect(withMargins=False).x() + 5, self._margin + 13, name)
 
-		# draw token tag
+		if sm.StateMachine.instance.configVars.showTokenTags:
+			self.drawTokenTag(br, painter)
+
+	def drawTokenTag(self, br: QRectF, painter: 'QPainter'):
+		"""
+		This is a helper function for the paint function.
+		It renders "Token Tags" in the corners of the GUI Components displayed in the TGUIM View.
+		Token Tags show how many Tokens are associated with the associated component.
+
+		:param br: The bounding rectangle of the component.
+		:type br: QRectF
+		:param painter: A QPainter object.
+		:type painter: QPainter
+		:return: None
+		:rtype: NoneType
+		"""
 		if br.width() >= ComponentGraphics.TITLEBAR_H:
 			token_count = str(self.getNumberOfTokens())
-			
+
 			ttX = br.x() + br.width() - ComponentGraphics.TITLEBAR_H
 			ttY = br.y()
 			ttWidth = ComponentGraphics.TITLEBAR_H
 			ttHeight = ComponentGraphics.TITLEBAR_H
-			
+
 			rectBox = QRectF(ttX, ttY, ttWidth, ttHeight)
 			tokenTagFont = QFont("Times", 10)
 			painter.setFont(tokenTagFont)

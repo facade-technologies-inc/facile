@@ -25,6 +25,8 @@ from PySide2.QtCore import QRectF
 from PySide2.QtGui import QPainterPath, QPainter, QPen, Qt, QColor, QBrush, QPainterPathStroker
 from PySide2.QtWidgets import QGraphicsItem, QAbstractGraphicsShapeItem
 
+import data.statemachine as sm
+
 
 class VBGraphics(QAbstractGraphicsShapeItem):
 	def __init__(self, dataVisibilityBehavior: 'VisibilityBehavior', parent: 'TScene'):
@@ -71,7 +73,8 @@ class VBGraphics(QAbstractGraphicsShapeItem):
 	
 	def paint(self, painter: QPainter, option, widget):
 		"""
-		Paints the contents of the visibilitybehavior. Override the parent paint function
+		Paints the contents of the visibilitybehavior. Override the parent paint function.
+		Only renders the visibility behavior if the configuration variable, showBehaviors, is true.
 		
 		:param painter: Use a Qpainter object.
 		:type painter: QPainter
@@ -82,64 +85,63 @@ class VBGraphics(QAbstractGraphicsShapeItem):
 		:return: None
 		:rtype: NoneType
 		"""
-		arrowColor = QColor(255, 200, 50)
-		pen = QPen(arrowColor)
-		if self.isSelected():
-			pen.setStyle(Qt.DashDotLine)
-			arrowColor = QColor(255, 0, 0)
-		else:
-			pen.setStyle(Qt.SolidLine)
+		# Only draw visibility behaviors if "Show Visibility Behaviors" action is checked in the View drop down.
+		if sm.StateMachine.instance.configVars.showBehaviors:
 			arrowColor = QColor(255, 200, 50)
-		pen.setWidth(10)
-		painter.setPen(pen)
 
-		lengthSrcNodeSrcEdgeList = len(self._dataVB.getSrcComponent().getSrcVisibilityBehaviors())
-		lengthDesNodeDesEdgeList = len(self._dataVB.getDestComponent().getDestVisibilityBehaviors())
-		heightSrcNode = self._dataVB.getSrcComponent().getGraphicsItem().boundingRect(
-			withMargins=False).height()
-		heightDesNode = self._dataVB.getDestComponent().getGraphicsItem().boundingRect(
-			withMargins=False).height()
-		widthDesNode = self._dataVB.getDestComponent().getGraphicsItem().boundingRect(
-			withMargins=False).width()
-		# This is the index(+1 avoid 0 in calculation) of the edge at the SourceNode's edgeSrcList
-		srcNodeIndex = self._dataVB.getSrcComponent().getSrcVisibilityBehaviors().index(
-			self._dataVB) + 1
-		# This is the index of the edge at the DesNode's _edgeDesList
-		desNodeIndex = self._dataVB.getDestComponent().getDestVisibilityBehaviors().index(
-			self._dataVB) + 1
-		
-		# ComponentGraphics.MARGIN = 20
-		x1 = self._dataVB.getSrcComponent().getGraphicsItem().scenePos().x() + 20  # x does not change, stay at the left most of the node
-		y1 = self._dataVB.getSrcComponent().getGraphicsItem().scenePos().y() + (
-			heightSrcNode / (lengthSrcNodeSrcEdgeList + 1)) * srcNodeIndex
-		x2 = self._dataVB.getDestComponent().getGraphicsItem().scenePos().x() + widthDesNode + 20
-		y2 = self._dataVB.getDestComponent().getGraphicsItem().scenePos().y() + (
-			heightDesNode / (lengthDesNodeDesEdgeList + 1)) * desNodeIndex
-		self._x1 = x1
-		self._x2 = x2
-		self._y1 = y1
-		self._y2 = y2
-		
-		# build the path and arrowhead
-		path, leftInTrue, pathBoundingRect = self.buildPath(x1, x2, y1, y2)
-		arrowHead, arrowHeadBoundingRect = self.buildArrowHead(x1, x2, y1, y2, leftInTrue)
-		
-		brTLx = min(pathBoundingRect.topLeft().x(), arrowHeadBoundingRect.topLeft().x())
-		brTLy = min(pathBoundingRect.topLeft().y(), arrowHeadBoundingRect.topLeft().y())
-		brBLx = min(pathBoundingRect.bottomLeft().x(), arrowHeadBoundingRect.bottomLeft().x())
-		brBLy = max(pathBoundingRect.bottomLeft().y(), arrowHeadBoundingRect.bottomLeft().y())
-		brTRx = max(pathBoundingRect.topRight().x(), arrowHeadBoundingRect.topRight().x())
-		brHeight = brBLy - brTLy
-		brWidth = brTRx - brTLx
+			pen = QPen(arrowColor)
+			if self.isSelected():
+				pen.setStyle(Qt.DashDotLine)
+				arrowColor = QColor(255, 0, 0)
+			else:
+				pen.setStyle(Qt.SolidLine)
+				arrowColor = QColor(255, 200, 50)
 
-		margin = 10
-		self._boundingRect = QRectF(brTLx - margin, brTLy - margin, brWidth + margin * 2, brHeight + margin * 2)
+			pen.setWidth(10)
+			painter.setPen(pen)
+
+			lengthSrcNodeSrcEdgeList = len(self._dataVB.getSrcComponent().getSrcVisibilityBehaviors())
+			lengthDesNodeDesEdgeList = len(self._dataVB.getDestComponent().getDestVisibilityBehaviors())
+			heightSrcNode = self._dataVB.getSrcComponent().getGraphicsItem().boundingRect(withMargins=False).height()
+			heightDesNode = self._dataVB.getDestComponent().getGraphicsItem().boundingRect(withMargins=False).height()
+			widthDesNode = self._dataVB.getDestComponent().getGraphicsItem().boundingRect(withMargins=False).width()
+			# This is the index(+1 avoid 0 in calculation) of the edge at the SourceNode's edgeSrcList
+			srcNodeIndex = self._dataVB.getSrcComponent().getSrcVisibilityBehaviors().index(
+			self._dataVB) + 1
+			# This is the index of the edge at the DesNode's _edgeDesList
+			desNodeIndex = self._dataVB.getDestComponent().getDestVisibilityBehaviors().index(
+			self._dataVB) + 1
+
+			# ComponentGraphics.MARGIN = 20
+			x1 = self._dataVB.getSrcComponent().getGraphicsItem().scenePos().x() + 20  # x does not change, stay at the left most of the node
+			y1 = self._dataVB.getSrcComponent().getGraphicsItem().scenePos().y() + (heightSrcNode / (lengthSrcNodeSrcEdgeList + 1)) * srcNodeIndex
+			x2 = self._dataVB.getDestComponent().getGraphicsItem().scenePos().x() + widthDesNode + 20
+			y2 = self._dataVB.getDestComponent().getGraphicsItem().scenePos().y() + (heightDesNode / (lengthDesNodeDesEdgeList + 1)) * desNodeIndex
+			self._x1 = x1
+			self._x2 = x2
+			self._y1 = y1
+			self._y2 = y2
 		
-		#painter.drawRect(self.boundingRect())
-		painter.drawPath(path)
-		painter.drawPath(arrowHead)
-		painter.fillPath(arrowHead, QBrush(arrowColor))
-	
+			# build the path and arrowhead
+			path, leftInTrue, pathBoundingRect = self.buildPath(x1, x2, y1, y2)
+			arrowHead, arrowHeadBoundingRect = self.buildArrowHead(x1, x2, y1, y2, leftInTrue)
+			
+			brTLx = min(pathBoundingRect.topLeft().x(), arrowHeadBoundingRect.topLeft().x())
+			brTLy = min(pathBoundingRect.topLeft().y(), arrowHeadBoundingRect.topLeft().y())
+			brBLx = min(pathBoundingRect.bottomLeft().x(), arrowHeadBoundingRect.bottomLeft().x())
+			brBLy = max(pathBoundingRect.bottomLeft().y(), arrowHeadBoundingRect.bottomLeft().y())
+			brTRx = max(pathBoundingRect.topRight().x(), arrowHeadBoundingRect.topRight().x())
+			brHeight = brBLy - brTLy
+			brWidth = brTRx - brTLx
+			
+			margin = 10
+			self._boundingRect = QRectF(brTLx - margin, brTLy - margin, brWidth + margin * 2, brHeight + margin * 2)
+			
+			#painter.drawRect(self.boundingRect())
+			painter.drawPath(path)
+			painter.drawPath(arrowHead)
+			painter.fillPath(arrowHead, QBrush(arrowColor))
+
 	def buildArrowHead(self, x1, x2, y1, y2, leftInTrue):
 		# draw the arrow head
 		aSize = 20
@@ -159,6 +161,7 @@ class VBGraphics(QAbstractGraphicsShapeItem):
 		boundingRect = arrowHead.boundingRect()
 		
 		return arrowHead, boundingRect
+
 	
 	def buildPath(self, x1, x2, y1, y2):
 		"""
