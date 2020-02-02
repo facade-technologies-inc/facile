@@ -70,5 +70,7 @@ class WireSet:
         # Search for wire in set with the given ports.
         for wire in self._wires:
             if wire.asTuple() == (sourcePort, destPort):
+                pass
                 # Delete the wire: Remove the wire reference from both ports and from the wire set.
-                wire.getSourcePort().
+                # TODO: Complete this
+                #wire.getSourcePort().

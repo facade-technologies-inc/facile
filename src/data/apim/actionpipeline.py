@@ -22,7 +22,6 @@ This module contains the **ActionPipeline** class which describes a custom funct
 that will be created in the generated API.
 """
 
-from typecheck import typecheck
 from typing import List
 
 from data.apim.action import Action, ActionException
@@ -38,10 +37,10 @@ class ActionPipeline(Action):
 		ActionPipeline can be connected with wires that carry data. The internal actions are
 		executed in the sequence in with they are stored.
 		"""
+		Action.__init__(self)
 		self.actions = []
 		self.wireSet = WireSet()
 	
-	@typecheck
 	def addAction(self, action: Action) -> None:
 		"""
 		Adds an *Action* (Either ActionPipeline or ComponentAction) as an internal component of
@@ -62,8 +61,7 @@ class ActionPipeline(Action):
 			raise ActionException("The action can only be added once.")
 		
 		self.actions.append(action)
-		
-	@typecheck
+	
 	def removeAction(self, action: Action) -> bool:
 		"""
 		Removes an action from the action pipeline. All connected wires will be deleted.
@@ -82,8 +80,7 @@ class ActionPipeline(Action):
 		else:
 			self.actions.remove(action)
 			return True
-		
-	@typecheck
+	
 	def connect(self, portA: Port, portB: Port) -> None:
 		"""
 		Insert a wire to carry data from port A to port B.
@@ -114,8 +111,7 @@ class ActionPipeline(Action):
 		
 		# now we can add a wire.
 		self.wireSet.addWire(portA, portB)
-		
-	@typecheck
+	
 	def disconnect(self, portA: Port, portB: Port) -> None:
 		"""
 		Remove the wire spanning from portA to portB.
@@ -146,8 +142,7 @@ class ActionPipeline(Action):
 		
 		# now we can delete the wire
 		self.wireSet.removeWire(portA, portB)
-		
-	@typecheck
+	
 	def changeSequence(self, actionSequence: List[Action]) -> None:
 		"""
 		Change the sequence of action execution.

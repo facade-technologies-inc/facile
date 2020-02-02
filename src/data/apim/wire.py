@@ -20,8 +20,6 @@
 
 This module contains the Wire class.
 """
-from data.apim.port import Port
-
 
 class WireException(Exception):
     def __init__(self, msg):

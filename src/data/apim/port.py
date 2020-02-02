@@ -20,7 +20,7 @@
 
 This module contains the Port class.
 """
-from data.apim.wire import Wire #TODO: this will probably cause a circular import.
+import data.apim.wire as wr
 
 
 class PortException(Exception):

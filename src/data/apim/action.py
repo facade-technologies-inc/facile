@@ -24,8 +24,6 @@ and *ActionPipeline* classes.
 
 from abc import ABC as AbstractBaseClass
 
-from typecheck import typecheck
-
 from data.apim.port import Port, PortException
 
 
@@ -53,7 +51,6 @@ class Action(AbstractBaseClass):
 		self.inputs = []
 		self.outputs = []
 		
-	@typecheck
 	def addInputPort(self, port: Port) -> None:
 		"""
 		Adds a port to the list of inputs for this action.
@@ -73,7 +70,6 @@ class Action(AbstractBaseClass):
 		
 		self.inputs.append(port)
 	
-	@typecheck
 	def addOutputPort(self, port: Port) -> None:
 		"""
 		Adds a port to the list of outputs for this action.
@@ -93,7 +89,6 @@ class Action(AbstractBaseClass):
 		
 		self.outputs.append(port)
 	
-	@typecheck
 	def removePort(self, port) -> bool:
 		"""
 		Removes a port from this action - no need to specify input or output.

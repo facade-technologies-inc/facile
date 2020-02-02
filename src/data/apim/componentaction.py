@@ -22,21 +22,18 @@ This module contains the **ComponentAction** class which is used to tie a user a
 component from the TGUIM.
 """
 
-from typecheck import typecheck
-
 from data.apim.action import Action
 from data.tguim.component import Component
 
 class ComponentAction(Action):
 	
-	@typecheck
 	def __init__(self, targetComponent: Component, codeSpec: str):
 		"""
 		The ComponentAction class is used to describe a
 		:param targetComponent:
 		:param codeSpec:
 		"""
-		
+		Action.__init__(self)
 		self.target = targetComponent
 		self.codeSpec = codeSpec
 	
