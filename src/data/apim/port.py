@@ -34,7 +34,8 @@ class Port:
     duplicated across all of its outputs. Ports specify the data type that may be passed across it.
     (Ports between different Actions are connected with Wires).
     """
-    def __init__(self, action: 'Action', dataType: type = None, isOptional: bool = False):
+    #TODO: action param must be set.
+    def __init__(self, action: 'Action'=None, dataType: type = None, isOptional: bool = False):
         """
         Constructs a Port Object.
 
@@ -46,7 +47,7 @@ class Port:
         :type isOptional: bool
         """
         self._input: 'Wire' = None
-        self._outputs: list = None  # list of wires.
+        self._outputs: list = []  # list of wires.
         self._dataType: type = dataType
         self._optional: bool = isOptional
         self._Action: 'Action' = action
@@ -55,6 +56,8 @@ class Port:
         """
         Connects a wire to the output of the port by adding it to the list of output wires. If a wire is passed in that
         is redundant with one already in the list, it is ignored.
+
+        This function assumes that this Port is set as the Wire's source port outside of this function.
 
         :param newWire: A wire to be connected to the output of the port.
         :type newWire: Wire
@@ -71,21 +74,87 @@ class Port:
         # Add the new wire to the list of outputs if it's not redundant.
         if not newWireAlreadyInList:
             self._outputs.append(newWire)
-            newWire.setSourcePort(self)  # Connect the wire to the port from the wire's perspective.
 
-    def addInputWire(self, newWire: 'Wire') -> None:
+    def setInputWire(self, newWire: 'Wire') -> None:
         """
-        Connects the given wire to the input of the port. (There can be only one input wire)
+        Connects the given wire to the input of the port. (There can be only one input wire).
 
-        :param newWire: A wire which
+        This function assumes that this Port is set as the Wire's destination port outside of this function.
+
+        :param newWire: A wire which is to be connected to the input of the port.
         :type newWire: Wire
         :return: None
         :rtype: NoneType
         """
+        self._input = newWire
 
-    def removeOutputWire(self, ):
-        pass
+    def removeOutputWire(self, wireToRemove: 'Wire') -> None:
+        """
+        Removes the given wire from the Port's list of output wires.
 
-    def removeInputWire(self):
-        pass
+        This function assumes that the given Wire's Port references are updated outside of this function.
 
+        :param wireToRemove: The wire to be removed from the Port's list of output wires.
+        :type wireToRemove: Wire
+        :return: None
+        :rtype: NoneType
+        """
+        # Check to see if the given wire is really one of the port's output wires.
+        if wireToRemove in self._outputs:
+            self._outputs.remove(wireToRemove)
+
+    def removeInputWire(self) -> None:
+        """
+        Removes the Port's input Wire.
+
+        This function assumes that the input Wire's Port references are updated outside of this function.
+
+        :return: None
+        :rtype: NoneType
+        """
+        if self._input != None:
+            self._input.setDestPort(None)
+
+
+    def getOutputWires(self) -> list:
+        """
+        Gets a list of the Port's output Wire's.
+
+        :return: A list of the Port's output Wire's.
+        :rtype: list of Wires
+        """
+        return self._outputs
+
+    def getInputWire(self) -> 'Wire':
+        """
+         Gets the Port's input Wire.
+
+        :return: The Port's input Wire.
+        :rtype: Wire
+        """
+        return self._input
+
+    def setDataType(self, newType: type) -> None:
+        """
+        Sets the data type of the port. (A Python type [e.g. int, str, bool, etc.])
+
+        :param newType: A Python type [e.g. int, str, bool, etc.].
+        :type newType: type
+        :return: None
+        :rtype: NoneType
+        TODO: add exception doc string info.
+        """
+        if type(newType) == type:
+            self._dataType
+        else:
+            raise TypeError("setDataType()'s input parameter must specify a Python type [e.g. int, str, bool].")
+
+    def setOptional(self, isOptional: bool) -> None:
+        """
+        Sets whether the Port must be connected or not.
+
+        :param isOptional: True if the Port is optionally connected. False if it MUST be connected.
+        :type isOptional: bool
+        :return: None
+        :rtype: NoneType
+        """

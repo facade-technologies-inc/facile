@@ -20,7 +20,7 @@
 
 This module contains the Wire class.
 """
-from data.apim.port import Port
+#from data.apim.port import Port
 
 
 class WireException(Exception):
@@ -46,7 +46,7 @@ class Wire:
         self._src: 'Port' = sourcePort;
         self._dest: 'Port' = destinationPort;
 
-    def getSourcePort(self):
+    def getSourcePort(self) -> 'Port':
         """
         Returns the output Port of the source Action (the Action outputting data) connected to the wire.
 
@@ -55,7 +55,7 @@ class Wire:
         """
         return self._src
 
-    def getDestPort(self):
+    def getDestPort(self) -> 'Port':
         """
         Returns the input Port of the destination Action (the Action receiving data) connected to the wire.
 
@@ -64,7 +64,10 @@ class Wire:
         """
         return self._dest
 
-    def setSourcePort(self, newSourcePort: 'Port'):
+    ''' These Two functions probably aren't necessary, and might cause issues if someone were to change the 
+        wire's ports without changing the port's wire references. For now, the syncing of references is handled
+        by the WireSet class.
+    def setSourcePort(self, newSourcePort: 'Port') -> None:
         """
         Sets the Port connected to the input of the wire.
 
@@ -76,7 +79,7 @@ class Wire:
         self._src = newSourcePort
 
 
-    def setDestPort(self, newDestPort: 'Port'):
+    def setDestPort(self, newDestPort: 'Port') -> None:
         """
         Sets the Port connected to the output of the wire.
 
@@ -86,13 +89,14 @@ class Wire:
         :rtype: NoneType
         """
         self._dest = newDestPort
+    '''
 
     def asTuple(self) -> tuple:
         """
         Returns the source port and destination port as a tuple. Useful for quickly comparing wires when checking
         for duplicates.
 
-        :return: A tuple like: (source_port, destination_port)
+        :return: A tuple with the format: (source_port, destination_port)
         :rtype: tuple
         """
 
