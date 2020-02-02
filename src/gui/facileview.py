@@ -32,6 +32,7 @@ from PySide2.QtWidgets import QMainWindow, QFileDialog, QMessageBox, QLabel, \
 from data.project import Project
 from data.statemachine import StateMachine
 from data.tguim.component import Component
+from data.tguim.visibilitybehavior import VisibilityBehavior
 from gui.copyprojectdialog import CopyProjectDialog
 from gui.manageprojectdialog import ManageProjectDialog
 from gui.newprojectdialog import NewProjectDialog
@@ -274,14 +275,16 @@ class FacileView(QMainWindow):
 		:return: None
 		:rtype: NoneType
 		"""
-		# TODO: Change to get any entity instead of just component
-		entity = self._project.getTargetGUIModel().getComponent(id)
+		entity = self._project.getTargetGUIModel().getEntity(id)
 		properties = entity.getProperties()
 		self.ui.propertyEditorView.setModel(properties.getModel())
 		
 		if type(entity) == Component:
 			self.ui.projectExplorerView.model().selectComponent(entity)
 			self._stateMachine.componentClicked(entity)
+			
+		elif type(entity) == VisibilityBehavior:
+			self.ui.projectExplorerView.model().selectBehavior(entity)
 	
 	@Slot(int)
 	def onItemBlink(self, id: int) -> None:

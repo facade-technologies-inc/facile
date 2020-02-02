@@ -26,7 +26,7 @@ import json
 from enum import Enum, auto
 
 from PySide2.QtCore import Slot, QTimer
-from PySide2.QtGui import QStandardItem, QStandardItemModel, Qt
+from PySide2.QtGui import QStandardItem, QStandardItemModel, Qt, QIcon, QPixmap
 from PySide2.QtWidgets import QGraphicsScene
 
 import data.tguim.visibilitybehavior as vb
@@ -299,8 +299,11 @@ class StateMachine:
 				ui.menuRecent_Projects.addAction("No recent projects.")
 			else:
 				for proj in recentProjects[:10]:
-					action = ui.menuRecent_Projects.addAction(proj)
+					action = ui.menuRecent_Projects_2.addAction(proj)
 					action.triggered.connect(v.onOpenRecentProject)
+					icon = QIcon()
+					icon.addPixmap(QPixmap(":/icon/resources/icons/pastel/open_box.png"),QIcon.Normal, QIcon.Off)
+					action.setIcon(icon)
 
 		# Connecting the configVars' change signal to logic that will update the TGUIM View
 		self.configVars.updateTGUIMView.connect(lambda: v.ui.targetGUIModelView.scene().invalidate(
