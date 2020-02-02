@@ -132,7 +132,7 @@ class WireSet:
 # Basic Testing/Debugging Script...
 if __name__ == "__main__":
     myWireSet = WireSet()
-    portA = Port()
+    portA = Port(dataType=int)
     portB = Port()
     portC = Port()
 
@@ -143,21 +143,36 @@ if __name__ == "__main__":
     print()
 
     #check the ports' references.
-    print("portA ", portA, " Input: ", portA._input)
-    print("portA outputs: ", portA._outputs)
-    print("portB ", portB, " input: ", portB._input)
-    print("portB outputs: ", portB._outputs)
-    print("portC ", portC, " input: ", portC._input)
-    print("portC outputs: ", portC._outputs)
+    print("portA :", portA)
+    print("\tportA Input: ", portA.getInputWire())
+    print("\tportA outputs: ", portA.getOutputWires())
+    print("portB ", portB)
+    print("\tportB input: ", portB.getInputWire())
+    print("\tportB outputs: ", portB._outputs)
+    print("portC ", portC)
+    print("\tportC input: ", portC._input)
+    print("\tportC outputs: ", portC._outputs)
     print()
 
     #check the wire's references.
-    for wire in myWireSet._wires:
+    for wire in myWireSet.getWires():
         print("Wire: ", wire)
         print("\tInput Port: ", wire._src)
         print("\tOuptut Port: ", wire._dest)
         print()
 
+    print("Port A Optional? ", portA.isOptional())
+    portA.setOptional(True)
+    print("Port A Optional? ", portA.isOptional())
+    portA.setOptional(False)
+    print("Port A Optional? ", portA.isOptional())
+    print()
+
+    print("PortA data type: ", portA.getDataType())
+    portA.setDataType(bool)
+    print("PortA data type: ", portA.getDataType())
+    portA.setDataType(str)
+    print("PortA data type: ", portA.getDataType())
 
 
 

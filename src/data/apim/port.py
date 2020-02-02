@@ -20,7 +20,7 @@
 
 This module contains the Port class.
 """
-from data.apim.wire import Wire #TODO: this will probably cause a circular import.
+from data.apim.wire import Wire
 
 
 class PortException(Exception):
@@ -34,8 +34,8 @@ class Port:
     duplicated across all of its outputs. Ports specify the data type that may be passed across it.
     (Ports between different Actions are connected with Wires).
     """
-    #TODO: action param must be set.
-    def __init__(self, action: 'Action'=None, dataType: type = None, isOptional: bool = False):
+
+    def __init__(self, action: 'Action', dataType: type = None, isOptional: bool = False):
         """
         Constructs a Port Object.
 
@@ -112,8 +112,7 @@ class Port:
         :return: None
         :rtype: NoneType
         """
-        if self._input != None:
-            self._input.setDestPort(None)
+        self._input = None
 
 
     def getOutputWires(self) -> list:
@@ -134,6 +133,15 @@ class Port:
         """
         return self._input
 
+    def getDataType(self) -> type:
+        """
+        Returns the data type of this Port.
+
+        :return: The data type as a Python type.
+        :rtype: type
+        """
+        return self._dataType
+
     def setDataType(self, newType: type) -> None:
         """
         Sets the data type of the port. (A Python type [e.g. int, str, bool, etc.])
@@ -145,7 +153,7 @@ class Port:
         TODO: add exception doc string info.
         """
         if type(newType) == type:
-            self._dataType
+            self._dataType = newType
         else:
             raise TypeError("setDataType()'s input parameter must specify a Python type [e.g. int, str, bool].")
 
@@ -158,3 +166,13 @@ class Port:
         :return: None
         :rtype: NoneType
         """
+        self._optional = isOptional
+
+    def isOptional(self) -> bool:
+        """
+        Returns True if the Port doesn't necessarily have to be connected, False if it MUST be connected.
+
+        :return: A bool: True if the Port doesn't necessarily have to be connected, False if it MUST be connected.
+        :rtype: bool
+        """
+        return self._optional
