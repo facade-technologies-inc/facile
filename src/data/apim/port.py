@@ -20,7 +20,8 @@
 
 This module contains the Port class.
 """
-from data.apim.wire import Wire
+import data.apim.wire as wr
+import data.apim.action as ac
 
 
 class PortException(Exception):
@@ -35,7 +36,7 @@ class Port:
     (Ports between different Actions are connected with Wires).
     """
 
-    def __init__(self, action: 'Action', dataType: type = None, isOptional: bool = False):
+    def __init__(self, action: 'ac.Action', dataType: type = None, isOptional: bool = False):
         """
         Constructs a Port Object.
 
@@ -52,7 +53,7 @@ class Port:
         self._optional: bool = isOptional
         self._Action: 'Action' = action
 
-    def addOutputWire(self, newWire: 'Wire') -> None:
+    def addOutputWire(self, newWire: 'wr.Wire') -> None:
         """
         Connects a wire to the output of the port by adding it to the list of output wires. If a wire is passed in that
         is redundant with one already in the list, it is ignored.
@@ -75,7 +76,7 @@ class Port:
         if not newWireAlreadyInList:
             self._outputs.append(newWire)
 
-    def setInputWire(self, newWire: 'Wire') -> None:
+    def setInputWire(self, newWire: 'wr.Wire') -> None:
         """
         Connects the given wire to the input of the port. (There can be only one input wire).
 
@@ -88,7 +89,7 @@ class Port:
         """
         self._input = newWire
 
-    def removeOutputWire(self, wireToRemove: 'Wire') -> None:
+    def removeOutputWire(self, wireToRemove: 'wr.Wire') -> None:
         """
         Removes the given wire from the Port's list of output wires.
 
@@ -124,7 +125,7 @@ class Port:
         """
         return self._outputs
 
-    def getInputWire(self) -> 'Wire':
+    def getInputWire(self) -> 'wr.Wire':
         """
          Gets the Port's input Wire.
 

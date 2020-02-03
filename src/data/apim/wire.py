@@ -20,7 +20,7 @@
 
 This module contains the Wire class.
 """
-#from data.apim.port import Port
+import data.apim.port as pt
 
 
 class WireException(Exception):
@@ -34,7 +34,7 @@ class Wire:
     A Wire object consists of a reference to the source Action's desired output Port, and a reference
     to the destination Action's input Port.
     """
-    def __init__(self, sourcePort: 'Port', destinationPort: 'Port'):
+    def __init__(self, sourcePort: 'pt.Port', destinationPort: 'pt.Port'):
         """
         Constructs a Wire object.
 
@@ -46,7 +46,7 @@ class Wire:
         self._src: 'Port' = sourcePort;
         self._dest: 'Port' = destinationPort;
 
-    def getSourcePort(self) -> 'Port':
+    def getSourcePort(self) -> 'pt.Port':
         """
         Returns the output Port of the source Action (the Action outputting data) connected to the wire.
 
@@ -55,7 +55,7 @@ class Wire:
         """
         return self._src
 
-    def getDestPort(self) -> 'Port':
+    def getDestPort(self) -> 'pt.Port':
         """
         Returns the input Port of the destination Action (the Action receiving data) connected to the wire.
 
@@ -67,7 +67,7 @@ class Wire:
     ''' These Two functions probably aren't necessary, and might cause issues if someone were to change the 
         wire's ports without changing the port's wire references. For now, the syncing of references is handled
         by the WireSet class.
-    def setSourcePort(self, newSourcePort: 'Port') -> None:
+    def setSourcePort(self, newSourcePort: 'pt.Port') -> None:
         """
         Sets the Port connected to the input of the wire.
 
@@ -79,7 +79,7 @@ class Wire:
         self._src = newSourcePort
 
 
-    def setDestPort(self, newDestPort: 'Port') -> None:
+    def setDestPort(self, newDestPort: 'pt.Port') -> None:
         """
         Sets the Port connected to the output of the wire.
 
