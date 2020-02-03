@@ -21,6 +21,8 @@
 This module contains the Wire class.
 """
 
+import data.apim.port as pt
+
 class WireException(Exception):
     def __init__(self, msg):
         Exception.__init__(msg)
@@ -32,7 +34,7 @@ class Wire:
     A Wire object consists of a reference to the source Action's desired output Port, and a reference
     to the destination Action's input Port.
     """
-    def __init__(self, sourcePort: 'Port', destinationPort: 'Port'):
+    def __init__(self, sourcePort: 'pt.Port', destinationPort: 'pt.Port'):
         """
         Constructs a Wire object.
 
@@ -44,7 +46,7 @@ class Wire:
         self._src: 'Port' = sourcePort;
         self._dest: 'Port' = destinationPort;
 
-    def getSourcePort(self):
+    def getSourcePort(self) -> 'pt.Port':
         """
         Returns the output Port of the source Action (the Action outputting data) connected to the wire.
 
@@ -53,7 +55,7 @@ class Wire:
         """
         return self._src
 
-    def getDestPort(self):
+    def getDestPort(self) -> 'pt.Port':
         """
         Returns the input Port of the destination Action (the Action receiving data) connected to the wire.
 
@@ -62,7 +64,10 @@ class Wire:
         """
         return self._dest
 
-    def setSourcePort(self, newSourcePort: 'Port'):
+    ''' These Two functions probably aren't necessary, and might cause issues if someone were to change the 
+        wire's ports without changing the port's wire references. For now, the syncing of references is handled
+        by the WireSet class.
+    def setSourcePort(self, newSourcePort: 'pt.Port') -> None:
         """
         Sets the Port connected to the input of the wire.
 
@@ -74,7 +79,7 @@ class Wire:
         self._src = newSourcePort
 
 
-    def setDestPort(self, newDestPort: 'Port'):
+    def setDestPort(self, newDestPort: 'pt.Port') -> None:
         """
         Sets the Port connected to the output of the wire.
 
@@ -84,13 +89,14 @@ class Wire:
         :rtype: NoneType
         """
         self._dest = newDestPort
+    '''
 
     def asTuple(self) -> tuple:
         """
         Returns the source port and destination port as a tuple. Useful for quickly comparing wires when checking
         for duplicates.
 
-        :return: A tuple like: (source_port, destination_port)
+        :return: A tuple with the format: (source_port, destination_port)
         :rtype: tuple
         """
 
