@@ -26,6 +26,7 @@ from abc import ABC as AbstractBaseClass
 from typing import List
 
 from data.apim.port import Port, PortException
+from data.entity import Entity
 
 
 class ActionException(Exception):
@@ -33,7 +34,7 @@ class ActionException(Exception):
 		Exception.__init__(self, msg)
 
 
-class Action(AbstractBaseClass):
+class Action(AbstractBaseClass, Entity):
 	
 	allPorts = set()
 	
@@ -48,11 +49,12 @@ class Action(AbstractBaseClass):
 		
 		The action class maintains a set of all ports to prevent misuse of ports.
 		"""
+		super().__init__(self)
 		# inputs and outputs are lists of ports.
 		self._inputs = []
 		self._outputs = []
 		
-	def addInputPort(self, port: Port) -> None:
+	def addInputPort(self, port: 'Port') -> None:
 		"""
 		Adds a port to the list of inputs for this action.
 		
@@ -114,7 +116,7 @@ class Action(AbstractBaseClass):
 		"""
 		return self._outputs[:]
 	
-	def removePort(self, port) -> bool:
+	def removePort(self, port: 'Port') -> bool:
 		"""
 		Removes a port from this action - no need to specify input or output.
 

@@ -41,7 +41,7 @@ class ActionPipeline(Action):
 		self._actions = []
 		self._wireSet = WireSet()
 	
-	def addAction(self, action: Action) -> None:
+	def addAction(self, action: 'Action') -> None:
 		"""
 		Adds an *Action* (Either ActionPipeline or ComponentAction) as an internal component of
 		this action pipeline.
@@ -62,7 +62,7 @@ class ActionPipeline(Action):
 		
 		self._actions.append(action)
 	
-	def removeAction(self, action: Action) -> bool:
+	def removeAction(self, action: 'Action') -> bool:
 		"""
 		Removes an action from the action pipeline. All connected wires will be deleted.
 		
@@ -85,7 +85,7 @@ class ActionPipeline(Action):
 			self._actions.remove(action)
 			return True
 	
-	def connect(self, portA: Port, portB: Port) -> None:
+	def connect(self, portA: 'Port', portB: 'Port') -> None:
 		"""
 		Insert a wire to carry data from port A to port B.
 		
@@ -118,7 +118,7 @@ class ActionPipeline(Action):
 		
 		self._wireSet.addWire(portA, portB)
 	
-	def disconnect(self, portA: Port, portB: Port) -> None:
+	def disconnect(self, portA: 'Port', portB: 'Port') -> None:
 		"""
 		Remove the wire spanning from portA to portB.
 		
@@ -154,7 +154,7 @@ class ActionPipeline(Action):
 		# now we can delete the wire
 		self._wireSet.deleteWire(portA, portB)
 	
-	def changeSequence(self, actionSequence: List[Action]) -> None:
+	def changeSequence(self, actionSequence: List['Action']) -> None:
 		"""
 		Change the sequence of action execution.
 		
@@ -178,7 +178,7 @@ class ActionPipeline(Action):
 		
 		self._actions = actionSequence
 		
-	def removePort(self, port: Port) -> bool:
+	def removePort(self, port: 'Port') -> bool:
 		"""
 		Removes a port from this action pipeline or a sub-action - no need to specify input or
 		output.
@@ -248,7 +248,7 @@ class ActionPipeline(Action):
 		
 		return False
 	
-	def getActions(self) -> List[Action]:
+	def getActions(self) -> List['Action']:
 		"""
 		Get all of the internal actions of this action pipeline.
 		
