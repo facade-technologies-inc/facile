@@ -38,8 +38,8 @@ class ActionPipeline(Action):
 		executed in the sequence in with they are stored.
 		"""
 		Action.__init__(self)
-		self.actions = []
-		self.wireSet = WireSet()
+		self._actions = []
+		self._wireSet = WireSet()
 	
 	def addAction(self, action: Action) -> None:
 		"""
@@ -57,10 +57,10 @@ class ActionPipeline(Action):
 		:rtype: NoneType
 		"""
 		
-		if action in self.actions:
+		if action in self._actions:
 			raise ActionException("The action can only be added once.")
 		
-		self.actions.append(action)
+		self._actions.append(action)
 	
 	def removeAction(self, action: Action) -> bool:
 		"""
@@ -74,15 +74,15 @@ class ActionPipeline(Action):
 		:rtype: bool
 		"""
 		
-		if action not in self.actions:
+		if action not in self._actions:
 			raise ActionException("The Action does not exist in this Action Pipeline.")
 		
 		else:
 			# remove all the ports, which disconnects the wires
-			for port in action.inputs + action.outputs:
+			for port in action.getInputPorts() + action.getOutputPorts():
 				self.removePort(port)
 				
-			self.actions.remove(action)
+			self._actions.remove(action)
 			return True
 	
 	def connect(self, portA: Port, portB: Port) -> None:
@@ -102,12 +102,12 @@ class ActionPipeline(Action):
 		:rtype: NoneType
 		"""
 		
-		allowableActions = [self] + self.actions
+		allowableActions = [self] + self._actions
 		
-		if portA.action not in allowableActions:
+		if portA.getAction() not in allowableActions:
 			raise PortException("The source port is invalid")
 		
-		if portB.action not in allowableActions:
+		if portB.getAction() not in allowableActions:
 			raise PortException("The destination port is invalid")
 		
 		if portB.getInputWire() is not None:
@@ -116,7 +116,7 @@ class ActionPipeline(Action):
 		if not self.connectionIsValid(portA, portB):
 			raise WireException("The connection is not a valid configuration.")
 		
-		self.wireSet.addWire(portA, portB)
+		self._wireSet.addWire(portA, portB)
 	
 	def disconnect(self, portA: Port, portB: Port) -> None:
 		"""
@@ -135,12 +135,12 @@ class ActionPipeline(Action):
 		"""
 		
 		# Check for errors
-		allowableActions = [self] + self.actions
+		allowableActions = [self] + self._actions
 		
-		if portA.action not in allowableActions:
+		if portA.getAction() not in allowableActions:
 			raise PortException("The source port is invalid")
 		
-		if portB.action not in allowableActions:
+		if portB.getAction() not in allowableActions:
 			raise PortException("The destination port is invalid")
 		
 		wireFound = False
@@ -152,7 +152,7 @@ class ActionPipeline(Action):
 			raise WireException("There is no wire between the specified ports")
 		
 		# now we can delete the wire
-		self.wireSet.deleteWire(portA, portB)
+		self._wireSet.deleteWire(portA, portB)
 	
 	def changeSequence(self, actionSequence: List[Action]) -> None:
 		"""
@@ -173,10 +173,10 @@ class ActionPipeline(Action):
 		if len(actionSequence) != len(set(actionSequence)):
 			raise ActionException("Duplicate Action detected in sequence.")
 		
-		if set(actionSequence) != set(self.actions):
+		if set(actionSequence) != set(self._actions):
 			raise ActionException("Different set of actions detected from original ordering.")
 		
-		self.actions = actionSequence
+		self._actions = actionSequence
 		
 	def removePort(self, port: Port) -> bool:
 		"""
@@ -196,10 +196,10 @@ class ActionPipeline(Action):
 		:rtype: bool
 		"""
 		
-		if port.action is not None:
-			if port.action in self.actions or port.action is self:
-				removed = Action.removePort(port.action, port)
-				self.wireSet.deleteWiresConnectedToPort(port)
+		if port.getAction() is not None:
+			if port.getAction() in self._actions or port.getAction() is self:
+				removed = Action.removePort(port.getAction(), port)
+				self._wireSet.deleteWiresConnectedToPort(port)
 				return removed
 			else:
 				raise PortException("The port does not belong to this action pipeline or any children")
@@ -235,15 +235,37 @@ class ActionPipeline(Action):
 		"""
 		
 		def isPortBValid():
-			if portB in self.outputs:
+			if portB in self.getOutputPorts():
 				return True
-			elif portB.action in self.actions and portB in portB.action.inputs:
+			elif portB.getAction() in self._actions and portB in portB.getAction().getInputPorts():
 				return True
 		
-		if portA in self.inputs:
+		if portA in self.getInputPorts():
 			return isPortBValid()
 		
-		elif portA.action in self.actions and portA in portA.action.outputs:
+		elif portA.getAction() in self._actions and portA in portA.getAction().getOutputPorts():
 			return isPortBValid()
 		
 		return False
+	
+	def getActions(self) -> List[Action]:
+		"""
+		Get all of the internal actions of this action pipeline.
+		
+		:return: All actions in this action pipeline.
+		:rtype: List[Action]
+		"""
+		return self._actions[:]
+	
+	def getWireSet(self) -> WireSet:
+		"""
+		Get the wire set for this action pipeline.
+		
+		.. warning:: The WireSet does not provide the same protections as the ActionPipeline
+			class does. It is advised to use methods of the ActionPipeline instead of operating
+			on the wireset manually if possible.
+		
+		:return: This action pipeline's wire set.
+		:rtype: WireSet
+		"""
+		return self._wireSet

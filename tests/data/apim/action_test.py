@@ -19,9 +19,9 @@ class TestAction(unittest.TestCase):
 		
 		# create top-level action pipeline
 		readAccountBalance = ActionPipeline()
-		self.assertTrue(readAccountBalance.actions == [])
-		self.assertTrue(readAccountBalance.inputs == [])
-		self.assertTrue(readAccountBalance.outputs == [])
+		self.assertTrue(readAccountBalance.getActions() == [])
+		self.assertTrue(readAccountBalance.getInputPorts() == [])
+		self.assertTrue(readAccountBalance.getOutputPorts() == [])
 		
 		# create ports and add them to the top-level action pipeline
 		username = Port()
@@ -38,9 +38,9 @@ class TestAction(unittest.TestCase):
 		readAccountBalance.addInputPort(username)
 		readAccountBalance.addInputPort(pwd)
 		readAccountBalance.addOutputPort(accountBalance)
-		self.assertTrue(readAccountBalance.actions == [])
-		self.assertTrue(readAccountBalance.inputs == [username, pwd])
-		self.assertTrue(readAccountBalance.outputs == [accountBalance])
+		self.assertTrue(readAccountBalance.getActions() == [])
+		self.assertTrue(readAccountBalance.getInputPorts() == [username, pwd])
+		self.assertTrue(readAccountBalance.getOutputPorts() == [accountBalance])
 		
 		# create another action pipeline that won't be a child of the top-level
 		temp = ActionPipeline()
@@ -53,13 +53,13 @@ class TestAction(unittest.TestCase):
 		password = Port()
 		login.addInputPort(uname)
 		login.addInputPort(password)
-		self.assertTrue(login.actions == [])
-		self.assertTrue(login.inputs == [uname, password])
-		self.assertTrue(login.outputs == [])
+		self.assertTrue(login.getActions() == [])
+		self.assertTrue(login.getInputPorts() == [uname, password])
+		self.assertTrue(login.getOutputPorts() == [])
 		
 		# Add sub-action pipeline to top-level action pipeline.
 		readAccountBalance.addAction(login)
-		self.assertTrue(readAccountBalance.actions == [login])
+		self.assertTrue(readAccountBalance.getActions() == [login])
 		
 		# Make sure we can't add the same action again
 		self.assertRaises(ActionException, lambda: readAccountBalance.addAction(login))
@@ -77,8 +77,8 @@ class TestAction(unittest.TestCase):
 		readAccountBalance.connect(pwd, password)
 		
 		# make sure wires exist
-		self.assertTrue(readAccountBalance.wireSet.containsWire(username, uname))
-		self.assertTrue(readAccountBalance.wireSet.containsWire(pwd, password))
+		self.assertTrue(readAccountBalance.getWireSet().containsWire(username, uname))
+		self.assertTrue(readAccountBalance.getWireSet().containsWire(pwd, password))
 		
 		# make sure that you can't connect the wires again.
 		self.assertRaises(PortException, lambda: readAccountBalance.connect(username, uname))
@@ -92,15 +92,15 @@ class TestAction(unittest.TestCase):
 		# back.
 		readAccountBalance.removePort(username)
 		readAccountBalance.removePort(accountBalance)
-		self.assertTrue(readAccountBalance.inputs == [pwd])
-		self.assertTrue(readAccountBalance.outputs == [])
-		self.assertTrue(username.action is None)
-		self.assertTrue(accountBalance.action is None)
+		self.assertTrue(readAccountBalance.getInputPorts() == [pwd])
+		self.assertTrue(readAccountBalance.getOutputPorts() == [])
+		self.assertTrue(username.getAction() is None)
+		self.assertTrue(accountBalance.getAction() is None)
 		self.assertRaises(PortException, lambda: readAccountBalance.removePort(username))
 		self.assertRaises(PortException, lambda: readAccountBalance.removePort(accountBalance))
 		self.assertRaises(PortException, lambda: readAccountBalance.removePort(Port()))
 		self.assertRaises(PortException, lambda: readAccountBalance.removePort(tempPort))
-		self.assertFalse(readAccountBalance.wireSet.containsWire(username, uname))
+		self.assertFalse(readAccountBalance.getWireSet().containsWire(username, uname))
 		login.addInputPort(username)
 		login.addOutputPort(accountBalance)
 		login.removePort(username)
@@ -108,8 +108,8 @@ class TestAction(unittest.TestCase):
 		readAccountBalance.addInputPort(username)
 		readAccountBalance.addOutputPort(accountBalance)
 		readAccountBalance.connect(username, uname)
-		self.assertTrue(readAccountBalance.wireSet.containsWire(username, uname))
-		self.assertTrue(readAccountBalance.wireSet.containsWire(pwd, password))
+		self.assertTrue(readAccountBalance.getWireSet().containsWire(username, uname))
+		self.assertTrue(readAccountBalance.getWireSet().containsWire(pwd, password))
 		
 		# change sequence of actions
 		readAccountBalance.changeSequence([login])
@@ -129,8 +129,8 @@ class TestAction(unittest.TestCase):
 		# action deletion
 		self.assertRaises(ActionException, lambda: readAccountBalance.removeAction(ActionPipeline()))
 		readAccountBalance.removeAction(login)
-		self.assertFalse(readAccountBalance.wireSet.containsWire(username, uname))
-		self.assertFalse(readAccountBalance.wireSet.containsWire(pwd, password))
+		self.assertFalse(readAccountBalance.getWireSet().containsWire(username, uname))
+		self.assertFalse(readAccountBalance.getWireSet().containsWire(pwd, password))
 		
 		# Add a component action to read from the account balance field
 		readField = ComponentAction(None, "This is a bullshit component action")

@@ -23,6 +23,7 @@ and *ActionPipeline* classes.
 """
 
 from abc import ABC as AbstractBaseClass
+from typing import List
 
 from data.apim.port import Port, PortException
 
@@ -48,8 +49,8 @@ class Action(AbstractBaseClass):
 		The action class maintains a set of all ports to prevent misuse of ports.
 		"""
 		# inputs and outputs are lists of ports.
-		self.inputs = []
-		self.outputs = []
+		self._inputs = []
+		self._outputs = []
 		
 	def addInputPort(self, port: Port) -> None:
 		"""
@@ -68,10 +69,10 @@ class Action(AbstractBaseClass):
 		if port in Action.allPorts:
 			raise PortException("Port is already used. Can't add port to action.")
 		
-		port.action = self
+		port.setAction(self)
 		
 		Action.allPorts.add(port)
-		self.inputs.append(port)
+		self._inputs.append(port)
 	
 	def addOutputPort(self, port: Port) -> None:
 		"""
@@ -90,10 +91,28 @@ class Action(AbstractBaseClass):
 		if port in Action.allPorts:
 			raise PortException("Port is already used. Can't add port to action.")
 		
-		port.action = self
+		port.setAction(self)
 		
 		Action.allPorts.add(port)
-		self.outputs.append(port)
+		self._outputs.append(port)
+		
+	def getInputPorts(self) -> List[Port]:
+		"""
+		Get the list of input ports for this action.
+		
+		:return: The list of input ports for this action
+		:rtype: List[Port]
+		"""
+		return self._inputs[:]
+		
+	def getOutputPorts(self) -> List[Port]:
+		"""
+		Get the list of output ports for this action.
+
+		:return: The list of output ports for this action
+		:rtype: List[Port]
+		"""
+		return self._outputs[:]
 	
 	def removePort(self, port) -> bool:
 		"""
@@ -114,17 +133,17 @@ class Action(AbstractBaseClass):
 			raise PortException("Port not found in any actions.")
 		
 		found = False
-		if port in self.inputs:
+		if port in self._inputs:
 			found = True
-			self.inputs.remove(port)
-		elif port in self.outputs:
+			self._inputs.remove(port)
+		elif port in self._outputs:
 			found = True
-			self.outputs.remove(port)
+			self._outputs.remove(port)
 		else:
 			raise PortException("Port not found in this action.")
 			
 		if found:
 			Action.allPorts.remove(port)
-			port.action = None
+			port._action = None
 		
 		return found

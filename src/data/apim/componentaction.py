@@ -33,7 +33,7 @@ class ComponentAction(Action):
 		:param codeSpec:
 		"""
 		Action.__init__(self)
-		self.target = targetComponent
-		self.codeSpec = codeSpec
+		self._target = targetComponent
+		self._codeSpec = codeSpec
 	
 	# TODO: Add more methods once we've clearly defined what we're doing with this class.

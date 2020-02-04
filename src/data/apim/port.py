@@ -55,11 +55,10 @@ class Port:
         self._input: 'wr.Wire' = None
         self._outputs: list = []  # list of wires.
         self._dataType: type = None
-        self.setDataType(dataType)
         self._optional: bool = isOptional
-        
-        # purposefully made public
-        self.action: 'ac.Action' = None
+        self._action: 'ac.Action' = None
+
+        self.setDataType(dataType)
 
     def addOutputWire(self, newWire: 'wr.Wire') -> None:
         """
@@ -186,3 +185,27 @@ class Port:
         :rtype: bool
         """
         return self._optional
+    
+    def setAction(self, action: 'ac.Action') -> None:
+        """
+        Sets this port's action.
+        
+        .. warning:: This function should only be called from Action.addInputPort or
+            Action.addOutput port. Calling this function elsewhere may result in unsynchronized
+            references.
+        
+        :param action: The action that owns this port.
+        :type action: ac.Action
+        :return: None
+        :rtype: NoneType
+        """
+        self._action = action
+        
+    def getAction(self) -> 'ac.Action':
+        """
+        Get the Action that this port belongs to.
+        
+        :return: This port's Action.
+        :rtype: Action
+        """
+        return self._action
