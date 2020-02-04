@@ -48,14 +48,3 @@ class ActionMenu(QWidget):
 	def setLabelText(self, text: str) -> None:
 		self.ui.menuLabel.setText(text)
 	
-			
-		
-		
-		
-if __name__ == "__main__":
-	app = QApplication([])
-	
-	window = ActionMenu()
-	window.setLabelText("Andrews Menu")
-	window.show()
-	sys.exit(app.exec_())
