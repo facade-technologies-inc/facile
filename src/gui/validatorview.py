@@ -40,6 +40,10 @@ from data.validatormessage import ValidatorMessage
 
 
 class ValidatorView(QWidget):
+	"""
+	The ValidatorView class is the graphical view of the validator. It receives data from the Validator class.
+	
+	"""
 	
 	stopped = Signal()
 	ran = Signal()
@@ -47,6 +51,9 @@ class ValidatorView(QWidget):
 	cleared = Signal()
 	
 	def __init__(self, parent: QWidget = None):
+		"""
+		Construct the view for the validator.
+		"""
 		
 		super(ValidatorView, self).__init__(parent)
 		self.ui = Ui_ValidatorView()
@@ -76,6 +83,12 @@ class ValidatorView(QWidget):
 	
 	@Slot()
 	def clear(self):
+		"""
+		Clear all the information/messages in the view.
+		
+		:return: None
+		:rtype: NoneType
+		"""
 		print("cleared")
 		self.allMessages = []
 		self.ui.centralWidget = QWidget()
@@ -86,6 +99,12 @@ class ValidatorView(QWidget):
 	
 	@Slot()
 	def refresh(self):
+		"""
+		Refresh the GUI to show the right widgets.
+		
+		:return: None
+		:rtype: NoneType
+		"""
 		print("refreshed")
 		
 		self.sync()
@@ -98,6 +117,14 @@ class ValidatorView(QWidget):
 	
 	@Slot(dict)
 	def receiveMessage(self, msg: ValidatorMessage):
+		"""
+		Receive message from the Validator class. Receive one message each time.
+		
+		:param msg: a customized validator message coming from the validator
+		:type msg: ValidatorMessage
+		:return: None
+		:rtype: NoneType
+		"""
 		print("message received:", msg)
 		self.addWidgetToMessage(msg)
 		self.allMessages.append(msg)
@@ -108,10 +135,24 @@ class ValidatorView(QWidget):
 			msg.widget.hide()
 
 	def addWidgetToMessage(self, msg: ValidatorMessage):
+		"""
+		Add a QLabel widget to each message received.
+		
+		:param msg: a customized validator message coming from the validator
+		:type msg: ValidatorMessage
+		:return: None
+		:rtype: NoneType
+		"""
 		# TODO: use-custom message widget instead of QLabel
 		msg.widget = QLabel(msg.text)
 		
 	def sync(self):
+		"""
+		determine what kind of messages should be shown.
+		
+		:return: None
+		:rtype: NoneType
+		"""
 		self.showLevels = set()
 		if self.ui.checkBoxError.isChecked():
 			self.showLevels.add(ValidatorMessage.Level.Error)
