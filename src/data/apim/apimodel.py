@@ -21,7 +21,12 @@
 This module contains the ApiModel class which is the top-level class for building the API Model.
 """
 
+from typing import List
+
 from PySide2.QtCore import QObject
+
+from data.apim.actionpipeline import ActionPipeline
+from data.apim.componentaction import ComponentAction
 
 class ApiModel(QObject):
 	"""
@@ -36,7 +41,21 @@ class ApiModel(QObject):
 		:rtype: ApiModel
 		"""
 		
+		
 		self._actionPipelines = []
 		self._componentActions = []
 		
+	def getActionPipelines(self) -> List[ActionPipeline]:
+		"""
+		Gets a list of all ActionPipelines.
+		
+		:return: A list of all ActionPipelines.
+		:rtype: List[ActionPipeline]
+		"""
+		return self._actionPipelines[:]
+	
+	def getComponentActions(self) -> List[ComponentAction]:
+		pass
+		# TODO: Decide how we're going to store component actions and which ones we'll store.
+	
 	# TODO: Add methods to this class as we see fit
