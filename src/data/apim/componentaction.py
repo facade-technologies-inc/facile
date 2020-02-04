@@ -23,11 +23,10 @@ component from the TGUIM.
 """
 
 from data.apim.action import Action
-from data.tguim.component import Component
 
 class ComponentAction(Action):
 	
-	def __init__(self, targetComponent: Component, codeSpec: str):
+	def __init__(self, targetComponent: 'Component' = None, codeSpec: str = ""):
 		"""
 		The ComponentAction class is used to describe a
 		:param targetComponent:

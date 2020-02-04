@@ -68,6 +68,9 @@ class Action(AbstractBaseClass):
 		if port in Action.allPorts:
 			raise PortException("Port is already used. Can't add port to action.")
 		
+		port.action = self
+		
+		Action.allPorts.add(port)
 		self.inputs.append(port)
 	
 	def addOutputPort(self, port: Port) -> None:
@@ -87,6 +90,9 @@ class Action(AbstractBaseClass):
 		if port in Action.allPorts:
 			raise PortException("Port is already used. Can't add port to action.")
 		
+		port.action = self
+		
+		Action.allPorts.add(port)
 		self.outputs.append(port)
 	
 	def removePort(self, port) -> bool:
@@ -119,5 +125,6 @@ class Action(AbstractBaseClass):
 			
 		if found:
 			Action.allPorts.remove(port)
+			port.action = None
 		
 		return found

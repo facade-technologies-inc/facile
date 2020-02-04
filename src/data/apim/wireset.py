@@ -20,8 +20,9 @@
 
 This module contains the WireSet class.
 """
+from typing import List
 
-from data.apim.port import Port
+from data.apim.port import Port, PortException
 from data.apim.wire import Wire
 
 
@@ -40,6 +41,12 @@ class WireSet:
         """
         Creates a new wire and adds it to the set of wires (WireSet).
 
+        .. note:: Adding a wire that already exists will not add a new wire, but it will not 
+            raise an exception either.
+
+        :raises: PortException if the the destination port already has an input wire, 
+                 but the wire is not a duplication.
+
         :param sourcePort: The Port to be connected to the input of the wire.
         :type sourcePort: Port
         :param destPort: The Port to be connected to the output of the wire.
@@ -53,6 +60,10 @@ class WireSet:
             if (sourcePort, destPort) == wire.asTuple():
                 newWireAlreadyInSet = True
                 break
+
+        if not newWireAlreadyInSet:
+            if destPort.getInputWire() is not None:
+                raise PortException("The destination port already has an input!")
 
         # Only add wires that are unique (not redundant).
         if not newWireAlreadyInSet:
@@ -76,11 +87,29 @@ class WireSet:
         # Search for wire in set with the given ports.
         for wire in self._wires:
             if wire.asTuple() == (sourcePort, destPort):
-                pass
                 # Delete the wire: Remove the wire reference from both ports and from the wire set.
                 wire.getSourcePort().removeOutputWire(wire)
                 wire.getDestPort().removeInputWire()
                 self._wires.remove(wire)
+
+    def deleteWiresConnectedToPort(self, port: 'Port') -> None:
+        """
+        Deletes all wires connected to a port.
+
+        :param port: The port to remove connections to.
+        :type port: Port
+        :return: None
+        :rtype: NoneType
+        """
+        # remove outgoing wires
+        wires = self.getWiresWithSrcPort(port)[:]
+        for wire in wires:
+            self.deleteWire(wire.getSourcePort(), wire.getDestPort())
+    
+        # remove incoming wire if it exists
+        wire = self.getWireWithDestPort(port)
+        if wire:
+            self.deleteWire(wire.getSourcePort(), wire.getDestPort())
 
     def containsWire(self, sourcePort: 'Port', destPort: 'Port') -> 'bool':
         """
@@ -107,7 +136,7 @@ class WireSet:
         :return: List of the Wires in the wireSet.
         :rtype: list of Wires
         """
-        return self._wires
+        return self._wires[:]
 
     def getWiresWithSrcPort(self, sourcePort: 'Port') -> list:
         """
@@ -116,7 +145,7 @@ class WireSet:
         :param sourcePort: The source Port of the desired wires.
         :type sourcePort: Port
         :return: A list of the Wires with the given source Port.
-        :rtype: list of Wires
+        :rtype: List[Wire]
         """
         return sourcePort.getOutputWires()
 
@@ -124,54 +153,10 @@ class WireSet:
         """
         Gets the Wire connected
 
-        :param destPort:
-        :return:
+        :param destPort: The port for which to get wires that are coming in.
+        :type destPort: Port
+        :return: The wire going into the port
+        :rtype: Wire
         """
         return destPort.getInputWire()
-
-
-# Basic Testing/Debugging Script...
-if __name__ == "__main__":
-    myWireSet = WireSet()
-    portA = Port(dataType=int)
-    portB = Port()
-    portC = Port()
-
-    #Make some wires.
-    myWireSet.addWire(portA, portB)
-    myWireSet.addWire(portA, portC)
-    print("WireSet: ", myWireSet._wires)
-    print()
-
-    #check the ports' references.
-    print("portA :", portA)
-    print("\tportA Input: ", portA.getInputWire())
-    print("\tportA outputs: ", portA.getOutputWires())
-    print("portB ", portB)
-    print("\tportB input: ", portB.getInputWire())
-    print("\tportB outputs: ", portB._outputs)
-    print("portC ", portC)
-    print("\tportC input: ", portC._input)
-    print("\tportC outputs: ", portC._outputs)
-    print()
-
-    #check the wire's references.
-    for wire in myWireSet.getWires():
-        print("Wire: ", wire)
-        print("\tInput Port: ", wire._src)
-        print("\tOuptut Port: ", wire._dest)
-        print()
-
-    print("Port A Optional? ", portA.isOptional())
-    portA.setOptional(True)
-    print("Port A Optional? ", portA.isOptional())
-    portA.setOptional(False)
-    print("Port A Optional? ", portA.isOptional())
-    print()
-
-    print("PortA data type: ", portA.getDataType())
-    portA.setDataType(bool)
-    print("PortA data type: ", portA.getDataType())
-    portA.setDataType(str)
-    print("PortA data type: ", portA.getDataType())
-
+    

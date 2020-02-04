@@ -78,6 +78,10 @@ class ActionPipeline(Action):
 			raise ActionException("The Action does not exist in this Action Pipeline.")
 		
 		else:
+			# remove all the ports, which disconnects the wires
+			for port in action.inputs + action.outputs:
+				self.removePort(port)
+				
 			self.actions.remove(action)
 			return True
 	
@@ -88,6 +92,7 @@ class ActionPipeline(Action):
 		:raises: PortException if either portA or portB do not belong to either this
 		ActionPipeline or any of its inner actions.
 		:raises: PortException if portB already has an input.
+		:raises: WireException if the connnection is invalid.
 		
 		:param portA: The port that will be the source of the wire.
 		:type portA: Port
@@ -97,7 +102,6 @@ class ActionPipeline(Action):
 		:rtype: NoneType
 		"""
 		
-		# Check for errors
 		allowableActions = [self] + self.actions
 		
 		if portA.action not in allowableActions:
@@ -106,10 +110,12 @@ class ActionPipeline(Action):
 		if portB.action not in allowableActions:
 			raise PortException("The destination port is invalid")
 		
-		if portB.input:
+		if portB.getInputWire() is not None:
 			raise PortException("The destination port already has an input wire.")
 		
-		# now we can add a wire.
+		if not self.connectionIsValid(portA, portB):
+			raise WireException("The connection is not a valid configuration.")
+		
 		self.wireSet.addWire(portA, portB)
 	
 	def disconnect(self, portA: Port, portB: Port) -> None:
@@ -137,11 +143,16 @@ class ActionPipeline(Action):
 		if portB.action not in allowableActions:
 			raise PortException("The destination port is invalid")
 		
-		if portB.input.src != portA:
+		wireFound = False
+		if portB.getInputWire() is not None:
+			if portB.getInputWire().getSourcePort() == portA:
+				wireFound = True
+			
+		if not wireFound:
 			raise WireException("There is no wire between the specified ports")
 		
 		# now we can delete the wire
-		self.wireSet.removeWire(portA, portB)
+		self.wireSet.deleteWire(portA, portB)
 	
 	def changeSequence(self, actionSequence: List[Action]) -> None:
 		"""
@@ -163,6 +174,76 @@ class ActionPipeline(Action):
 			raise ActionException("Duplicate Action detected in sequence.")
 		
 		if set(actionSequence) != set(self.actions):
-			raise ActionException("Different actions detected from original ordering.")
+			raise ActionException("Different set of actions detected from original ordering.")
 		
 		self.actions = actionSequence
+		
+	def removePort(self, port: Port) -> bool:
+		"""
+		Removes a port from this action pipeline or a sub-action - no need to specify input or
+		output.
+
+		Removing the port from the action does not destroy the port.
+		Removing a port removes all wires connected to the port.
+
+		:raises: PortException if the port is not found.
+		:raises: PortException if the port does not belong the ActionPipeline or a child action.
+		:raises: PortException if the port does not have an action.
+
+		:param port: The port instance to be removed.
+		:type port: Port
+		:return: True if the port was successfully removed, False otherwise.
+		:rtype: bool
+		"""
+		
+		if port.action is not None:
+			if port.action in self.actions or port.action is self:
+				removed = Action.removePort(port.action, port)
+				self.wireSet.deleteWiresConnectedToPort(port)
+				return removed
+			else:
+				raise PortException("The port does not belong to this action pipeline or any children")
+		else:
+			raise PortException("The port does not have an action.")
+		
+	def connectionIsValid(self, portA: 'Port', portB: 'Port') -> bool:
+		"""
+		Determines if a wire can be used to connect portA to portB.
+		
+		Not all wiring configurations are valid. Please follow the wiring table below:
+		
+		.. table:: Valid Wire Configurations
+		
+			+------------------+-------------------------------+
+			| Source Port      | Destination Port              |
+			+==================+===============================+
+			| Top-Level Input  | Top-Level Output, Child Input |
+			+------------------+-------------------------------+
+			| Top-Level Output | NA                            |
+			+------------------+-------------------------------+
+			| Child Input      | NA                            |
+			+------------------+-------------------------------+
+			| Child Output     | Top-Level Output, Child Input |
+			+------------------+-------------------------------+
+			
+		:param portA: The source port for the connection.
+		:type portA: Port
+		:param portB: The destination port for the connection.
+		:type portB: Port
+		:return: True if the connection is valid, False otherwise.
+		:rtype: bool
+		"""
+		
+		def isPortBValid():
+			if portB in self.outputs:
+				return True
+			elif portB.action in self.actions and portB in portB.action.inputs:
+				return True
+		
+		if portA in self.inputs:
+			return isPortBValid()
+		
+		elif portA.action in self.actions and portA in portA.action.outputs:
+			return isPortBValid()
+		
+		return False

@@ -25,7 +25,7 @@ import data.apim.port as pt
 
 class WireException(Exception):
     def __init__(self, msg):
-        Exception.__init__(msg)
+        Exception.__init__(self, msg)
 
 class Wire:
     """
@@ -33,6 +33,15 @@ class Wire:
     may be dependant upon data that is output from another Action.)
     A Wire object consists of a reference to the source Action's desired output Port, and a reference
     to the destination Action's input Port.
+    
+    .. note:: Wires are *immutable* meaning they cannot be changed once they've been created.
+        Rather than changing the source or destination of a wire, the wire should be deleted and a
+        new one should be created.
+    
+    .. warning:: Although this class provides methods to make port/wire connections, this should
+        only be performed from the WireSet class. Using methods that establish wire connections
+        should be used carefully to ensure that references between ports and wires maintain
+        synchronized.
     """
     def __init__(self, sourcePort: 'pt.Port', destinationPort: 'pt.Port'):
         """
@@ -43,8 +52,8 @@ class Wire:
         :param destinationPort: An input Port from the destination Action - (the Action that data is flowing to.)
         :type destinationPort: Port
         """
-        self._src: 'Port' = sourcePort;
-        self._dest: 'Port' = destinationPort;
+        self._src: 'pt.Port' = sourcePort
+        self._dest: 'pt.Port' = destinationPort
 
     def getSourcePort(self) -> 'pt.Port':
         """
@@ -63,33 +72,6 @@ class Wire:
         :rtype: Port
         """
         return self._dest
-
-    ''' These Two functions probably aren't necessary, and might cause issues if someone were to change the 
-        wire's ports without changing the port's wire references. For now, the syncing of references is handled
-        by the WireSet class.
-    def setSourcePort(self, newSourcePort: 'pt.Port') -> None:
-        """
-        Sets the Port connected to the input of the wire.
-
-        :param newSourcePort: The desired output Port of the Action that is to be connected to the input of the wire.
-        :type newSourcePort: Port
-        :return: None
-        :rtype: NoneType
-        """
-        self._src = newSourcePort
-
-
-    def setDestPort(self, newDestPort: 'pt.Port') -> None:
-        """
-        Sets the Port connected to the output of the wire.
-
-        :param newDestPort: The desired input Port of the Action that is to be connected to the output of the wire.
-        :type newDestPort: Port
-        :return: None
-        :rtype: NoneType
-        """
-        self._dest = newDestPort
-    '''
 
     def asTuple(self) -> tuple:
         """

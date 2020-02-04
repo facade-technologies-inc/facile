@@ -26,7 +26,7 @@ import data.apim.action as ac
 
 class PortException(Exception):
     def __init__(self, msg: str):
-        Exception.__init__(msg)
+        Exception.__init__(self, msg)
 
 class Port:
     """
@@ -34,24 +34,32 @@ class Port:
     A Port has one input (could be None), and as many outputs as desired. In effect, the input of the Port is
     duplicated across all of its outputs. Ports specify the data type that may be passed across it.
     (Ports between different Actions are connected with Wires).
+    
+    .. warning:: Although this class provides methods to add wires, this should only be performed from
+        the WireSet class. Using methods that establish wire connections should be used carefully to
+        ensure that references between ports and wires maintain synchronized.
     """
 
-    def __init__(self, action: 'ac.Action', dataType: type = None, isOptional: bool = False):
+    def __init__(self, dataType: type = str, isOptional: bool = False):
         """
         Constructs a Port Object.
+        
+        .. note:: The port's action will be set when the port is added as either an input or
+            output of an action.
 
-        :param action: The Action Object that the Port belongs to.
-        :type action: Action
         :param dataType: The data type that is to be passed across the Port.
         :type dataType: type
         :param isOptional: Boolean specifying if the Port must be connected for the Port's Action to remain valid.
         :type isOptional: bool
         """
-        self._input: 'Wire' = None
+        self._input: 'wr.Wire' = None
         self._outputs: list = []  # list of wires.
-        self._dataType: type = dataType
+        self._dataType: type = None
+        self.setDataType(dataType)
         self._optional: bool = isOptional
-        self._Action: 'Action' = action
+        
+        # purposefully made public
+        self.action: 'ac.Action' = None
 
     def addOutputWire(self, newWire: 'wr.Wire') -> None:
         """
@@ -147,11 +155,12 @@ class Port:
         """
         Sets the data type of the port. (A Python type [e.g. int, str, bool, etc.])
 
+        :raises: TypeError if newType is not a valid type
+
         :param newType: A Python type [e.g. int, str, bool, etc.].
         :type newType: type
         :return: None
         :rtype: NoneType
-        TODO: add exception doc string info.
         """
         if type(newType) == type:
             self._dataType = newType
