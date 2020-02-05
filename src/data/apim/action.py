@@ -49,7 +49,7 @@ class Action(AbstractBaseClass, Entity):
 		
 		The action class maintains a set of all ports to prevent misuse of ports.
 		"""
-		super().__init__(self)
+		super().__init__()
 		# inputs and outputs are lists of ports.
 		self._inputs = []
 		self._outputs = []
