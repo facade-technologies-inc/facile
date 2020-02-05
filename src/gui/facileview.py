@@ -70,12 +70,15 @@ class FacileView(QMainWindow):
 		self._componentActionMenu = ActionMenu()
 		self._actionPipelinesMenu = ActionMenu()
 		
+		#Add labels for each tab on the Action Menu to the view
 		self._componentActionMenu.setLabelText("Actions for current selected component.")
 		self._actionPipelinesMenu.setLabelText("All user-defined actions.")
 		
+		#Add Action Menu Tabs to the view
 		self.ui.actionMenuTabWidget.addTab(self._componentActionMenu, "Component Actions")
 		self.ui.actionMenuTabWidget.addTab(self._actionPipelinesMenu, "Action Pipelines")
 		self.ui.actionMenuTabWidget.removeTab(0)
+		
 	
 	@Slot(Project)
 	def setProject(self, project: Project) -> None:

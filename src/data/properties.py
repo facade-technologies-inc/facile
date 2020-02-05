@@ -112,6 +112,12 @@ class Properties:
 				newProperties.addProperty("Visibility Behavior", "Reaction Type", None, Enum)
 				newProperties.addProperty("Visibility Behavior", "Source ID", 1, int, True)
 				newProperties.addProperty("Visibility Behavior", "Destination ID", 1, int, True)
+			elif predefinedCategories[i] == "Action":
+				pass
+			elif predefinedCategories[i] == "Port":
+				pass
+			elif predefinedCategories[i] == "Wire":
+				pass
 		
 		for category in customCategories.keys():
 			newProperties.newCategory(category)

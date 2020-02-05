@@ -6,6 +6,7 @@ sys.path.append(os.path.abspath("../"))
 from PySide2.QtWidgets import QWidget, QApplication, QVBoxLayout, QLabel
 from gui.ui.ui_actionmenu import Ui_Form as Ui_ActionMenu
 from gui.actionmenuitem import ActionMenuItem
+from data.apim.actionpipeline import ActionPipeline
 
 
 class ActionMenu(QWidget):
@@ -31,20 +32,40 @@ class ActionMenu(QWidget):
 		self.ui._itemLayout = QVBoxLayout()
 		
 		self.ui._centralWidget.setLayout(self.ui._itemLayout)
-		
 		self.ui.menuItemScrollArea.setWidget(self.ui._centralWidget)
-
-		for i in range(5):
-			self.addAction(None)
-			
 		self.ui._itemLayout.addStretch()
 	
 	def addAction(self, action: "Action") -> None:
-		menuItem = ActionMenuItem()
-		menuItem.setText("Andrew ")
-
+		"""
+		Adds an action item from the action pipeline to the Action Menu view.
+		
+		:param action: Action from the action pipeline.
+		:type action: Action
+		:return: None
+		:rtype: Nonetype
+		"""
+		menuItem = ActionMenuItem(action)
 		self.ui._itemLayout.addWidget(menuItem)
 	
 	def setLabelText(self, text: str) -> None:
+		"""
+		Adds a label for the tabs in the view.
+		
+		:param text: Text that will be in the label.
+		:type text: str
+		:return: None
+		:rtype: Nonetype
+		"""
 		self.ui.menuLabel.setText(text)
+		
+if __name__ == "__main__":
+	app = QApplication()
+	w = ActionMenu()
+	w.show()
 	
+	for i in range(10):
+		ap = ActionPipeline()
+		ap.getProperties().getProperty("Name")[1].setValue("Action Pipeline" + str(i))
+		w.addAction(ap)
+	
+	sys.exit(app.exec_())

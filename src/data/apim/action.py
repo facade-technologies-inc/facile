@@ -27,6 +27,7 @@ from typing import List
 
 from data.apim.port import Port, PortException
 from data.entity import Entity
+from data.properties import Properties
 
 
 class ActionException(Exception):
@@ -49,7 +50,13 @@ class Action(AbstractBaseClass, Entity):
 		
 		The action class maintains a set of all ports to prevent misuse of ports.
 		"""
-		super().__init__(self)
+		super().__init__()
+		
+		predefinedCategories = ["Base", "Action"]
+		customCategories = {}
+		props = Properties.createPropertiesObject(predefinedCategories, customCategories)
+		self.setProperties(props)
+	
 		# inputs and outputs are lists of ports.
 		self._inputs = []
 		self._outputs = []
