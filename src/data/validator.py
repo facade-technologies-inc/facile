@@ -5,3 +5,7 @@
 # one function for one checking algorithm and call all of them in run
 
 # targetguimodel and aplmodel are the two things
+
+
+#first step: integrate validator in to the facile
+#first step: get the validator to send out some kind of message
