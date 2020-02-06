@@ -25,7 +25,7 @@ and *ActionPipeline* classes.
 from abc import ABC as AbstractBaseClass
 from typing import List
 
-from data.apim.port import Port, PortException
+import data.apim.port as port
 from data.entity import Entity
 
 
@@ -69,14 +69,14 @@ class Action(AbstractBaseClass, Entity):
 		:rtype: NoneType
 		"""
 		if port in Action.allPorts:
-			raise PortException("Port is already used. Can't add port to action.")
+			raise port.PortException("Port is already used. Can't add port to action.")
 		
 		port.setAction(self)
 		
 		Action.allPorts.add(port)
 		self._inputs.append(port)
 	
-	def addOutputPort(self, port: Port) -> None:
+	def addOutputPort(self, port: 'port.Port') -> None:
 		"""
 		Adds a port to the list of outputs for this action.
 		
@@ -91,14 +91,14 @@ class Action(AbstractBaseClass, Entity):
 		:rtype: NoneType
 		"""
 		if port in Action.allPorts:
-			raise PortException("Port is already used. Can't add port to action.")
+			raise port.PortException("Port is already used. Can't add port to action.")
 		
 		port.setAction(self)
 		
 		Action.allPorts.add(port)
 		self._outputs.append(port)
 		
-	def getInputPorts(self) -> List[Port]:
+	def getInputPorts(self) -> List['port.Port']:
 		"""
 		Get the list of input ports for this action.
 		
@@ -107,7 +107,7 @@ class Action(AbstractBaseClass, Entity):
 		"""
 		return self._inputs[:]
 		
-	def getOutputPorts(self) -> List[Port]:
+	def getOutputPorts(self) -> List['port.Port']:
 		"""
 		Get the list of output ports for this action.
 
@@ -132,7 +132,7 @@ class Action(AbstractBaseClass, Entity):
 		"""
 		
 		if port not in Action.allPorts:
-			raise PortException("Port not found in any actions.")
+			raise port.PortException("Port not found in any actions.")
 		
 		found = False
 		if port in self._inputs:
@@ -142,7 +142,7 @@ class Action(AbstractBaseClass, Entity):
 			found = True
 			self._outputs.remove(port)
 		else:
-			raise PortException("Port not found in this action.")
+			raise port.PortException("Port not found in this action.")
 			
 		if found:
 			Action.allPorts.remove(port)
