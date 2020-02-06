@@ -209,3 +209,33 @@ class Port:
         :rtype: Action
         """
         return self._action
+    
+    def copy(self) -> 'Port':
+        """
+        Creates a copy of a port object and returns it.
+        
+        .. note:: The copy's action will not be set and no wires wil be connected.
+        
+        :return: A copy of the port (without wires)
+        :rtype: Port
+        """
+        
+        newPort = Port(self._dataType, self._optional)
+        # TODO: Copy properties (CAREFULLY) once ports are entities
+        return newPort
+    
+    def mirror(self, port: 'Port') -> None:
+        """
+        Sets this port to look just like another one.
+        
+        .. note:: This port's action, inputs, and outputs will not be affected.
+        
+        :param port: The port to mirror
+        :type port: Port
+        :return: None
+        :rtype: NoneType
+        """
+        
+        self._optional = port.isOptional()
+        self._dataType = port.getDataType()
+        # TODO: Copy properties (CAREFULLY) once ports are entities
