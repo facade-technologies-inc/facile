@@ -30,6 +30,7 @@ from PySide2.QtWidgets import QTreeView
 from PySide2.QtCore import Qt
 
 from data.tguim.targetguimodel import TargetGuiModel
+from data.apim.apimodel import ApiModel
 from qt_models.projectexplorermodel import ProjectExplorerModel
 from tguiil.explorer import Explorer
 from tguiil.observer import Observer
@@ -78,7 +79,7 @@ class Project:
 		self._backend = None
 		self._startupTimeout = None
 		self._targetGUIModel = TargetGuiModel()
-		self._APIModel = None
+		self._apiModel = ApiModel()
 		self._process = None
 		self._observer = None
 		self._explorer = None
@@ -136,12 +137,20 @@ class Project:
 	
 	def getTargetGUIModel(self) -> 'TargetGuiModel':
 		"""
-		Gets the the project's target GUI model.
+		Gets the project's target GUI model.
 		
 		:return: The project's target GUI model.
 		:rtype: TargetGuiModel
 		"""
 		return self._targetGUIModel
+	
+	def getAPIModel(self) -> 'ApiModel':
+		"""
+		Gets the project's API model.
+		
+		:return: The project's API model
+		"""
+		return self._apiModel
 	
 	def setProjectDir(self, url: str) -> None:
 		"""
@@ -387,6 +396,7 @@ class Project:
 		else:
 			loadedProject._targetGUIModel = tguim
 		
+		# TODO: Load the API Model
 		# loadedProject.setAPIModel(["Model Files"]["API Model"] = self._APIModel)
 		
 		return loadedProject
@@ -421,6 +431,8 @@ class Project:
 			d = self._targetGUIModel.asDict()
 			print(d)
 			tguimFile.write(json.dumps(d, indent=4))
+			
+		# TODO: Save the API Model.
 	
 	def addToRecents(self) -> None:
 		"""
