@@ -37,7 +37,7 @@ from PySide2.QtWidgets import QWidget, QVBoxLayout, QLabel
 from gui.ui.ui_validatorview import Ui_Form as Ui_ValidatorView
 
 from data.validatormessage import ValidatorMessage
-
+from data.validator import Validator
 
 class ValidatorView(QWidget):
 	"""
@@ -75,9 +75,11 @@ class ValidatorView(QWidget):
 		self.refreshed.connect(self.refresh)
 		self.cleared.connect(self.clear)
 		
-		# temp
-		self.ran.connect(lambda: print("ran"))
-		self.stopped.connect(lambda: print("stopped"))
+		self.dataValidator = Validator()
+		
+		#call start instead of run
+		self.ran.connect(self.dataValidator.start)
+		self.stopped.connect(self.dataValidator.stop)
 		
 
 	
@@ -163,7 +165,6 @@ class ValidatorView(QWidget):
 		
 		
 if __name__ == "__main__":
-
 	
 	app = QApplication([])
 	widget = ValidatorView()
