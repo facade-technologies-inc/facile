@@ -26,8 +26,10 @@ from PySide2.QtWidgets import QGraphicsItem, QApplication, QGraphicsView, QGraph
 	QWidget, QStyleOptionGraphicsItem
 from PySide2.QtGui import QPainter, QPainterPath
 from PySide2.QtCore import QRectF
-
+from graphics.apim.portgraphics import PortGraphics
 from data.apim.action import Action
+from data.apim.componentaction import ComponentAction
+from data.apim.port import Port
 
 class ActionGraphics(QGraphicsItem):
 	"""
@@ -35,8 +37,11 @@ class ActionGraphics(QGraphicsItem):
 	"""
 	
 	PEN_WIDTH = 1.0
-	#
-	SPACE = 10
+	MIN_WIDTH = 200
+	SPACE = PortGraphics.WIDTH * 2
+	TOTAL_PORT_WIDTH = PortGraphics.WIDTH + SPACE
+	TOTAL_RECT_HEIGHT = PortGraphics.TOTAL_HEIGHT + 50
+	
 	def __init__(self, action: 'Action', parent=None) -> 'ActionGraphics':
 		"""
 		Constructs a Action Graphics object for the given action.
@@ -50,8 +55,9 @@ class ActionGraphics(QGraphicsItem):
 		"""
 		QGraphicsItem.__init__(self, parent)
 		self.setFlag(QGraphicsItem.ItemIsSelectable)
-		
-		#TODO: What else do I need to add in constructor
+		self._action = action
+		self._inputPortGraphics = [PortGraphics(port, self) for port in self._action.getInputPorts()]
+		self._outputPortGraphics = [PortGraphics(port, self) for port in self._action.getOutputPorts()]
 	
 	def boundingRect(self) -> QRectF:
 		"""
@@ -60,13 +66,38 @@ class ActionGraphics(QGraphicsItem):
 		:return: Creates the bounds for the graphics.
 		:rtype: QRectF
 		"""
-		halfPenWidth = ActionGraphics.PEN_WIDTH/2
-		#add PortGraphics.WIDTH & HEIGHT
-		width = 100 + halfPenWidth
-		height = 100 + halfPenWidth
 		
-		return QRectF(width, height, width, height)
+		inputPorts = self._action.getInputPorts()
+		outputPorts = self._action.getOutputPorts()
+		
+		x,y,width,height = self.getActionRect(inputPorts,outputPorts)
+		
+		if inputPorts:
+			height += PortGraphics.TOTAL_HEIGHT/2
+			y -= PortGraphics.TOTAL_HEIGHT/2
+		if outputPorts:
+			height += PortGraphics.TOTAL_HEIGHT/2
+			
+		width += ActionGraphics.PEN_WIDTH
+		height += ActionGraphics.PEN_WIDTH
+		
+		return QRectF(x, y, width, height)
 	
+	def getActionRect(self, inputPorts, outputPorts):
+		halfPenWidth = ActionGraphics.PEN_WIDTH / 2
+		maxPorts = max(len(inputPorts), len(outputPorts))
+		
+		width = max(ActionGraphics.TOTAL_PORT_WIDTH * maxPorts, ActionGraphics.MIN_WIDTH)
+		height = ActionGraphics.TOTAL_RECT_HEIGHT
+		
+		x = (-0.5 * width) - halfPenWidth
+		y = (-0.5 * (height + PortGraphics.TOTAL_HEIGHT)) - halfPenWidth
+		
+		self._width = width
+		self._height = height
+		
+		return x, y, width, height
+		
 	def shape(self) -> QPainterPath:
 		"""
 		
@@ -87,9 +118,18 @@ class ActionGraphics(QGraphicsItem):
 		:return: None
 		:rtype: NoneType
 		"""
-		#painter.drawRect(self.boundingRect())
-		painter.drawPath(self.shape())
+		painter.drawRect(self.boundingRect())
+		x, y, width, height = self.getActionRect(self._action.getInputPorts(), self._action.getOutputPorts() )
+		painter.drawRect(QRectF(x, y, width, height))
+		self.placePorts()
 		
+	def placePorts(self):
+		
+		for p in range(len(self._inputPortGraphics)):
+			port = self._inputPortGraphics[p]
+			port.setPos(p*ActionGraphics.TOTAL_PORT_WIDTH - self._width/2 + ActionGraphics.SPACE/2,-150)
+			
+	
 	
 if __name__ == "__main__":
 	
@@ -97,7 +137,15 @@ if __name__ == "__main__":
 	v = QGraphicsView()
 	s = QGraphicsScene()
 	v.setScene(s)
-	A = ActionGraphics(Action)
+	action = ComponentAction()
+	p1 = Port()
+	p2 = Port()
+	p3 = Port()
+	action.addInputPort(p1)
+	action.addInputPort(p2)
+	action.addOutputPort(p3)
+	
+	A = ActionGraphics(action)
 	s.addItem(A)
 	v.show()
 	sys.exit(app.exec_())
