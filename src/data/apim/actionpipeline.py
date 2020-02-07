@@ -25,6 +25,7 @@ that will be created in the generated API.
 from typing import List
 
 from data.apim.action import Action, ActionException
+from data.apim.actionwrapper import ActionWrapper
 from data.apim.port import Port, PortException
 from data.apim.wireset import WireSet
 from data.apim.wire import WireException
@@ -33,7 +34,7 @@ class ActionPipeline(Action):
 	
 	def __init__(self):
 		"""
-		ActionPipelines are an aggregation of Actions. The internals of the
+		ActionPipelines are an aggregation of ActionWrappers. The internals of the
 		ActionPipeline can be connected with wires that carry data. The internal actions are
 		executed in the sequence in with they are stored.
 		"""
@@ -41,15 +42,16 @@ class ActionPipeline(Action):
 		self._actions = []
 		self._wireSet = WireSet()
 	
-	def addAction(self, action: 'Action') -> None:
+	def addAction(self, action: 'ActionWrapper') -> None:
 		"""
-		Adds an *Action* (Either ActionPipeline or ComponentAction) as an internal component of
-		this action pipeline.
+		Adds an *ActionWrapper* as an internal part of this action pipeline.
 		
 		This method does not check to see if the Action exists in another ActionPipeline,
 		but the caller should avoid this as it would certainly be invalid.
 		
-		:raises: ActionException if the action is already in the action list
+		:raises: ActionException if the action is not a action wrapper
+		:raises: ActionException if the wrapper has another parent already.
+		:raises: ActionException if the wrapper is already in the action list
 		
 		:param action: The Action to add to this ActionPipeline.
 		:type action: Action
@@ -57,12 +59,18 @@ class ActionPipeline(Action):
 		:rtype: NoneType
 		"""
 		
+		if type(action) != ActionWrapper:
+			raise ActionException("The Action being added to the ActionPipeline must be a ActionWrapper")
+		
+		if action.getParent() is not self:
+			raise ActionException("The ActionWrapper already has a different parent.")
+		
 		if action in self._actions:
-			raise ActionException("The action can only be added once.")
+			raise ActionException("The action wrapper can only be added once.")
 		
 		self._actions.append(action)
 	
-	def removeAction(self, action: 'Action') -> bool:
+	def removeAction(self, action: 'ActionWrapper') -> bool:
 		"""
 		Removes an action from the action pipeline. All connected wires will be deleted.
 		
@@ -77,13 +85,14 @@ class ActionPipeline(Action):
 		if action not in self._actions:
 			raise ActionException("The Action does not exist in this Action Pipeline.")
 		
-		else:
-			# remove all the ports, which disconnects the wires
-			for port in action.getInputPorts() + action.getOutputPorts():
-				self.removePort(port)
-				
-			self._actions.remove(action)
-			return True
+		action.forgetParent()
+		
+		# remove all the ports, which disconnects the wires
+		for port in action.getInputPorts() + action.getOutputPorts():
+			self.removePort(port)
+			
+		self._actions.remove(action)
+		return True
 	
 	def connect(self, portA: 'Port', portB: 'Port') -> None:
 		"""
