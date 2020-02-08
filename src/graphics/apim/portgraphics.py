@@ -45,7 +45,7 @@ class PortGraphics(QGraphicsItem):
 	Y_POS = -0.5 * TOTAL_HEIGHT
 	
 	PEN_COLOR = QColor(Qt.black)
-	BRUSH_COLOR = QColor(Qt.black)
+	BRUSH_COLOR = QColor(Qt.gray)
 	
 	def __init__(self, port: 'Port', parent=None):
 		"""
@@ -98,19 +98,18 @@ class PortGraphics(QGraphicsItem):
 		"""
 		Paints a port.
 		
-		:param painter:
-		:param option:
-		:param widget:
-		:return:
+		:param painter: The painter to paint with.
+		:type painter: QPainter
+		:param option: provides style options for the item.
+		:type option: QStyleOptionGraphicsItem
+		:param widget: QWidget
+		:type widget: It points to the widget that is being painted on; or make it = None.
+		:return: None
+		:rtype: NoneType
 		"""
 		
 		pen = QPen(PortGraphics.PEN_COLOR)
-		if self.isSelected():
-			pen.setStyle(Qt.DashDotLine)
-			pen.setColor(QColor(255, 0, 0))
-		else:
-			pen.setStyle(Qt.SolidLine)
-			pen.setColor(QColor(0, 0, 0))
+		pen.setWidth(PortGraphics.PEN_WIDTH)
 		painter.setPen(pen)
 		
 		painter.setBrush(PortGraphics.BRUSH_COLOR)
