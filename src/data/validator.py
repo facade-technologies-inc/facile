@@ -10,12 +10,17 @@
 #first step: get the validator to send out some kind of message. Emit a signal with a message and get it printed out. 
 import threading
 
-from PySide2.QtCore import QThread, Slot
+from PySide2.QtCore import QThread, Slot, Signal
+from data.validatormessage import ValidatorMessage
+
 
 class Validator(QThread):
+	# TODO: solve multi-thread issue
+	sentMessage = Signal()
 	
-	def __init__(self):
+	def __init__(self, validatorGraphics: 'ValidatorView'):
 		QThread.__init__(self)
+		self.validatorGraphics = validatorGraphics
 	
 	@Slot()
 	def run(self):
@@ -23,6 +28,14 @@ class Validator(QThread):
 		print('run')
 		# while True:
 		# 	pass
+		self.sentMessage.emit()
+		self.sentMessage.connect(self.sendAMessage)
+	
+	@Slot()
+	def sendAMessage(self):
+		message = ValidatorMessage("test Message", ValidatorMessage.Level.Error)
+		self.validatorGraphics.receiveMessage(message)
+		
 	
 	@Slot()
 	def stop(self):

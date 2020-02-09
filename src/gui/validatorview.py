@@ -77,7 +77,8 @@ class ValidatorView(QWidget):
 		self.refreshed.connect(self.refresh)
 		self.cleared.connect(self.clear)
 		
-		self.dataValidator = Validator()
+		# FIXME: is this a good practice?
+		self.dataValidator = Validator(self)
 		
 		#call start instead of run
 		self.ran.connect(self.dataValidator.start)
@@ -173,13 +174,13 @@ if __name__ == "__main__":
 	widget = ValidatorView()
 	widget.show()
 	
-	def handler():
-		for i in range(100):
-			widget.receiveMessage(ValidatorMessage("item " + str(i), ValidatorMessage.Level.Info))
-	
-	populateTimer = QTimer()
-	populateTimer.setSingleShot(True)
-	populateTimer.timeout.connect(handler)
-	populateTimer.start(5000)
+	# def handler():
+	# 	for i in range(100):
+	# 		widget.receiveMessage(ValidatorMessage("item " + str(i), ValidatorMessage.Level.Info))
+	#
+	# populateTimer = QTimer()
+	# populateTimer.setSingleShot(True)
+	# populateTimer.timeout.connect(handler)
+	# populateTimer.start(5000)
 	
 	sys.exit(app.exec_())
