@@ -13,10 +13,12 @@ import threading
 from PySide2.QtCore import QThread, Slot, Signal
 from data.validatormessage import ValidatorMessage
 
+from datetime import datetime
+
 
 class Validator(QThread):
 	# TODO: solve multi-thread issue
-	sentMessage = Signal()
+	sentMessage = Signal(ValidatorMessage)
 	
 	def __init__(self, validatorGraphics: 'ValidatorView'):
 		QThread.__init__(self)
@@ -28,14 +30,11 @@ class Validator(QThread):
 		print('run')
 		# while True:
 		# 	pass
-		self.sentMessage.emit()
-		self.sentMessage.connect(self.sendAMessage)
-	
-	@Slot()
-	def sendAMessage(self):
-		message = ValidatorMessage("test Message", ValidatorMessage.Level.Error)
-		self.validatorGraphics.receiveMessage(message)
 		
+		now = datetime.now()
+		message = ValidatorMessage("test Message" + str(now), ValidatorMessage.Level.Error)
+		self.sentMessage.emit(message)
+		self.sentMessage.connect(self.validatorGraphics.receiveMessage)
 	
 	@Slot()
 	def stop(self):
