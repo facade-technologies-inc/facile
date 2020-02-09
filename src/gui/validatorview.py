@@ -23,6 +23,8 @@ This module contains the code for the copy project dialog.
 
 import sys
 import os
+import threading
+
 from PySide2.QtWidgets import QApplication
 
 sys.path.append(os.path.abspath("../"))
@@ -79,6 +81,7 @@ class ValidatorView(QWidget):
 		
 		#call start instead of run
 		self.ran.connect(self.dataValidator.start)
+		print(threading.get_ident())
 		self.stopped.connect(self.dataValidator.stop)
 		
 

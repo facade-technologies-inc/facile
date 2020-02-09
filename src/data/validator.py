@@ -5,10 +5,11 @@
 # one function for one checking algorithm and call all of them in run
 
 # targetguimodel and aplmodel are the two things
+# integrate validator in to the facile
 
+#first step: get the validator to send out some kind of message. Emit a signal with a message and get it printed out. 
+import threading
 
-#first step: integrate validator in to the facile
-#first step: get the validator to send out some kind of message
 from PySide2.QtCore import QThread, Slot
 
 class Validator(QThread):
@@ -18,13 +19,14 @@ class Validator(QThread):
 	
 	@Slot()
 	def run(self):
+		print(threading.get_ident())
 		print('run')
-		print(self.currentThread())
+		# while True:
+		# 	pass
 	
 	@Slot()
 	def stop(self):
 		print('stop')
-		print(self.currentThread())
 		self.quit()
 		
 		if self.isRunning():
