@@ -14,36 +14,67 @@ from PySide2.QtCore import QThread, Slot, Signal
 from data.validatormessage import ValidatorMessage
 
 from datetime import datetime
+import time
 
 
 class Validator(QThread):
-	# TODO: solve multi-thread issue
+	
 	sentMessage = Signal(ValidatorMessage)
+	updateProgress = Signal(float)
 	
-	def __init__(self, validatorGraphics: 'ValidatorView'):
+	def __init__(self):
 		QThread.__init__(self)
-		self.validatorGraphics = validatorGraphics
 	
-	@Slot()
 	def run(self):
-		print(threading.get_ident())
-		print('run')
-		# while True:
-		# 	pass
+		self._running = True
 		
-		now = datetime.now()
-		message = ValidatorMessage("test Message" + str(now), ValidatorMessage.Level.Error)
-		self.sentMessage.emit(message)
-		self.sentMessage.connect(self.validatorGraphics.receiveMessage)
+		# TODO: acquire references to TGUIM and APIM
+		
+		# accumulate list of algorithm method objects:
+		algorithms = [getattr(self, method_name) for method_name in dir(self)
+		              if callable(getattr(self, method_name)) and
+		              method_name.startswith("algorithm_")]
+		
+		for algoNum in range(len(algorithms)):
+			algo = algorithms[algoNum]
+			if not self._running:
+				return
+			
+			self.updateProgress.emit(100 * (algoNum+1)/(len(algorithms)+1))
+			algo()
+			
+		self.updateProgress.emit(100)
 	
+	def algorithm_01_test_INFO(self):
+		for i in range(100):
+			if not self._running:
+				return
+			now = datetime.now()
+			message = ValidatorMessage("INFO: test Message" + str(now), ValidatorMessage.Level.Info)
+			self.sentMessage.emit(message)
+		
+	def algorithm_02_test_WARNING(self):
+		for i in range(100):
+			if not self._running:
+				return
+			now = datetime.now()
+			message = ValidatorMessage("WARNING: test Message" + str(now), ValidatorMessage.Level.Warning)
+			self.sentMessage.emit(message)
+		
+	def algorithm_03_test_ERROR(self):
+		for i in range(100):
+			if not self._running:
+				return
+			now = datetime.now()
+			message = ValidatorMessage("ERROR: test Message" + str(now), ValidatorMessage.Level.Error)
+			self.sentMessage.emit(message)
+			
+		
+			
+		
+	
+
+
 	@Slot()
 	def stop(self):
-		print('stop')
-		self.quit()
-		
-		if self.isRunning():
-			print("still running")
-		else:
-			print("stopped running")
-	
-	
+		self._running = False
