@@ -21,10 +21,11 @@
 This module contains the ActionGraphics() Class.
 """
 import sys
+import math
 
 from PySide2.QtWidgets import QGraphicsItem, QApplication, QGraphicsView, QGraphicsScene, \
 	QWidget, QStyleOptionGraphicsItem
-from PySide2.QtGui import QPainter, QPainterPath
+from PySide2.QtGui import QPainter, QPainterPath, QColor, Qt
 from PySide2.QtCore import QRectF
 from graphics.apim.portgraphics import PortGraphics
 from data.apim.action import Action
@@ -56,8 +57,8 @@ class ActionGraphics(QGraphicsItem):
 		QGraphicsItem.__init__(self, parent)
 		self.setFlag(QGraphicsItem.ItemIsSelectable)
 		self._action = action
-		self._inputPortGraphics = [PortGraphics(port, self) for port in self._action.getInputPorts()]
-		self._outputPortGraphics = [PortGraphics(port, self) for port in self._action.getOutputPorts()]
+		self._inputPortGraphics = [PortGraphics(p, self) for p in self._action.getInputPorts()]
+		self._outputPortGraphics = [PortGraphics(p, self) for p in self._action.getOutputPorts()]
 	
 	def boundingRect(self) -> QRectF:
 		"""
@@ -91,7 +92,7 @@ class ActionGraphics(QGraphicsItem):
 		height = ActionGraphics.TOTAL_RECT_HEIGHT
 		
 		x = (-0.5 * width) - halfPenWidth
-		y = (-0.5 * (height + PortGraphics.TOTAL_HEIGHT)) - halfPenWidth
+		y = (-0.5 * height) - halfPenWidth
 		
 		self._width = width
 		self._height = height
@@ -118,21 +119,52 @@ class ActionGraphics(QGraphicsItem):
 		:return: None
 		:rtype: NoneType
 		"""
-		painter.drawRect(self.boundingRect())
+		
+		self.placePorts()
+		painter.setBrush(QColor(88, 183, 255))
 		x, y, width, height = self.getActionRect(self._action.getInputPorts(), self._action.getOutputPorts() )
 		painter.drawRect(QRectF(x, y, width, height))
-		self.placePorts()
+		
+
 		
 	def placePorts(self):
+		"""
+		Place the ports at the right positions on the actions.
 		
-		for p in range(len(self._inputPortGraphics)):
-			port = self._inputPortGraphics[p]
-			port.setPos(p*ActionGraphics.TOTAL_PORT_WIDTH - self._width/2 + ActionGraphics.SPACE/2,-150)
-			
-	
-	
+		:return: None
+		:rtype: NoneType
+		"""
+		
+		def spread(y, portList):
+			"""
+			Spreads a single port list evenly
+			:param y:
+			:param portList:
+			:return:
+			"""
+			offset = 0 # offset from center
+			if len(portList) % 2 == 0:
+				offset = ActionGraphics.TOTAL_PORT_WIDTH / 2
+				
+			halfLen = (len(portList) - 1) / 2
+			for p in range(len(portList)):
+				posIdx = math.ceil(halfLen + p)
+				negIdx = math.floor(halfLen - p)
+				
+				posShift = p * ActionGraphics.TOTAL_PORT_WIDTH + offset
+				negShift = -posShift
+				
+				try:
+					portList[posIdx].setPos(posShift, y)
+					portList[negIdx].setPos(negShift, y)
+				except IndexError:
+					return
+				
+		spread(-ActionGraphics.TOTAL_RECT_HEIGHT / 2, self._inputPortGraphics)
+		spread(ActionGraphics.TOTAL_RECT_HEIGHT / 2, self._outputPortGraphics)
+		
+		
 if __name__ == "__main__":
-	
 	app = QApplication()
 	v = QGraphicsView()
 	s = QGraphicsScene()

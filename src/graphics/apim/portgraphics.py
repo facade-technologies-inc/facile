@@ -37,7 +37,7 @@ class PortGraphics(QGraphicsItem):
 	
 	PEN_WIDTH = 1.0
 	WIDTH = 50
-	SIDE_HEIGHT = 2 * WIDTH
+	SIDE_HEIGHT = 1 * WIDTH
 	TAPER_HEIGHT = 0.5 * SIDE_HEIGHT
 	TOTAL_HEIGHT = SIDE_HEIGHT + TAPER_HEIGHT
 	# Center the shape about the origin of its coordinate system.
