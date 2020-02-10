@@ -49,38 +49,24 @@ class ValidatorView(QWidget):
 	refreshed = Signal()
 	cleared = Signal()
 	
-	ERROR_LABEL   = '<span style="font-weight:bold;color:red;">{}</span> Errors'
-	WARNING_LABEL = '<span style="font-weight:bold;color:orange;">{}</span> Warnings'
-	INFO_LABEL    = '<span style="font-weight:bold;color:green;">{}</span> Info'
+	LABEL_STYLE = '<span style="font-weight:bold;color:{color};">{{}}</span> {label}'
 	
-	# This is ugly, but it's just styling and it works.
-	ERROR_PROGRESSBAR = """
-		QProgressBar::chunk {
-			background-color: red;
+	PROGRESSBAR_STYLE = """
+		QProgressBar::chunk {{
+			background-color: {color};
             border-bottom-right-radius: 7px;
             border-bottom-left-radius: 7px;
             border: 0px solid black;
-        }
+        }}
 	"""
 	
-	WARNING_PROGRESSBAR = """
-		QProgressBar::chunk {
-			background-color: orange;
-            border-bottom-right-radius: 7px;
-            border-bottom-left-radius: 7px;
-            border: 0px solid black;
-        }
-	"""
+	ERROR_LABEL = LABEL_STYLE.format(color="red", label="Errors")
+	WARNING_LABEL = LABEL_STYLE.format(color="orange", label="Warnings")
+	INFO_LABEL = LABEL_STYLE.format(color="green", label="Info")
 	
-	SAFE_PROGRESSBAR = """
-		QProgressBar::chunk {
-			background-color: green;
-            border-bottom-right-radius: 7px;
-            border-bottom-left-radius: 7px;
-            border: 0px solid black;
-        }
-	"""
-	
+	ERROR_PROGRESSBAR = PROGRESSBAR_STYLE.format(color='red')
+	WARNING_PROGRESSBAR = PROGRESSBAR_STYLE.format(color='orange')
+	SAFE_PROGRESSBAR = PROGRESSBAR_STYLE.format(color='green')
 	
 	def __init__(self, parent: QWidget = None):
 		"""
@@ -186,9 +172,10 @@ class ValidatorView(QWidget):
 		# set visible count to 0.
 		self._visibleCount = 0
 		self.ui.messageCountLabel.setText(str(self._visibleCount))
+		
+		# set worst level to 0
+		self._mostSevere = 0
 
-		
-		
 	@Slot()
 	def refresh(self) -> None:
 		"""
@@ -305,14 +292,5 @@ if __name__ == "__main__":
 	app = QApplication([])
 	widget = ValidatorView()
 	widget.show()
-	
-	# def handler():
-	# 	for i in range(100):
-	# 		widget.receiveMessage(ValidatorMessage("item " + str(i), ValidatorMessage.Level.Info))
-	#
-	# populateTimer = QTimer()
-	# populateTimer.setSingleShot(True)
-	# populateTimer.timeout.connect(handler)
-	# populateTimer.start(5000)
-	
+
 	sys.exit(app.exec_())
