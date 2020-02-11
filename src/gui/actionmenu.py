@@ -35,7 +35,7 @@ from data.apim.port import Port
 
 class ActionMenu(QWidget):
 	"""
-	ActionMenu is a widget for Facile's API modules.
+	ActionMenu is a widget for Facile's API actions.
 	"""
 	
 	def __init__(self) -> 'ActionMenu':
@@ -62,9 +62,9 @@ class ActionMenu(QWidget):
 	
 	def addAction(self, action: "Action") -> None:
 		"""
-		Adds an action menu item from the action pipeline to the Action Menu view.
+		Creates an ActionMenuItem for the given action and adds it to this ActionMenu.
 		
-		:param action: Action from the action pipeline.
+		:param action: The specific action that will be added as ActionMenuItem.
 		:type action: Action
 		:return: None
 		:rtype: Nonetype
@@ -74,7 +74,7 @@ class ActionMenu(QWidget):
 	
 	def setLabelText(self, text: str) -> None:
 		"""
-		Adds a label for the tabs in the view.
+		Setting the label for the menu's description.
 		
 		:param text: Text that will be in the label.
 		:type text: str

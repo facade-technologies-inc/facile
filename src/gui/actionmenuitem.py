@@ -53,7 +53,6 @@ class ActionMenuItem(QWidget):
 		#Add ActionGraphics to Graphics View
 		self._actionGraphics = ActionGraphics(self._action)
 		self._scene = QGraphicsScene()
-		v = self._scene.itemsBoundingRect()
 		self.ui.actionIcon.setScene(self._scene)
 		self.ui.actionIcon.fitInView(self._actionGraphics, Qt.KeepAspectRatioByExpanding)
 		self._scene.addItem(self._actionGraphics)
