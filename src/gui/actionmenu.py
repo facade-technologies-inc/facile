@@ -26,13 +26,11 @@ import os
 
 sys.path.append(os.path.abspath("../"))
 
-from PySide2.QtWidgets import QWidget, QApplication, QVBoxLayout, QGraphicsScene, QGraphicsView
+from PySide2.QtWidgets import QWidget, QApplication, QVBoxLayout
 from gui.ui.ui_actionmenu import Ui_Form as Ui_ActionMenu
 from gui.actionmenuitem import ActionMenuItem
 from data.apim.actionpipeline import ActionPipeline
-from data.apim.componentaction import ComponentAction
 from data.apim.port import Port
-from graphics.apim.actiongraphics import ActionGraphics
 
 
 class ActionMenu(QWidget):
@@ -91,10 +89,14 @@ if __name__ == "__main__":
 	p1 = Port()
 	p2 = Port()
 	p3 = Port()
+	p4 = Port()
+	p5 = Port()
 	ap = ActionPipeline()
 	ap.addInputPort(p1)
 	ap.addInputPort(p2)
 	ap.addOutputPort(p3)
+	ap.addOutputPort(p4)
+	ap.addOutputPort(p5)
 	
 	for i in range(10):
 		ap.getProperties().getProperty("Name")[1].setValue("Action Pipeline" + str(i))

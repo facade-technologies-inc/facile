@@ -20,12 +20,13 @@
 
 This module contains the ActionGraphics() Class.
 """
+
 import sys
 import math
 
 from PySide2.QtWidgets import QGraphicsItem, QApplication, QGraphicsView, QGraphicsScene, \
 	QWidget, QStyleOptionGraphicsItem
-from PySide2.QtGui import QPainter, QPainterPath, QColor, Qt
+from PySide2.QtGui import QPainter, QPainterPath, QColor
 from PySide2.QtCore import QRectF
 from graphics.apim.portgraphics import PortGraphics
 from data.apim.action import Action
@@ -88,11 +89,12 @@ class ActionGraphics(QGraphicsItem):
 		"""
 		Gets the bounding rect of the action.
 		
-		:param inputPorts: A list of
+		:param inputPorts: Input ports added for the action.
 		:type: QGraphicsItem
-		:param outputPorts:
-		:type:
-		:return:
+		:param outputPorts: Output ports added for the action.
+		:type: QGraphicsItem
+		:return: List of coordinates and dimensions for the bounding rect of the action.
+		:rtype: list
 		"""
 		halfPenWidth = ActionGraphics.PEN_WIDTH / 2
 		maxPorts = max(len(inputPorts), len(outputPorts))
@@ -146,14 +148,14 @@ class ActionGraphics(QGraphicsItem):
 		:rtype: NoneType
 		"""
 		
-		def spread(y, portList) -> None:
+		def spread(y: int , portList: list) -> None:
 			"""
 			Spreads a single port list evenly.
 			
-			:param y:
-			:type:
-			:param portList:
-			:type:
+			:param y: The coordinate the ports need to be placed.
+			:type: int
+			:param portList: The list of ports that need to be placed.
+			:type: list
 			:return: None
 			:rtype: NoneType
 			"""
