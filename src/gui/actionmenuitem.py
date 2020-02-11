@@ -21,8 +21,11 @@
 This module contains the ActionMenuItem() Class.
 """
 
-from PySide2.QtWidgets import QWidget
+from PySide2.QtWidgets import QWidget, QGraphicsView, QGraphicsScene
 from gui.ui.ui_actionmenuitem import Ui_Form as Ui_ActionMenuItem
+from graphics.apim.actiongraphics import ActionGraphics
+from data.apim.componentaction import ComponentAction
+from data.apim.port import Port
 
 class ActionMenuItem(QWidget):
 	"""
@@ -32,7 +35,9 @@ class ActionMenuItem(QWidget):
 	def __init__(self, action: 'Action') -> 'ActionMenuItem':
 		"""
 		Constructs a ActionMenuItem object.
-
+		
+		:param: Specified action that will be added as a action menu item.
+		:type: Action
 		:return: The new ActionMenuItem object.
 		:rtype: ActionMenuItem
 		"""
@@ -45,11 +50,19 @@ class ActionMenuItem(QWidget):
 		#Set text for the action menu item
 		self._action = action
 		self.setText(self.getName())
-	
+		
+		#Add ActionGraphics to Graphics View
+		self._actionGraphics = ActionGraphics(self._action)
+		self._scene = QGraphicsScene()
+		self.ui.actionIcon.setScene(self._scene)
+		self._scene.addItem(self._actionGraphics)
+		
 	def getName(self) -> str:
 		"""
+		Gets the name of the action from the actions property "Name."
 		
-		:return:
+		:return: Name of action item.
+		:rtype: str
 		"""
 		return self._action.getProperties().getProperty("Name")[1].getValue()
 		
@@ -63,8 +76,3 @@ class ActionMenuItem(QWidget):
 		:rtype: Nonetype
 		"""
 		self.ui.actionLabel.setText(text)
-	
-#TODO: Action graphics in reference to Port Graphics in seperate class
-#TODO: Make a method to paint the graphics
-#TODO: Make a method to draw the custom graphic
-#TODO: Make a method to set the graphic

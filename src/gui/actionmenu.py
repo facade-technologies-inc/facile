@@ -26,10 +26,13 @@ import os
 
 sys.path.append(os.path.abspath("../"))
 
-from PySide2.QtWidgets import QWidget, QApplication, QVBoxLayout, QLabel
+from PySide2.QtWidgets import QWidget, QApplication, QVBoxLayout, QGraphicsScene, QGraphicsView
 from gui.ui.ui_actionmenu import Ui_Form as Ui_ActionMenu
 from gui.actionmenuitem import ActionMenuItem
 from data.apim.actionpipeline import ActionPipeline
+from data.apim.componentaction import ComponentAction
+from data.apim.port import Port
+from graphics.apim.actiongraphics import ActionGraphics
 
 
 class ActionMenu(QWidget):
@@ -57,10 +60,11 @@ class ActionMenu(QWidget):
 		self.ui._centralWidget.setLayout(self.ui._itemLayout)
 		self.ui.menuItemScrollArea.setWidget(self.ui._centralWidget)
 		self.ui._itemLayout.addStretch()
+		
 	
 	def addAction(self, action: "Action") -> None:
 		"""
-		Adds an action item from the action pipeline to the Action Menu view.
+		Adds an action menu item from the action pipeline to the Action Menu view.
 		
 		:param action: Action from the action pipeline.
 		:type action: Action
@@ -84,11 +88,18 @@ class ActionMenu(QWidget):
 if __name__ == "__main__":
 	app = QApplication()
 	w = ActionMenu()
-	w.show()
+	p1 = Port()
+	p2 = Port()
+	p3 = Port()
+	ap = ActionPipeline()
+	ap.addInputPort(p1)
+	ap.addInputPort(p2)
+	ap.addOutputPort(p3)
 	
 	for i in range(10):
-		ap = ActionPipeline()
 		ap.getProperties().getProperty("Name")[1].setValue("Action Pipeline" + str(i))
 		w.addAction(ap)
+		
+	w.show()
 	
 	sys.exit(app.exec_())

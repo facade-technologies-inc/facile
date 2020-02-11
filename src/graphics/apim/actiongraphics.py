@@ -62,7 +62,7 @@ class ActionGraphics(QGraphicsItem):
 	
 	def boundingRect(self) -> QRectF:
 		"""
-		This function defines the outer bounds of the actions icon as a rectangle.
+		This function defines the outer bounds of the actions icon.
 		
 		:return: Creates the bounds for the graphics.
 		:rtype: QRectF
@@ -84,7 +84,16 @@ class ActionGraphics(QGraphicsItem):
 		
 		return QRectF(x, y, width, height)
 	
-	def getActionRect(self, inputPorts, outputPorts):
+	def getActionRect(self, inputPorts: QGraphicsItem, outputPorts: QGraphicsItem) -> list:
+		"""
+		Gets the bounding rect of the action.
+		
+		:param inputPorts: A list of
+		:type: QGraphicsItem
+		:param outputPorts:
+		:type:
+		:return:
+		"""
 		halfPenWidth = ActionGraphics.PEN_WIDTH / 2
 		maxPorts = max(len(inputPorts), len(outputPorts))
 		
@@ -101,21 +110,23 @@ class ActionGraphics(QGraphicsItem):
 		
 	def shape(self) -> QPainterPath:
 		"""
+		Defines the shape of the action icon.
 		
-		:return:
+		:return: Returns the shape of the action icon.
+		:rtype: QPainterPath
 		"""
 		return QGraphicsItem.shape(self)
 	
 	def paint(self, painter: QPainter, option: QStyleOptionGraphicsItem, index: QWidget) -> None:
 		"""
-		Paint a checkbox without the label.
+		Paint the graphics of the action with the ports.
 
 		:param painter: This draws the widget.
-		:type painter: QStylePainter
-		:param option: Option for the style of checkbox.
-		:type option: QStyleOptionViewItem
-		:param index: Index for the painted checkbox.
-		:type index: QModelIndex
+		:type painter: QPainter
+		:param option: Option for the style of graphic.
+		:type option: QStyleOptionGraphicsItem
+		:param index: Index for the painted graphic.
+		:type index: QWidget
 		:return: None
 		:rtype: NoneType
 		"""
@@ -127,7 +138,7 @@ class ActionGraphics(QGraphicsItem):
 		
 
 		
-	def placePorts(self):
+	def placePorts(self) -> None:
 		"""
 		Place the ports at the right positions on the actions.
 		
@@ -135,12 +146,16 @@ class ActionGraphics(QGraphicsItem):
 		:rtype: NoneType
 		"""
 		
-		def spread(y, portList):
+		def spread(y, portList) -> None:
 			"""
-			Spreads a single port list evenly
+			Spreads a single port list evenly.
+			
 			:param y:
+			:type:
 			:param portList:
-			:return:
+			:type:
+			:return: None
+			:rtype: NoneType
 			"""
 			offset = 0 # offset from center
 			if len(portList) % 2 == 0:
