@@ -24,6 +24,8 @@
 
         <file alias="../resources/icons/pastel/add_box.png">resources/icons/pastel/add_box.png</file>
 
+        <file alias="../resources/icons/pastel/add_person.png">resources/icons/pastel/add_person.png</file>
+
         <file alias="../resources/icons/pastel/box.png">resources/icons/pastel/box.png</file>
 
         <file alias="../resources/icons/pastel/copy.png">resources/icons/pastel/copy.png</file>

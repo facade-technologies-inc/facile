@@ -172,6 +172,7 @@
    <addaction name="separator"/>
    <addaction name="actionAdd_Behavior"/>
    <addaction name="separator"/>
+   <addaction name="actionAdd_Action_Pipeline"/>
   </widget>
   <action name="actionOpen_Project">
    <property name="icon">
@@ -348,6 +349,18 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+T</string>
+   </property>
+  </action>
+  <action name="actionAdd_Action_Pipeline">
+   <property name="icon">
+    <iconset resource="../../../icons.qrc">
+     <normaloff>:/icon/resources/icons/pastel/add_person.png</normaloff>:/icon/resources/icons/pastel/add_person.png</iconset>
+   </property>
+   <property name="text">
+    <string>Add Action Pipeline</string>
+   </property>
+   <property name="toolTip">
+    <string>Create a new action pipeline</string>
    </property>
   </action>
  </widget>
