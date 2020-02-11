@@ -8,6 +8,7 @@ sys.path.insert(0, os.path.abspath("./src/gui/rc/"))
 import unittest
 from data.apim.componentaction import ComponentAction
 from data.apim.actionpipeline import ActionPipeline
+from data.apim.actionwrapper import ActionWrapper
 from data.apim.action import Action, ActionException
 from data.apim.port import Port, PortException
 from data.apim.wire import Wire, WireException
@@ -57,11 +58,25 @@ class TestAction(unittest.TestCase):
 		self.assertTrue(login.getInputPorts() == [uname, password])
 		self.assertTrue(login.getOutputPorts() == [])
 		
-		# Add sub-action pipeline to top-level action pipeline.
-		readAccountBalance.addAction(login)
-		self.assertTrue(readAccountBalance.getActions() == [login])
+		# Create a wrapper for the sub-action pipeline
+		loginWrapper = ActionWrapper(login, readAccountBalance)
+		w_uname, w_password = loginWrapper.getInputPorts()
 		
-		# Make sure we can't add the same action again
+		self.assertTrue(type(w_uname) == Port)
+		self.assertTrue(type(w_password) == Port)
+		self.assertTrue(w_uname.isOptional() == uname.isOptional())
+		self.assertTrue(w_uname.getDataType() == uname.getDataType())
+		self.assertTrue(w_password.isOptional() == password.isOptional())
+		self.assertTrue(w_password.getDataType() == password.getDataType())
+		
+		uname = w_uname
+		password = w_password
+		
+		# Add sub-action pipeline to top-level action pipeline.
+		#readAccountBalance.addAction(loginWrapper)
+		self.assertTrue(readAccountBalance.getActions() == [loginWrapper])
+		
+		# Make sure we can't add a non-wrapper action to an action pipeline
 		self.assertRaises(ActionException, lambda: readAccountBalance.addAction(login))
 		
 		# make sure we can't add the uname port again
@@ -112,9 +127,9 @@ class TestAction(unittest.TestCase):
 		self.assertTrue(readAccountBalance.getWireSet().containsWire(pwd, password))
 		
 		# change sequence of actions
-		readAccountBalance.changeSequence([login])
-		self.assertRaises(ActionException, lambda: readAccountBalance.changeSequence([login,ActionPipeline]))
-		self.assertRaises(ActionException, lambda: readAccountBalance.changeSequence([login,login]))
+		readAccountBalance.changeSequence([loginWrapper])
+		self.assertRaises(ActionException, lambda: readAccountBalance.changeSequence([loginWrapper,ActionPipeline]))
+		self.assertRaises(ActionException, lambda: readAccountBalance.changeSequence([loginWrapper,loginWrapper]))
 		self.assertRaises(ActionException, lambda: readAccountBalance.changeSequence([]))
 		
 		# Make sure we can't connect/disconnect ports that we don't have access to.
@@ -127,8 +142,8 @@ class TestAction(unittest.TestCase):
 		self.assertRaises(WireException, lambda: readAccountBalance.connect(uname, username))
 	
 		# action deletion
-		self.assertRaises(ActionException, lambda: readAccountBalance.removeAction(ActionPipeline()))
-		readAccountBalance.removeAction(login)
+		self.assertRaises(ActionException, lambda: readAccountBalance.removeAction(login))
+		readAccountBalance.removeAction(loginWrapper)
 		self.assertFalse(readAccountBalance.getWireSet().containsWire(username, uname))
 		self.assertFalse(readAccountBalance.getWireSet().containsWire(pwd, password))
 		
@@ -136,8 +151,13 @@ class TestAction(unittest.TestCase):
 		readField = ComponentAction(None, "This is a bullshit component action")
 		balanceStr = Port()
 		readField.addOutputPort(balanceStr)
-		readAccountBalance.addAction(readField)
-		readAccountBalance.connect(balanceStr, accountBalance)
+		
+		readFieldWrapper = ActionWrapper(readField, readAccountBalance)
+		balanceStr2, = readFieldWrapper.getOutputPorts()
+		
+		#readAccountBalance.addAction(readFieldWrapper)
+		readAccountBalance.connect(balanceStr2, accountBalance)
+		self.assertRaises(PortException, lambda: readAccountBalance.connect(balanceStr, accountBalance))
 		
 	def test_ComponentAction(self):
 		ca1 = ComponentAction()
@@ -211,3 +231,46 @@ class TestAction(unittest.TestCase):
 		portA.addOutputWire(AtoB)
 		
 		self.assertRaises(TypeError, lambda: portB.setDataType("not a type"))
+		
+	def test_ActionWrapper(self):
+		# make an action pipeline
+		ap = ActionPipeline()
+		p1 = Port()
+		p2 = Port()
+		ap.addInputPort(p1)
+		ap.addOutputPort(p2)
+		
+		# make a wrapper for it
+		parent = ActionPipeline()
+		w = ActionWrapper(ap, parent)
+		p1Mirror, = w.getInputPorts()
+		p2Mirror, = w.getOutputPorts()
+		
+		self.assertTrue(p1Mirror is not p1)
+		self.assertTrue(p2Mirror is not p2)
+		self.assertTrue(type(p1Mirror) == Port)
+		self.assertTrue(type(p2Mirror) == Port)
+		self.assertTrue(p1Mirror.isOptional() == p1.isOptional())
+		self.assertTrue(p1Mirror.getDataType() == p1.getDataType())
+		self.assertTrue(p2Mirror.isOptional() == p2.isOptional())
+		self.assertTrue(p2Mirror.getDataType() == p2.getDataType())
+		
+		# Add another port to the action pipeline and make sure the wrapper is updated
+		ap.addInputPort(Port())
+		self.assertTrue(len(ap.getInputPorts()) == len(w.getInputPorts()))
+		
+		ap.removePort(p1)
+		self.assertTrue(len(ap.getInputPorts()) == len(w.getInputPorts()))
+		
+		ap.removePort(p2)
+		self.assertTrue(len(ap.getInputPorts()) == len(w.getInputPorts()))
+		
+		self.assertRaises(ActionException, lambda: ActionPipeline().registerWrapper(w))
+		self.assertRaises(ActionException, lambda: ActionPipeline().unRegisterWrapper(w))
+		self.assertRaises(ActionException, lambda: ap.unRegisterWrapper(w))
+		
+		w.forgetActionReference()
+		ap.unRegisterWrapper(w)
+		
+		self.assertRaises(ActionException, lambda: ActionPipeline().addAction(w))
+		self.assertRaises(ActionException, lambda: parent.addAction(w))
