@@ -23,7 +23,7 @@ This module contains the ApiModel class which is the top-level class for buildin
 
 from typing import List
 
-from PySide2.QtCore import QObject
+from PySide2.QtCore import QObject, Signal
 
 from data.apim.actionpipeline import ActionPipeline
 from data.apim.componentaction import ComponentAction
@@ -42,6 +42,8 @@ class ApiModel(QObject):
 	unique - meaning that we never store 2 component actions that have the same component and the
 	same action specification.
 	"""
+	
+	newActionPipeline = Signal(ActionPipeline)
 	
 	def __init__(self):
 		"""
@@ -76,15 +78,24 @@ class ApiModel(QObject):
 		"""
 		return self._componentActions[:]
 	
-	def addActionPipeline(self, actionPipeline: 'ActionPipeline') -> None:
+	def addActionPipeline(self, actionPipeline: 'ActionPipeline', configure:bool=False) -> None:
 		"""
 		Add an action pipeline to the collection of all action pipelines.
 		
 		:param actionPipeline: The action pipeline to add to the collection.
 		:type actionPipeline: ActionPipeline
+		:param configure: If True, the black box editor will be shown to allow the user to
+						  configure ports and name the action pipeline.
+		:type configure: bool
 		:return: None
 		:rtype: NoneType
 		"""
+		
+		if configure:
+			#TODO: show the black box editor.
+			# If the user selects "OK", set the ports and name of the action pipeline.
+			# If the user selects "Cancel", simply return.
+		
 		self._actionPipelines.append(actionPipeline)
 		
 	def addComponentAction(self, componentAction: 'ComponentAction') -> None:

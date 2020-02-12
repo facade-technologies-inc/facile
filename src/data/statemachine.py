@@ -33,6 +33,7 @@ import data.tguim.visibilitybehavior as vb
 from gui.facilegraphicsview import FacileGraphicsView
 from qt_models.propeditordelegate import PropertyEditorDelegate
 from data.configvars import ConfigVars
+from data.apim.actionpipeline import ActionPipeline
 
 
 class StateMachine:
@@ -340,6 +341,7 @@ class StateMachine:
 		ui.actionStart_App.setEnabled(False)
 		ui.actionStop_App.setEnabled(False)
 		ui.actionManage_Project.setEnabled(False)
+		ui.actionAdd_Action_Pipeline.setEnabled(False)
 	
 	def _state_MODEL_MANIPULATION(self, event: Event, previousState: State, *args,
 	                              **kwargs) -> None:
@@ -395,6 +397,7 @@ class StateMachine:
 			ui.actionStop_App.setEnabled(False)
 			ui.actionStart_App.setEnabled(True)
 			ui.actionManage_Project.setEnabled(True)
+			ui.actionAdd_Action_Pipeline.triggered.connect(lambda: self._project.getAPIModel().addActionPipeline(ActionPipeline(), configure=True))
 		
 		if previousState == StateMachine.State.EXPLORATION:
 			o = self._project.getObserver()
@@ -421,6 +424,7 @@ class StateMachine:
 		ui.actionAdd_Behavior.setEnabled(True)
 		ui.actionManualExplore.setChecked(False)
 		ui.actionAutoExplore.setChecked(False)
+		ui.actionAdd_Action_Pipeline.setEnabled(True)
 	
 	def _state_ADDING_VB(self, event: Event, previousState: State, *args, **kwargs) -> None:
 		"""
