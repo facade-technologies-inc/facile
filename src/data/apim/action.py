@@ -25,7 +25,7 @@ and *ActionPipeline* classes.
 from abc import ABC as AbstractBaseClass
 from typing import List
 
-from data.apim.port import Port, PortException
+import data.apim.port as port
 from data.entity import Entity
 
 
@@ -40,19 +40,23 @@ class Action(AbstractBaseClass, Entity):
 	
 	def __init__(self):
 		"""
-		The **Action** class is the abstract base class of both *ActionPipeline* and
-		*ComponentAction*. It stores all of the common functionality of the derived classes.
+		The **Action** class is the abstract base class of all types of actions.
+		It stores all of the common functionality of the derived classes.
 		
 		The Action class is responsible for managing ports. Actions can have any number of
 		inputs and outputs. Each input and output is a port. A single port instance cannot be
 		both an input and an output, nor can it be shared between actions.
 		
 		The action class maintains a set of all ports to prevent misuse of ports.
+		
+		Each action instance also maintains a list of action wrappers.
 		"""
 		super().__init__()
 		# inputs and outputs are lists of ports.
 		self._inputs = []
 		self._outputs = []
+		
+		self._wrappers = set()
 		
 	def addInputPort(self, port: 'Port') -> None:
 		"""
@@ -69,14 +73,15 @@ class Action(AbstractBaseClass, Entity):
 		:rtype: NoneType
 		"""
 		if port in Action.allPorts:
-			raise PortException("Port is already used. Can't add port to action.")
+			raise port.PortException("Port is already used. Can't add port to action.")
 		
 		port.setAction(self)
 		
 		Action.allPorts.add(port)
 		self._inputs.append(port)
+		self.synchronizeWrappers()
 	
-	def addOutputPort(self, port: Port) -> None:
+	def addOutputPort(self, port: 'port.Port') -> None:
 		"""
 		Adds a port to the list of outputs for this action.
 		
@@ -91,14 +96,15 @@ class Action(AbstractBaseClass, Entity):
 		:rtype: NoneType
 		"""
 		if port in Action.allPorts:
-			raise PortException("Port is already used. Can't add port to action.")
+			raise port.PortException("Port is already used. Can't add port to action.")
 		
 		port.setAction(self)
 		
 		Action.allPorts.add(port)
 		self._outputs.append(port)
+		self.synchronizeWrappers()
 		
-	def getInputPorts(self) -> List[Port]:
+	def getInputPorts(self) -> List['port.Port']:
 		"""
 		Get the list of input ports for this action.
 		
@@ -107,7 +113,7 @@ class Action(AbstractBaseClass, Entity):
 		"""
 		return self._inputs[:]
 		
-	def getOutputPorts(self) -> List[Port]:
+	def getOutputPorts(self) -> List['port.Port']:
 		"""
 		Get the list of output ports for this action.
 
@@ -132,7 +138,7 @@ class Action(AbstractBaseClass, Entity):
 		"""
 		
 		if port not in Action.allPorts:
-			raise PortException("Port not found in any actions.")
+			raise port.PortException("Port not found in any actions.")
 		
 		found = False
 		if port in self._inputs:
@@ -142,10 +148,61 @@ class Action(AbstractBaseClass, Entity):
 			found = True
 			self._outputs.remove(port)
 		else:
-			raise PortException("Port not found in this action.")
+			raise port.PortException("Port not found in this action.")
 			
 		if found:
 			Action.allPorts.remove(port)
-			port._action = None
+			port.setAction(None)
 		
+		self.synchronizeWrappers()
 		return found
+
+	def registerWrapper(self, wrapper: 'ActionWrapper') -> None:
+		"""
+		Register an action wrapper with this action.
+		
+		:raises: ActionException if the wrapper does not store a reference to this action.
+		
+		:return: None
+		:rtype: NoneType
+		"""
+		
+		if wrapper.getActionReference() is not self:
+			raise ActionException("The ActionWrapper must reference this action for this action to "
+			                      "reference it.")
+		
+		self._wrappers.add(wrapper)
+		
+	def unRegisterWrapper(self, wrapper: 'ActionWrapper') -> None:
+		"""
+		Un-register an action wrapper with this action.
+		
+		To maintain synchronized two-way references, the wrapper is required to forget about this
+		action before this action can un-register it.
+		
+		:raises: ActionException if the wrapper is not registered with this action already.
+		:raises: ActionException if the wrapper still references this action
+		
+		:param wrapper: The ActionWrapper to unregister.
+		:return: None
+		"""
+		
+		if wrapper not in self._wrappers:
+			raise ActionException("Cannot unregister a wrapper that is not registered with this action.")
+		
+		if wrapper.getActionReference() is self:
+			raise ActionException("The Wrapper must forget about the action before the action can forget about the wrapper.")
+		
+		self._wrappers.remove(wrapper)
+		
+	def synchronizeWrappers(self) -> None:
+		"""
+		Synchronizes all wrappers. This function should be called from any function that edits
+		the ports of the action.
+		
+		:return: None
+		:rtype: NoneType
+		"""
+		
+		for wrapper in self._wrappers:
+			wrapper.synchronizePorts()
