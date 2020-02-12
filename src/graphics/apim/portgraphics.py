@@ -27,6 +27,7 @@ sys.path.append(os.path.abspath("../../"))
 
 from PySide2.QtCore import QRectF, QPoint
 from PySide2.QtGui import QPainterPath, QPainter, QPolygon, QColor, Qt, QPen
+
 from PySide2.QtWidgets import QGraphicsScene, QGraphicsItem, QApplication, QGraphicsView, QStyleOptionGraphicsItem, \
 	QWidget, QGraphicsSceneContextMenuEvent
 from qt_models.portmenu import PortMenu
@@ -35,12 +36,13 @@ import data.apim.port as port
 class PortGraphics(QGraphicsItem):
 	"""
 	This class defines the graphics for displaying a port in the APIM View.
+
 	A port is shaped somewhat like an inverted, elongated pentagon.
 	"""
 	
 	PEN_WIDTH = 1.0
 	WIDTH = 50
-	SIDE_HEIGHT = 2 * WIDTH
+	SIDE_HEIGHT = 1 * WIDTH
 	TAPER_HEIGHT = 0.5 * SIDE_HEIGHT
 	TOTAL_HEIGHT = SIDE_HEIGHT + TAPER_HEIGHT
 	# Center the shape about the origin of its coordinate system.
@@ -50,19 +52,21 @@ class PortGraphics(QGraphicsItem):
 	PEN_COLOR = QColor(Qt.black)
 	BRUSH_COLOR = QColor(252, 140, 3)
 	
-	def __init__(self, port: 'Port', parent: QGraphicsItem = None):
+	def __init__(self, port: 'Port', parent: QGraphicsItem = None, menuEnabled: bool = True):
 		"""
 		Constructs a portGraphics object for the given Port object.
+		
 		:param port: The port for which this graphics item represents.
 		:type port: Port
 		:param parent: A QGraphicsItem (probably an actionGraphics object)
 		:type parent: QGraphicsItem
+		:param menuEnabled: If true, a context menu will be shown on right-click.
+		:type menuEnabled: bool
 		"""
 		QGraphicsItem.__init__(self, parent)
 		self.setFlag(QGraphicsItem.ItemIsSelectable)
+		self._menuEnabled = menuEnabled
 		self.menu = PortMenu()
-		
-		#TODO: What else should be in the constructor ?...
 	
 	def boundingRect(self) -> QRectF:
 		"""
@@ -131,6 +135,10 @@ class PortGraphics(QGraphicsItem):
 		:return: None
 		:rtype: NoneType
 		"""
+		
+		if not self._menuEnabled:
+			return QGraphicsItem.contextMenuEvent(self, event)
+		
 		self.setSelected(True)
 		self.menu.exec_(event.screenPos())
 
