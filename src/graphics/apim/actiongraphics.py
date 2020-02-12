@@ -51,15 +51,30 @@ class ActionGraphics(QGraphicsItem):
 		:param action: The action for which this graphics item represents.
 		:type action: Action
 		:param parent: None
-		:type parent: Nonetype
+		:type parent: NoneType
 		:return: The graphics of an action.
 		:rtype: ActionGraphics
 		"""
 		QGraphicsItem.__init__(self, parent)
 		self.setFlag(QGraphicsItem.ItemIsSelectable)
 		self._action = action
-		self._inputPortGraphics = [PortGraphics(p, self) for p in self._action.getInputPorts()]
-		self._outputPortGraphics = [PortGraphics(p, self) for p in self._action.getOutputPorts()]
+		
+		self._inputPortGraphics = []
+		self._outputPortGraphics = []
+		self._interactivePorts = True
+		self.createPortGraphics()
+		
+		
+	def createPortGraphics(self) -> None:
+		"""
+		Creates the port graphics for the action.
+		
+		:return: None
+		:rtype: NoneType
+		"""
+		m = self._interactivePorts
+		self._inputPortGraphics = [PortGraphics(p, self, m) for p in self._action.getInputPorts()]
+		self._outputPortGraphics = [PortGraphics(p, self, m) for p in self._action.getOutputPorts()]
 	
 	def boundingRect(self) -> QRectF:
 		"""

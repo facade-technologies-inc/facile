@@ -27,12 +27,17 @@ sys.path.append(os.path.abspath("../../"))
 
 from PySide2.QtCore import QRectF, QPoint
 from PySide2.QtGui import QPainterPath, QPainter, QPolygon, QColor, Qt, QPen
-from PySide2.QtWidgets import QGraphicsScene, QGraphicsItem, QApplication, QGraphicsView, QStyleOptionGraphicsItem, QWidget
+
+from PySide2.QtWidgets import QGraphicsScene, QGraphicsItem, QApplication, QGraphicsView, QStyleOptionGraphicsItem, \
+	QWidget, QGraphicsSceneContextMenuEvent
+from qt_models.portmenu import PortMenu
 import data.apim.port as port
 
 class PortGraphics(QGraphicsItem):
 	"""
 	This class defines the graphics for displaying a port in the APIM View.
+
+	A port is shaped somewhat like an inverted, elongated pentagon.
 	"""
 	
 	PEN_WIDTH = 1.0
@@ -45,18 +50,23 @@ class PortGraphics(QGraphicsItem):
 	Y_POS = -0.5 * TOTAL_HEIGHT
 	
 	PEN_COLOR = QColor(Qt.black)
-	BRUSH_COLOR = QColor(Qt.black)
+	BRUSH_COLOR = QColor(252, 140, 3)
 	
-	def __init__(self, port: 'Port', parent=None):
+	def __init__(self, port: 'Port', parent: QGraphicsItem = None, menuEnabled: bool = True):
 		"""
 		Constructs a portGraphics object for the given Port object.
+		
 		:param port: The port for which this graphics item represents.
 		:type port: Port
+		:param parent: A QGraphicsItem (probably an actionGraphics object)
+		:type parent: QGraphicsItem
+		:param menuEnabled: If true, a context menu will be shown on right-click.
+		:type menuEnabled: bool
 		"""
 		QGraphicsItem.__init__(self, parent)
 		self.setFlag(QGraphicsItem.ItemIsSelectable)
-		
-		#TODO: What else should be in the constructor ?...
+		self._menuEnabled = menuEnabled
+		self.menu = PortMenu()
 	
 	def boundingRect(self) -> QRectF:
 		"""
@@ -75,8 +85,10 @@ class PortGraphics(QGraphicsItem):
 	
 	def shape(self) -> QPainterPath:
 		"""
+		Returns the shape of the Port as a QPainterPath. Ports are shaped like an inverted, elongated pentagon.
 
-		:return:
+		:return: The shape of the Port as a QPainterPath.
+		:rtype: QPainterPath
 		"""
 		# Create the polygon (pentagon-like shape)
 		poly = QPolygon()
@@ -86,35 +98,49 @@ class PortGraphics(QGraphicsItem):
 		poly << QPoint(0, PortGraphics.Y_POS + PortGraphics.TOTAL_HEIGHT)
 		poly << QPoint(PortGraphics.X_POS, PortGraphics.Y_POS + PortGraphics.SIDE_HEIGHT)
 		poly << QPoint(PortGraphics.X_POS, PortGraphics.Y_POS)
-		
-		
-		
+
 		path = QPainterPath()
 		path.addPolygon(poly)
 		return path
 	
 	
-	def paint(self, painter: QPainter, option: QStyleOptionGraphicsItem, widget: QWidget):
+	def paint(self, painter: QPainter, option: QStyleOptionGraphicsItem, widget: QWidget) -> None:
 		"""
-		Paints a port.
+		Paints a port. This function is used implicitly by the QGraphicsView to render a port.
 		
-		:param painter:
-		:param option:
-		:param widget:
-		:return:
+		:param painter: The painter to paint with.
+		:type painter: QPainter
+		:param option: provides style options for the item.
+		:type option: QStyleOptionGraphicsItem
+		:param widget: QWidget
+		:type widget: It points to the widget that is being painted on; or make it = None.
+		:return: None
+		:rtype: NoneType
 		"""
-		
+
+		# Make a Qpen to draw the border. Use different pens if Port is selected.
 		pen = QPen(PortGraphics.PEN_COLOR)
-		if self.isSelected():
-			pen.setStyle(Qt.DashDotLine)
-			pen.setColor(QColor(255, 0, 0))
-		else:
-			pen.setStyle(Qt.SolidLine)
-			pen.setColor(QColor(0, 0, 0))
+		pen.setWidth(PortGraphics.PEN_WIDTH)
 		painter.setPen(pen)
 		
 		painter.setBrush(PortGraphics.BRUSH_COLOR)
 		painter.drawPath(self.shape())
+
+	def contextMenuEvent(self, event: QGraphicsSceneContextMenuEvent) -> None:
+		"""
+		Opens a context menu (right click menu) for the component.
+
+		:param event: The event that was generated when the user right-clicked on this item.
+		:type event: QGraphicsSceneContextMenuEvent
+		:return: None
+		:rtype: NoneType
+		"""
+		
+		if not self._menuEnabled:
+			return QGraphicsItem.contextMenuEvent(self, event)
+		
+		self.setSelected(True)
+		self.menu.exec_(event.screenPos())
 
 if __name__ == "__main__":
 	app = QApplication()

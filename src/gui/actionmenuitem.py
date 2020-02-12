@@ -24,7 +24,7 @@ This module contains the ActionMenuItem() Class.
 from PySide2.QtWidgets import QWidget, QGraphicsScene
 from PySide2.QtCore import Qt
 from gui.ui.ui_actionmenuitem import Ui_Form as Ui_ActionMenuItem
-from graphics.apim.actiongraphics import ActionGraphics
+from graphics.apim.actionicongraphics import ActionIconGraphics
 
 class ActionMenuItem(QWidget):
 	"""
@@ -51,7 +51,7 @@ class ActionMenuItem(QWidget):
 		self.setText(self.getName())
 		
 		#Add ActionGraphics to Graphics View
-		self._actionGraphics = ActionGraphics(self._action)
+		self._actionGraphics = ActionIconGraphics(self._action)
 		self._scene = QGraphicsScene()
 		self.ui.actionIcon.setScene(self._scene)
 		self.ui.actionIcon.fitInView(self._actionGraphics, Qt.KeepAspectRatioByExpanding)
