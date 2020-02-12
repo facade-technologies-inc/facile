@@ -39,6 +39,7 @@ from gui.newprojectdialog import NewProjectDialog
 from gui.ui.ui_facileview import Ui_MainWindow as Ui_FacileView
 from qt_models.projectexplorermodel import ProjectExplorerModel
 from tguiil.blinker import Blinker
+from gui.actionmenu import ActionMenu
 
 
 class FacileView(QMainWindow):
@@ -64,6 +65,20 @@ class FacileView(QMainWindow):
 		# State Machine Initialization
 		self._stateMachine = StateMachine(self)
 		self._stateMachine.facileOpened()
+		
+		#Action Menu Initialization
+		self._componentActionMenu = ActionMenu()
+		self._actionPipelinesMenu = ActionMenu()
+		
+		#Add labels for each tab on the Action Menu to the view
+		self._componentActionMenu.setLabelText("Actions for current selected component.")
+		self._actionPipelinesMenu.setLabelText("All user-defined actions.")
+		
+		#Add Action Menu Tabs to the view
+		self.ui.actionMenuTabWidget.addTab(self._componentActionMenu, "Component Actions")
+		self.ui.actionMenuTabWidget.addTab(self._actionPipelinesMenu, "Action Pipelines")
+		self.ui.actionMenuTabWidget.removeTab(0)
+		
 	
 	@Slot(Project)
 	def setProject(self, project: Project) -> None:
