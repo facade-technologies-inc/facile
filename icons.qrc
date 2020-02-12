@@ -1,37 +1,70 @@
+
 <RCC>
     <qresource prefix="/icon">
+        
         <file alias="../resources/icons/facade_logo.png">resources/icons/facade_logo.png</file>
+
         <file alias="../resources/icons/gradient/icons8-add-property-64.png">resources/icons/gradient/icons8-add-property-64.png</file>
+
         <file alias="../resources/icons/gradient/icons8-database-view-64.png">resources/icons/gradient/icons8-database-view-64.png</file>
+
         <file alias="../resources/icons/gradient/icons8-ophthalmology-64.png">resources/icons/gradient/icons8-ophthalmology-64.png</file>
+
         <file alias="../resources/icons/gradient/icons8-search-property-64.png">resources/icons/gradient/icons8-search-property-64.png</file>
+
         <file alias="../resources/icons/gradient/icons8-show-property-64.png">resources/icons/gradient/icons8-show-property-64.png</file>
+
         <file alias="../resources/icons/gradient/start_app.png">resources/icons/gradient/start_app.png</file>
+
         <file alias="../resources/icons/gradient/stop_app.png">resources/icons/gradient/stop_app.png</file>
+
         <file alias="../resources/icons/pastel/add.png">resources/icons/pastel/add.png</file>
+
         <file alias="../resources/icons/pastel/add_arrow.png">resources/icons/pastel/add_arrow.png</file>
+
         <file alias="../resources/icons/pastel/add_box.png">resources/icons/pastel/add_box.png</file>
+
         <file alias="../resources/icons/pastel/box.png">resources/icons/pastel/box.png</file>
+
         <file alias="../resources/icons/pastel/copy.png">resources/icons/pastel/copy.png</file>
+
         <file alias="../resources/icons/pastel/create.png">resources/icons/pastel/create.png</file>
+
         <file alias="../resources/icons/pastel/flash_light.png">resources/icons/pastel/flash_light.png</file>
+
         <file alias="../resources/icons/pastel/image.png">resources/icons/pastel/image.png</file>
+
         <file alias="../resources/icons/pastel/open_box.png">resources/icons/pastel/open_box.png</file>
+
         <file alias="../resources/icons/pastel/pause.png">resources/icons/pastel/pause.png</file>
+
         <file alias="../resources/icons/pastel/play.png">resources/icons/pastel/play.png</file>
+
         <file alias="../resources/icons/pastel/power_off.png">resources/icons/pastel/power_off.png</file>
+
         <file alias="../resources/icons/pastel/recent_box.png">resources/icons/pastel/recent_box.png</file>
+
         <file alias="../resources/icons/pastel/record.png">resources/icons/pastel/record.png</file>
+
         <file alias="../resources/icons/pastel/refresh.png">resources/icons/pastel/refresh.png</file>
+
         <file alias="../resources/icons/pastel/right_arrow.png">resources/icons/pastel/right_arrow.png</file>
+
         <file alias="../resources/icons/pastel/robot.png">resources/icons/pastel/robot.png</file>
+
         <file alias="../resources/icons/pastel/save.png">resources/icons/pastel/save.png</file>
+
         <file alias="../resources/icons/pastel/save_as.png">resources/icons/pastel/save_as.png</file>
+
         <file alias="../resources/icons/pastel/search.png">resources/icons/pastel/search.png</file>
+
         <file alias="../resources/icons/pastel/settings.png">resources/icons/pastel/settings.png</file>
+
         <file alias="../resources/icons/pastel/space_shuttle.png">resources/icons/pastel/space_shuttle.png</file>
+
         <file alias="../resources/icons/pastel/stop_recording.png">resources/icons/pastel/stop_recording.png</file>
+
         <file alias="../resources/icons/pastel/tag.png">resources/icons/pastel/tag.png</file>
+
     </qresource>
-    <qresource prefix="/"/>
 </RCC>
