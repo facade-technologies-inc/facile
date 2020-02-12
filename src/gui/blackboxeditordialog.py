@@ -48,6 +48,7 @@ class BlackBoxEditorDialog(QDialog):
 		QDialog.__init__(self)
 		self.ui = Ui_BlackBoxEditorDialog()
 		self.ui.setupUi(self)
+		self.setModal(True)
 		
 		self.ui.inputCentralWidget = QWidget()
 		self.ui.inputLayout = QVBoxLayout()
@@ -65,15 +66,39 @@ class BlackBoxEditorDialog(QDialog):
 		self.ui.outputCentralWidget.setLayout(self.ui.outputLayout)
 		self.ui.outputScrollArea.setWidget(self.ui.outputCentralWidget)
 		
-		self.ui.addInputPortButton.clicked.connect(lambda: self.addPort(self.ui.inputLayout))
-		self.ui.addOutputPortButton.clicked.connect(lambda: self.addPort(self.ui.outputLayout))
+		self.ui.addInputPortButton.clicked.connect(lambda: self.addPortWidget(None, self.ui.inputLayout))
+		self.ui.addOutputPortButton.clicked.connect(lambda: self.addPortWidget(None, self.ui.outputLayout))
 		
-		#TODO:
-		# Set name field &
-		# Add existing ports.
+		self._action = action
 		
-	def addPort(self, layout: QVBoxLayout):
-		layout.insertWidget(0, PortEditorWidget())
+		self.addExistingPorts()
+	
+	def addExistingPorts(self) -> None:
+		"""
+		Adds port editors for all of the existing ports in the action.
+		
+		:return: None
+		:rtype: NoneType
+		"""
+		for port in self._action.getInputPorts():
+			self.addPortWidget(port, self.ui.inputLayout)
+		for port in self._action.getOutputPorts():
+			self.addPortWidget(port, self.ui.outputLayout)
+		
+	def addPortWidget(self, port: 'Port', layout: QVBoxLayout):
+		"""
+		Add a single port editor to a specified layout. The layout provided should
+		be the layout for either the input or output port editors.
+		
+		:param port: The port to create the editor widget for.
+		:type port: Port
+		:param layout: The layout to place the editor widget in.
+		:type layout: QVBoxLayout
+		:return: None
+		:rtype: NoneType
+		"""
+		pew = PortEditorWidget(port)
+		layout.insertWidget(0, pew)
 		
 	def accept(self) -> None:
 		"""
@@ -85,9 +110,6 @@ class BlackBoxEditorDialog(QDialog):
 		#TODO: Set the ports and name
 		return QDialog.accept(self)
 		
-		
-	
-	
 if __name__ == "__main__":
 	def stylize(qApp):
 		qApp.setStyle("Fusion")

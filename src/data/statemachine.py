@@ -27,10 +27,11 @@ from enum import Enum, auto
 
 from PySide2.QtCore import Slot, QTimer
 from PySide2.QtGui import QStandardItem, QStandardItemModel, Qt, QIcon, QPixmap
-from PySide2.QtWidgets import QGraphicsScene
+from PySide2.QtWidgets import QGraphicsScene, QDialog
 
 import data.tguim.visibilitybehavior as vb
 from gui.facilegraphicsview import FacileGraphicsView
+from gui.blackboxeditordialog import BlackBoxEditorDialog
 from qt_models.propeditordelegate import PropertyEditorDelegate
 from data.configvars import ConfigVars
 from data.apim.actionpipeline import ActionPipeline
@@ -328,6 +329,22 @@ class StateMachine:
 		ui.actionStop_App.triggered.connect(lambda: v.onStopAppTriggered(confirm=True))
 		ui.actionShow_Behaviors.triggered.connect(self.configVars.setShowBehaviors)
 		ui.actionShow_Token_Tags.triggered.connect(self.configVars.setShowTokenTags)
+		
+		def onNewActionPipeline():
+			ap = ActionPipeline()
+			blackBoxEditor = BlackBoxEditorDialog(ap)
+			result = blackBoxEditor.exec_()
+			if result == QDialog.Rejected:
+				return
+			else:
+				print(ap.getInputPorts())
+				print(ap.getOutputPorts())
+				self._project.getAPIModel().addActionPipeline(ap)
+				# TODO: Add the action pipeline to the action pipeline menu.
+				#  This operation should also trigger something that shows the action pipeline in
+				#  the action pipeline editor view.
+		
+		ui.actionAdd_Action_Pipeline.triggered.connect(onNewActionPipeline)
 
 		# Disable actions
 		ui.actionSave_Project.setEnabled(False)
@@ -397,7 +414,6 @@ class StateMachine:
 			ui.actionStop_App.setEnabled(False)
 			ui.actionStart_App.setEnabled(True)
 			ui.actionManage_Project.setEnabled(True)
-			ui.actionAdd_Action_Pipeline.triggered.connect(lambda: self._project.getAPIModel().addActionPipeline(ActionPipeline(), configure=True))
 		
 		if previousState == StateMachine.State.EXPLORATION:
 			o = self._project.getObserver()
