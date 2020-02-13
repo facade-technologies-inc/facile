@@ -31,6 +31,7 @@ from PySide2.QtWidgets import QGraphicsScene, QDialog
 
 import data.tguim.visibilitybehavior as vb
 from gui.facilegraphicsview import FacileGraphicsView
+from gui.facileactiongraphicsview import FacileActionGraphicsView
 from gui.blackboxeditordialog import BlackBoxEditorDialog
 from qt_models.propeditordelegate import PropertyEditorDelegate
 from data.configvars import ConfigVars
@@ -260,7 +261,7 @@ class StateMachine:
 		# Set up the GUI
 		ui.tempView.hide()
 		ui.targetGUIModelView = FacileGraphicsView()
-		ui.apiModelView = FacileGraphicsView()
+		ui.apiModelView = FacileActionGraphicsView()
 		ui.viewSplitter.addWidget(ui.targetGUIModelView)
 		ui.viewSplitter.addWidget(ui.apiModelView)
 		
@@ -340,11 +341,10 @@ class StateMachine:
 				print(ap.getInputPorts())
 				print(ap.getOutputPorts())
 				self._project.getAPIModel().addActionPipeline(ap)
-				# TODO: Add the action pipeline to the action pipeline menu.
-				#  This operation should also trigger something that shows the action pipeline in
-				#  the action pipeline editor view.
+				v._actionPipelinesMenu.addAction(ap)
 		
 		ui.actionAdd_Action_Pipeline.triggered.connect(onNewActionPipeline)
+		v._actionPipelinesMenu.actionSelected.connect(ui.apiModelView.showAction)
 
 		# Disable actions
 		ui.actionSave_Project.setEnabled(False)

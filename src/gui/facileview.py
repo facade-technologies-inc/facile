@@ -62,10 +62,6 @@ class FacileView(QMainWindow):
 		
 		self._blinker = None
 		
-		# State Machine Initialization
-		self._stateMachine = StateMachine(self)
-		self._stateMachine.facileOpened()
-		
 		#Action Menu Initialization
 		self._componentActionMenu = ActionMenu()
 		self._actionPipelinesMenu = ActionMenu()
@@ -79,6 +75,9 @@ class FacileView(QMainWindow):
 		self.ui.actionMenuTabWidget.addTab(self._actionPipelinesMenu, "Action Pipelines")
 		self.ui.actionMenuTabWidget.removeTab(0)
 		
+		# State Machine Initialization
+		self._stateMachine = StateMachine(self)
+		self._stateMachine.facileOpened()
 	
 	@Slot(Project)
 	def setProject(self, project: Project) -> None:

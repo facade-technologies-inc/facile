@@ -107,7 +107,25 @@ class BlackBoxEditorDialog(QDialog):
 		:return: None
 		:rtype: NoneType
 		"""
-		#TODO: Set the ports and name
+		
+		self._action.setName(self.ui.actionName.text())
+		
+		il = self.ui.inputLayout
+		for i in range(il.count()-1):
+			pew = il.itemAt(i).widget()
+			pew.updatePort()
+			port = pew.getPort()
+			if port.getAction() is None:
+				self._action.addInputPort(port)
+		
+		ol = self.ui.outputLayout
+		for i in range(ol.count() - 1):
+			pew = ol.itemAt(i).widget()
+			pew.updatePort()
+			port = pew.getPort()
+			if port.getAction() is None:
+				self._action.addOutputPort(port)
+			
 		return QDialog.accept(self)
 		
 if __name__ == "__main__":

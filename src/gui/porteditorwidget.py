@@ -77,5 +77,5 @@ class PortEditorWidget(QWidget):
 		:rtype: NoneType
 		"""
 		self._port.setName(self.ui.nameEdit.text())
-		self._port.setDataType(eval(self.ui.nameEdit.text()))
+		self._port.setDataType(int) #TODO: use type from editor
 		self._port.setOptional(self.ui.checkBoxOptional.isChecked())
