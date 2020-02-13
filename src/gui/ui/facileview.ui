@@ -95,7 +95,7 @@
     </layout>
    </widget>
   </widget>
-  <widget class="QDockWidget" name="dockWidget_4">
+  <widget class="QDockWidget" name="validatorDockWidget">
    <property name="allowedAreas">
     <set>Qt::BottomDockWidgetArea</set>
    </property>
@@ -106,11 +106,7 @@
     <number>8</number>
    </attribute>
    <widget class="QWidget" name="dockWidgetContents_4">
-    <layout class="QVBoxLayout" name="verticalLayout_3">
-     <item>
-      <widget class="QListView" name="validatorView"/>
-     </item>
-    </layout>
+    <layout class="QVBoxLayout" name="verticalLayout_3"/>
    </widget>
   </widget>
   <widget class="QDockWidget" name="dockWidget_5">

@@ -36,6 +36,7 @@ from data.tguim.visibilitybehavior import VisibilityBehavior
 from gui.copyprojectdialog import CopyProjectDialog
 from gui.manageprojectdialog import ManageProjectDialog
 from gui.newprojectdialog import NewProjectDialog
+from gui.validatorview import ValidatorView
 from gui.ui.ui_facileview import Ui_MainWindow as Ui_FacileView
 from qt_models.projectexplorermodel import ProjectExplorerModel
 from tguiil.blinker import Blinker
@@ -60,12 +61,16 @@ class FacileView(QMainWindow):
 		self.ui = Ui_FacileView()
 		self.ui.setupUi(self)
 		
+		# add validator view
+		self.ui.validatorView = ValidatorView()
+		self.ui.validatorDockWidget.setWidget(self.ui.validatorView)
+		
 		self._blinker = None
 		
 		# State Machine Initialization
 		self._stateMachine = StateMachine(self)
 		self._stateMachine.facileOpened()
-		
+
 		#Action Menu Initialization
 		self._componentActionMenu = ActionMenu()
 		self._actionPipelinesMenu = ActionMenu()
