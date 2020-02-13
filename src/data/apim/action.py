@@ -25,8 +25,9 @@ and *ActionPipeline* classes.
 from abc import ABC as AbstractBaseClass
 from typing import List
 
-from data.apim.port import Port, PortException
+import data.apim.port as port
 from data.entity import Entity
+from data.properties import Properties
 
 
 class ActionException(Exception):
@@ -52,6 +53,12 @@ class Action(AbstractBaseClass, Entity):
 		Each action instance also maintains a list of action wrappers.
 		"""
 		super().__init__()
+		
+		predefinedCategories = ["Base", "Action"]
+		customCategories = {}
+		props = Properties.createPropertiesObject(predefinedCategories, customCategories)
+		self.setProperties(props)
+
 		# inputs and outputs are lists of ports.
 		self._inputs = []
 		self._outputs = []
@@ -73,7 +80,7 @@ class Action(AbstractBaseClass, Entity):
 		:rtype: NoneType
 		"""
 		if port in Action.allPorts:
-			raise PortException("Port is already used. Can't add port to action.")
+			raise port.PortException("Port is already used. Can't add port to action.")
 		
 		port.setAction(self)
 		
@@ -81,7 +88,7 @@ class Action(AbstractBaseClass, Entity):
 		self._inputs.append(port)
 		self.synchronizeWrappers()
 	
-	def addOutputPort(self, port: Port) -> None:
+	def addOutputPort(self, port: 'port.Port') -> None:
 		"""
 		Adds a port to the list of outputs for this action.
 		
@@ -96,7 +103,7 @@ class Action(AbstractBaseClass, Entity):
 		:rtype: NoneType
 		"""
 		if port in Action.allPorts:
-			raise PortException("Port is already used. Can't add port to action.")
+			raise port.PortException("Port is already used. Can't add port to action.")
 		
 		port.setAction(self)
 		
@@ -104,7 +111,7 @@ class Action(AbstractBaseClass, Entity):
 		self._outputs.append(port)
 		self.synchronizeWrappers()
 		
-	def getInputPorts(self) -> List[Port]:
+	def getInputPorts(self) -> List['port.Port']:
 		"""
 		Get the list of input ports for this action.
 		
@@ -113,7 +120,7 @@ class Action(AbstractBaseClass, Entity):
 		"""
 		return self._inputs[:]
 		
-	def getOutputPorts(self) -> List[Port]:
+	def getOutputPorts(self) -> List['port.Port']:
 		"""
 		Get the list of output ports for this action.
 
@@ -138,7 +145,7 @@ class Action(AbstractBaseClass, Entity):
 		"""
 		
 		if port not in Action.allPorts:
-			raise PortException("Port not found in any actions.")
+			raise port.PortException("Port not found in any actions.")
 		
 		found = False
 		if port in self._inputs:
@@ -148,7 +155,7 @@ class Action(AbstractBaseClass, Entity):
 			found = True
 			self._outputs.remove(port)
 		else:
-			raise PortException("Port not found in this action.")
+			raise port.PortException("Port not found in this action.")
 			
 		if found:
 			Action.allPorts.remove(port)

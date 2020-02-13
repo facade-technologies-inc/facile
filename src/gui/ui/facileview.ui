@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>872</width>
-    <height>634</height>
+    <width>1017</width>
+    <height>615</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -33,8 +33,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>872</width>
-     <height>25</height>
+     <width>1017</width>
+     <height>26</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -125,8 +125,13 @@
    </widget>
   </widget>
   <widget class="QDockWidget" name="dockWidget_6">
+   <property name="font">
+    <font>
+     <family>MS Shell Dlg 2</family>
+    </font>
+   </property>
    <property name="windowTitle">
-    <string>Modules</string>
+    <string>Action Menu</string>
    </property>
    <attribute name="dockWidgetArea">
     <number>2</number>
@@ -134,17 +139,15 @@
    <widget class="QWidget" name="dockWidgetContents_6">
     <layout class="QVBoxLayout" name="verticalLayout_4">
      <item>
-      <widget class="QTreeWidget" name="modulesView">
-       <column>
-        <property name="text">
-         <string>Module</string>
-        </property>
-       </column>
-       <column>
-        <property name="text">
-         <string>Description</string>
-        </property>
-       </column>
+      <widget class="QTabWidget" name="actionMenuTabWidget">
+       <property name="currentIndex">
+        <number>0</number>
+       </property>
+       <widget class="QWidget" name="tab">
+        <attribute name="title">
+         <string>Tab 1</string>
+        </attribute>
+       </widget>
       </widget>
      </item>
     </layout>

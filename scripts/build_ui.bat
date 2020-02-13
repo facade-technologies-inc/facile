@@ -6,6 +6,8 @@ pyside2-uic ../src/gui/ui/copyprojectdialog.ui > ../src/gui/ui/ui_copyprojectdia
 pyside2-uic ../src/gui/ui/newprojectdialog.ui > ../src/gui/ui/ui_newprojectdialog.py
 pyside2-uic ../src/gui/ui/manageprojectdialog.ui > ../src/gui/ui/ui_manageprojectdialog.py
 pyside2-uic ../src/gui/ui/validatorview.ui > ../src/gui/ui/ui_validatorview.py
+pyside2-uic ../src/gui/ui/actionmenu.ui > ../src/gui/ui/ui_actionmenu.py
+pyside2-uic ../src/gui/ui/actionmenuitem.ui > ../src/gui/ui/ui_actionmenuitem.py
 
 echo Done.
 
