@@ -338,8 +338,6 @@ class StateMachine:
 			if result == QDialog.Rejected:
 				return
 			else:
-				print(ap.getInputPorts())
-				print(ap.getOutputPorts())
 				self._project.getAPIModel().addActionPipeline(ap)
 				v._actionPipelinesMenu.addAction(ap)
 		
