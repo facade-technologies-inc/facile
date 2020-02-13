@@ -21,12 +21,24 @@
 from enum import Enum
 
 class ValidatorMessage:
+	"""
+	Validator Message class is a customized message after validation.
+	"""
+	
 	class Level(Enum):
+		"""
+		Create a Enum class for different types of message.
+		"""
+		
 		Error = 3
 		Warning = 2
 		Info = 1
 	
 	def __init__(self, text: str, level: Enum, entity: int=None):
+		"""
+		Construct the view for the validator.
+		"""
+		
 		self.text = text
 		self.level = level
 		self.entity = entity

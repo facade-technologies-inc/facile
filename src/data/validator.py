@@ -18,14 +18,27 @@ import time
 
 
 class Validator(QThread):
+	"""
+	This Validator class run algorithms to validate user's action pipline. It communicates with ValidatorView class with
+	signal/slot and sends message to the graphical view.
+	"""
 	
 	sentMessage = Signal(ValidatorMessage)
 	updateProgress = Signal(float)
 	
 	def __init__(self):
+		"""
+		Construct the validator.
+		"""
 		QThread.__init__(self)
 	
 	def run(self):
+		"""
+		Run validation. Send validator message through emitting signal.
+		
+		:return: None
+		:rtype: NoneType
+		"""
 		self._running = True
 		
 		# TODO: acquire references to TGUIM and APIM
@@ -78,4 +91,10 @@ class Validator(QThread):
 
 	@Slot()
 	def stop(self):
+		"""
+		Stop validator.
+		
+		:return: None
+		:rtype: NoneType
+		"""
 		self._running = False

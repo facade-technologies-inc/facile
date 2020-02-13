@@ -288,11 +288,4 @@ class ValidatorView(QWidget):
 		self.ui.algorithmProgressBar.setValue(round(progress, 2))
 		self.ui.algorithmProgressBar.show()
 		
-		
-if __name__ == "__main__":
-	
-	app = QApplication([])
-	widget = ValidatorView()
-	widget.show()
 
-	sys.exit(app.exec_())
