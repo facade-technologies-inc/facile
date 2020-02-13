@@ -27,6 +27,8 @@ import threading
 
 from PySide2.QtWidgets import QApplication
 
+from gui.validatormessageview import ValidatorMessageView
+
 sys.path.append(os.path.abspath("../"))
 
 from PySide2.QtGui import QPalette
@@ -254,8 +256,8 @@ class ValidatorView(QWidget):
 		:return: None
 		:rtype: NoneType
 		"""
-		# TODO: use-custom message widget instead of QLabel
-		msg.widget = QLabel(msg.text)
+		
+		msg.widget = ValidatorMessageView(msg)
 		
 	def sync(self):
 		"""

@@ -13,9 +13,24 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true"/>
+  </property>
   <layout class="QVBoxLayout" name="verticalLayout">
+   <property name="spacing">
+    <number>1</number>
+   </property>
+   <property name="topMargin">
+    <number>2</number>
+   </property>
+   <property name="bottomMargin">
+    <number>2</number>
+   </property>
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout">
+     <property name="spacing">
+      <number>0</number>
+     </property>
      <item>
       <widget class="QLabel" name="levelLabel">
        <property name="text">
@@ -38,6 +53,9 @@
      </item>
      <item>
       <widget class="QLabel" name="entityLabel">
+       <property name="styleSheet">
+        <string notr="true">color: rgb(15, 151, 255);</string>
+       </property>
        <property name="text">
         <string>TextLabel</string>
        </property>
@@ -49,6 +67,16 @@
     <widget class="QLabel" name="messageLabel">
      <property name="text">
       <string>TextLabel</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="Line" name="line">
+     <property name="lineWidth">
+      <number>3</number>
+     </property>
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
      </property>
     </widget>
    </item>
