@@ -34,6 +34,7 @@ class Validator(QThread):
 		algorithms = [getattr(self, method_name) for method_name in dir(self)
 		              if callable(getattr(self, method_name)) and
 		              method_name.startswith("algorithm_")]
+		print(algorithms)
 		
 		for algoNum in range(len(algorithms)):
 			algo = algorithms[algoNum]
