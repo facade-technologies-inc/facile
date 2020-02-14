@@ -25,7 +25,7 @@ import os
 from copy import deepcopy
 
 from PySide2.QtCore import Slot, QTimer, QItemSelection
-from PySide2.QtGui import Qt
+from PySide2.QtGui import Qt, QCloseEvent, QKeyEvent
 from PySide2.QtWidgets import QMainWindow, QFileDialog, QMessageBox, QLabel, \
 	QGraphicsOpacityEffect
 
@@ -420,3 +420,57 @@ class FacileView(QMainWindow):
 		waitTimer.timeout.connect(wait)
 		fadeOutTimer.timeout.connect(fadeOut)
 		fadeInTimer.start(10)
+	
+	def closeEvent(self, event: QCloseEvent) -> None:
+		"""
+		Handles what happens when the user tries to quit the application.
+		
+		If there is a project open, ask them if they want to save their progress. We also give
+		the option to not save or to cancel the closing of Facile.
+		
+		If a project is not open, ask them if they are sure they want to quit.
+		
+		:param event: The close event used to determine if the application should be closed or not.
+		:type event: QCloseEvent
+		:return: None
+		:rtype: NoneType
+		"""
+		
+		title = "Cancel confirmation ..."
+		if self._project:
+			message = "Would you like to save your project before exiting?"
+			options = QMessageBox.Yes | QMessageBox.No | QMessageBox.Cancel
+			result = QMessageBox.question(self, title, message, options)
+			event.ignore()
+			
+			if result == QMessageBox.Yes:
+				self.onSaveProjectTriggered()
+				
+			if result != QMessageBox.Cancel:
+				event.accept()
+		else:
+			message = "Are you sure you want to quit?"
+			options = QMessageBox.Yes | QMessageBox.No
+			result = QMessageBox.question(self, title, message, options)
+			event.ignore()
+			
+			if result == QMessageBox.Yes:
+				self.onSaveProjectTriggered()
+				event.accept()
+	
+	def keyPressEvent(self, event: QKeyEvent) -> None:
+		"""
+		Handles key presses for the main window.
+		
+		When the "Esc" key is pressed, we'll try to close Facile
+		
+		:param event: The event carrying the code of the key that was pressed.
+		:type event: QKeyEvent
+		:return: None
+		:rtype: NoneType
+		"""
+		
+		if event.key() == Qt.Key_Escape:
+			self.close()
+		event.accept()
+
