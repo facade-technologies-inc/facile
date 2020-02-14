@@ -391,7 +391,7 @@ class FacileView(QMainWindow):
 		fadeOutTimer = QTimer()
 		
 		waitTimer.setSingleShot(True)
-		waitTimer.setInterval(1000)
+		waitTimer.setInterval(3000)
 		
 		effect = QGraphicsOpacityEffect(label)
 		label.setGraphicsEffect(effect)
