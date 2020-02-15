@@ -78,3 +78,24 @@ class Entity:
 		"""
 		
 		self._properties = propertiesObj
+		
+	def getName(self) -> str:
+		"""
+		Gets the name of this entity.
+		
+		:return: the name of the entity
+		:rtype: str
+		"""
+		return self.getProperties().getProperty("Name")[1].getValue()
+	
+	def setName(self, newName:str) -> None:
+		"""
+		Set the name of this entity.
+		
+		:param newName: The new name of the entity.
+		:type newName: str
+		:return: None
+		:rtype: NoneType
+		"""
+		print("Setting name to:", newName)
+		self.getProperties().getProperty("Name")[1].setValue(newName)

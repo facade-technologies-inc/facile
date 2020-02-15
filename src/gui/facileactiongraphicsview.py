@@ -17,12 +17,27 @@
 	| Technologies Inc.                                                            |
 	|                                                                              |
 	\------------------------------------------------------------------------------/
+	
+This module contains the FacileGraphicsView class which is just like a normal graphics
+view, but can be zoomed.
 """
 
-from PySide2.QtWidgets import QGraphicsItem
-from graphics.apim.actiongraphics import ActionGraphics
+
+from PySide2.QtWidgets import QGraphicsScene
+from gui.facilegraphicsview import FacileGraphicsView
+from graphics.apim.actionpipelinegraphics import ActionPipelineGraphics
 
 
-class ActionPipelineGraphics(ActionGraphics):
+class FacileActionGraphicsView(FacileGraphicsView):
+	"""
+	This class adds functionality to the QGraphicsView to zoom in and out.
 	
-	pass
+	This is primarily used as the view that shows the target GUI model and API model
+	"""
+	
+	def showAction(self, action: 'Action') -> None:
+		newScene = QGraphicsScene()
+		newScene.addItem(ActionPipelineGraphics(action))
+		self.setScene(newScene)
+	
+

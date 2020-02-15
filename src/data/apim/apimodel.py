@@ -23,15 +23,29 @@ This module contains the ApiModel class which is the top-level class for buildin
 
 from typing import List
 
-from PySide2.QtCore import QObject
+from PySide2.QtCore import QObject, Signal
+from PySide2.QtWidgets import QDialog
 
 from data.apim.actionpipeline import ActionPipeline
 from data.apim.componentaction import ComponentAction
+from gui.blackboxeditordialog import BlackBoxEditorDialog
 
 class ApiModel(QObject):
 	"""
-	The ApiModel class contains all the information about the API model.
+	The ApiModel class contains all the information about the API model. There are 2 main parts
+	of the API model; action pipelines, and component actions.
+	
+	Each Action Pipeline is created manually by the user using Facile. When action pipelines are
+	created, other actions are inserted into them; however, since the action pipelines can share
+	resources (such as the same ComponentAction being used in 2 Action Pipelines), the Action
+	Pipelines really only contain wrappers that point to other actions.
+	
+	The action pipelines are kept in a collection separate from the action pipelines and each one is
+	unique - meaning that we never store 2 component actions that have the same component and the
+	same action specification.
 	"""
+	
+	newActionPipeline = Signal(ActionPipeline)
 	
 	def __init__(self):
 		"""
@@ -41,7 +55,6 @@ class ApiModel(QObject):
 		:rtype: ApiModel
 		"""
 		
-		
 		self._actionPipelines = []
 		self._componentActions = []
 		
@@ -49,13 +62,60 @@ class ApiModel(QObject):
 		"""
 		Gets a list of all ActionPipelines.
 		
+		.. note:: A shallow copy of the list is returned rather than the original.
+		
 		:return: A list of all ActionPipelines.
 		:rtype: List[ActionPipeline]
 		"""
 		return self._actionPipelines[:]
 	
 	def getComponentActions(self) -> List[ComponentAction]:
-		pass
-		# TODO: Decide how we're going to store component actions and which ones we'll store.
+		"""
+		Gets a list of all ComponentActions
+		
+		.. note:: A shallow copy of the list is returned rather than the original.
+		
+		:return: A list of all ComponentActions
+		:rtype: List[ComponentAction]
+		"""
+		return self._componentActions[:]
 	
-	# TODO: Add methods to this class as we see fit
+	def addActionPipeline(self, actionPipeline: 'ActionPipeline') -> None:
+		"""
+		Add an action pipeline to the collection of all action pipelines.
+		
+		:param actionPipeline: The action pipeline to add to the collection.
+		:type actionPipeline: ActionPipeline
+		:return: None
+		:rtype: NoneType
+		"""
+		self._actionPipelines.append(actionPipeline)
+		
+	def addComponentAction(self, componentAction: 'ComponentAction') -> None:
+		"""
+		Add a component action to the collection of all component actions.
+		
+		:param actionPipeline: The component action to add to the collection
+		:type actionPipeline: ComponentAction
+		:return: None
+		:rtype: NoneType
+		"""
+		# TODO: if componentAction is a repeat, don't add it.
+		
+		self._componentActions.append(componentAction)
+		
+	def removeActionPipeline(self, actionPipeline: 'ActionPipeline') -> bool:
+		"""
+		Removes an action pipeline instance from the collection of action pipelines.
+		
+		:param actionPipeline: The action pipeline to remove
+		:type actionPipeline: ActionPipeline
+		:return: True if the action pipeline existed before, but is successfully removed. False
+		         otherwise.
+		:rtype: bool
+		"""
+		try:
+			self._actionPipelines.remove(actionPipeline)
+			return True
+		except:
+			return False
