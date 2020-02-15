@@ -192,8 +192,8 @@ class ActionGraphics(QGraphicsItem):
 				except IndexError:
 					return
 				
-		spread(-ActionGraphics.TOTAL_RECT_HEIGHT / 2, self._inputPortGraphics)
-		spread(ActionGraphics.TOTAL_RECT_HEIGHT / 2, self._outputPortGraphics)
+		spread(-self._height / 2, self._inputPortGraphics)
+		spread(self._height / 2, self._outputPortGraphics)
 		
 		
 if __name__ == "__main__":
