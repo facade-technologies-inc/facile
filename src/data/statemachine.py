@@ -116,8 +116,39 @@ class StateMachine:
 
 		# Initialize configuration variables (that affect what gets displayed in the Facile GUI)
 		self.configVars = ConfigVars()
+		
+		# Stores the action pipeline that's currently being edited
+		self._currentActionPipeline = None
 
 		StateMachine.instance = self
+		
+	def setCurrentActionPipeline(self, actionPipeline: 'ActionPipeline') -> None:
+		"""
+		Sets the current action pipeline to be edited.
+		
+		:param actionPipeline: The action pipeline to stage for editing.
+		:type actionPipeline: ActionPipeline
+		:return: None
+		:rtype: NoneType
+		"""
+		if type(actionPipeline) == ActionPipeline:
+			self.view.ui.apiModelView.showAction(actionPipeline)
+		elif actionPipeline is None:
+			self.view.ui.apiModelView.setScene(QGraphicsScene())
+		else:
+			raise TypeError("Must provide either ActionPipeline or None")
+			
+		self._currentActionPipeline = actionPipeline
+		
+	def getCurrentActionPipeline(self) -> 'ActionPipeline':
+		"""
+		Get the current action pipeline staged for editing.
+		
+		:return: The current action pipeline staged for editing.
+		:rtype: ActionPipeline
+		"""
+		return self._currentActionPipeline
+		
 	
 	def tick(self, event: Event, *args, **kwargs) -> None:
 		"""
@@ -342,7 +373,7 @@ class StateMachine:
 				v._actionPipelinesMenu.addAction(ap)
 		
 		ui.actionAdd_Action_Pipeline.triggered.connect(onNewActionPipeline)
-		v._actionPipelinesMenu.actionSelected.connect(ui.apiModelView.showAction)
+		v._actionPipelinesMenu.actionSelected.connect(self.setCurrentActionPipeline)
 
 		# Disable actions
 		ui.actionSave_Project.setEnabled(False)

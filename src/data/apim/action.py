@@ -25,6 +25,8 @@ and *ActionPipeline* classes.
 from abc import ABC as AbstractBaseClass
 from typing import List
 
+from PySide2.QtCore import QObject, Signal
+
 import data.apim.port as port
 from data.entity import Entity
 from data.properties import Properties
@@ -35,9 +37,11 @@ class ActionException(Exception):
 		Exception.__init__(self, msg)
 
 
-class Action(AbstractBaseClass, Entity):
+class Action(QObject, Entity):
 	
 	allPorts = set()
+	
+	updated = Signal()
 	
 	def __init__(self):
 		"""
@@ -87,6 +91,7 @@ class Action(AbstractBaseClass, Entity):
 		Action.allPorts.add(port)
 		self._inputs.append(port)
 		self.synchronizeWrappers()
+		self.updated.emit()
 	
 	def addOutputPort(self, port: 'port.Port') -> None:
 		"""
@@ -110,6 +115,7 @@ class Action(AbstractBaseClass, Entity):
 		Action.allPorts.add(port)
 		self._outputs.append(port)
 		self.synchronizeWrappers()
+		self.updated.emit()
 		
 	def getInputPorts(self) -> List['port.Port']:
 		"""
@@ -162,6 +168,7 @@ class Action(AbstractBaseClass, Entity):
 			port.setAction(None)
 		
 		self.synchronizeWrappers()
+		self.updated.emit()
 		return found
 
 	def registerWrapper(self, wrapper: 'ActionWrapper') -> None:

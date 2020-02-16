@@ -21,10 +21,18 @@
 This module contains the ActionMenuItem() Class.
 """
 
-from PySide2.QtWidgets import QWidget, QGraphicsScene
+from PySide2.QtWidgets import QWidget, QGraphicsScene, QDialog
 from PySide2.QtCore import Qt
+from PySide2.QtGui import QContextMenuEvent
 from gui.ui.ui_actionmenuitem import Ui_Form as Ui_ActionMenuItem
 from graphics.apim.actionicongraphics import ActionIconGraphics
+from data.apim.actionpipeline import ActionPipeline
+from data.apim.componentaction import ComponentAction
+from data.apim.actionwrapper import ActionWrapper
+from qt_models.componentactionitemmenu import ComponentActionItemMenu
+from qt_models.actionpipelineitemmenu import ActionPipelineItemMenu
+from gui.blackboxeditordialog import BlackBoxEditorDialog
+import data.statemachine as sm
 
 class ActionMenuItem(QWidget):
 	"""
@@ -35,8 +43,8 @@ class ActionMenuItem(QWidget):
 		"""
 		Constructs a ActionMenuItem object.
 		
-		:param: Specified action that will be added as a action menu item.
-		:type: Action
+		:param action: Specified action that will be added as a action menu item.
+		:type action: Action
 		:return: The new ActionMenuItem object.
 		:rtype: ActionMenuItem
 		"""
@@ -45,17 +53,46 @@ class ActionMenuItem(QWidget):
 		# UI Initialization
 		self.ui = Ui_ActionMenuItem()
 		self.ui.setupUi(self)
-		
-		#Set text for the action menu item
 		self._action = action
-		self.setText(self.getName())
 		
 		#Add ActionGraphics to Graphics View
 		self._actionGraphics = ActionIconGraphics(self._action)
 		self._scene = QGraphicsScene()
 		self.ui.actionIcon.setScene(self._scene)
-		self.ui.actionIcon.fitInView(self._actionGraphics, Qt.KeepAspectRatioByExpanding)
 		self._scene.addItem(self._actionGraphics)
+		
+		# set action name text field and shrink action graphics to fit.
+		self.update()
+		
+		# Create a menu appropriate for this action.
+		if type(self._action) == ActionPipeline:
+			self.menu = ActionPipelineItemMenu()
+			
+			def editInternals():
+				sm.StateMachine.instance.view._actionPipelinesMenu.actionSelected.emit(action)
+				
+			def editExternals():
+				editInternals()
+				BlackBoxEditorDialog(action).exec_()
+				self.update()
+				
+			def delete():
+				pass
+				# TODO: remove the action pipeline from the
+			
+			self.menu.onEditInternals(editInternals)
+			self.menu.onEditExternals(editExternals)
+			self.menu.onDelete(delete)
+				
+		elif type(self._action) == ComponentAction:
+			self.menu = ComponentActionItemMenu()
+			
+		def add():
+			cap = sm.StateMachine.instance.getCurrentActionPipeline()
+			ActionWrapper(self._action, cap)
+			print(cap.getActions())
+			
+		self.menu.onAdd(add)
 		
 	def getName(self) -> str:
 		"""
@@ -76,3 +113,26 @@ class ActionMenuItem(QWidget):
 		:rtype: Nonetype
 		"""
 		self.ui.actionLabel.setText(text)
+	
+	def contextMenuEvent(self, event: QContextMenuEvent) -> None:
+		"""
+		Opens a context menu (right click menu) for the component.
+
+		:param event: The event that was generated when the user right-clicked on this item.
+		:type event: QGraphicsSceneContextMenuEvent
+		:return: None
+		:rtype: NoneType
+		"""
+		
+		self.menu.exec_(event.globalPos())
+		
+	def update(self):
+		"""
+		Snaps the action icon to the size of the graphics view.
+		
+		:return: None
+		:rtype: NoneType
+		"""
+		self.setText(self.getName())
+		self._actionGraphics.updateGraphics()
+		self.ui.actionIcon.fitInView(self._actionGraphics, Qt.KeepAspectRatioByExpanding)

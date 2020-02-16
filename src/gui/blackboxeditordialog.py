@@ -71,6 +71,8 @@ class BlackBoxEditorDialog(QDialog):
 		
 		self._action = action
 		
+		self.ui.actionName.setText(self._action.getName())
+		
 		self.addExistingPorts()
 	
 	def addExistingPorts(self) -> None:
@@ -110,21 +112,37 @@ class BlackBoxEditorDialog(QDialog):
 		
 		self._action.setName(self.ui.actionName.text())
 		
+		# add new input ports to the action
 		il = self.ui.inputLayout
+		newPorts = []
 		for i in range(il.count()-1):
 			pew = il.itemAt(i).widget()
 			pew.updatePort()
 			port = pew.getPort()
+			newPorts.append(port)
 			if port.getAction() is None:
 				self._action.addInputPort(port)
+				
+		# remove old input ports from the action.
+		for port in self._action.getInputPorts():
+			if port not in newPorts:
+				self._action.removePort(port)
 		
+		# add new output ports to the action.
 		ol = self.ui.outputLayout
+		newPorts = []
 		for i in range(ol.count() - 1):
 			pew = ol.itemAt(i).widget()
 			pew.updatePort()
 			port = pew.getPort()
+			newPorts.append(port)
 			if port.getAction() is None:
 				self._action.addOutputPort(port)
+				
+		# remove old output ports from the action.
+		for port in self._action.getOutputPorts():
+			if port not in newPorts:
+				self._action.removePort(port)
 			
 		return QDialog.accept(self)
 		
