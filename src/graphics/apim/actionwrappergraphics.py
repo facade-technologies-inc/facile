@@ -21,9 +21,10 @@
 
 from PySide2.QtGui import QPainter, QColor, QFont, QFontMetricsF
 from PySide2.QtCore import QRectF
-from PySide2.QtWidgets import QWidget, QStyleOptionGraphicsItem
+from PySide2.QtWidgets import QWidget, QStyleOptionGraphicsItem, QGraphicsSceneContextMenuEvent
 
 from graphics.apim.actiongraphics import ActionGraphics
+from qt_models.actionwrappermenu import ActionWrapperMenu
 
 class ActionWrapperGraphics(ActionGraphics):
 	
@@ -33,6 +34,27 @@ class ActionWrapperGraphics(ActionGraphics):
 	
 	NAME_FONT = QFont("Times", 10)
 	NAME_TEXT_COLOR = QColor(0, 0, 0)
+	
+	def __init__(self, action: 'ActionWrapper', parent=None) -> 'ActionGraphics':
+		"""
+		Constructs an Action Wrapper Graphics object for the given action wrapper.
+
+		:param action: The action wrapper for which this graphics item represents.
+		:type action: ActionWrapper
+		:param parent: None
+		:type parent: NoneType
+		:return: The graphics of an action.
+		:rtype: ActionGraphics
+		"""
+		ActionGraphics.__init__(self, action, parent)
+		
+		def delete():
+			action.getParent().removeAction(action)
+			self.updateGraphics()
+			
+		self.menu = ActionWrapperMenu()
+		self.menu.onDelete(delete)
+		
 	
 	def paint(self, painter: QPainter, option: QStyleOptionGraphicsItem, index: QWidget) -> None:
 		"""
@@ -76,4 +98,14 @@ class ActionWrapperGraphics(ActionGraphics):
 		br = fm.boundingRect(self._action.getName())
 		# TODO: fix text positioning - font metrics aren't working well
 		painter.drawText(x + offset, br.height(), self._action.getName())
-		
+	
+	def contextMenuEvent(self, event: QGraphicsSceneContextMenuEvent) -> None:
+		"""
+		Opens a context menu (right click menu) for the action wrapper.
+
+		:param event: The event that was generated when the user right-clicked on this item.
+		:type event: QGraphicsSceneContextMenuEvent
+		:return: None
+		:rtype: NoneType
+		"""
+		self.menu.exec_(event.screenPos())

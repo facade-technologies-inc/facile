@@ -166,7 +166,6 @@ class ActionMenuItem(QWidget):
 			event.accept()
 			self.menu.editInternals()
 			
-		
 	def update(self):
 		"""
 		Snaps the action icon to the size of the graphics view.
