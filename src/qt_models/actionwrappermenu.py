@@ -31,10 +31,9 @@ class ActionWrapperMenu(QMenu):
 	
 	def __init__(self):
 		"""
-		This class is the menu that shows when an action menu item is right clicked in the
-		action pipeline menu.
+		This class is the menu that shows when an action wrapper graphics item is right-clicked.
 		
-		Constructing a ActionPipelineItemMenu creates the menu items, but does not connect any
+		Constructing a ActionWrapperMenu creates the menu items, but does not connect any
 		actions. To connect the menu items to internal logic, use the methods that start with "on".
 		"""
 		QMenu.__init__(self)

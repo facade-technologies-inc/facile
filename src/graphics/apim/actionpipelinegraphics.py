@@ -29,7 +29,6 @@ from graphics.apim.wiregraphics import WireGraphics
 from graphics.apim.portgraphics import PortGraphics
 
 
-
 class ActionPipelineGraphics(ActionGraphics):
 
 	SIDE_MARGIN = 50
@@ -56,7 +55,16 @@ class ActionPipelineGraphics(ActionGraphics):
 		ActionPipelineGraphics.updateGraphics(self)
 	
 	@Slot()
-	def updateGraphics(self):
+	def updateGraphics(self) -> None:
+		"""
+		Updates the graphics and all sub-graphics for the action pipeline.
+		
+		starts by updating the sub-actions, then sub-wires, then calls teh same method but in the
+		ActionGraphics class to update the ports.
+		
+		:return: None
+		:rtype: NoneType
+		"""
 		self.prepareGeometryChange()
 		self.updateActionGraphics()
 		self.updateWireGraphics()
@@ -147,7 +155,7 @@ class ActionPipelineGraphics(ActionGraphics):
 		
 		for i in range(len(self._actionGraphics)):
 			actionGraphics = self._actionGraphics[i]
-			actionHeight = actionGraphics.boundingRect().height() + ActionGraphics.V_SPACE
+			actionHeight = ActionGraphics.MAX_HEIGHT + ActionGraphics.V_SPACE
 			actionGraphics.setPos(0, i * actionHeight - self._height / 2 +
 			                      PortGraphics.TOTAL_HEIGHT + ActionGraphics.H_SPACE)
 			
@@ -171,7 +179,7 @@ class ActionPipelineGraphics(ActionGraphics):
 			count += 1
 			br = actionGraphics.boundingRect()
 			y -= br.height()/2 - 50
-			height += br.height() + ActionGraphics.V_SPACE
+			height += ActionGraphics.MAX_HEIGHT + ActionGraphics.V_SPACE
 			curChildWidth = br.width() + ActionPipelineGraphics.SIDE_MARGIN*2
 			maxChildWidth = max(maxChildWidth, curChildWidth)
 			

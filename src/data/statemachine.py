@@ -27,7 +27,7 @@ from enum import Enum, auto
 
 from PySide2.QtCore import Slot, QTimer
 from PySide2.QtGui import QStandardItem, QStandardItemModel, Qt, QIcon, QPixmap
-from PySide2.QtWidgets import QGraphicsScene, QDialog
+from PySide2.QtWidgets import QGraphicsScene, QDialog, QLabel, QVBoxLayout, QWidget
 
 import data.tguim.visibilitybehavior as vb
 from gui.facilegraphicsview import FacileGraphicsView

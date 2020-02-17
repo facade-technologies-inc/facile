@@ -94,7 +94,7 @@ class ActionMenuItem(QWidget):
 		def add():
 			cap = sm.StateMachine.instance.getCurrentActionPipeline()
 			ActionWrapper(self._action, cap)
-			print(cap.getActions())
+			sm.StateMachine.instance.view.ui.apiModelView.refresh()
 			
 		self.menu.onAdd(add)
 		

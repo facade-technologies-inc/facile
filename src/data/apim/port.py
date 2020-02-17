@@ -42,7 +42,7 @@ class Port(Entity):
         ensure that references between ports and wires maintain synchronized.
     """
 
-    def __init__(self, dataType: type = str, isOptional: bool = False):
+    def __init__(self, dataType: type = type(None), isOptional: bool = False):
         """
         Constructs a Port Object.
         

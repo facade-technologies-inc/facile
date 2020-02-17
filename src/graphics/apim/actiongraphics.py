@@ -46,6 +46,9 @@ class ActionGraphics(QGraphicsItem):
 	V_SPACE = 50
 	TOTAL_PORT_WIDTH = PortGraphics.WIDTH + H_SPACE
 	TOTAL_RECT_HEIGHT = PortGraphics.TOTAL_HEIGHT + V_SPACE
+	MAX_HEIGHT = TOTAL_RECT_HEIGHT + PortGraphics.TOTAL_HEIGHT
+	
+	COLOR = QColor(88, 183, 255)
 	
 	def __init__(self, action: 'Action', parent=None) -> 'ActionGraphics':
 		"""
@@ -63,6 +66,8 @@ class ActionGraphics(QGraphicsItem):
 		self._action = action
 		QObject.connect(action, SIGNAL('updated()'), self.updateGraphics)
 		
+		self.color = ActionGraphics.COLOR
+		
 		self._inputPortGraphics = []
 		self._outputPortGraphics = []
 		self._wireGraphics = []
@@ -75,7 +80,13 @@ class ActionGraphics(QGraphicsItem):
 		ActionGraphics.updateGraphics(self)
 		
 	@Slot()
-	def updateGraphics(self):
+	def updateGraphics(self) -> None:
+		"""
+		Updates all graphics and sub-graphics for this action.
+		
+		:return: None
+		:rtype: NoneType
+		"""
 		self.prepareGeometryChange()
 		self.updatePortGraphics()
 		return QGraphicsItem.update(self)
@@ -157,7 +168,7 @@ class ActionGraphics(QGraphicsItem):
 			height += PortGraphics.TOTAL_HEIGHT/2
 			
 		width += ActionGraphics.PEN_WIDTH
-		height += ActionGraphics.PEN_WIDTH
+		height += max(ActionGraphics.PEN_WIDTH, PortGraphics.REQUIRED_PEN_WIDTH)
 		
 		return QRectF(x, y, width, height)
 	
@@ -210,12 +221,10 @@ class ActionGraphics(QGraphicsItem):
 		"""
 		
 		self.placePorts()
-		painter.setBrush(QColor(88, 183, 255))
+		painter.setBrush(self.color)
 		x, y, width, height = self.getActionRect(self._action.getInputPorts(), self._action.getOutputPorts())
 		painter.drawRect(QRectF(x, y, width, height))
-		
 
-		
 	def placePorts(self) -> None:
 		"""
 		Place the ports at the right positions on the actions.
@@ -248,8 +257,8 @@ class ActionGraphics(QGraphicsItem):
 				negShift = -posShift
 				
 				try:
-					portList[posIdx].setPos(posShift, y)
-					portList[negIdx].setPos(negShift, y)
+					portList[posIdx].setPos(negShift, y)
+					portList[negIdx].setPos(posShift, y)
 				except IndexError:
 					return
 				

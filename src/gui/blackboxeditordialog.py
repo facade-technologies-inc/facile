@@ -99,7 +99,11 @@ class BlackBoxEditorDialog(QDialog):
 		:return: None
 		:rtype: NoneType
 		"""
-		pew = PortEditorWidget(port)
+		
+		if layout == self.ui.outputLayout:
+			pew = PortEditorWidget(port, allowOptional=False)
+		else:
+			pew = PortEditorWidget(port, allowOptional=True)
 		layout.insertWidget(0, pew)
 		
 	def accept(self) -> None:

@@ -27,11 +27,12 @@ sys.path.append(os.path.abspath("../../"))
 
 from PySide2.QtCore import QRectF, QPoint
 from PySide2.QtGui import QPainterPath, QPainter, QPolygon, QColor, Qt, QPen
-
 from PySide2.QtWidgets import QGraphicsScene, QGraphicsItem, QApplication, QGraphicsView, QStyleOptionGraphicsItem, \
-	QWidget, QGraphicsSceneContextMenuEvent
+	QWidget, QGraphicsSceneContextMenuEvent, QGraphicsTextItem
+
 from qt_models.portmenu import PortMenu
 import data.apim.port as port
+from data.apim.actionwrapper import ActionWrapper
 
 class PortGraphics(QGraphicsItem):
 	"""
@@ -40,7 +41,8 @@ class PortGraphics(QGraphicsItem):
 	A port is shaped somewhat like an inverted, elongated pentagon.
 	"""
 	
-	PEN_WIDTH = 1.0
+	REQUIRED_PEN_WIDTH = 5.0
+	OPTIONAL_PEN_WIDTH = 1.0
 	WIDTH = 50
 	SIDE_HEIGHT = 1 * WIDTH
 	TAPER_HEIGHT = 0.5 * SIDE_HEIGHT
@@ -50,7 +52,9 @@ class PortGraphics(QGraphicsItem):
 	Y_POS = -0.5 * TOTAL_HEIGHT
 	
 	PEN_COLOR = QColor(Qt.black)
-	BRUSH_COLOR = QColor(252, 140, 3)
+	
+	INNER_COLOR = QColor(100, 200, 0)
+	OUTER_COLOR = QColor(252, 140, 3)
 	
 	def __init__(self, port: 'Port', parent: QGraphicsItem = None, menuEnabled: bool = True):
 		"""
@@ -65,8 +69,22 @@ class PortGraphics(QGraphicsItem):
 		"""
 		QGraphicsItem.__init__(self, parent)
 		self.setFlag(QGraphicsItem.ItemIsSelectable)
+		self._port = port
 		self._menuEnabled = menuEnabled
 		self.menu = PortMenu()
+		
+		# If port is required and it's an input, make the border thicker
+		if not self._port.isOptional() and self._port in self._port.getAction().getInputPorts():
+			self.borderWidth = PortGraphics.REQUIRED_PEN_WIDTH
+		else:
+			self.borderWidth = PortGraphics.OPTIONAL_PEN_WIDTH
+			
+		# TODO: align port labels correctly
+		# self.nameItem = QGraphicsTextItem("TempName", self)
+		# self.nameItem.setRotation(90)
+		# self.typeItem = QGraphicsTextItem("TempType", self)
+		# self.typeItem.setRotation(90)
+		
 	
 	def boundingRect(self) -> QRectF:
 		"""
@@ -74,12 +92,12 @@ class PortGraphics(QGraphicsItem):
 		:return: create the bounding of the item
 		:rtype: QRectF
 		"""
-		halfPenWidth = PortGraphics.PEN_WIDTH / 2
+		halfPenWidth = self.borderWidth / 2
 		x = PortGraphics.X_POS - halfPenWidth
 		y = PortGraphics.Y_POS - halfPenWidth
 		
-		actualWidth = PortGraphics.WIDTH + PortGraphics.PEN_WIDTH
-		actualHeight = PortGraphics.TOTAL_HEIGHT + PortGraphics.PEN_WIDTH
+		actualWidth = PortGraphics.WIDTH + self.borderWidth
+		actualHeight = PortGraphics.TOTAL_HEIGHT + self.borderWidth
 		
 		return QRectF(x, y, actualWidth, actualHeight)
 	
@@ -120,11 +138,18 @@ class PortGraphics(QGraphicsItem):
 
 		# Make a Qpen to draw the border. Use different pens if Port is selected.
 		pen = QPen(PortGraphics.PEN_COLOR)
-		pen.setWidth(PortGraphics.PEN_WIDTH)
+		pen.setWidth(self.borderWidth)
 		painter.setPen(pen)
 		
-		painter.setBrush(PortGraphics.BRUSH_COLOR)
+		if type(self._port.getAction()) == ActionWrapper:
+			painter.setBrush(PortGraphics.INNER_COLOR)
+		else:
+			painter.setBrush(PortGraphics.OUTER_COLOR)
 		painter.drawPath(self.shape())
+		
+		# TODO: update port labels
+		# self.nameItem.setPlainText(self._port.getName())
+		# self.typeItem.setPlainText(self._port.getDataType().__name__)
 
 	def contextMenuEvent(self, event: QGraphicsSceneContextMenuEvent) -> None:
 		"""

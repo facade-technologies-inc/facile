@@ -23,6 +23,7 @@ from PySide2.QtGui import QPainter, QColor, QFont, QFontMetricsF
 from PySide2.QtCore import QRectF
 from PySide2.QtWidgets import QWidget, QStyleOptionGraphicsItem, QGraphicsSceneContextMenuEvent
 
+import data.statemachine as sm
 from graphics.apim.actiongraphics import ActionGraphics
 from qt_models.actionwrappermenu import ActionWrapperMenu
 
@@ -34,6 +35,8 @@ class ActionWrapperGraphics(ActionGraphics):
 	
 	NAME_FONT = QFont("Times", 10)
 	NAME_TEXT_COLOR = QColor(0, 0, 0)
+	
+	COLOR = QColor(188, 183, 255)
 	
 	def __init__(self, action: 'ActionWrapper', parent=None) -> 'ActionGraphics':
 		"""
@@ -48,9 +51,12 @@ class ActionWrapperGraphics(ActionGraphics):
 		"""
 		ActionGraphics.__init__(self, action, parent)
 		
+		self.color = ActionWrapperGraphics.COLOR
+		
 		def delete():
 			action.getParent().removeAction(action)
-			self.updateGraphics()
+			sm.StateMachine.instance.view.ui.apiModelView.refresh()
+			
 			
 		self.menu = ActionWrapperMenu()
 		self.menu.onDelete(delete)

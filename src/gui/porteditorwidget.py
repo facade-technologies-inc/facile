@@ -30,12 +30,14 @@ class PortEditorWidget(QWidget):
 	The PortEditorWidget is used to edit a single port object.
 	"""
 	
-	def __init__(self, port: 'Port' = None) -> 'PortEditorWidget':
+	def __init__(self, port: 'Port' = None, allowOptional: bool = True) -> 'PortEditorWidget':
 		"""
 		Creates a port editor widget.
 		
 		:param port: The port to edit.
 		:type port: Port
+		:param allowOptional: if True, the optional checkbox will be shown.
+		:type allowOptional: bool
 		"""
 		QWidget.__init__(self)
 		self.ui = Ui_PortEditorWidget()
@@ -46,6 +48,10 @@ class PortEditorWidget(QWidget):
 		else:
 			self._port = Port()
 		self.updateEditor()
+		
+		if not allowOptional:
+			self.ui.checkBoxOptional.setChecked(False)
+			self.ui.checkBoxOptional.hide()
 		
 			
 	def getPort(self) -> 'Port':
@@ -65,7 +71,7 @@ class PortEditorWidget(QWidget):
 		:rtype: NoneType
 		"""
 		self.ui.nameEdit.setText(self._port.getName())
-		self.ui.typeEdit.setText(str(self._port.getDataType()))
+		self.ui.typeEdit.setText(str(self._port.getDataType().__name__))
 		self.ui.checkBoxOptional.setChecked(self._port.isOptional())
 		
 	
@@ -77,5 +83,13 @@ class PortEditorWidget(QWidget):
 		:rtype: NoneType
 		"""
 		self._port.setName(self.ui.nameEdit.text())
-		self._port.setDataType(int) #TODO: use type from editor
 		self._port.setOptional(self.ui.checkBoxOptional.isChecked())
+		
+		try:
+			dataType = eval(self.ui.typeEdit.text())
+			assert (type(dataType) == type)
+		except:
+			# TODO: Figure out what to do in the case that we didn't recognize it as a type.
+			pass
+		else:
+			self._port.setDataType(dataType)
