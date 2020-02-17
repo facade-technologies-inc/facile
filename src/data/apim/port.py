@@ -22,13 +22,15 @@ This module contains the Port class.
 """
 import data.apim.wire as wr
 import data.apim.action as ac
+from data.entity import Entity
+from data.properties import Properties
 
 
 class PortException(Exception):
     def __init__(self, msg: str):
         Exception.__init__(self, msg)
 
-class Port:
+class Port(Entity):
     """
     A Port defines the interface between an Action (ActionPipeline or ComponentAction) and the outside world.
     A Port has one input (could be None), and as many outputs as desired. In effect, the input of the Port is
@@ -52,6 +54,13 @@ class Port:
         :param isOptional: Boolean specifying if the Port must be connected for the Port's Action to remain valid.
         :type isOptional: bool
         """
+        super().__init__()
+
+        predefinedCategories = ["Base", "Port"]
+        customCategories = {}
+        props = Properties.createPropertiesObject(predefinedCategories, customCategories)
+        self.setProperties(props)
+        
         self._input: 'wr.Wire' = None
         self._outputs: list = []  # list of wires.
         self._dataType: type = None
