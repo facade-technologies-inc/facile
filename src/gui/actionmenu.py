@@ -75,6 +75,7 @@ class ActionMenu(QWidget):
 		:return: None
 		:rtype: Nonetype
 		"""
+		sm.StateMachine.instance._project.getAPIModel().addActionPipeline(action)
 		menuItem = ActionMenuItem(action)
 		self.ui._itemLayout.addWidget(menuItem)
 		self.actionSelected.emit(action)

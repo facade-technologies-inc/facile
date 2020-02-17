@@ -50,13 +50,64 @@ class ActionPipelineItemMenu(ActionItemMenu):
 		# TODO: set action icons
 	
 	def onEditInternals(self, func):
+		"""
+		Sets the function to be run when the editInternal signal is triggered.
+		
+		:param func: The function to be run when the editInternal action is triggered.
+		:type func: callabe
+		:return: None
+		:rtype: NoneType
+		"""
 		self._editInternal.triggered.connect(func)
 		
-	def onEditExternals(self, func):
+	def onEditExternals(self, func) -> None:
+		"""
+		Sets the function to be run when the editExternal action is triggered.
+		
+		:param func: The function to be run when the editExternal action is triggered.
+		:type func: callabe
+		:return: None
+		:rtype: NoneType
+		"""
 		self._editExternal.triggered.connect(func)
 		
-	def onDelete(self, func):
+	def onDelete(self, func) -> None:
+		"""
+		Sets the function to be run when the delete action is triggered.
+
+		:param func: The function to be run when the editExternal action is triggered.
+		:type func: callabe
+		:return: None
+		:rtype: NoneType
+		"""
 		self._delete.triggered.connect(func)
+		
+	def editInternals(self) -> None:
+		"""
+		Emulates the user clicking the editInternal action
+		
+		:return: None
+		:rtype: NoneType
+		"""
+		self._editInternal.trigger()
+	
+	def editExternals(self) -> None:
+		"""
+		Emulates the user clicking the editExternal action
+
+		:return: None
+		:rtype: NoneType
+		"""
+		self._editExternal.trigger()
+	
+	def delete(self) -> None:
+		"""
+		Emulates the user clicking the delete action
+
+		:return: None
+		:rtype: NoneType
+		"""
+		self._delete.trigger()
 		
 	def prerequest(self) -> None:
 		"""

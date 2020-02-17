@@ -45,8 +45,25 @@ class ActionItemMenu(QMenu):
 		
 		# TODO: set action icons
 	
-	def onAdd(self, func):
+	def onAdd(self, func) -> None:
+		"""
+		Set the function to be run when the add action is triggered.
+		
+		:param func: the function to be run when the add action is triggered.
+		:type func: callable
+		:return: None
+		:rtype: NoneType
+		"""
 		self._addAction.triggered.connect(func)
+		
+	def triggerAdd(self) -> None:
+		"""
+		Emulates the user clicking the add action
+		
+		:return: None
+		:rtype: NoneType
+		"""
+		self._addAction.trigger()
 		
 	def prerequest(self) -> None:
 		"""

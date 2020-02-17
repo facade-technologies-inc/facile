@@ -22,7 +22,7 @@ This module contains the ActionMenuItem() Class.
 """
 
 from PySide2.QtWidgets import QWidget, QGraphicsScene, QDialog
-from PySide2.QtCore import Qt
+from PySide2.QtCore import Qt, QEvent
 from PySide2.QtGui import QContextMenuEvent
 from gui.ui.ui_actionmenuitem import Ui_Form as Ui_ActionMenuItem
 from graphics.apim.actionicongraphics import ActionIconGraphics
@@ -75,10 +75,14 @@ class ActionMenuItem(QWidget):
 				editInternals()
 				BlackBoxEditorDialog(action).exec_()
 				self.update()
+				apimView = sm.StateMachine.instance.view.ui.apiModelView
+				apimView.showAction(self._action)
 				
 			def delete():
-				pass
-				# TODO: remove the action pipeline from the
+				sm.StateMachine.instance._project.getAPIModel().removeActionPipeline(self._action)
+				if sm.StateMachine.instance.getCurrentActionPipeline() == self._action:
+					sm.StateMachine.instance.setCurrentActionPipeline(None)
+				self.hide()
 			
 			self.menu.onEditInternals(editInternals)
 			self.menu.onEditExternals(editExternals)
@@ -125,6 +129,43 @@ class ActionMenuItem(QWidget):
 		"""
 		
 		self.menu.exec_(event.globalPos())
+	
+	def mouseDoubleClickEvent(self, event: QEvent):
+		"""
+		Handles what happens when the user double clicks this action menu item.
+		
+		The interface editor opens for this action.
+		
+		:param event:
+		:return:
+		"""
+		
+		if event.buttons() != Qt.LeftButton:
+			return
+		
+		if type(self._action) == ActionPipeline:
+			event.accept()
+			self.menu.editExternals()
+		elif type(self._action) == ComponentAction:
+			event.accept()
+			self.menu.edit()
+	
+	def mousePressEvent(self, event: QEvent):
+		"""
+		Handles what happens when the user releases the mouse on this menu item.
+
+		This action is opened in the action pipeline editor view if it is an action pipeline
+
+		:param event:
+		:return:
+		"""
+		if event.buttons() != Qt.LeftButton:
+			return
+		
+		if type(self._action) == ActionPipeline:
+			event.accept()
+			self.menu.editInternals()
+			
 		
 	def update(self):
 		"""

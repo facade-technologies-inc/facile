@@ -24,13 +24,14 @@ from PySide2.QtGui import QPainter, QColor
 from PySide2.QtCore import QRectF, Slot
 
 from graphics.apim.actiongraphics import ActionGraphics
+from graphics.apim.actionwrappergraphics import ActionWrapperGraphics
 from graphics.apim.wiregraphics import WireGraphics
+from graphics.apim.portgraphics import PortGraphics
 
 
 
 class ActionPipelineGraphics(ActionGraphics):
-	
-	VERTICAL_SPACING = 50
+
 	SIDE_MARGIN = 50
 	
 	def __init__(self, actionPipeline: 'ActionPipeline', parent=None) -> 'ActionPipelineGraphics':
@@ -80,7 +81,7 @@ class ActionPipelineGraphics(ActionGraphics):
 			
 			# create new action graphics that aren't already in the mapping.
 			else:
-				newActionGraphics = ActionGraphics(refAction, self)
+				newActionGraphics = ActionWrapperGraphics(refAction, self)
 				self._actionGraphics.append(newActionGraphics)
 				self._actionMapping[refAction] = newActionGraphics
 			
@@ -142,10 +143,13 @@ class ActionPipelineGraphics(ActionGraphics):
 		"""
 		inputs = self._action.getInputPorts()
 		outputs = self._action.getOutputPorts()
+		self.getActionRect(inputs, outputs)
+		
 		for i in range(len(self._actionGraphics)):
 			actionGraphics = self._actionGraphics[i]
-			actionGraphics.setPos(0, -(i+1) * actionGraphics.boundingRect().height() +
-			                      self.getActionRect(inputs, outputs)[3]/2)
+			actionHeight = actionGraphics.boundingRect().height() + ActionGraphics.V_SPACE
+			actionGraphics.setPos(0, i * actionHeight - self._height / 2 +
+			                      PortGraphics.TOTAL_HEIGHT + ActionGraphics.H_SPACE)
 			
 	def getActionRect(self, inputPorts: QGraphicsItem, outputPorts: QGraphicsItem) -> list:
 		"""
@@ -164,19 +168,20 @@ class ActionPipelineGraphics(ActionGraphics):
 		count = 0
 		maxChildWidth = 0
 		for actionGraphics in self._actionGraphics:
+			count += 1
 			br = actionGraphics.boundingRect()
 			y -= br.height()/2 - 50
-			height += br.height() + 100
-			count += 1
-			maxChildWidth = max(maxChildWidth, br.width() + ActionPipelineGraphics.SIDE_MARGIN)
+			height += br.height() + ActionGraphics.V_SPACE
+			curChildWidth = br.width() + ActionPipelineGraphics.SIDE_MARGIN*2
+			maxChildWidth = max(maxChildWidth, curChildWidth)
 			
-		self._width = width #max(width, maxChildWidth)
+		self._width = max(self._width, maxChildWidth)
 		self._height = height
 		
-		x = -width/2
-		y = -height/2
+		x = -self._width/2
+		y = -self._height/2
 		
-		return x, y, width, height
+		return x, y, self._width, self._height
 	
 	def paint(self, painter: QPainter, option: QStyleOptionGraphicsItem, index: QWidget) -> None:
 		"""

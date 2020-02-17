@@ -69,6 +69,17 @@ class Action(QObject, Entity):
 		
 		self._wrappers = set()
 		
+	def setName(self, name:str) -> None:
+		"""
+		Sets the name of the action and makes sure the change propagates to all wrappers
+		
+		:return: None
+		:rtype: NoneType
+		"""
+		Entity.setName(self, name)
+		for wrapper in self._wrappers:
+			Entity.setName(wrapper, name)
+		
 	def addInputPort(self, port: 'Port') -> None:
 		"""
 		Adds a port to the list of inputs for this action.

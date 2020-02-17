@@ -42,9 +42,10 @@ class ActionGraphics(QGraphicsItem):
 	
 	PEN_WIDTH = 1.0
 	MIN_WIDTH = 200
-	SPACE = PortGraphics.WIDTH * 2
-	TOTAL_PORT_WIDTH = PortGraphics.WIDTH + SPACE
-	TOTAL_RECT_HEIGHT = PortGraphics.TOTAL_HEIGHT + 50
+	H_SPACE = PortGraphics.WIDTH * 2
+	V_SPACE = 50
+	TOTAL_PORT_WIDTH = PortGraphics.WIDTH + H_SPACE
+	TOTAL_RECT_HEIGHT = PortGraphics.TOTAL_HEIGHT + V_SPACE
 	
 	def __init__(self, action: 'Action', parent=None) -> 'ActionGraphics':
 		"""
