@@ -8,18 +8,16 @@
 # integrate validator in to the facile
 
 #first step: get the validator to send out some kind of message. Emit a signal with a message and get it printed out. 
-import threading
 
 from PySide2.QtCore import QThread, Slot, Signal
 from data.validatormessage import ValidatorMessage
 
 from datetime import datetime
-import time
 
 
 class Validator(QThread):
 	"""
-	This Validator class run algorithms to validate user's action pipline. It communicates with ValidatorView class with
+	This Validator class run algorithms to validate user's action pipeline. It communicates with ValidatorView class with
 	signal/slot and sends message to the graphical view.
 	"""
 	
