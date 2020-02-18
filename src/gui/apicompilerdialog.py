@@ -22,10 +22,12 @@ This module contains the code for the copy project dialog.
 """
 import sys
 import os
+from os.path import expanduser
 
 from PySide2.QtCore import Signal, Slot
-from PySide2.QtWidgets import QDialog, QWidget, QButtonGroup, QApplication
+from PySide2.QtWidgets import QDialog, QWidget, QButtonGroup, QApplication, QFileDialog
 from gui.ui.ui_apicompilerdialog import Ui_Dialog as Ui_ApiCompilerDialog
+from libs.bitness import getPythonBitness
 
 
 class ApiCompilerDialog(QDialog):
@@ -49,18 +51,43 @@ class ApiCompilerDialog(QDialog):
 		group.addButton(self.ui.docOptionPdf)
 		
 		# disable file path editors
-		self.ui.compilerLocation.setEnabled(False)
-		self.ui.interpreterLocatoin.setEnabled(False)
+		self.ui.apiLocation.setEnabled(False)
+		self.ui.interpreterLocation.setEnabled(False)
+		
+		self.ui.browseFilesButton_folder.clicked.connect(self.browseForAPILocation)
+		self.ui.browseFilesButton_folder_2.clicked.connect(self.browseForInterpreterLocation)
+		
+		#is it the right way to deal with ok and cancel button?
+		self.ui.dialogButtons.clicked.connect(self.reject)
 	
 	@Slot()
-	def _browseProjectFolders(self) -> None:
-		pass
-		# fileDialog = QFileDialog()
-		# fileDialog.setFileMode(QFileDialog.Directory)
-		# fileDialog.setDirectory(expanduser("~"))
-		# fileDialog.fileSelected.connect(lambda url: self.ui.project_folder_edit.setText(url))
-		# fileDialog.exec_()
-
+	def browseForAPILocation(self) -> None:
+		if getPythonBitness() == 32:
+			openDir = "C:/Program Files (x86)"
+		else:
+			openDir = "C:/Program Files"
+		openDir = os.path.abspath(openDir)
+		
+		fileDialog = QFileDialog()
+		fileDialog.setFileMode(QFileDialog.ExistingFile)
+		fileDialog.setDirectory(openDir)
+		fileDialog.fileSelected.connect(lambda url: self.ui.apiLocation.setText(url))
+		fileDialog.exec_()
+	
+	@Slot()
+	def browseForInterpreterLocation(self) -> None:
+		if getPythonBitness() == 32:
+			openDir = "C:/Program Files (x86)"
+		else:
+			openDir = "C:/Program Files"
+		openDir = os.path.abspath(openDir)
+		
+		fileDialog = QFileDialog()
+		fileDialog.setFileMode(QFileDialog.ExistingFile)
+		fileDialog.setDirectory(openDir)
+		fileDialog.fileSelected.connect(lambda url: self.ui.interpreterLocation.setText(url))
+		fileDialog.exec_()
+		
 
 if __name__ == "__main__":
 	
