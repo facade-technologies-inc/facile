@@ -19,7 +19,7 @@
 	\------------------------------------------------------------------------------/
 """
 
-from PySide2.QtGui import QPainter, QColor, QFont, QFontMetricsF
+from PySide2.QtGui import QPainter, QColor, QFont, QFontMetricsF, Qt
 from PySide2.QtCore import QRectF
 from PySide2.QtWidgets import QWidget, QStyleOptionGraphicsItem, QGraphicsSceneContextMenuEvent
 
@@ -103,7 +103,8 @@ class ActionWrapperGraphics(ActionGraphics):
 		fm = QFontMetricsF(ActionWrapperGraphics.NAME_FONT)
 		br = fm.boundingRect(self._action.getName())
 		# TODO: fix text positioning - font metrics aren't working well
-		painter.drawText(x + offset, br.height(), self._action.getName())
+		t = fm.elidedText(self._action.getName(), Qt.ElideRight, self._width - offset * 2)
+		painter.drawText(x + offset, br.height(), t)
 	
 	def contextMenuEvent(self, event: QGraphicsSceneContextMenuEvent) -> None:
 		"""
