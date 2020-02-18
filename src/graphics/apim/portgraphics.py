@@ -26,7 +26,7 @@ import os
 sys.path.append(os.path.abspath("../../"))
 
 from PySide2.QtCore import QRectF, QPoint
-from PySide2.QtGui import QPainterPath, QPainter, QPolygon, QColor, Qt, QPen
+from PySide2.QtGui import QPainterPath, QPainter, QPolygon, QColor, Qt, QPen, QFont, QFontMetricsF
 from PySide2.QtWidgets import QGraphicsScene, QGraphicsItem, QApplication, QGraphicsView, QStyleOptionGraphicsItem, \
 	QWidget, QGraphicsSceneContextMenuEvent, QGraphicsTextItem
 
@@ -44,7 +44,7 @@ class PortGraphics(QGraphicsItem):
 	REQUIRED_PEN_WIDTH = 5.0
 	OPTIONAL_PEN_WIDTH = 1.0
 	WIDTH = 50
-	SIDE_HEIGHT = 1 * WIDTH
+	SIDE_HEIGHT = 1.5 * WIDTH
 	TAPER_HEIGHT = 0.5 * SIDE_HEIGHT
 	TOTAL_HEIGHT = SIDE_HEIGHT + TAPER_HEIGHT
 	# Center the shape about the origin of its coordinate system.
@@ -55,6 +55,9 @@ class PortGraphics(QGraphicsItem):
 	
 	INNER_COLOR = QColor(100, 200, 0)
 	OUTER_COLOR = QColor(252, 140, 3)
+	
+	NAME_FONT = QFont("Times", 15)
+	TYPE_FONT = QFont("Times", 15)
 	
 	def __init__(self, port: 'Port', parent: QGraphicsItem = None, menuEnabled: bool = True):
 		"""
@@ -79,11 +82,21 @@ class PortGraphics(QGraphicsItem):
 		else:
 			self.borderWidth = PortGraphics.OPTIONAL_PEN_WIDTH
 			
-		# TODO: align port labels correctly
-		# self.nameItem = QGraphicsTextItem("TempName", self)
-		# self.nameItem.setRotation(90)
-		# self.typeItem = QGraphicsTextItem("TempType", self)
-		# self.typeItem.setRotation(90)
+		# show port name and type
+		if self._menuEnabled:
+			fm = QFontMetricsF(PortGraphics.NAME_FONT)
+			name = fm.elidedText(self._port.getName(), Qt.ElideRight, PortGraphics.SIDE_HEIGHT)
+			self.nameItem = QGraphicsTextItem(name, self)
+			self.nameItem.setFont(PortGraphics.NAME_FONT)
+			self.nameItem.setRotation(90)
+			self.nameItem.setPos(PortGraphics.WIDTH/2 + 5,-PortGraphics.TOTAL_HEIGHT/2)
+			
+			fm = QFontMetricsF(PortGraphics.TYPE_FONT)
+			t = fm.elidedText(self._port.getDataType().__name__, Qt.ElideRight, PortGraphics.SIDE_HEIGHT)
+			self.typeItem = QGraphicsTextItem(t, self)
+			self.typeItem.setFont(PortGraphics.TYPE_FONT)
+			self.typeItem.setRotation(90)
+			self.typeItem.setPos(5, -PortGraphics.TOTAL_HEIGHT / 2)
 		
 	
 	def boundingRect(self) -> QRectF:
@@ -135,8 +148,7 @@ class PortGraphics(QGraphicsItem):
 		:return: None
 		:rtype: NoneType
 		"""
-
-		# Make a Qpen to draw the border. Use different pens if Port is selected.
+		
 		pen = QPen(PortGraphics.PEN_COLOR)
 		pen.setWidth(self.borderWidth)
 		painter.setPen(pen)
@@ -146,10 +158,6 @@ class PortGraphics(QGraphicsItem):
 		else:
 			painter.setBrush(PortGraphics.OUTER_COLOR)
 		painter.drawPath(self.shape())
-		
-		# TODO: update port labels
-		# self.nameItem.setPlainText(self._port.getName())
-		# self.typeItem.setPlainText(self._port.getDataType().__name__)
 
 	def contextMenuEvent(self, event: QGraphicsSceneContextMenuEvent) -> None:
 		"""

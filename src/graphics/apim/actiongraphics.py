@@ -257,8 +257,8 @@ class ActionGraphics(QGraphicsItem):
 				negShift = -posShift
 				
 				try:
-					portList[posIdx].setPos(negShift, y)
-					portList[negIdx].setPos(posShift, y)
+					portList[posIdx].setPos(posShift, y)
+					portList[negIdx].setPos(negShift, y)
 				except IndexError:
 					return
 				

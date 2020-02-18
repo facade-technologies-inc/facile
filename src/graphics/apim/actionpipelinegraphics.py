@@ -153,11 +153,12 @@ class ActionPipelineGraphics(ActionGraphics):
 		outputs = self._action.getOutputPorts()
 		self.getActionRect(inputs, outputs)
 		
+		offset = ActionGraphics.V_SPACE + PortGraphics.TOTAL_HEIGHT
 		for i in range(len(self._actionGraphics)):
 			actionGraphics = self._actionGraphics[i]
 			actionHeight = ActionGraphics.MAX_HEIGHT + ActionGraphics.V_SPACE
-			actionGraphics.setPos(0, i * actionHeight - self._height / 2 +
-			                      PortGraphics.TOTAL_HEIGHT + ActionGraphics.H_SPACE)
+			y = i * actionHeight - actionHeight*len(self._actionGraphics)/2 + offset
+			actionGraphics.setPos(0, y)
 			
 	def getActionRect(self, inputPorts: QGraphicsItem, outputPorts: QGraphicsItem) -> list:
 		"""
