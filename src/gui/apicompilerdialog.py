@@ -24,10 +24,14 @@ import sys
 import os
 from os.path import expanduser
 
+from PySide2 import QtCore
+
+import data.statemachine as sm
+
 from PySide2.QtCore import Signal, Slot
 from PySide2.QtWidgets import QDialog, QWidget, QButtonGroup, QApplication, QFileDialog
 from gui.ui.ui_apicompilerdialog import Ui_Dialog as Ui_ApiCompilerDialog
-from libs.bitness import getPythonBitness
+from libs.bitness import getPythonBitness, isExecutable, appBitnessMatches, getExeBitness
 
 
 class ApiCompilerDialog(QDialog):
@@ -44,24 +48,32 @@ class ApiCompilerDialog(QDialog):
 		# self.ui.browseFilesButton_executable.clicked.connect(self._browseApplicationFile)
 		
 		# group all radio buttons together to make them mutually exclusive
+		# TODO: change it to checkbox to allow user to select multiple doc type
 		group = QButtonGroup()
-		group.setExclusive(True)
+		group.setExclusive(False)
 		group.addButton(self.ui.docOptionDocx)
 		group.addButton(self.ui.docOptionHtml)
 		group.addButton(self.ui.docOptionPdf)
 		
+		# TODO: add component resolution options
+		
 		# disable file path editors
 		self.ui.apiLocation.setEnabled(False)
 		self.ui.interpreterLocation.setEnabled(False)
+		self.ui.apiLocation.setText(sm.StateMachine.instance._project.getProjectDir())
+		self.ui.interpreterLocation.setText(sys.executable)
 		
 		self.ui.browseFilesButton_folder.clicked.connect(self.browseForAPILocation)
 		self.ui.browseFilesButton_folder_2.clicked.connect(self.browseForInterpreterLocation)
 		
-		#is it the right way to deal with ok and cancel button?
-		self.ui.dialogButtons.clicked.connect(self.reject)
+		self.ui.dialogButtons.accepted.connect(self.accept)
+		self.ui.dialogButtons.rejected.connect(self.reject)
+		
+		# TODO: change the layout. Break the current vertical layout. Right click on the background and make a new layout on the entire dialog
 	
 	@Slot()
 	def browseForAPILocation(self) -> None:
+		# TODO: it should only allow user to open a folder
 		if getPythonBitness() == 32:
 			openDir = "C:/Program Files (x86)"
 		else:
@@ -81,12 +93,42 @@ class ApiCompilerDialog(QDialog):
 		else:
 			openDir = "C:/Program Files"
 		openDir = os.path.abspath(openDir)
+		# openDir = sys.executable
+		# print(sys.executable)
 		
 		fileDialog = QFileDialog()
 		fileDialog.setFileMode(QFileDialog.ExistingFile)
 		fileDialog.setDirectory(openDir)
 		fileDialog.fileSelected.connect(lambda url: self.ui.interpreterLocation.setText(url))
 		fileDialog.exec_()
+		
+	@Slot()
+	def accept(self):
+		errors = []
+		interpExe = self.ui.interpreterLocation.text()
+		
+		# Check for valid target application executable
+		if not interpExe:
+			errors.append("Need to select target application executable")
+		else:
+			if not isExecutable(interpExe):
+				errors.append("Target application must be an executable file.")
+			elif not appBitnessMatches(interpExe):
+				pyBit = getPythonBitness()
+				appBit = getExeBitness(interpExe)
+				errors.append(
+					"{} bit Python cannot control {} bit application".format(pyBit, appBit))
+		
+		if len(errors) != 0:
+			errMsg = "Errors:\n"
+			for err in errors:
+				errMsg += "\t" + err + "\n"
+			print(errMsg)
+			return
+		
+		# TODO: create error label later
+		print("accepted")
+		return QDialog.accept(self)
 		
 
 if __name__ == "__main__":

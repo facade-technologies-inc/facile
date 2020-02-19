@@ -36,6 +36,7 @@ from gui.blackboxeditordialog import BlackBoxEditorDialog
 from qt_models.propeditordelegate import PropertyEditorDelegate
 from data.configvars import ConfigVars
 from data.apim.actionpipeline import ActionPipeline
+from gui.apicompilerdialog import ApiCompilerDialog
 
 
 class StateMachine:
@@ -331,6 +332,10 @@ class StateMachine:
 		ui.actionShow_Behaviors.triggered.connect(self.configVars.setShowBehaviors)
 		ui.actionShow_Token_Tags.triggered.connect(self.configVars.setShowTokenTags)
 		
+		def onAPICompiler():
+			apicomp = ApiCompilerDialog()
+			apicomp.exec_()
+		
 		def onNewActionPipeline():
 			ap = ActionPipeline()
 			blackBoxEditor = BlackBoxEditorDialog(ap)
@@ -342,6 +347,9 @@ class StateMachine:
 				v._actionPipelinesMenu.addAction(ap)
 		
 		ui.actionAdd_Action_Pipeline.triggered.connect(onNewActionPipeline)
+		# TODO: add this action
+		ui.actionAdd_Action_Pipeline.triggered.connect(onAPICompiler)
+		# ui.actionShow_APICompilerDialog.triggered.connect(self.configVars.onAPICompiler)
 		v._actionPipelinesMenu.actionSelected.connect(ui.apiModelView.showAction)
 
 		# Disable actions
