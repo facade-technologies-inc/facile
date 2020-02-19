@@ -18,48 +18,55 @@
 	|                                                                              |
 	\------------------------------------------------------------------------------/
 	
-This module contains the FacileGraphicsView class which is just like a normal graphics
-view, but can be zoomed.
+This module contains the ComponentMenu class which is the context menu that is seen when a
+component is right-clicked.
+
 """
 
 
-from PySide2.QtWidgets import QGraphicsScene, QGraphicsTextItem, QGraphicsRectItem
-
-import data.statemachine as sm
-from gui.facilegraphicsview import FacileGraphicsView
-from graphics.apim.actionpipelinegraphics import ActionPipelineGraphics
-from graphics.apim.portgraphics import PortGraphics
+from PySide2.QtWidgets import QMenu
 
 
-class FacileActionGraphicsView(FacileGraphicsView):
-	"""
-	This class adds functionality to the QGraphicsView to zoom in and out.
+class ActionWrapperMenu(QMenu):
 	
-	This is primarily used as the view that shows the target GUI model and API model
-	"""
-	
-	def showAction(self, action: 'Action') -> None:
-		newScene = QGraphicsScene()
-		
-		# Add the action pipeline graphics
-		ap = ActionPipelineGraphics(action)
-		br = ap.boundingRect()
-		newScene.addItem(ap)
-		
-		# Add the action pipeline name
-		nameItem = QGraphicsTextItem(action.getName())
-		nameItem.setPos(-br.width()/2, -br.height()/2 - PortGraphics.TOTAL_HEIGHT/2)
-		newScene.addItem(nameItem)
-		
-		self.setScene(newScene)
-	
-
-	def refresh(self) -> None:
+	def __init__(self):
 		"""
-		Clears the scene and re-creates it.
+		This class is the menu that shows when an action wrapper graphics item is right-clicked.
 		
+		Constructing a ActionWrapperMenu creates the menu items, but does not connect any
+		actions. To connect the menu items to internal logic, use the methods that start with "on".
+		"""
+		QMenu.__init__(self)
+		
+		self._delete = self.addAction("Delete Action")
+		
+		# TODO: set action icons
+
+	def onDelete(self, func) -> None:
+		"""
+		Sets the function to be run when the delete action is triggered.
+
+		:param func: The function to be run when the editExternal action is triggered.
+		:type func: callabe
 		:return: None
 		:rtype: NoneType
 		"""
-		cap = sm.StateMachine.instance.getCurrentActionPipeline()
-		self.showAction(cap)
+		self._delete.triggered.connect(func)
+		
+	def delete(self) -> None:
+		"""
+		Emulates the user clicking the delete action
+
+		:return: None
+		:rtype: NoneType
+		"""
+		self._delete.trigger()
+		
+	def prerequest(self) -> None:
+		"""
+		enables/disables the menu items appropriately before the context menu is requested. This
+		function should be called right before the exec_() method is called.
+		
+		:return: None
+		"""
+		pass
