@@ -18,48 +18,40 @@
 	|                                                                              |
 	\------------------------------------------------------------------------------/
 	
-This module contains the FacileGraphicsView class which is just like a normal graphics
-view, but can be zoomed.
+This module contains the ComponentMenu class which is the context menu that is seen when a
+component is right-clicked.
+
 """
 
 
-from PySide2.QtWidgets import QGraphicsScene, QGraphicsTextItem, QGraphicsRectItem
-
+from PySide2.QtWidgets import QMenu
+from PySide2.QtGui import QIcon, QPixmap
+import icons_rc
 import data.statemachine as sm
-from gui.facilegraphicsview import FacileGraphicsView
-from graphics.apim.actionpipelinegraphics import ActionPipelineGraphics
-from graphics.apim.portgraphics import PortGraphics
+from qt_models.actionitemmenu import ActionItemMenu
 
 
-class FacileActionGraphicsView(FacileGraphicsView):
-	"""
-	This class adds functionality to the QGraphicsView to zoom in and out.
+class ComponentActionItemMenu(ActionItemMenu):
 	
-	This is primarily used as the view that shows the target GUI model and API model
-	"""
-	
-	def showAction(self, action: 'Action') -> None:
-		newScene = QGraphicsScene()
-		
-		# Add the action pipeline graphics
-		ap = ActionPipelineGraphics(action)
-		br = ap.boundingRect()
-		newScene.addItem(ap)
-		
-		# Add the action pipeline name
-		nameItem = QGraphicsTextItem(action.getName())
-		nameItem.setPos(-br.width()/2, -br.height()/2 - PortGraphics.TOTAL_HEIGHT/2)
-		newScene.addItem(nameItem)
-		
-		self.setScene(newScene)
-	
-
-	def refresh(self) -> None:
+	def __init__(self):
 		"""
-		Clears the scene and re-creates it.
+		This class is the menu that shows when an action menu item is right clicked in the
+		component action menu.
+		
+		Constructing a ComponentActionItemMenu creates the menu items, but does not connect any
+		actions. To connect the menu items to internal logic, use the methods that start with "on".
+		"""
+		ActionItemMenu.__init__(self)
+		
+		self._edit = self.addAction("Edit")
+		
+		# TODO: set action icons
+		
+	def prerequest(self) -> None:
+		"""
+		enables/disables the menu items appropriately before the context menu is requested. This
+		function should be called right before the exec_() method is called.
 		
 		:return: None
-		:rtype: NoneType
 		"""
-		cap = sm.StateMachine.instance.getCurrentActionPipeline()
-		self.showAction(cap)
+		pass

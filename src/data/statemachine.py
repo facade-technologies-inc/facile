@@ -27,7 +27,7 @@ from enum import Enum, auto
 
 from PySide2.QtCore import Slot, QTimer
 from PySide2.QtGui import QStandardItem, QStandardItemModel, Qt, QIcon, QPixmap
-from PySide2.QtWidgets import QGraphicsScene, QDialog
+from PySide2.QtWidgets import QGraphicsScene, QDialog, QLabel, QVBoxLayout, QWidget
 
 import data.tguim.visibilitybehavior as vb
 from gui.facilegraphicsview import FacileGraphicsView
@@ -117,8 +117,39 @@ class StateMachine:
 
 		# Initialize configuration variables (that affect what gets displayed in the Facile GUI)
 		self.configVars = ConfigVars()
+		
+		# Stores the action pipeline that's currently being edited
+		self._currentActionPipeline = None
 
 		StateMachine.instance = self
+		
+	def setCurrentActionPipeline(self, actionPipeline: 'ActionPipeline') -> None:
+		"""
+		Sets the current action pipeline to be edited.
+		
+		:param actionPipeline: The action pipeline to stage for editing.
+		:type actionPipeline: ActionPipeline
+		:return: None
+		:rtype: NoneType
+		"""
+		if type(actionPipeline) == ActionPipeline:
+			self.view.ui.apiModelView.showAction(actionPipeline)
+		elif actionPipeline is None:
+			self.view.ui.apiModelView.setScene(QGraphicsScene())
+		else:
+			raise TypeError("Must provide either ActionPipeline or None")
+			
+		self._currentActionPipeline = actionPipeline
+		
+	def getCurrentActionPipeline(self) -> 'ActionPipeline':
+		"""
+		Get the current action pipeline staged for editing.
+		
+		:return: The current action pipeline staged for editing.
+		:rtype: ActionPipeline
+		"""
+		return self._currentActionPipeline
+		
 	
 	def tick(self, event: Event, *args, **kwargs) -> None:
 		"""
@@ -351,6 +382,9 @@ class StateMachine:
 		ui.actionAdd_Action_Pipeline.triggered.connect(onAPICompiler)
 		# ui.actionShow_APICompilerDialog.triggered.connect(self.configVars.onAPICompiler)
 		v._actionPipelinesMenu.actionSelected.connect(ui.apiModelView.showAction)
+		
+		# I should put this on
+		# v._actionPipelinesMenu.actionSelected.connect(self.setCurrentActionPipeline)
 
 		# Disable actions
 		ui.actionSave_Project.setEnabled(False)
