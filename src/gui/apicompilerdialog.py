@@ -35,27 +35,13 @@ from libs.bitness import getPythonBitness, isExecutable, appBitnessMatches, getE
 
 
 class ApiCompilerDialog(QDialog):
-	
+	# TODO: make it un-selectable before a project is open
 	def __init__(self, parent: QWidget = None):
 		
 		super(ApiCompilerDialog, self).__init__(parent)
 		self.ui = Ui_ApiCompilerDialog()
 		self.ui.setupUi(self)
 		self.setWindowTitle("Setup API Compiler")
-		
-		# # allow user to select folder to save project in
-		# self.ui.browseFilesButton_folder.clicked.connect(self._browseProjectFolders)
-		# self.ui.browseFilesButton_executable.clicked.connect(self._browseApplicationFile)
-		
-		# group all radio buttons together to make them mutually exclusive
-		# TODO: change it to checkbox to allow user to select multiple doc type
-		group = QButtonGroup()
-		group.setExclusive(False)
-		group.addButton(self.ui.docOptionDocx)
-		group.addButton(self.ui.docOptionHtml)
-		group.addButton(self.ui.docOptionPdf)
-		
-		# TODO: add component resolution options
 		
 		# disable file path editors
 		self.ui.apiLocation.setEnabled(False)
@@ -69,11 +55,10 @@ class ApiCompilerDialog(QDialog):
 		self.ui.dialogButtons.accepted.connect(self.accept)
 		self.ui.dialogButtons.rejected.connect(self.reject)
 		
-		# TODO: change the layout. Break the current vertical layout. Right click on the background and make a new layout on the entire dialog
+		self.ui.error_label.setText("")
 	
 	@Slot()
 	def browseForAPILocation(self) -> None:
-		# TODO: it should only allow user to open a folder
 		if getPythonBitness() == 32:
 			openDir = "C:/Program Files (x86)"
 		else:
@@ -81,7 +66,7 @@ class ApiCompilerDialog(QDialog):
 		openDir = os.path.abspath(openDir)
 		
 		fileDialog = QFileDialog()
-		fileDialog.setFileMode(QFileDialog.ExistingFile)
+		fileDialog.setFileMode(QFileDialog.Directory)
 		fileDialog.setDirectory(openDir)
 		fileDialog.fileSelected.connect(lambda url: self.ui.apiLocation.setText(url))
 		fileDialog.exec_()
@@ -93,8 +78,6 @@ class ApiCompilerDialog(QDialog):
 		else:
 			openDir = "C:/Program Files"
 		openDir = os.path.abspath(openDir)
-		# openDir = sys.executable
-		# print(sys.executable)
 		
 		fileDialog = QFileDialog()
 		fileDialog.setFileMode(QFileDialog.ExistingFile)
@@ -104,6 +87,7 @@ class ApiCompilerDialog(QDialog):
 		
 	@Slot()
 	def accept(self):
+		self.ui.error_label.setText("")
 		errors = []
 		interpExe = self.ui.interpreterLocation.text()
 		
@@ -119,15 +103,16 @@ class ApiCompilerDialog(QDialog):
 				errors.append(
 					"{} bit Python cannot control {} bit application".format(pyBit, appBit))
 		
+		# if there are any errors, show them, then return.
 		if len(errors) != 0:
 			errMsg = "Errors:\n"
 			for err in errors:
 				errMsg += "\t" + err + "\n"
-			print(errMsg)
+			self.ui.error_label.setText(errMsg)
 			return
 		
-		# TODO: create error label later
-		print("accepted")
+		# TODO: figure out why FindExecutable: There is no association for the file get printed
+		print("apicompilerdialog accepted")
 		return QDialog.accept(self)
 		
 

@@ -363,10 +363,6 @@ class StateMachine:
 		ui.actionShow_Behaviors.triggered.connect(self.configVars.setShowBehaviors)
 		ui.actionShow_Token_Tags.triggered.connect(self.configVars.setShowTokenTags)
 		
-		def onAPICompiler():
-			apicomp = ApiCompilerDialog()
-			apicomp.exec_()
-		
 		def onNewActionPipeline():
 			ap = ActionPipeline()
 			blackBoxEditor = BlackBoxEditorDialog(ap)
@@ -378,13 +374,13 @@ class StateMachine:
 				v._actionPipelinesMenu.addAction(ap)
 		
 		ui.actionAdd_Action_Pipeline.triggered.connect(onNewActionPipeline)
-		# TODO: add this action
-		ui.actionAdd_Action_Pipeline.triggered.connect(onAPICompiler)
-		# ui.actionShow_APICompilerDialog.triggered.connect(self.configVars.onAPICompiler)
-		v._actionPipelinesMenu.actionSelected.connect(ui.apiModelView.showAction)
+		v._actionPipelinesMenu.actionSelected.connect(self.setCurrentActionPipeline)
 		
-		# I should put this on
-		# v._actionPipelinesMenu.actionSelected.connect(self.setCurrentActionPipeline)
+		def onAPICompiler():
+			apicomp = ApiCompilerDialog()
+			apicomp.exec_()
+	
+		ui.actionShow_API_Compiler.triggered.connect(onAPICompiler)
 
 		# Disable actions
 		ui.actionSave_Project.setEnabled(False)
