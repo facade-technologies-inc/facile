@@ -97,21 +97,21 @@ class ActionPipeline(Action):
 		self.updated.emit()
 		return True
 	
-	def connect(self, portA: 'Port', portB: 'Port') -> None:
+	def connect(self, portA: 'Port', portB: 'Port') -> 'Wire':
 		"""
-		Insert a wire to carry data from port A to port B.
+		Insert a wire to carry data from port A to port B. Returns a reference to the newly created Wire.
 		
 		:raises: PortException if either portA or portB do not belong to either this
 		ActionPipeline or any of its inner actions.
 		:raises: PortException if portB already has an input.
-		:raises: WireException if the connnection is invalid.
+		:raises: WireException if the connection is invalid.
 		
 		:param portA: The port that will be the source of the wire.
 		:type portA: Port
 		:param portB: The port that will be the destination of the wire.
 		:type portB: Port
-		:return: None
-		:rtype: NoneType
+		:return: The newly created Wire object connecting the given ports.
+		:rtype: Wire
 		"""
 		
 		allowableActions = [self] + self._actions
@@ -128,8 +128,10 @@ class ActionPipeline(Action):
 		if not self.connectionIsValid(portA, portB):
 			raise WireException("The connection is not a valid configuration.")
 		
-		self._wireSet.addWire(portA, portB)
+		newWire = self._wireSet.addWire(portA, portB)
 		self.updated.emit()
+
+		return newWire
 	
 	def disconnect(self, portA: 'Port', portB: 'Port') -> None:
 		"""

@@ -90,7 +90,16 @@ class ActionGraphics(QGraphicsItem):
 		self.prepareGeometryChange()
 		self.updatePortGraphics()
 		return QGraphicsItem.update(self)
-		
+
+	def getAction(self):
+		"""
+		Returns the ActionGraphics' Action. Used by WireGraphics to get a reference to the ActionPipeline to add a wire.
+
+		:return: The Action associated with the ActionGraphics.
+		:rtype: Action
+		"""
+		return self._action
+
 	def updatePortGraphics(self) -> None:
 		"""
 		Creates the port graphics for the action.

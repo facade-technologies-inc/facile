@@ -25,14 +25,26 @@ class WireGraphics(QGraphicsItem):
 	"""
 
 	"""
-	def __init__(self, srcPortGraphics: 'portGraphics', dstPortGraphics: 'portGraphics', parent: QGraphicsItem):
+	def __init__(self, srcPortGraphics: 'portGraphics', dstPortGraphics: 'portGraphics',
+				 actPipelineGFX: "ActionPipelineGraphics" = None):
+		"""
+		Constructs a WireGraphics object between the given port graphics. Also creates the underlying Wire in the APIM.
+
+		:param srcPortGraphics: The PortGraphics for the source Port the wire is to be connected to.
+		:type srcPortGraphics: portGraphics
+		:param dstPortGraphics: The PortGraphics for the destination Port the wire is to be connected to.
+		:type dstPortGraphics: portGraphics
+		:param actPipelineGFX: This is the WireGraphics' parent QGraphicsItem used to instantiate the super class.
+		Also used to get a reference to the ActionPipeline for adding newly created wires to the underlying data.
+		:type actPipelineGFX: ActionPipelineGraphics
 		"""
 
-		:param srcPortGraphics:
-		:param dstPortGraphics:
-		"""
-		QGraphicsItem.__init__(self, parent)
+		QGraphicsItem.__init__(self, actPipelineGFX)
 		self._srcPortGraphics: 'portGraphics' = srcPortGraphics
 		self._dstPortGraphics: 'portGraphics' = dstPortGraphics
-		# TODO construct and connect underlying wire.
-		self._wire: '' = None
+
+		# Get reference to the actionPipeline and add a wire to it.
+		self._wire: 'Wire' = actPipelineGFX.getAction().connect()
+
+		# TODO: render graphics.
+
