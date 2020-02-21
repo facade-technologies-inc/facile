@@ -115,11 +115,3 @@ class ApiCompilerDialog(QDialog):
 		print("apicompilerdialog accepted")
 		return QDialog.accept(self)
 		
-
-if __name__ == "__main__":
-	
-	app = QApplication([])
-	widget = ApiCompilerDialog()
-	widget.show()
-
-	sys.exit(app.exec_())
