@@ -22,4 +22,17 @@
 from PySide2.QtWidgets import QGraphicsItem
 
 class WireGraphics(QGraphicsItem):
-	pass
+	"""
+
+	"""
+	def __init__(self, srcPortGraphics: 'portGraphics', dstPortGraphics: 'portGraphics', parent: QGraphicsItem):
+		"""
+
+		:param srcPortGraphics:
+		:param dstPortGraphics:
+		"""
+		QGraphicsItem.__init__(self, parent)
+		self._srcPortGraphics: 'portGraphics' = srcPortGraphics
+		self._dstPortGraphics: 'portGraphics' = dstPortGraphics
+		# TODO construct and connect underlying wire.
+		self._wire: '' = None
