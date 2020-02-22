@@ -22,21 +22,33 @@ This module contains the code for the copy project dialog.
 """
 import sys
 import os
-from os.path import expanduser
-
-from PySide2 import QtCore
-
 import data.statemachine as sm
 
 from PySide2.QtCore import Signal, Slot
-from PySide2.QtWidgets import QDialog, QWidget, QButtonGroup, QApplication, QFileDialog
+from PySide2.QtWidgets import QDialog, QWidget, QFileDialog
+from data.compilationprofile import CompilationProfile
 from gui.ui.ui_apicompilerdialog import Ui_Dialog as Ui_ApiCompilerDialog
 from libs.bitness import getPythonBitness, isExecutable, appBitnessMatches, getExeBitness
 
 
 class ApiCompilerDialog(QDialog):
-	# TODO: make it un-selectable before a project is open
+	"""
+	This class is used when user runs the api compiler. If the information is valid, all the information will be
+	stored in a CompilationProfile object and sent in a signal. If not, the ApiCompilerDialog will not accept the
+	input and give error messages accordingly.
+	"""
+	
+	setApiCompiler = Signal(CompilationProfile)
+	
 	def __init__(self, parent: QWidget = None):
+		"""
+		Constructs a ApiCompilerDialog object.
+
+		:param parent: the widget to nest this dialog inside of. If None, this dialog will be a window.
+		:type parent: PySide2.QtWidgets.QWidget
+		:return: The constructed new Api Compiler dialog object.
+		:rtype: ApiCompilerDialog
+		"""
 		
 		super(ApiCompilerDialog, self).__init__(parent)
 		self.ui = Ui_ApiCompilerDialog()
@@ -57,8 +69,22 @@ class ApiCompilerDialog(QDialog):
 		
 		self.ui.error_label.setText("")
 	
+	# TODO: make it un-selectable before a project is open
+	
 	@Slot()
 	def browseForAPILocation(self) -> None:
+		"""
+		Opens a file dialog when the user clicks on the "..." button to choose a project directory.
+
+		The user will only be able to select folders, and when a folder is selected, the value will
+		be placed into the read-only text editor to the left.
+		
+		The default location is the current project location.
+
+		:return: None
+		:rtype: NoneType
+		"""
+		
 		if getPythonBitness() == 32:
 			openDir = "C:/Program Files (x86)"
 		else:
@@ -73,6 +99,19 @@ class ApiCompilerDialog(QDialog):
 	
 	@Slot()
 	def browseForInterpreterLocation(self) -> None:
+		"""
+		Opens a file dialog when the user clicks on the "..." button to choose a target application.
+
+		The dialog that pops up doesn't restrict what file the user selects, but before creating the
+		project, the file will be checked for correct bitness, and to make sure that it's an executable file.
+		The path to the file will be placed into the read-only text editor to the left.
+		
+		The default location is the default python location on user's end.
+
+		:return: None
+		:rtype: NoneType
+		"""
+		
 		if getPythonBitness() == 32:
 			openDir = "C:/Program Files (x86)"
 		else:
@@ -87,10 +126,17 @@ class ApiCompilerDialog(QDialog):
 		
 	@Slot()
 	def accept(self):
-		# TODO: finish it and submit a pull request
-		# Construct a message
-		# send a signal with it
-		
+		"""
+		This method is called when the user clicks the "OK" button.
+
+		It will validate all of the user's input and show error messages if
+		any information is invalid.
+
+		:emits: setApiCompiler if the api compiler setting was successfully accpeted
+		:return: None
+		:rtype: NoneType
+		"""
+
 		self.ui.error_label.setText("")
 		errors = []
 		interpExe = self.ui.interpreterLocation.text()
@@ -115,6 +161,31 @@ class ApiCompilerDialog(QDialog):
 			self.ui.error_label.setText(errMsg)
 			return
 		
+		# Construct a set for documentation type
+		setDocType = set()
+		if self.ui.checkBoxDocx.isChecked():
+			setDocType.add(CompilationProfile.DocType.Doc)
+		if self.ui.checkBoxHtml.isChecked():
+			setDocType.add(CompilationProfile.DocType.Html)
+		if self.ui.checkBoxPdf.isChecked():
+			setDocType.add(CompilationProfile.DocType.Pdf)
+		
+		# Construct a set for component resolution type
+		setcompResOpts = set()
+		# TODO: change option1 and option2 here, CompilationProfile, ui
+		if self.ui.checkBox1.isChecked():
+			setcompResOpts.add(CompilationProfile.CompResOpt.Option1)
+		if self.ui.checkBox2.isChecked():
+			setcompResOpts.add(CompilationProfile.CompResOpt.Option2)
+		if self.ui.checkBoxPyw.isChecked():
+			setcompResOpts.add(CompilationProfile.CompResOpt.Pywinauto)
+		
+		apiFolderDir = self.ui.apiLocation.text()
+		interpExeDir = self.ui.interpreterLocation.text()
+
+		theCompilationProfile = CompilationProfile(setDocType, setcompResOpts, apiFolderDir, interpExeDir)
+		
 		# TODO: figure out why FindExecutable: There is no association for the file get printed
 		print("apicompilerdialog accepted")
+		self.setApiCompiler.emit(theCompilationProfile)
 		return QDialog.accept(self)
