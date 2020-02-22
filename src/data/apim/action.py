@@ -22,16 +22,11 @@ This module contains the **Action** class which serves as the base class to the 
 and *ActionPipeline* classes.
 """
 
-from abc import ABC as AbstractBaseClass
 from typing import List
 
-<<<<<<< HEAD
 from PySide2.QtCore import QObject, Signal
 
-import data.apim.port as port
-=======
 import data.apim.port as pt
->>>>>>> bugfix/apim_tests
 from data.entity import Entity
 from data.properties import Properties
 
