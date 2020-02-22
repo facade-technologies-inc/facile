@@ -395,6 +395,7 @@ class StateMachine:
 		ui.actionStop_App.setEnabled(False)
 		ui.actionManage_Project.setEnabled(False)
 		ui.actionAdd_Action_Pipeline.setEnabled(False)
+		ui.actionShow_API_Compiler.setEnabled(False)
 	
 	def _state_MODEL_MANIPULATION(self, event: Event, previousState: State, *args,
 	                              **kwargs) -> None:
@@ -477,6 +478,7 @@ class StateMachine:
 		ui.actionManualExplore.setChecked(False)
 		ui.actionAutoExplore.setChecked(False)
 		ui.actionAdd_Action_Pipeline.setEnabled(True)
+		ui.actionShow_API_Compiler.setEnabled(True)
 	
 	def _state_ADDING_VB(self, event: Event, previousState: State, *args, **kwargs) -> None:
 		"""
@@ -501,6 +503,7 @@ class StateMachine:
 		self.view.ui.actionAdd_Behavior.setEnabled(True)
 		self.view.ui.actionStart_App.setEnabled(True)
 		self.view.ui.actionStop_App.setEnabled(True)
+		self.view.actionShow_API_Compiler.setEnabled(True)
 	
 	def _state_EXPLORATION(self, event: Event, previousState: State, *args, **kwargs) -> None:
 		"""
@@ -536,6 +539,7 @@ class StateMachine:
 		self.view.ui.actionAdd_Behavior.setEnabled(False)
 		self.view.ui.actionStart_App.setEnabled(False)
 		self.view.ui.actionStop_App.setEnabled(True)
+		self.view.actionShow_API_Compiler.setEnabled(True)
 	
 	############################################################################
 	# Slots (Entry points for other parts of Facile)

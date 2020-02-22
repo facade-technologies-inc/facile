@@ -153,14 +153,6 @@ class ApiCompilerDialog(QDialog):
 				errors.append(
 					"{} bit Python cannot control {} bit application".format(pyBit, appBit))
 		
-		# if there are any errors, show them, then return.
-		if len(errors) != 0:
-			errMsg = "Errors:\n"
-			for err in errors:
-				errMsg += "\t" + err + "\n"
-			self.ui.error_label.setText(errMsg)
-			return
-		
 		# Construct a set for documentation type
 		setDocType = set()
 		if self.ui.checkBoxDocx.isChecked():
@@ -170,6 +162,9 @@ class ApiCompilerDialog(QDialog):
 		if self.ui.checkBoxPdf.isChecked():
 			setDocType.add(CompilationProfile.DocType.Pdf)
 		
+		if len(setDocType) == 0:
+			errors.append("You must select at least one documentation type.")
+			
 		# Construct a set for component resolution type
 		setcompResOpts = set()
 		# TODO: change option1 and option2 here, CompilationProfile, ui
@@ -179,12 +174,25 @@ class ApiCompilerDialog(QDialog):
 			setcompResOpts.add(CompilationProfile.CompResOpt.Option2)
 		if self.ui.checkBoxPyw.isChecked():
 			setcompResOpts.add(CompilationProfile.CompResOpt.Pywinauto)
+			
+		if len(setcompResOpts) == 0:
+			errors.append("You must select at least one component resolution type.")
 		
 		apiFolderDir = self.ui.apiLocation.text()
 		interpExeDir = self.ui.interpreterLocation.text()
-
+		
 		theCompilationProfile = CompilationProfile(setDocType, setcompResOpts, apiFolderDir, interpExeDir)
 		
+		
+		
+		# if there are any errors, show them, then return.
+		if len(errors) != 0:
+			errMsg = "Errors:\n"
+			for err in errors:
+				errMsg += "\t" + err + "\n"
+			self.ui.error_label.setText(errMsg)
+			return
+
 		# TODO: figure out why FindExecutable: There is no association for the file get printed
 		print("apicompilerdialog accepted")
 		self.setApiCompiler.emit(theCompilationProfile)
