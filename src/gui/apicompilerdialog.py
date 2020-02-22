@@ -87,6 +87,10 @@ class ApiCompilerDialog(QDialog):
 		
 	@Slot()
 	def accept(self):
+		# TODO: finish it and submit a pull request
+		# Construct a message
+		# send a signal with it
+		
 		self.ui.error_label.setText("")
 		errors = []
 		interpExe = self.ui.interpreterLocation.text()
@@ -114,4 +118,3 @@ class ApiCompilerDialog(QDialog):
 		# TODO: figure out why FindExecutable: There is no association for the file get printed
 		print("apicompilerdialog accepted")
 		return QDialog.accept(self)
-		
