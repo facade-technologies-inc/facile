@@ -2,17 +2,13 @@
 import sys
 import os
 
+# These lines allow us to import things as if we were running facile.py
 sys.path.insert(0, os.path.abspath("./src/"))
 sys.path.insert(0, os.path.abspath("./src/gui/rc/"))
 
 import unittest
-from data.apim.componentaction import ComponentAction
 from data.apim.actionpipeline import ActionPipeline
-from data.apim.actionwrapper import ActionWrapper
-from data.apim.action import Action, ActionException
-from data.apim.port import Port, PortException
-from data.apim.wire import Wire, WireException
-from data.apim.wireset import WireSet
+from data.apim.port import Port
 
 class TestCompiler(unittest.TestCase):
 	
@@ -48,11 +44,9 @@ class TestCompiler(unittest.TestCase):
 		#  signatures are generated correctly.
 	
 	def test_ActionMethodDocStrings(self):
-		pass
 		# TODO: Test the docstrings
+		
+		# placeholder to make test fail
+		self.assertTrue(False)
 	
 	# TODO: Create more tests
-
-		
-		
-		
