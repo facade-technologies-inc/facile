@@ -22,13 +22,15 @@ This module contains the Port class.
 """
 import data.apim.wire as wr
 import data.apim.action as ac
+from data.entity import Entity
+from data.properties import Properties
 
 
 class PortException(Exception):
     def __init__(self, msg: str):
         Exception.__init__(self, msg)
 
-class Port:
+class Port(Entity):
     """
     A Port defines the interface between an Action (ActionPipeline or ComponentAction) and the outside world.
     A Port has one input (could be None), and as many outputs as desired. In effect, the input of the Port is
@@ -40,7 +42,7 @@ class Port:
         ensure that references between ports and wires maintain synchronized.
     """
 
-    def __init__(self, dataType: type = str, isOptional: bool = False):
+    def __init__(self, dataType: type = type(None), isOptional: bool = False):
         """
         Constructs a Port Object.
         
@@ -52,6 +54,13 @@ class Port:
         :param isOptional: Boolean specifying if the Port must be connected for the Port's Action to remain valid.
         :type isOptional: bool
         """
+        super().__init__()
+
+        predefinedCategories = ["Base", "Port"]
+        customCategories = {}
+        props = Properties.createPropertiesObject(predefinedCategories, customCategories)
+        self.setProperties(props)
+        
         self._input: 'wr.Wire' = None
         self._outputs: list = []  # list of wires.
         self._dataType: type = None
@@ -165,6 +174,9 @@ class Port:
             self._dataType = newType
         else:
             raise TypeError("setDataType()'s input parameter must specify a Python type [e.g. int, str, bool].")
+        
+        if self._action is not None:
+            self._action.synchronizeWrappers()
 
     def setOptional(self, isOptional: bool) -> None:
         """
@@ -176,6 +188,22 @@ class Port:
         :rtype: NoneType
         """
         self._optional = isOptional
+        if self._action is not None:
+            self._action.synchronizeWrappers()
+        
+    def setName(self, name: str) -> None:
+        """
+        Sets the name of the port
+        
+        :param name: The new name to set
+        :type name: str
+        :return: None
+        :rtype: NoneType
+        """
+        Entity.setName(self, name)
+        if self._action is not None:
+            self._action.synchronizeWrappers()
+        
 
     def isOptional(self) -> bool:
         """
@@ -221,7 +249,7 @@ class Port:
         """
         
         newPort = Port(self._dataType, self._optional)
-        # TODO: Copy properties (CAREFULLY) once ports are entities
+        newPort.setName(self.getName())
         return newPort
     
     def mirror(self, port: 'Port') -> None:
@@ -238,4 +266,4 @@ class Port:
         
         self._optional = port.isOptional()
         self._dataType = port.getDataType()
-        # TODO: Copy properties (CAREFULLY) once ports are entities
+        self.setName(port.getName())

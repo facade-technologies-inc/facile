@@ -26,17 +26,23 @@ import os
 
 sys.path.append(os.path.abspath("../"))
 
+from PySide2.QtCore import Signal
 from PySide2.QtWidgets import QWidget, QApplication, QVBoxLayout
+
 from gui.ui.ui_actionmenu import Ui_Form as Ui_ActionMenu
 from gui.actionmenuitem import ActionMenuItem
 from data.apim.actionpipeline import ActionPipeline
 from data.apim.port import Port
+from data.apim.action import Action
+import data.statemachine as sm
 
 
 class ActionMenu(QWidget):
 	"""
 	ActionMenu is a widget for Facile's API actions.
 	"""
+	
+	actionSelected = Signal(Action)
 	
 	def __init__(self) -> 'ActionMenu':
 		"""
@@ -69,8 +75,11 @@ class ActionMenu(QWidget):
 		:return: None
 		:rtype: Nonetype
 		"""
+		sm.StateMachine.instance._project.getAPIModel().addActionPipeline(action)
 		menuItem = ActionMenuItem(action)
 		self.ui._itemLayout.addWidget(menuItem)
+		self.actionSelected.emit(action)
+		
 	
 	def setLabelText(self, text: str) -> None:
 		"""

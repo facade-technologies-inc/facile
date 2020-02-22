@@ -24,10 +24,12 @@ This module contains the ActionGraphics() Class.
 import sys
 import math
 
+from typing import Dict, List
+
 from PySide2.QtWidgets import QGraphicsItem, QApplication, QGraphicsView, QGraphicsScene, \
 	QWidget, QStyleOptionGraphicsItem
 from PySide2.QtGui import QPainter, QPainterPath, QColor
-from PySide2.QtCore import QRectF
+from PySide2.QtCore import QRectF, Slot, SIGNAL, QObject
 from graphics.apim.portgraphics import PortGraphics
 from data.apim.action import Action
 from data.apim.componentaction import ComponentAction
@@ -40,9 +42,13 @@ class ActionGraphics(QGraphicsItem):
 	
 	PEN_WIDTH = 1.0
 	MIN_WIDTH = 200
-	SPACE = PortGraphics.WIDTH * 2
-	TOTAL_PORT_WIDTH = PortGraphics.WIDTH + SPACE
-	TOTAL_RECT_HEIGHT = PortGraphics.TOTAL_HEIGHT + 50
+	H_SPACE = PortGraphics.WIDTH * 2
+	V_SPACE = 50
+	TOTAL_PORT_WIDTH = PortGraphics.WIDTH + H_SPACE
+	TOTAL_RECT_HEIGHT = PortGraphics.TOTAL_HEIGHT + V_SPACE
+	MAX_HEIGHT = TOTAL_RECT_HEIGHT + PortGraphics.TOTAL_HEIGHT
+	
+	COLOR = QColor(88, 183, 255)
 	
 	def __init__(self, action: 'Action', parent=None) -> 'ActionGraphics':
 		"""
@@ -58,23 +64,89 @@ class ActionGraphics(QGraphicsItem):
 		QGraphicsItem.__init__(self, parent)
 		self.setFlag(QGraphicsItem.ItemIsSelectable)
 		self._action = action
+		QObject.connect(action, SIGNAL('updated()'), self.updateGraphics)
+		
+		self.color = ActionGraphics.COLOR
 		
 		self._inputPortGraphics = []
 		self._outputPortGraphics = []
+		self._wireGraphics = []
+		self._actionGraphics = []
+		
+		self._inputPortMapping = {}
+		self._outputPortMapping = {}
+		
 		self._interactivePorts = True
-		self.createPortGraphics()
+		ActionGraphics.updateGraphics(self)
 		
+	@Slot()
+	def updateGraphics(self) -> None:
+		"""
+		Updates all graphics and sub-graphics for this action.
 		
-	def createPortGraphics(self) -> None:
+		:return: None
+		:rtype: NoneType
+		"""
+		self.prepareGeometryChange()
+		self.updatePortGraphics()
+		return QGraphicsItem.update(self)
+		
+	def updatePortGraphics(self) -> None:
 		"""
 		Creates the port graphics for the action.
 		
 		:return: None
 		:rtype: NoneType
 		"""
-		m = self._interactivePorts
-		self._inputPortGraphics = [PortGraphics(p, self, m) for p in self._action.getInputPorts()]
-		self._outputPortGraphics = [PortGraphics(p, self, m) for p in self._action.getOutputPorts()]
+		
+		def synchronizePortList(myPortList: List['PortGraphics'], refPortList: List['Port'],
+		                         mapping: Dict['Port', 'PortGraphics']) -> None:
+			"""
+			Synchronizes either the inputs our outputs of the port graphics with the
+			corresponding port list in the action.
+
+			:param myPortList: The list of port graphics in this action to synchronize.
+			:type myPortList: List['PortGraphics']
+			:param refPortList: The list of ports to synchronize with from the reference action.
+			:type refPortList: List['Port']
+			:param mapping: Maps the ports in the wrapper to the corresponding port in the reference.
+			:type mapping: Dict['Port', 'Port']
+			:return: None
+			:rtype: NoneType
+			"""
+			
+			assert (myPortList is self._inputPortGraphics or myPortList is self._outputPortGraphics)
+			
+			newOrdering = []
+			
+			# map all of the reference ports to port graphics.
+			for refPort in refPortList:
+				
+				# update any port graphics that are already in the mapping.
+				if refPort in mapping:
+					mapping[refPort].update()
+				
+				# create new ports that aren't already in the mapping.
+				else:
+					newPortGraphics = PortGraphics(refPort, self, self._interactivePorts)
+					myPortList.append(newPortGraphics)
+					mapping[refPort] = newPortGraphics
+				
+				newOrdering.append(mapping[refPort])
+			
+			# remove any ports that don't exist in the reference action.
+			for portGraphics in myPortList[:]:
+				if portGraphics not in newOrdering:
+					myPortList.remove(portGraphics)
+					portGraphics.scene().removeItem(portGraphics)
+			
+			# maintain correct ordering of ports
+			myPortList.clear()
+			for port in newOrdering:
+				myPortList.append(port)
+		
+		synchronizePortList(self._inputPortGraphics, self._action.getInputPorts(), self._inputPortMapping)
+		synchronizePortList(self._outputPortGraphics, self._action.getOutputPorts(), self._outputPortMapping)
 	
 	def boundingRect(self) -> QRectF:
 		"""
@@ -96,7 +168,7 @@ class ActionGraphics(QGraphicsItem):
 			height += PortGraphics.TOTAL_HEIGHT/2
 			
 		width += ActionGraphics.PEN_WIDTH
-		height += ActionGraphics.PEN_WIDTH
+		height += max(ActionGraphics.PEN_WIDTH, PortGraphics.REQUIRED_PEN_WIDTH)
 		
 		return QRectF(x, y, width, height)
 	
@@ -149,12 +221,10 @@ class ActionGraphics(QGraphicsItem):
 		"""
 		
 		self.placePorts()
-		painter.setBrush(QColor(88, 183, 255))
-		x, y, width, height = self.getActionRect(self._action.getInputPorts(), self._action.getOutputPorts() )
+		painter.setBrush(self.color)
+		x, y, width, height = self.getActionRect(self._action.getInputPorts(), self._action.getOutputPorts())
 		painter.drawRect(QRectF(x, y, width, height))
-		
 
-		
 	def placePorts(self) -> None:
 		"""
 		Place the ports at the right positions on the actions.
@@ -192,8 +262,8 @@ class ActionGraphics(QGraphicsItem):
 				except IndexError:
 					return
 				
-		spread(-ActionGraphics.TOTAL_RECT_HEIGHT / 2, self._inputPortGraphics)
-		spread(ActionGraphics.TOTAL_RECT_HEIGHT / 2, self._outputPortGraphics)
+		spread(-self._height / 2, self._inputPortGraphics)
+		spread(self._height / 2, self._outputPortGraphics)
 		
 		
 if __name__ == "__main__":

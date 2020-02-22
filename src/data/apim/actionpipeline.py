@@ -69,6 +69,8 @@ class ActionPipeline(Action):
 			raise ActionException("The action wrapper can only be added once.")
 		
 		self._actions.append(action)
+		
+		self.updated.emit()
 	
 	def removeAction(self, action: 'ActionWrapper') -> bool:
 		"""
@@ -92,6 +94,7 @@ class ActionPipeline(Action):
 			self.removePort(port)
 			
 		self._actions.remove(action)
+		self.updated.emit()
 		return True
 	
 	def connect(self, portA: 'Port', portB: 'Port') -> None:
@@ -126,6 +129,7 @@ class ActionPipeline(Action):
 			raise WireException("The connection is not a valid configuration.")
 		
 		self._wireSet.addWire(portA, portB)
+		self.updated.emit()
 	
 	def disconnect(self, portA: 'Port', portB: 'Port') -> None:
 		"""
@@ -162,6 +166,7 @@ class ActionPipeline(Action):
 		
 		# now we can delete the wire
 		self._wireSet.deleteWire(portA, portB)
+		self.updated.emit()
 	
 	def changeSequence(self, actionSequence: List['Action']) -> None:
 		"""
@@ -186,6 +191,7 @@ class ActionPipeline(Action):
 			raise ActionException("Different set of actions detected from original ordering.")
 		
 		self._actions = actionSequence
+		self.updated.emit()
 		
 	def removePort(self, port: 'Port') -> bool:
 		"""
@@ -214,6 +220,8 @@ class ActionPipeline(Action):
 				raise PortException("The port does not belong to this action pipeline or any children")
 		else:
 			raise PortException("The port does not have an action.")
+		
+		self.updated.emit()
 		
 	def connectionIsValid(self, portA: 'Port', portB: 'Port') -> bool:
 		"""
