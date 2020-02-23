@@ -64,6 +64,7 @@ class ActionWrapper(Action):
 		if self not in parent.getActions():
 			parent.addAction(self)
 		
+		self.setName(self._actionRef.getName())
 		self._actionRef.registerWrapper(self)
 		self.synchronizePorts()
 		

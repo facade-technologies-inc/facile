@@ -27,12 +27,15 @@ from enum import Enum, auto
 
 from PySide2.QtCore import Slot, QTimer
 from PySide2.QtGui import QStandardItem, QStandardItemModel, Qt, QIcon, QPixmap
-from PySide2.QtWidgets import QGraphicsScene
+from PySide2.QtWidgets import QGraphicsScene, QDialog, QLabel, QVBoxLayout, QWidget
 
 import data.tguim.visibilitybehavior as vb
 from gui.facilegraphicsview import FacileGraphicsView
+from gui.facileactiongraphicsview import FacileActionGraphicsView
+from gui.blackboxeditordialog import BlackBoxEditorDialog
 from qt_models.propeditordelegate import PropertyEditorDelegate
 from data.configvars import ConfigVars
+from data.apim.actionpipeline import ActionPipeline
 
 
 class StateMachine:
@@ -113,8 +116,39 @@ class StateMachine:
 
 		# Initialize configuration variables (that affect what gets displayed in the Facile GUI)
 		self.configVars = ConfigVars()
+		
+		# Stores the action pipeline that's currently being edited
+		self._currentActionPipeline = None
 
 		StateMachine.instance = self
+		
+	def setCurrentActionPipeline(self, actionPipeline: 'ActionPipeline') -> None:
+		"""
+		Sets the current action pipeline to be edited.
+		
+		:param actionPipeline: The action pipeline to stage for editing.
+		:type actionPipeline: ActionPipeline
+		:return: None
+		:rtype: NoneType
+		"""
+		if type(actionPipeline) == ActionPipeline:
+			self.view.ui.apiModelView.showAction(actionPipeline)
+		elif actionPipeline is None:
+			self.view.ui.apiModelView.setScene(QGraphicsScene())
+		else:
+			raise TypeError("Must provide either ActionPipeline or None")
+			
+		self._currentActionPipeline = actionPipeline
+		
+	def getCurrentActionPipeline(self) -> 'ActionPipeline':
+		"""
+		Get the current action pipeline staged for editing.
+		
+		:return: The current action pipeline staged for editing.
+		:rtype: ActionPipeline
+		"""
+		return self._currentActionPipeline
+		
 	
 	def tick(self, event: Event, *args, **kwargs) -> None:
 		"""
@@ -258,7 +292,7 @@ class StateMachine:
 		# Set up the GUI
 		ui.tempView.hide()
 		ui.targetGUIModelView = FacileGraphicsView()
-		ui.apiModelView = FacileGraphicsView()
+		ui.apiModelView = FacileActionGraphicsView()
 		ui.viewSplitter.addWidget(ui.targetGUIModelView)
 		ui.viewSplitter.addWidget(ui.apiModelView)
 		
@@ -327,6 +361,19 @@ class StateMachine:
 		ui.actionStop_App.triggered.connect(lambda: v.onStopAppTriggered(confirm=True))
 		ui.actionShow_Behaviors.triggered.connect(self.configVars.setShowBehaviors)
 		ui.actionShow_Token_Tags.triggered.connect(self.configVars.setShowTokenTags)
+		
+		def onNewActionPipeline():
+			ap = ActionPipeline()
+			blackBoxEditor = BlackBoxEditorDialog(ap)
+			result = blackBoxEditor.exec_()
+			if result == QDialog.Rejected:
+				return
+			else:
+				self._project.getAPIModel().addActionPipeline(ap)
+				v._actionPipelinesMenu.addAction(ap)
+		
+		ui.actionAdd_Action_Pipeline.triggered.connect(onNewActionPipeline)
+		v._actionPipelinesMenu.actionSelected.connect(self.setCurrentActionPipeline)
 
 		# Disable actions
 		ui.actionSave_Project.setEnabled(False)
@@ -340,6 +387,7 @@ class StateMachine:
 		ui.actionStart_App.setEnabled(False)
 		ui.actionStop_App.setEnabled(False)
 		ui.actionManage_Project.setEnabled(False)
+		ui.actionAdd_Action_Pipeline.setEnabled(False)
 	
 	def _state_MODEL_MANIPULATION(self, event: Event, previousState: State, *args,
 	                              **kwargs) -> None:
@@ -421,6 +469,7 @@ class StateMachine:
 		ui.actionAdd_Behavior.setEnabled(True)
 		ui.actionManualExplore.setChecked(False)
 		ui.actionAutoExplore.setChecked(False)
+		ui.actionAdd_Action_Pipeline.setEnabled(True)
 	
 	def _state_ADDING_VB(self, event: Event, previousState: State, *args, **kwargs) -> None:
 		"""

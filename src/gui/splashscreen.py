@@ -35,6 +35,6 @@ class FacileSplashScreen(QSplashScreen):
 		height = QApplication.instance().primaryScreen().size().height() * .25
 		width = QApplication.instance().primaryScreen().size().width() * .25
 		
-		logo = QPixmap('../resources/facile_logo.png').scaledToHeight(height)
+		logo = QPixmap('../resources/splash_screen_02.png').scaledToHeight(height)
 		
 		self.setPixmap(logo)

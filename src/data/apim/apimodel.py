@@ -21,17 +21,27 @@
 This module contains the ApiModel class which is the top-level class for building the API Model.
 """
 
-from typing import List
+from typing import List, Tuple
 
-from PySide2.QtCore import QObject
+from PySide2.QtCore import QObject, Signal
+from PySide2.QtWidgets import QDialog
 
 from data.apim.actionpipeline import ActionPipeline
 from data.apim.componentaction import ComponentAction
+from data.apim.actionwrapper import ActionWrapper
+from gui.blackboxeditordialog import BlackBoxEditorDialog
 
 class ApiModel(QObject):
 	"""
-	The ApiModel class contains all the information about the API model.
+	The ApiModel class contains all action pipelines in the project.
+	
+	Each Action Pipeline is created manually by the user using Facile. When action pipelines are
+	created, other actions are inserted into them; however, since the action pipelines can share
+	resources (such as the same ComponentAction being used in 2 Action Pipelines), the Action
+	Pipelines really only contain wrappers that point to other actions.
 	"""
+	
+	newActionPipeline = Signal(ActionPipeline)
 	
 	def __init__(self):
 		"""
@@ -41,21 +51,68 @@ class ApiModel(QObject):
 		:rtype: ApiModel
 		"""
 		
-		
 		self._actionPipelines = []
-		self._componentActions = []
 		
 	def getActionPipelines(self) -> List[ActionPipeline]:
 		"""
 		Gets a list of all ActionPipelines.
+		
+		.. note:: A shallow copy of the list is returned rather than the original.
 		
 		:return: A list of all ActionPipelines.
 		:rtype: List[ActionPipeline]
 		"""
 		return self._actionPipelines[:]
 	
-	def getComponentActions(self) -> List[ComponentAction]:
-		pass
-		# TODO: Decide how we're going to store component actions and which ones we'll store.
-	
-	# TODO: Add methods to this class as we see fit
+	def addActionPipeline(self, actionPipeline: 'ActionPipeline') -> None:
+		"""
+		Add an action pipeline to the collection of all action pipelines.
+		
+		:param actionPipeline: The action pipeline to add to the collection.
+		:type actionPipeline: ActionPipeline
+		:return: None
+		:rtype: NoneType
+		"""
+		if actionPipeline not in self._actionPipelines:
+			self._actionPipelines.append(actionPipeline)
+		
+	def removeActionPipeline(self, actionPipeline: 'ActionPipeline') -> bool:
+		"""
+		Removes an action pipeline instance from the collection of action pipelines.
+		
+		:param actionPipeline: The action pipeline to remove
+		:type actionPipeline: ActionPipeline
+		:return: True if the action pipeline existed before, but is successfully removed. False
+		         otherwise.
+		:rtype: bool
+		"""
+		try:
+			self._actionPipelines.remove(actionPipeline)
+			return True
+		except:
+			return False
+		
+	def getActionsByType(self) -> Tuple[List['ActionPipeline'], List['ComponentAction']]:
+		"""
+		get lists of all actions separated by type.
+		
+		.. note:: This method is computationally intensive as it traverses all actions in the
+			apim. It should not be called often.
+		
+		:return: A list of all component actions used by the action pipelines
+		:rtype: Tuple[List['ActionPipeline'], List['ComponentAction']]
+		"""
+		
+		componentActions = set()
+		
+		work = self._actionPipelines[:]
+		while work:
+			action = work.pop()
+			if type(action) == ComponentAction:
+				componentActions.add(action)
+			elif type(action) == ActionPipeline:
+				work += action.getActions()
+			elif type(action) == ActionWrapper:
+				work.append(action.getActionReference())
+			
+		return self.getActionPipelines(), list(componentActions)

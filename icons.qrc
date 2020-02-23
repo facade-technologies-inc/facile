@@ -108,11 +108,15 @@
 
         <file alias="../resources/icons/pastel/add_box.png">resources/icons/pastel/add_box.png</file>
 
+        <file alias="../resources/icons/pastel/add_person.png">resources/icons/pastel/add_person.png</file>
+
         <file alias="../resources/icons/pastel/box.png">resources/icons/pastel/box.png</file>
 
         <file alias="../resources/icons/pastel/copy.png">resources/icons/pastel/copy.png</file>
 
         <file alias="../resources/icons/pastel/create.png">resources/icons/pastel/create.png</file>
+
+        <file alias="../resources/icons/pastel/delete.png">resources/icons/pastel/delete.png</file>
 
         <file alias="../resources/icons/pastel/flash_light.png">resources/icons/pastel/flash_light.png</file>
 
@@ -149,6 +153,8 @@
         <file alias="../resources/icons/pastel/stop_recording.png">resources/icons/pastel/stop_recording.png</file>
 
         <file alias="../resources/icons/pastel/tag.png">resources/icons/pastel/tag.png</file>
+
+        <file alias="../resources/icons/pastel/trash_can.png">resources/icons/pastel/trash_can.png</file>
 
     </qresource>
 </RCC>
