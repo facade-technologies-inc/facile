@@ -353,7 +353,7 @@
   <action name="actionAdd_Action_Pipeline">
    <property name="icon">
     <iconset resource="../../../icons.qrc">
-     <normaloff>:/icon/resources/icons/pastel/add_person.png</normaloff>:/icon/resources/icons/pastel/add_person.png</iconset>
+     <normaloff>:/icon/resources/icons/office/new-flow.png</normaloff>:/icon/resources/icons/office/new-flow.png</iconset>
    </property>
    <property name="text">
     <string>Add Action Pipeline</string>
