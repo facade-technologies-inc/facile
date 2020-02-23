@@ -56,7 +56,7 @@ class ActionSpecification:
 		code = None
 		
 		globals = {
-			"__builtins__" : None
+			#"__builtins__" : None
 		}
 		
 		locals = {

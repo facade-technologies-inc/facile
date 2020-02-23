@@ -54,9 +54,14 @@ class ApiModel(QObject):
 		self._actionPipelines = []
 		self._specifications = {}
 		
+		self.initializeSpecifications()
+		
 	def initializeSpecifications(self) -> None:
 		"""
-		Read all action specifications from the database
+		Read all action specifications from the database.
+		
+		The specifications are stored in a dictionary mapping each unique target to a list of
+		ActionSpecification objects.
 		
 		:return: None
 		:rtype: NoneType
@@ -64,7 +69,10 @@ class ApiModel(QObject):
 		specDir = os.path.abspath("../database/component_actions")
 		for file in os.listdir(specDir):
 			if file.endswith(".action"):
-				aS = ActionSpecification(os.path.join(specDir, file))
+				filepath = os.path.join(specDir, file)
+				aS = ActionSpecification().fromFile(filepath)
+				
+				# Map all targets to the specification for easy lookup later.
 				for target in aS.viableTargets:
 					if target in self._specifications:
 						self._specifications[target].append(aS)

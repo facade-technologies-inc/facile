@@ -2,8 +2,8 @@
 name = "click"
 description = "Left-click a button."
 targets = {'Button'}
-inputs = {}
-outputs = {}
+inputs = []
+outputs = []
 code = """
 cw.click()
 """
