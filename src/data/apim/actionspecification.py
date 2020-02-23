@@ -21,10 +21,14 @@
 This module contains the ActionSpecification class.
 """
 
-import json
+import os, sys
+sys.path.append(os.path.abspath("../../"))
 
-from typing import Dict
 from data.apim.port import Port
+
+class ActionSpecificationException(Exception):
+	def __init__(self, msg):
+		Exception.__init__(self, msg)
 
 class ActionSpecification:
 	"""
@@ -40,37 +44,77 @@ class ActionSpecification:
 		self.code = ""
 		
 	@staticmethod
-	def fromDict(aS: Dict) -> 'ActionSpecification':
-		newAS = ActionSpecification()
-		newAS.name = aS['name']
-		newAS.description = aS['description']
-		newAS.viableTargets = [eval(target) for target in aS['targets']]
-		newAS.inputs = [Port.fromDict(p) for p in aS['inputs']]
-		newAS.outputs = [Port.fromDict(p) for p in aS['outputs']]
-		newAS.code = aS['code']
+	def fromFile(specFile: "str") -> 'ActionSpecification':
+		with open(specFile, 'r+') as f:
+			specContents = f.read()
 		
-	def toDict(self) -> Dict:
-		d = {}
-		d['name'] = self.name
-		d['description'] = self.description
-		d['targets'] = self.viableTargets
-		d['inputs'] = [p.toDict() for p in self.inputs]
-		d['outputs'] = [p.toDict() for p in self.outputs]
-		d['code'] = self.code
+		name = None
+		description = None
+		targets = None
+		inputs = None
+		outputs = None
+		code = None
 		
-		return d
+		globals = {
+			"__builtins__" : None
+		}
 		
+		locals = {
+			'name': name,
+			'description': description,
+			'targets': targets,
+			'inputs': inputs,
+			'outputs': outputs,
+			'code': code
+		}
+		
+		exec(compile(specContents, specFile, 'exec'), globals, locals)
+		
+		name = locals['name']
+		description = locals['description']
+		targets = locals['targets']
+		inputs = locals['inputs']
+		outputs = locals['outputs']
+		code = locals['code']
+		
+		try:
+			assert(name != None)
+			assert(description != None)
+			assert(targets != None)
+			assert(inputs != None)
+			assert(outputs != None)
+			assert(code != None)
+		except:
+			raise ActionSpecificationException("Required variable not set in specification!")
+		
+		spec = ActionSpecification()
+		spec.name = name
+		spec.description = description
+		spec.viableTargets = targets
+		spec.code = code
+		
+		for input in inputs:
+			p = Port()
+			p.setName(input["name"])
+			p.setDataType(input["type"])
+			p.setOptional(input.get("optional", False))
+			spec.inputs.append(p)
+		
+		for output in outputs:
+			p = Port()
+			p.setName(output["name"])
+			p.setDataType(output["type"])
+			spec.outputs.append(p)
+			
+		return spec
+	
 if __name__ == "__main__":
-	aS = ActionSpecification()
-	aS.name = "click"
-	aS.description = "Click a button."
-	aS.viableTargets = ['Button', 'ComboBox', 'MenuItem', 'Menu', 'Edit']
-	aS.inputs = []
-	aS.outputs = []
-	aS.code = """
-	comp.click()
-	"""
+	file = "../../../database/component_actions/click.action"
+	aS = ActionSpecification.fromFile(file)
 	
-	print(json.dumps(aS.toDict(), indent=4))
-	
-	
+	print(aS.name)
+	print(aS.description)
+	print(aS.viableTargets)
+	print(aS.inputs)
+	print(aS.outputs)
+	print(aS.code)

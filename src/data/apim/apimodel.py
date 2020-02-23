@@ -21,15 +21,15 @@
 This module contains the ApiModel class which is the top-level class for building the API Model.
 """
 
+import os
 from typing import List, Tuple
 
 from PySide2.QtCore import QObject, Signal
-from PySide2.QtWidgets import QDialog
 
 from data.apim.actionpipeline import ActionPipeline
 from data.apim.componentaction import ComponentAction
 from data.apim.actionwrapper import ActionWrapper
-from gui.blackboxeditordialog import BlackBoxEditorDialog
+from data.apim.actionspecification import ActionSpecification
 
 class ApiModel(QObject):
 	"""
@@ -52,6 +52,24 @@ class ApiModel(QObject):
 		"""
 		
 		self._actionPipelines = []
+		self._specifications = {}
+		
+	def initializeSpecifications(self) -> None:
+		"""
+		Read all action specifications from the database
+		
+		:return: None
+		:rtype: NoneType
+		"""
+		specDir = os.path.abspath("../database/component_actions")
+		for file in os.listdir(specDir):
+			if file.endswith(".action"):
+				aS = ActionSpecification(os.path.join(specDir, file))
+				for target in aS.viableTargets:
+					if target in self._specifications:
+						self._specifications[target].append(aS)
+					else:
+						self._specifications[target] = [aS]
 		
 	def getActionPipelines(self) -> List[ActionPipeline]:
 		"""

@@ -1,0 +1,12 @@
+name = "write"
+description = "write to a component"
+targets = ['Edit']
+inputs = {
+	"name": "value",
+	"type": str,
+	"optional": False,
+}
+outputs = {}
+code = """
+cw.write(value)
+"""
