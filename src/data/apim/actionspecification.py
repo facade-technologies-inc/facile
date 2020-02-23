@@ -90,8 +90,12 @@ class ActionSpecification:
 		spec = ActionSpecification()
 		spec.name = name
 		spec.description = description
-		spec.viableTargets = targets
 		spec.code = code
+		
+		if not targets:
+			spec.viableTargets = None
+		else:
+			spec.viableTargets = targets
 		
 		for input in inputs:
 			p = Port()

@@ -78,7 +78,27 @@ class ApiModel(QObject):
 						self._specifications[target].append(aS)
 					else:
 						self._specifications[target] = [aS]
+						
+	def getSpecifications(self, target: str = "all") -> List[ActionSpecification]:
+		"""
+		Get all the action specifications for a specific target.
 		
+		If target is all, all specifications will be returned.
+		
+		:param target: The target of the specification to retrieve.
+		:type target: str
+		:return: A list of action specifications for the given target
+		:rtype:
+		"""
+		# Get all action specifications as a list
+		if target == "all":
+			specs = set()
+			for target in self._specifications:
+				specs.update(self._specifications[target])
+			return list(specs)
+		else:
+			return self._specifications.get(target, [])[:]
+			
 	def getActionPipelines(self) -> List[ActionPipeline]:
 		"""
 		Gets a list of all ActionPipelines.

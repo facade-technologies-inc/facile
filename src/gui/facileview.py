@@ -33,6 +33,7 @@ from data.project import Project
 from data.statemachine import StateMachine
 from data.tguim.component import Component
 from data.tguim.visibilitybehavior import VisibilityBehavior
+from data.apim.componentaction import ComponentAction
 from gui.copyprojectdialog import CopyProjectDialog
 from gui.manageprojectdialog import ManageProjectDialog
 from gui.newprojectdialog import NewProjectDialog
@@ -301,6 +302,15 @@ class FacileView(QMainWindow):
 		if type(entity) == Component:
 			self.ui.projectExplorerView.model().selectComponent(entity)
 			self._stateMachine.componentClicked(entity)
+			
+			# show all component actions in the component action menu
+			cType = entity.getProperties().getProperty('Class Name')[1].getValue()
+			specs = self._project.getAPIModel().getSpecifications(cType)
+			self._componentActionMenu.clearActions()
+			self.ui.actionMenuTabWidget.setCurrentWidget(self._componentActionMenu)
+			for spec in specs:
+				action = ComponentAction(entity, spec)
+				self._componentActionMenu.addAction(action)
 			
 		elif type(entity) == VisibilityBehavior:
 			self.ui.projectExplorerView.model().selectBehavior(entity)
