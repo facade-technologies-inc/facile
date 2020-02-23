@@ -158,7 +158,8 @@ class ValidatorView(QWidget):
 		self.ui.centralWidget.setPalette(palette)
 		
 		# reset progress bar and hide it.
-		self.ui.algorithmProgressBar.setValue(0)
+		if self.ui.algorithmProgressBar.value() == 100:
+			self.ui.algorithmProgressBar.setValue(0)
 		self.ui.algorithmProgressBar.hide()
 		
 		# reset individual counts
@@ -246,6 +247,8 @@ class ValidatorView(QWidget):
 			self.ui.algorithmProgressBar.setStyleSheet(ValidatorView.WARNING_PROGRESSBAR)
 		else:
 			self.ui.algorithmProgressBar.setStyleSheet(ValidatorView.ERROR_PROGRESSBAR)
+		
+		self.ui.algorithmProgressBar.show()
 
 	def addWidgetToMessage(self, msg: ValidatorMessage) -> None:
 		"""
