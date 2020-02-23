@@ -26,15 +26,29 @@
 
         <file alias="../resources/icons/office/add.png">resources/icons/office/add.png</file>
 
+        <file alias="../resources/icons/office/arrow-right.png">resources/icons/office/arrow-right.png</file>
+
         <file alias="../resources/icons/office/auto-explore.png">resources/icons/office/auto-explore.png</file>
 
         <file alias="../resources/icons/office/cancel.png">resources/icons/office/cancel.png</file>
 
+        <file alias="../resources/icons/office/code.png">resources/icons/office/code.png</file>
+
         <file alias="../resources/icons/office/compass.png">resources/icons/office/compass.png</file>
+
+        <file alias="../resources/icons/office/compile-python.png">resources/icons/office/compile-python.png</file>
 
         <file alias="../resources/icons/office/copy.png">resources/icons/office/copy.png</file>
 
+        <file alias="../resources/icons/office/dark-finger-touch.png">resources/icons/office/dark-finger-touch.png</file>
+
+        <file alias="../resources/icons/office/dark-gear.png">resources/icons/office/dark-gear.png</file>
+
+        <file alias="../resources/icons/office/dark-user-male.png">resources/icons/office/dark-user-male.png</file>
+
         <file alias="../resources/icons/office/delete.png">resources/icons/office/delete.png</file>
+
+        <file alias="../resources/icons/office/deploy.png">resources/icons/office/deploy.png</file>
 
         <file alias="../resources/icons/office/detective.png">resources/icons/office/detective.png</file>
 
@@ -43,6 +57,8 @@
         <file alias="../resources/icons/office/edit-file.png">resources/icons/office/edit-file.png</file>
 
         <file alias="../resources/icons/office/epub.png">resources/icons/office/epub.png</file>
+
+        <file alias="../resources/icons/office/export-python.png">resources/icons/office/export-python.png</file>
 
         <file alias="../resources/icons/office/eye.png">resources/icons/office/eye.png</file>
 
@@ -55,6 +71,8 @@
         <file alias="../resources/icons/office/html.png">resources/icons/office/html.png</file>
 
         <file alias="../resources/icons/office/invisible.png">resources/icons/office/invisible.png</file>
+
+        <file alias="../resources/icons/office/light-finger-touch.png">resources/icons/office/light-finger-touch.png</file>
 
         <file alias="../resources/icons/office/lightning-arrow.png">resources/icons/office/lightning-arrow.png</file>
 
@@ -69,6 +87,10 @@
         <file alias="../resources/icons/office/pdf.png">resources/icons/office/pdf.png</file>
 
         <file alias="../resources/icons/office/picture.png">resources/icons/office/picture.png</file>
+
+        <file alias="../resources/icons/office/python-code.png">resources/icons/office/python-code.png</file>
+
+        <file alias="../resources/icons/office/python.png">resources/icons/office/python.png</file>
 
         <file alias="../resources/icons/office/recent.png">resources/icons/office/recent.png</file>
 

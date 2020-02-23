@@ -163,8 +163,7 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
-   <addaction name="actionStart_App"/>
-   <addaction name="actionStop_App"/>
+   <addaction name="actionPower_App"/>
    <addaction name="separator"/>
    <addaction name="actionAutoExplore"/>
    <addaction name="actionManualExplore"/>
@@ -308,28 +307,20 @@
     <string>Add a visibility behavior to the target GUI model</string>
    </property>
   </action>
-  <action name="actionStart_App">
+  <action name="actionPower_App">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="icon">
     <iconset resource="../../../icons.qrc">
-     <normaloff>:/icon/resources/icons/office/turn-on.png</normaloff>:/icon/resources/icons/office/turn-on.png</iconset>
+     <normaloff>:/icon/resources/icons/office/turn-on.png</normaloff>
+     <normalon>:/icon/resources/icons/office/shutdown.png</normalon>:/icon/resources/icons/office/turn-on.png</iconset>
    </property>
    <property name="text">
-    <string>Start App</string>
+    <string>Start/Stop App</string>
    </property>
    <property name="toolTip">
     <string>Start running this project's target application</string>
-   </property>
-  </action>
-  <action name="actionStop_App">
-   <property name="icon">
-    <iconset resource="../../../icons.qrc">
-     <normaloff>:/icon/resources/icons/office/shutdown.png</normaloff>:/icon/resources/icons/office/shutdown.png</iconset>
-   </property>
-   <property name="text">
-    <string>Stop App</string>
-   </property>
-   <property name="toolTip">
-    <string>Stop running this project's target application</string>
    </property>
   </action>
   <action name="actionShow_Token_Tags">

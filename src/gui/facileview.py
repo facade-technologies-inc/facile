@@ -274,6 +274,8 @@ class FacileView(QMainWindow):
 		:return: None
 		:rtype: NoneType
 		"""
+		
+		self.ui.actionPower_App.setChecked(True)
 		if confirm:
 			title = "Confirm Application Termination"
 			message = "Are you sure you'd like to terminate the target application?"
@@ -282,6 +284,7 @@ class FacileView(QMainWindow):
 			response = QMessageBox.StandardButton.Yes
 		
 		if response == QMessageBox.StandardButton.Yes:
+			self.ui.actionPower_App.setChecked(True)
 			self._project.stopTargetApplication()
 			self._stateMachine.stopApp()
 			self.info("The target application has been\nterminated.")

@@ -183,8 +183,7 @@ class StateMachine:
 		# If the app was just started, we don't want to change the state, but we do want to
 		# enable/disable the controls.
 		elif event == StateMachine.Event.START_APP:
-			self.view.ui.actionStart_App.setEnabled(False)
-			self.view.ui.actionStop_App.setEnabled(True)
+			self.view.ui.actionPower_App.setChecked(True)
 			self.view.appWatcher.start()
 			if self.curState == StateMachine.State.MODEL_MANIPULATION:
 				self.view.ui.actionManualExplore.setEnabled(True)
@@ -193,8 +192,7 @@ class StateMachine:
 		# If the app was just terminated, we must leave the exploration state if we're in it and
 		# we will toggle the app controls
 		elif event == StateMachine.Event.STOP_APP:
-			self.view.ui.actionStart_App.setEnabled(True)
-			self.view.ui.actionStop_App.setEnabled(False)
+			self.view.ui.actionPower_App.setChecked(False)
 			self.view.ui.actionManualExplore.setEnabled(False)
 			self.view.ui.actionAutoExplore.setEnabled(False)
 			if self.curState == StateMachine.State.EXPLORATION:
@@ -357,10 +355,16 @@ class StateMachine:
 		ui.actionAutoExplore.triggered.connect(v.onAutomaticExploration)
 		ui.actionManualExplore.triggered.connect(v.onManualExploration)
 		ui.actionAdd_Behavior.triggered.connect(v.onAddBehaviorTriggered)
-		ui.actionStart_App.triggered.connect(v.onStartAppTriggered)
-		ui.actionStop_App.triggered.connect(lambda: v.onStopAppTriggered(confirm=True))
 		ui.actionShow_Behaviors.triggered.connect(self.configVars.setShowBehaviors)
 		ui.actionShow_Token_Tags.triggered.connect(self.configVars.setShowTokenTags)
+		
+		def onPowerApp(checked):
+			if checked == True:
+				v.onStartAppTriggered()
+			else:
+				v.onStopAppTriggered(confirm=True)
+		
+		ui.actionPower_App.triggered.connect(onPowerApp)
 		
 		def onNewActionPipeline():
 			ap = ActionPipeline()
@@ -384,8 +388,7 @@ class StateMachine:
 		ui.actionShow_Behaviors.setEnabled(False)
 		ui.actionShow_Token_Tags.setEnabled(False)
 		ui.actionAdd_Behavior.setEnabled(False)
-		ui.actionStart_App.setEnabled(False)
-		ui.actionStop_App.setEnabled(False)
+		ui.actionPower_App.setEnabled(False)
 		ui.actionManage_Project.setEnabled(False)
 		ui.actionAdd_Action_Pipeline.setEnabled(False)
 	
@@ -440,8 +443,7 @@ class StateMachine:
 			propertyDelegate.propertyUpdated.connect(onPropUpdate)
 			ui.propertyEditorView.setItemDelegate(propertyDelegate)
 			ui.targetGUIModelView.setScene(v._project.getTargetGUIModel().getScene())
-			ui.actionStop_App.setEnabled(False)
-			ui.actionStart_App.setEnabled(True)
+			ui.actionPower_App.setChecked(False)
 			ui.actionManage_Project.setEnabled(True)
 		
 		if previousState == StateMachine.State.EXPLORATION:
@@ -453,13 +455,11 @@ class StateMachine:
 		if self._project.getProcess():
 			ui.actionAutoExplore.setEnabled(True)
 			ui.actionManualExplore.setEnabled(True)
-			ui.actionStop_App.setEnabled(True)
-			ui.actionStart_App.setEnabled(False)
+			ui.actionPower_App.setChecked(True)
 		else:
 			ui.actionManualExplore.setEnabled(False)
 			ui.actionAutoExplore.setEnabled(False)
-			ui.actionStop_App.setEnabled(False)
-			ui.actionStart_App.setEnabled(True)
+			ui.actionPower_App.setChecked(False)
 		
 		ui.actionSave_Project.setEnabled(True)
 		ui.actionSave_as.setEnabled(True)
@@ -470,6 +470,7 @@ class StateMachine:
 		ui.actionManualExplore.setChecked(False)
 		ui.actionAutoExplore.setChecked(False)
 		ui.actionAdd_Action_Pipeline.setEnabled(True)
+		ui.actionPower_App.setEnabled(True)
 	
 	def _state_ADDING_VB(self, event: Event, previousState: State, *args, **kwargs) -> None:
 		"""
@@ -492,8 +493,7 @@ class StateMachine:
 		self.view.ui.actionShow_Behaviors.setEnabled(True)
 		self.view.ui.actionShow_Token_Tags.setEnabled(True)
 		self.view.ui.actionAdd_Behavior.setEnabled(True)
-		self.view.ui.actionStart_App.setEnabled(True)
-		self.view.ui.actionStop_App.setEnabled(True)
+		self.view.ui.actionPower_App.setEnabled(True)
 	
 	def _state_EXPLORATION(self, event: Event, previousState: State, *args, **kwargs) -> None:
 		"""
@@ -527,8 +527,7 @@ class StateMachine:
 		self.view.ui.actionShow_Behaviors.setEnabled(True)
 		self.view.ui.actionShow_Token_Tags.setEnabled(True)
 		self.view.ui.actionAdd_Behavior.setEnabled(False)
-		self.view.ui.actionStart_App.setEnabled(False)
-		self.view.ui.actionStop_App.setEnabled(True)
+		self.view.ui.actionPower_App.setEnabled(True)
 	
 	############################################################################
 	# Slots (Entry points for other parts of Facile)
