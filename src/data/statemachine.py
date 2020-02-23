@@ -302,7 +302,7 @@ class StateMachine:
 					action = ui.menuRecent_Projects_2.addAction(proj)
 					action.triggered.connect(v.onOpenRecentProject)
 					icon = QIcon()
-					icon.addPixmap(QPixmap(":/icon/resources/icons/pastel/open_box.png"),QIcon.Normal, QIcon.Off)
+					icon.addPixmap(QPixmap(":/icon/resources/icons/office/open_door.png"),QIcon.Normal, QIcon.Off)
 					action.setIcon(icon)
 
 		# Connecting the configVars' change signal to logic that will update the TGUIM View

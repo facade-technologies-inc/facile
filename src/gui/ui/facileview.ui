@@ -34,7 +34,7 @@
      <x>0</x>
      <y>0</y>
      <width>1017</width>
-     <height>26</height>
+     <height>25</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -175,7 +175,7 @@
   <action name="actionOpen_Project">
    <property name="icon">
     <iconset resource="../../../icons.qrc">
-     <normaloff>:/icon/resources/icons/pastel/open_box.png</normaloff>:/icon/resources/icons/pastel/open_box.png</iconset>
+     <normaloff>:/icon/resources/icons/office/open-door.png</normaloff>:/icon/resources/icons/office/open-door.png</iconset>
    </property>
    <property name="text">
     <string>Open Project</string>
@@ -184,7 +184,7 @@
   <action name="actionSave_Project">
    <property name="icon">
     <iconset resource="../../../icons.qrc">
-     <normaloff>:/icon/resources/icons/pastel/save.png</normaloff>:/icon/resources/icons/pastel/save.png</iconset>
+     <normaloff>:/icon/resources/icons/office/save.png</normaloff>:/icon/resources/icons/office/save.png</iconset>
    </property>
    <property name="text">
     <string>Save</string>
@@ -193,7 +193,7 @@
   <action name="actionSave_as">
    <property name="icon">
     <iconset resource="../../../icons.qrc">
-     <normaloff>:/icon/resources/icons/pastel/save_as.png</normaloff>:/icon/resources/icons/pastel/save_as.png</iconset>
+     <normaloff>:/icon/resources/icons/office/save-as.png</normaloff>:/icon/resources/icons/office/save-as.png</iconset>
    </property>
    <property name="text">
     <string>Save As . . .</string>
@@ -202,7 +202,7 @@
   <action name="actionFrom_Scratch">
    <property name="icon">
     <iconset resource="../../../icons.qrc">
-     <normaloff>:/icon/resources/icons/pastel/create.png</normaloff>:/icon/resources/icons/pastel/create.png</iconset>
+     <normaloff>:/icon/resources/icons/office/edit-file.png</normaloff>:/icon/resources/icons/office/edit-file.png</iconset>
    </property>
    <property name="text">
     <string>From Scratch</string>
@@ -211,7 +211,7 @@
   <action name="actionFrom_Existing_Project">
    <property name="icon">
     <iconset resource="../../../icons.qrc">
-     <normaloff>:/icon/resources/icons/pastel/copy.png</normaloff>:/icon/resources/icons/pastel/copy.png</iconset>
+     <normaloff>:/icon/resources/icons/office/copy.png</normaloff>:/icon/resources/icons/office/copy.png</iconset>
    </property>
    <property name="text">
     <string>From Existing Project</string>
@@ -226,7 +226,7 @@
    </property>
    <property name="icon">
     <iconset resource="../../../icons.qrc">
-     <normaloff>:/icon/resources/icons/pastel/right_arrow.png</normaloff>:/icon/resources/icons/pastel/right_arrow.png</iconset>
+     <normaloff>:/icon/resources/icons/office/visibility-behavior-green.png</normaloff>:/icon/resources/icons/office/visibility-behavior-green.png</iconset>
    </property>
    <property name="text">
     <string>Show Behaviors</string>
@@ -244,7 +244,7 @@
    </property>
    <property name="icon">
     <iconset resource="../../../icons.qrc">
-     <normaloff>:/icon/resources/icons/pastel/image.png</normaloff>:/icon/resources/icons/pastel/image.png</iconset>
+     <normaloff>:/icon/resources/icons/office/picture.png</normaloff>:/icon/resources/icons/office/picture.png</iconset>
    </property>
    <property name="text">
     <string>Show Component Images</string>
@@ -256,7 +256,7 @@
    </property>
    <property name="icon">
     <iconset resource="../../../icons.qrc">
-     <normaloff>:/icon/resources/icons/pastel/space_shuttle.png</normaloff>:/icon/resources/icons/pastel/space_shuttle.png</iconset>
+     <normaloff>:/icon/resources/icons/office/auto-explore.png</normaloff>:/icon/resources/icons/office/auto-explore.png</iconset>
    </property>
    <property name="text">
     <string>Auto Explore</string>
@@ -274,7 +274,7 @@
    </property>
    <property name="icon">
     <iconset resource="../../../icons.qrc">
-     <normaloff>:/icon/resources/icons/pastel/robot.png</normaloff>:/icon/resources/icons/pastel/robot.png</iconset>
+     <normaloff>:/icon/resources/icons/office/manual-explore.png</normaloff>:/icon/resources/icons/office/manual-explore.png</iconset>
    </property>
    <property name="text">
     <string>Manual Explore</string>
@@ -289,7 +289,7 @@
   <action name="actionManage_Project">
    <property name="icon">
     <iconset resource="../../../icons.qrc">
-     <normaloff>:/icon/resources/icons/pastel/settings.png</normaloff>:/icon/resources/icons/pastel/settings.png</iconset>
+     <normaloff>:/icon/resources/icons/office/settings.png</normaloff>:/icon/resources/icons/office/settings.png</iconset>
    </property>
    <property name="text">
     <string>Project Settings</string>
@@ -298,7 +298,7 @@
   <action name="actionAdd_Behavior">
    <property name="icon">
     <iconset resource="../../../icons.qrc">
-     <normaloff>:/icon/resources/icons/pastel/add_arrow.png</normaloff>:/icon/resources/icons/pastel/add_arrow.png</iconset>
+     <normaloff>:/icon/resources/icons/office/add-visibility-behavior.png</normaloff>:/icon/resources/icons/office/add-visibility-behavior.png</iconset>
    </property>
    <property name="text">
     <string>Add Behavior</string>
@@ -310,7 +310,7 @@
   <action name="actionStart_App">
    <property name="icon">
     <iconset resource="../../../icons.qrc">
-     <normaloff>:/icon/resources/icons/pastel/play.png</normaloff>:/icon/resources/icons/pastel/play.png</iconset>
+     <normaloff>:/icon/resources/icons/office/turn-on.png</normaloff>:/icon/resources/icons/office/turn-on.png</iconset>
    </property>
    <property name="text">
     <string>Start App</string>
@@ -322,7 +322,7 @@
   <action name="actionStop_App">
    <property name="icon">
     <iconset resource="../../../icons.qrc">
-     <normaloff>:/icon/resources/icons/pastel/power_off.png</normaloff>:/icon/resources/icons/pastel/power_off.png</iconset>
+     <normaloff>:/icon/resources/icons/office/shutdown.png</normaloff>:/icon/resources/icons/office/shutdown.png</iconset>
    </property>
    <property name="text">
     <string>Stop App</string>
@@ -337,7 +337,7 @@
    </property>
    <property name="icon">
     <iconset resource="../../../icons.qrc">
-     <normaloff>:/icon/resources/icons/pastel/tag.png</normaloff>:/icon/resources/icons/pastel/tag.png</iconset>
+     <normaloff>:/icon/resources/icons/office/tags.png</normaloff>:/icon/resources/icons/office/tags.png</iconset>
    </property>
    <property name="text">
     <string>Show Token Tags</string>
