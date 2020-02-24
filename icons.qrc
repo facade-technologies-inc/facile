@@ -112,9 +112,13 @@
 
         <file alias="../resources/icons/office/spotlight.png">resources/icons/office/spotlight.png</file>
 
+        <file alias="../resources/icons/office/stop.png">resources/icons/office/stop.png</file>
+
         <file alias="../resources/icons/office/tags.png">resources/icons/office/tags.png</file>
 
         <file alias="../resources/icons/office/target.png">resources/icons/office/target.png</file>
+
+        <file alias="../resources/icons/office/trash.png">resources/icons/office/trash.png</file>
 
         <file alias="../resources/icons/office/turn-on.png">resources/icons/office/turn-on.png</file>
 

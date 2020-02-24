@@ -67,6 +67,10 @@ class FacileView(QMainWindow):
 		
 		self._blinker = None
 		
+		#State label in status bar
+		self.ui.stateLabel = QLabel("")
+		self.ui.statusBar.addPermanentWidget(self.ui.stateLabel)
+		
 		#Action Menu Initialization
 		self._componentActionMenu = ActionMenu()
 		self._actionPipelinesMenu = ActionMenu()

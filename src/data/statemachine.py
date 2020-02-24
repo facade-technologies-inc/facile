@@ -82,6 +82,13 @@ class StateMachine:
 		AUTO = auto()
 		MANUAL = auto()
 		
+	status_text = {
+		State.WAIT_FOR_PROJECT: "Waiting for project",
+		State.MODEL_MANIPULATION: "Manipulating models",
+		State.ADDING_VB: "Adding a Visibility Behavior",
+		State.EXPLORATION: "Exploring the target GUI"
+	}
+		
 	# We can get the State machine instance from anywhere in the code using StateMachine.instance
 	# NOTE: This is not supposed to act as a Singleton because we make new state machines
 	#       whenever we open new project.
@@ -259,8 +266,8 @@ class StateMachine:
 		# Advance to the next state
 		if nextState is not None:
 			self.stateHandlers[nextState](event, self.curState, *args, **kwargs)
-			print("State Change:", self.curState.name, "->", nextState.name)
 			self.curState = nextState
+			self.view.ui.stateLabel.setText(StateMachine.status_text.get(self.curState,"UNKNOWN STATE") + "...   ")
 	
 	############################################################################
 	# State Handlers - 1 for each state. Called when entering state.
@@ -406,6 +413,11 @@ class StateMachine:
 		ui.actionAdd_Action_Pipeline.setEnabled(False)
 		ui.actionShow_API_Compiler.setEnabled(False)
 		ui.actionValidate.setEnabled(False)
+		
+		# disable validator buttons
+		ui.validatorView.ui.runButton.setEnabled(False)
+		ui.validatorView.ui.stopButton.setEnabled(False)
+		ui.validatorView.ui.clearButton.setEnabled(False)
 	
 	def _state_MODEL_MANIPULATION(self, event: Event, previousState: State, *args,
 	                              **kwargs) -> None:
@@ -488,6 +500,10 @@ class StateMachine:
 		ui.actionPower_App.setEnabled(True)
 		ui.actionShow_API_Compiler.setEnabled(True)
 		ui.actionValidate.setEnabled(True)
+		
+		# enable validator buttons
+		ui.validatorView.ui.runButton.setEnabled(True)
+		ui.validatorView.ui.clearButton.setEnabled(True)
 	
 	def _state_ADDING_VB(self, event: Event, previousState: State, *args, **kwargs) -> None:
 		"""
