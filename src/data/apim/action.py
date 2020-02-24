@@ -231,3 +231,117 @@ class Action(QObject, Entity):
 		
 		for wrapper in self._wrappers:
 			wrapper.synchronizePorts()
+
+	def getMethodSignature(self) -> str:
+		"""
+		Gives the signature for a method using its name and parameter list. Newline at end.
+
+		:return: Method Signature
+		:rtype: str
+		"""
+
+		name = self.getMethodName()
+		params = self.getParamStr()
+		output = "\tdef " + name + "(self" + params + ") -> " + self.getRType() + ":\n"
+		return output
+
+	def getRType(self) -> str:
+		"""
+		Gives str with return type(s), explicitly made for making the method signature.
+
+		:return: rtype
+		:rtype: str
+		"""
+
+		if len(self._outputs) > 1:
+			out = '('
+			work = []
+			for o in self._outputs:
+				work.insert(0, o.getDataType().__name__)
+			out += work.pop()
+			for w in work:
+				out += ', ' + work.pop()
+			out += ')'
+			return out
+		elif len(self._outputs) == 1:
+			return self._outputs[0].getDataType().__name__
+		else:
+			return 'None'
+
+	def getMethodName(self):
+		"""
+		Must be overwritten in children classes; raises exception here if not.
+		"""
+
+		raise ActionException("getMethodName() must be defined in the action type's class.")
+
+	def getParamStr(self) -> str:
+		"""
+		Generates the string of inputs needed into the action's method Def
+
+		:return: out
+		:rtype: str
+		"""
+
+		out = ""
+		for p in self._inputs:
+			out += ", " + p.getName() + ": " + p.getDataType()
+			# If we eventually provide functionality for defaulting values, use this:
+			# if p.hasDefault():
+			# 	out += " = " + p.getDefaultVal()
+
+		return out
+
+	def getDocStr(self) -> str:
+		"""
+		Generates the docstring for the action. Adds the necessary spacing after docstring.
+		If the function has no inputs or outputs, the docstring states this.
+
+		:return: out
+		:rtype: str
+		"""
+		if self.getAnnotoation():
+			out = '\t\t"""\n'
+			out += self.getAnnotoation() + '\n\n'
+			if self._inputs or self._outputs:
+				for p in self._inputs:
+					out += '\t\t:param ' + p.getName() + ": " + p.getAnnotoation() + '\n'
+					out += '\t\t:type ' + p.getName() + ': ' + p.getDataType() + '\n'
+				for o in self._outputs:
+					out += '\t\t:return ' + o.getName() + ': ' + o.getAnnotoation() + '\n'
+					out += '\t\t:rtype ' + o.getName() + ': ' + o.getDataType() + '\n'
+			out += '\t\t"""\n\n'
+			return out
+		else:
+			return '\t\t"""\n\t\tThis action has no annotations, inputs, or outputs.\n\t\t"""\n'
+
+	def getAnnotoation(self, p: port) -> str:
+		"""
+		Gives the annotation (specified/written by user) on what information is going through port p.
+
+		:return: annotation
+		:rtype: str
+		"""
+
+		return self.getProperties().getProperty("Annotations")[1].getValue()
+
+	def getMethodCode(self):
+		"""
+		Must be overwritten in children classes; raises exception here if not.
+		"""
+
+		raise ActionException("getMethodCode() must be defined in the action type's class.")
+
+	def getMethod(self) -> str:
+		"""
+		Generates the entirety of the code needed for the action, including spacing afterwards.
+
+		:return: code
+		:rtype: str
+		"""
+
+		code = self.getMethodSignature()
+		code += self.getMethodCode()
+		code += '\n'
+
+		return code

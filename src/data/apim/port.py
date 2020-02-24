@@ -267,3 +267,13 @@ class Port(Entity):
         self._optional = port.isOptional()
         self._dataType = port.getDataType()
         self.setName(port.getName())
+
+    def getAnnotation(self) -> str:
+        """
+        Gives the annotation (specified/written by user) on what information is going through this port.
+
+        :return: annotation
+        :rtype: str
+        """
+
+        return self.getProperties().getProperty("Annotations")[1].getValue()

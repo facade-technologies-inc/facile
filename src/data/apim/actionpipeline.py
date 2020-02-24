@@ -286,3 +286,24 @@ class ActionPipeline(Action):
 		:rtype: WireSet
 		"""
 		return self._wireSet
+
+	def getMethodName(self):
+		"""
+		In this case, just returns unique name of action pipeline, since AP name uniqueness is enforced within the GUI.
+
+		:return: name
+		:rtype: str
+		"""
+
+		return self.getName()
+
+	def getMethodCode(self):
+		"""
+		Generates the entirety of the code necessary for the action, including space afterwards.
+
+		:return: code
+		:rtype: str
+		"""
+
+		code = ""
+		for
