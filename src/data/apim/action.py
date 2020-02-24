@@ -284,7 +284,7 @@ class Action(QObject, Entity):
 
 		out = ""
 		for p in self._inputs:
-			out += ", " + p.getName() + ": " + p.getDataType()
+			out += ", " + p.getName() + ": " + p.getDataType().__name__
 			# If we eventually provide functionality for defaulting values, use this:
 			# if p.hasDefault():
 			# 	out += " = " + p.getDefaultVal()
@@ -305,10 +305,10 @@ class Action(QObject, Entity):
 			if self._inputs or self._outputs:
 				for p in self._inputs:
 					out += '\t\t:param ' + p.getName() + ": " + p.getAnnotoation() + '\n'
-					out += '\t\t:type ' + p.getName() + ': ' + p.getDataType() + '\n'
+					out += '\t\t:type ' + p.getName() + ': ' + p.getDataType().__name__ + '\n'
 				for o in self._outputs:
 					out += '\t\t:return ' + o.getName() + ': ' + o.getAnnotoation() + '\n'
-					out += '\t\t:rtype ' + o.getName() + ': ' + o.getDataType() + '\n'
+					out += '\t\t:rtype ' + o.getName() + ': ' + o.getDataType().__name__ + '\n'
 			out += '\t\t"""\n\n'
 			return out
 		else:

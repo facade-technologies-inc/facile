@@ -287,7 +287,7 @@ class ActionPipeline(Action):
 		"""
 		return self._wireSet
 
-	def getMethodName(self):
+	def getMethodName(self) -> str:
 		"""
 		In this case, just returns unique name of action pipeline, since AP name uniqueness is enforced within the GUI.
 
@@ -297,7 +297,7 @@ class ActionPipeline(Action):
 
 		return self.getName()
 
-	def getMethodCode(self):
+	def getMethodCode(self) -> str:
 		"""
 		Generates the entirety of the code necessary for the action, including space afterwards.
 
@@ -305,5 +305,38 @@ class ActionPipeline(Action):
 		:rtype: str
 		"""
 
+		varName = 'a'
 		code = ""
-		for
+		varMap = []  # This stores (varName, port) tuples
+		for	a in self._actions:
+			for o in a.getOutputPorts():
+				varMap.append((varName,o))
+				varName = self.incr(varName)  # TODO: Finish this
+
+	def incr(self, var: str) -> str:
+		"""
+		increments a string from a to z, then to aa to zz, and so on.
+
+		:param var: string of interest
+		:type var: str
+		:return: incremented string
+		:rtype: str
+		"""
+
+		zs = var.rstrip('z')
+		num_replacements = len(var) - len(zs)
+		newName = zs[:-1] + self.incrChar(zs[-1]) if zs else 'a'
+		newName += 'a' * num_replacements
+		return newName
+
+	def incrChar(self, var: str) -> str:
+		"""
+		increments character to z, then loops to a
+
+		:param var: character of interest
+		:type var: str
+		:return: incremented char
+		:rtype: str
+		"""
+
+		return chr(ord(var) + 1) if var != 'z' else 'a'
