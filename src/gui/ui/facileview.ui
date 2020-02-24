@@ -34,7 +34,11 @@
      <x>0</x>
      <y>0</y>
      <width>1017</width>
+<<<<<<< HEAD
      <height>25</height>
+=======
+     <height>21</height>
+>>>>>>> develop
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -171,6 +175,7 @@
    <addaction name="actionAdd_Behavior"/>
    <addaction name="separator"/>
    <addaction name="actionAdd_Action_Pipeline"/>
+   <addaction name="actionShow_API_Compiler"/>
   </widget>
   <action name="actionOpen_Project">
    <property name="icon">
@@ -351,6 +356,21 @@
    </property>
    <property name="toolTip">
     <string>Create a new action pipeline</string>
+   </property>
+  </action>
+  <action name="actionShow_API_Compiler">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../../../icons.qrc">
+     <normaloff>:/icon/resources/icons/pastel/create.png</normaloff>:/icon/resources/icons/pastel/create.png</iconset>
+   </property>
+   <property name="text">
+    <string>Show API Compiler</string>
+   </property>
+   <property name="toolTip">
+    <string>Show API Compiler Dialog</string>
    </property>
   </action>
  </widget>

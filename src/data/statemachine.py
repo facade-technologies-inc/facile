@@ -36,6 +36,7 @@ from gui.blackboxeditordialog import BlackBoxEditorDialog
 from qt_models.propeditordelegate import PropertyEditorDelegate
 from data.configvars import ConfigVars
 from data.apim.actionpipeline import ActionPipeline
+from gui.apicompilerdialog import ApiCompilerDialog
 
 
 class StateMachine:
@@ -378,6 +379,12 @@ class StateMachine:
 		
 		ui.actionAdd_Action_Pipeline.triggered.connect(onNewActionPipeline)
 		v._actionPipelinesMenu.actionSelected.connect(self.setCurrentActionPipeline)
+		
+		def onAPICompiler():
+			apicomp = ApiCompilerDialog()
+			apicomp.exec_()
+	
+		ui.actionShow_API_Compiler.triggered.connect(onAPICompiler)
 
 		# Disable actions
 		ui.actionSave_Project.setEnabled(False)
@@ -391,6 +398,7 @@ class StateMachine:
 		ui.actionPower_App.setEnabled(False)
 		ui.actionManage_Project.setEnabled(False)
 		ui.actionAdd_Action_Pipeline.setEnabled(False)
+		ui.actionShow_API_Compiler.setEnabled(False)
 	
 	def _state_MODEL_MANIPULATION(self, event: Event, previousState: State, *args,
 	                              **kwargs) -> None:
@@ -471,6 +479,7 @@ class StateMachine:
 		ui.actionAutoExplore.setChecked(False)
 		ui.actionAdd_Action_Pipeline.setEnabled(True)
 		ui.actionPower_App.setEnabled(True)
+		ui.actionShow_API_Compiler.setEnabled(True)
 	
 	def _state_ADDING_VB(self, event: Event, previousState: State, *args, **kwargs) -> None:
 		"""
@@ -494,6 +503,7 @@ class StateMachine:
 		self.view.ui.actionShow_Token_Tags.setEnabled(True)
 		self.view.ui.actionAdd_Behavior.setEnabled(True)
 		self.view.ui.actionPower_App.setEnabled(True)
+		self.view.actionShow_API_Compiler.setEnabled(True)
 	
 	def _state_EXPLORATION(self, event: Event, previousState: State, *args, **kwargs) -> None:
 		"""
@@ -528,6 +538,7 @@ class StateMachine:
 		self.view.ui.actionShow_Token_Tags.setEnabled(True)
 		self.view.ui.actionAdd_Behavior.setEnabled(False)
 		self.view.ui.actionPower_App.setEnabled(True)
+		self.view.actionShow_API_Compiler.setEnabled(True)
 	
 	############################################################################
 	# Slots (Entry points for other parts of Facile)
