@@ -49,10 +49,22 @@ class PortEditorWidget(QWidget):
 			self._port = Port()
 		self.updateEditor()
 		
-		if not allowOptional:
-			self.ui.checkBoxOptional.setChecked(False)
-			self.ui.checkBoxOptional.hide()
+		if allowOptional:
+			self.ui.optionalButton.clicked.connect(self.onOptionalButtonClicked)
+			
+	def onOptionalButtonClicked(self):
+		"""
+		Switch the text on the button between "Required" and "Optional"
 		
+		:return: None
+		:rtype: NoneType
+		"""
+		if self.ui.optionalButton.text() == "Required":
+			self.ui.optionalButton.setText("Optional")
+		else:
+			self.ui.optionalButton.setText("Required")
+			self.ui.defaultEdit.setText('None')
+			self.ui.defaultEdit.setEnabled(False)
 			
 	def getPort(self) -> 'Port':
 		"""
@@ -72,9 +84,14 @@ class PortEditorWidget(QWidget):
 		"""
 		self.ui.nameEdit.setText(self._port.getName())
 		self.ui.typeEdit.setText(str(self._port.getDataType().__name__))
-		self.ui.checkBoxOptional.setChecked(self._port.isOptional())
 		
-	
+		if self._port.isOptional():
+			self.ui.optionalButton.setText("Optional")
+			self.ui.defaultEdit.setText(str(self._port.getDefaultValue()))
+		else:
+			self.ui.optionalButton.setText("Required")
+			self.ui.defaultEdit.setText("None")
+			
 	def updatePort(self) -> None:
 		"""
 		Sets all the values of the port values to the values of the editors
@@ -83,7 +100,11 @@ class PortEditorWidget(QWidget):
 		:rtype: NoneType
 		"""
 		self._port.setName(self.ui.nameEdit.text())
-		self._port.setOptional(self.ui.checkBoxOptional.isChecked())
+		
+		if self.ui.optionalButton.text() == 'Optional':
+			self._port.setOptional(True)
+		else:
+			self._port.setOptional(False)
 		
 		try:
 			dataType = eval(self.ui.typeEdit.text())
@@ -93,3 +114,6 @@ class PortEditorWidget(QWidget):
 			pass
 		else:
 			self._port.setDataType(dataType)
+			
+		if self._port.isOptional():
+			self._port.setDefaultValue(self.ui.defaultEdit.text())

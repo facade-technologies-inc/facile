@@ -6,15 +6,21 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>600</width>
+    <width>1400</width>
     <height>393</height>
    </rect>
   </property>
   <property name="sizePolicy">
-   <sizepolicy hsizetype="Maximum" vsizetype="MinimumExpanding">
+   <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
     <horstretch>0</horstretch>
     <verstretch>0</verstretch>
    </sizepolicy>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>1400</width>
+    <height>0</height>
+   </size>
   </property>
   <property name="baseSize">
    <size>
@@ -139,8 +145,8 @@
           <rect>
            <x>0</x>
            <y>0</y>
-           <width>560</width>
-           <height>83</height>
+           <width>1360</width>
+           <height>85</height>
           </rect>
          </property>
         </widget>
@@ -258,8 +264,8 @@
           <rect>
            <x>0</x>
            <y>0</y>
-           <width>560</width>
-           <height>83</height>
+           <width>1360</width>
+           <height>84</height>
           </rect>
          </property>
         </widget>
