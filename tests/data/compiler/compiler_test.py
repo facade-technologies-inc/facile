@@ -38,15 +38,101 @@ class TestCompiler(unittest.TestCase):
 		p3.setName("output1")
 		ap.addOutputPort(p3)
 		
-		self.assertTrue(ap.getMethodSignature() == "def myAction(input1:int, input2:bool) -> str:")
+		sig = "\tdef myAction(self, input1: int, input2: bool) -> str:\n"
+		self.assertTrue(ap.getMethodSignature() == sig)
 		
-		# TODO: Add more tests here by creating more actions and ports and verifying that the
-		#  signatures are generated correctly.
+		# TODO: Still need to handle optional parameters.
+		p2.setOptional(True)
+		self.assertFalse(ap.getMethodSignature() == sig)
 	
 	def test_ActionMethodDocStrings(self):
-		# TODO: Test the docstrings
+		ap = ActionPipeline()
+		ap.setName("myAction")
 		
-		# placeholder to make test fail
-		self.assertTrue(False)
-	
-	# TODO: Create more tests
+		# set the input ports
+		p1 = Port()
+		p1.setDataType(int)
+		p1.setName("input1")
+		p1.setOptional(False)
+		ap.addInputPort(p1)
+		p2 = Port()
+		p2.setDataType(bool)
+		p2.setName("input2")
+		p2.setOptional(False)
+		ap.addInputPort(p2)
+		
+		# set the output ports
+		p3 = Port()
+		p3.setDataType(str)
+		p3.setName("output1")
+		ap.addOutputPort(p3)
+		
+		doc = '''"""
+		Add a comment here...
+
+		:param input1: Add a comment here...
+		:type input1: int
+		:param input2: Add a comment here...
+		:type input2: bool
+		:return: (Add a comment here...)
+		:rtype: (str)
+		"""'''
+		self.assertTrue(ap.getDocStr().strip() == doc)
+		
+		ap.setAnnotation("This is my action pipeline. Only mine.")
+		doc = '''"""
+		This is my action pipeline. Only mine.
+
+		:param input1: Add a comment here...
+		:type input1: int
+		:param input2: Add a comment here...
+		:type input2: bool
+		:return: (Add a comment here...)
+		:rtype: (str)
+		"""'''
+		self.assertTrue(ap.getDocStr().strip() == doc)
+		
+		ap.setName("login")
+		ap.setAnnotation("Login to the Chase Desktop banking app.")
+		p1.setName("username")
+		p1.setDataType(str)
+		p1.setOptional(False)
+		p1.setAnnotation("Your username (case-sensitive)")
+		p2.setName("Password")
+		p2.setDataType(str)
+		p2.setOptional(False)
+		p2.setAnnotation("Your password (case-sensitive)")
+		p3.setName("Success")
+		p3.setDataType(bool)
+		p3.setOptional(False)
+		p3.setAnnotation("A flag saying whether the login attempt was successful or not.")
+		
+		doc = '''"""
+		Login to the Chase Desktop banking app.
+
+		:param username: Your username (case-sensitive)
+		:type username: str
+		:param Password: Your password (case-sensitive)
+		:type Password: str
+		:return: (A flag saying whether the login attempt was successful or not.)
+		:rtype: (bool)
+		"""'''
+		self.assertTrue(ap.getDocStr().strip() == doc)
+		
+		p4 = Port()
+		p4.setName("numLoginAttempts")
+		p4.setDataType(int)
+		p4.setAnnotation("The number of login attempts it took to succeed (-1 if no success).")
+		p4.setOptional(False)
+		ap.addOutputPort(p4)
+		doc = '''"""
+		Login to the Chase Desktop banking app.
+
+		:param username: Your username (case-sensitive)
+		:type username: str
+		:param Password: Your password (case-sensitive)
+		:type Password: str
+		:return: (A flag saying whether the login attempt was successful or not., The number of login attempts it took to succeed (-1 if no success).)
+		:rtype: (bool, int)
+		"""'''
+		self.assertTrue(ap.getDocStr().strip() == doc)

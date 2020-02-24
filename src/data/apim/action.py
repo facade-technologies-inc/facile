@@ -299,30 +299,28 @@ class Action(QObject, Entity):
 		:return: out
 		:rtype: str
 		"""
-		if self.getAnnotoation():
+		if self.getAnnotation():
 			out = '\t\t"""\n'
-			out += self.getAnnotoation() + '\n\n'
+			out += '\t\t' + self.getAnnotation() + '\n\n'
 			if self._inputs or self._outputs:
 				for p in self._inputs:
-					out += '\t\t:param ' + p.getName() + ": " + p.getAnnotoation() + '\n'
+					out += '\t\t:param ' + p.getName() + ": " + p.getAnnotation() + '\n'
 					out += '\t\t:type ' + p.getName() + ': ' + p.getDataType().__name__ + '\n'
-				for o in self._outputs:
-					out += '\t\t:return ' + o.getName() + ': ' + o.getAnnotoation() + '\n'
-					out += '\t\t:rtype ' + o.getName() + ': ' + o.getDataType().__name__ + '\n'
+				
+				# we can only have one return tag, so we just combine everything.
+				if self._outputs:
+					annotations = [p.getAnnotation() for p in self._outputs]
+					types = [p.getDataType().__name__ for p in self._outputs]
+					out += '\t\t:return: ({})\n'.format(", ".join(annotations))
+					out += '\t\t:rtype: ({})\n'.format(", ".join(types))
+				else:
+					out += '\t\t:return: None\n'
+					out += '\t\t:rtype: NoneType\n'
+					
 			out += '\t\t"""\n\n'
 			return out
 		else:
 			return '\t\t"""\n\t\tThis action has no annotations, inputs, or outputs.\n\t\t"""\n'
-
-	def getAnnotoation(self, p: port) -> str:
-		"""
-		Gives the annotation (specified/written by user) on what information is going through port p.
-
-		:return: annotation
-		:rtype: str
-		"""
-
-		return self.getProperties().getProperty("Annotations")[1].getValue()
 
 	def getMethodCode(self):
 		"""
