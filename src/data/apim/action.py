@@ -22,12 +22,11 @@ This module contains the **Action** class which serves as the base class to the 
 and *ActionPipeline* classes.
 """
 
-from abc import ABC as AbstractBaseClass
 from typing import List
 
 from PySide2.QtCore import QObject, Signal
 
-import data.apim.port as port
+import data.apim.port as pt
 from data.entity import Entity
 from data.properties import Properties
 
@@ -80,7 +79,7 @@ class Action(QObject, Entity):
 		for wrapper in self._wrappers:
 			Entity.setName(wrapper, name)
 		
-	def addInputPort(self, port: 'Port') -> None:
+	def addInputPort(self, port: 'pt.Port') -> None:
 		"""
 		Adds a port to the list of inputs for this action.
 		
@@ -95,7 +94,7 @@ class Action(QObject, Entity):
 		:rtype: NoneType
 		"""
 		if port in Action.allPorts:
-			raise port.PortException("Port is already used. Can't add port to action.")
+			raise pt.PortException("Port is already used. Can't add port to action.")
 		
 		port.setAction(self)
 		
@@ -104,7 +103,7 @@ class Action(QObject, Entity):
 		self.synchronizeWrappers()
 		self.updated.emit()
 	
-	def addOutputPort(self, port: 'port.Port') -> None:
+	def addOutputPort(self, port: 'pt.Port') -> None:
 		"""
 		Adds a port to the list of outputs for this action.
 		
@@ -119,7 +118,7 @@ class Action(QObject, Entity):
 		:rtype: NoneType
 		"""
 		if port in Action.allPorts:
-			raise port.PortException("Port is already used. Can't add port to action.")
+			raise pt.PortException("Port is already used. Can't add port to action.")
 		
 		port.setAction(self)
 		
@@ -128,7 +127,7 @@ class Action(QObject, Entity):
 		self.synchronizeWrappers()
 		self.updated.emit()
 		
-	def getInputPorts(self) -> List['port.Port']:
+	def getInputPorts(self) -> List['pt.Port']:
 		"""
 		Get the list of input ports for this action.
 		
@@ -137,7 +136,7 @@ class Action(QObject, Entity):
 		"""
 		return self._inputs[:]
 		
-	def getOutputPorts(self) -> List['port.Port']:
+	def getOutputPorts(self) -> List['pt.Port']:
 		"""
 		Get the list of output ports for this action.
 
@@ -146,7 +145,7 @@ class Action(QObject, Entity):
 		"""
 		return self._outputs[:]
 	
-	def removePort(self, port: 'Port') -> bool:
+	def removePort(self, port: 'pt.Port') -> bool:
 		"""
 		Removes a port from this action - no need to specify input or output.
 
@@ -162,7 +161,7 @@ class Action(QObject, Entity):
 		"""
 		
 		if port not in Action.allPorts:
-			raise port.PortException("Port not found in any actions.")
+			raise pt.PortException("Port not found in any actions.")
 		
 		found = False
 		if port in self._inputs:
@@ -172,7 +171,7 @@ class Action(QObject, Entity):
 			found = True
 			self._outputs.remove(port)
 		else:
-			raise port.PortException("Port not found in this action.")
+			raise pt.PortException("Port not found in this action.")
 			
 		if found:
 			Action.allPorts.remove(port)
