@@ -108,21 +108,68 @@
         <item>
          <widget class="QCheckBox" name="checkBoxDocx">
           <property name="text">
-           <string>.doc</string>
+           <string/>
+          </property>
+          <property name="icon">
+           <iconset resource="../../../icons.qrc">
+            <normaloff>:/icon/resources/icons/office/doc.png</normaloff>:/icon/resources/icons/office/doc.png</iconset>
+          </property>
+          <property name="iconSize">
+           <size>
+            <width>48</width>
+            <height>48</height>
+           </size>
           </property>
          </widget>
         </item>
         <item>
          <widget class="QCheckBox" name="checkBoxHtml">
           <property name="text">
-           <string>.html</string>
+           <string/>
+          </property>
+          <property name="icon">
+           <iconset resource="../../../icons.qrc">
+            <normaloff>:/icon/resources/icons/office/html.png</normaloff>:/icon/resources/icons/office/html.png</iconset>
+          </property>
+          <property name="iconSize">
+           <size>
+            <width>48</width>
+            <height>48</height>
+           </size>
           </property>
          </widget>
         </item>
         <item>
          <widget class="QCheckBox" name="checkBoxPdf">
           <property name="text">
-           <string>.pdf</string>
+           <string/>
+          </property>
+          <property name="icon">
+           <iconset resource="../../../icons.qrc">
+            <normaloff>:/icon/resources/icons/office/pdf.png</normaloff>:/icon/resources/icons/office/pdf.png</iconset>
+          </property>
+          <property name="iconSize">
+           <size>
+            <width>48</width>
+            <height>48</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="checkBoxEPub">
+          <property name="text">
+           <string/>
+          </property>
+          <property name="icon">
+           <iconset resource="../../../icons.qrc">
+            <normaloff>:/icon/resources/icons/office/epub.png</normaloff>:/icon/resources/icons/office/epub.png</iconset>
+          </property>
+          <property name="iconSize">
+           <size>
+            <width>48</width>
+            <height>48</height>
+           </size>
           </property>
          </widget>
         </item>
@@ -189,6 +236,8 @@
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="../../../icons.qrc"/>
+ </resources>
  <connections/>
 </ui>

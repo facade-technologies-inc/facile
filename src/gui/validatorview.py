@@ -219,7 +219,6 @@ class ValidatorView(QWidget):
 		:return: None
 		:rtype: NoneType
 		"""
-		print("message received:", msg)
 		self.addWidgetToMessage(msg)
 		self.allMessages.append(msg)
 		self.ui.messageLayout.insertWidget(0, msg.widget)

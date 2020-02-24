@@ -122,6 +122,8 @@
 
         <file alias="../resources/icons/office/user.png">resources/icons/office/user.png</file>
 
+        <file alias="../resources/icons/office/verify.png">resources/icons/office/verify.png</file>
+
         <file alias="../resources/icons/office/visibility-behavior-blue.png">resources/icons/office/visibility-behavior-blue.png</file>
 
         <file alias="../resources/icons/office/visibility-behavior-green.png">resources/icons/office/visibility-behavior-green.png</file>

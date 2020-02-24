@@ -27,7 +27,7 @@ from enum import Enum, auto
 
 from PySide2.QtCore import Slot, QTimer
 from PySide2.QtGui import QStandardItem, QStandardItemModel, Qt, QIcon, QPixmap
-from PySide2.QtWidgets import QGraphicsScene, QDialog, QLabel, QVBoxLayout, QWidget
+from PySide2.QtWidgets import QGraphicsScene, QDialog, QLabel, QVBoxLayout, QWidget, QSizePolicy
 
 import data.tguim.visibilitybehavior as vb
 from gui.facilegraphicsview import FacileGraphicsView
@@ -295,6 +295,11 @@ class StateMachine:
 		ui.viewSplitter.addWidget(ui.targetGUIModelView)
 		ui.viewSplitter.addWidget(ui.apiModelView)
 		
+		# add spacers to toolbar.
+		w = QWidget()
+		w.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+		ui.toolBar.insertWidget(ui.actionValidate, w)
+		
 		# create blank model to show that no project is open.
 		blankProjectExplorer = QStandardItemModel()
 		blankProjectExplorer.setHorizontalHeaderLabels([""])
@@ -335,7 +340,7 @@ class StateMachine:
 					action = ui.menuRecent_Projects_2.addAction(proj)
 					action.triggered.connect(v.onOpenRecentProject)
 					icon = QIcon()
-					icon.addPixmap(QPixmap(":/icon/resources/icons/office/open_door.png"),QIcon.Normal, QIcon.Off)
+					icon.addPixmap(QPixmap(":/icon/resources/icons/office/open-door.png"), QIcon.Normal, QIcon.Off)
 					action.setIcon(icon)
 
 		# Connecting the configVars' change signal to logic that will update the TGUIM View
@@ -358,6 +363,7 @@ class StateMachine:
 		ui.actionAdd_Behavior.triggered.connect(v.onAddBehaviorTriggered)
 		ui.actionShow_Behaviors.triggered.connect(self.configVars.setShowBehaviors)
 		ui.actionShow_Token_Tags.triggered.connect(self.configVars.setShowTokenTags)
+		ui.actionValidate.triggered.connect(ui.validatorView.ran.emit)
 		
 		def onPowerApp(checked):
 			if checked == True:
@@ -399,6 +405,7 @@ class StateMachine:
 		ui.actionManage_Project.setEnabled(False)
 		ui.actionAdd_Action_Pipeline.setEnabled(False)
 		ui.actionShow_API_Compiler.setEnabled(False)
+		ui.actionValidate.setEnabled(False)
 	
 	def _state_MODEL_MANIPULATION(self, event: Event, previousState: State, *args,
 	                              **kwargs) -> None:
@@ -480,6 +487,7 @@ class StateMachine:
 		ui.actionAdd_Action_Pipeline.setEnabled(True)
 		ui.actionPower_App.setEnabled(True)
 		ui.actionShow_API_Compiler.setEnabled(True)
+		ui.actionValidate.setEnabled(True)
 	
 	def _state_ADDING_VB(self, event: Event, previousState: State, *args, **kwargs) -> None:
 		"""
@@ -503,7 +511,8 @@ class StateMachine:
 		self.view.ui.actionShow_Token_Tags.setEnabled(True)
 		self.view.ui.actionAdd_Behavior.setEnabled(True)
 		self.view.ui.actionPower_App.setEnabled(True)
-		self.view.actionShow_API_Compiler.setEnabled(True)
+		self.view.ui.actionShow_API_Compiler.setEnabled(True)
+		self.view.ui.actionValidate.setEnabled(True)
 	
 	def _state_EXPLORATION(self, event: Event, previousState: State, *args, **kwargs) -> None:
 		"""
@@ -538,7 +547,8 @@ class StateMachine:
 		self.view.ui.actionShow_Token_Tags.setEnabled(True)
 		self.view.ui.actionAdd_Behavior.setEnabled(False)
 		self.view.ui.actionPower_App.setEnabled(True)
-		self.view.actionShow_API_Compiler.setEnabled(True)
+		self.view.ui.actionShow_API_Compiler.setEnabled(True)
+		self.view.ui.actionValidate.setEnabled(True)
 	
 	############################################################################
 	# Slots (Entry points for other parts of Facile)
