@@ -161,6 +161,8 @@ class ApiCompilerDialog(QDialog):
 			setDocType.add(CompilationProfile.DocType.Html)
 		if self.ui.checkBoxPdf.isChecked():
 			setDocType.add(CompilationProfile.DocType.Pdf)
+		if self.ui.checkBoxEPub.isChecked():
+			setDocType.add(CompilationProfile.DocType.EPub)
 		
 		if len(setDocType) == 0:
 			errors.append("You must select at least one documentation type.")

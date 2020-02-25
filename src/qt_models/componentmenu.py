@@ -46,7 +46,7 @@ class ComponentMenu(QMenu):
 		
 		self.blinkAction = self.addAction("Show in target GUI")
 		blinkIcon = QIcon()
-		blinkIcon.addPixmap(QPixmap(":/icon/resources/icons/pastel/flash_light.png"), QIcon.Normal, QIcon.Off)
+		blinkIcon.addPixmap(QPixmap(":/icon/resources/icons/office/spotlight.png"), QIcon.Normal, QIcon.Off)
 		self.blinkAction.setIcon(blinkIcon)
 		
 	def onBlink(self, func) -> None:
