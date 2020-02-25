@@ -159,6 +159,7 @@ class ActionPipelineGraphics(ActionGraphics):
 			actionHeight = ActionGraphics.MAX_HEIGHT + ActionGraphics.V_SPACE
 			y = i * actionHeight - actionHeight*len(self._actionGraphics)/2 + offset
 			actionGraphics.setPos(0, y)
+			actionGraphics.updateMoveButtonVisibility()
 			
 	def getActionRect(self, inputPorts: QGraphicsItem, outputPorts: QGraphicsItem) -> list:
 		"""

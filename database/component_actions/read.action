@@ -1,0 +1,13 @@
+name = "read"
+description = "Read from a component."
+targets = {'Button', 'Edit', 'Static'}
+inputs = []
+outputs = [
+	{
+		"name": "value",
+		"type": str,
+	}
+]
+code = """
+return cw.read()
+"""
