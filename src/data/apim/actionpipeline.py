@@ -375,7 +375,7 @@ class ActionPipeline(Action):
 
 		return name
 
-	def incrVarName(self, var: str = self._varName) -> str:
+	def incrVarName(self, var: str = None) -> str:
 		"""
 		increments a string from a to z, then to aa, to zz, and so on.
 
@@ -384,6 +384,9 @@ class ActionPipeline(Action):
 		:return: incremented string
 		:rtype: str
 		"""
+		
+		if var is None:
+			var = self._varName
 
 		zs = var.rstrip('z')
 		num_replacements = len(var) - len(zs)
