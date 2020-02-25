@@ -97,7 +97,13 @@ class PortGraphics(QGraphicsItem):
 			self.typeItem.setFont(PortGraphics.TYPE_FONT)
 			self.typeItem.setRotation(90)
 			self.typeItem.setPos(5, -PortGraphics.TOTAL_HEIGHT / 2)
-		
+
+	def getPort(self):
+		"""
+		Returns the PortGraphics' Port.
+		:return:
+		"""
+		return self._port
 	
 	def boundingRect(self) -> QRectF:
 		"""

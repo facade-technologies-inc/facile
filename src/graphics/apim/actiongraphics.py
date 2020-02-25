@@ -156,6 +156,8 @@ class ActionGraphics(QGraphicsItem):
 		
 		synchronizePortList(self._inputPortGraphics, self._action.getInputPorts(), self._inputPortMapping)
 		synchronizePortList(self._outputPortGraphics, self._action.getOutputPorts(), self._outputPortMapping)
+		self.getActionRect(self._action.getInputPorts(), self._action.getOutputPorts())
+		self.placePorts()
 	
 	def boundingRect(self) -> QRectF:
 		"""
@@ -229,7 +231,7 @@ class ActionGraphics(QGraphicsItem):
 		:rtype: NoneType
 		"""
 		
-		self.placePorts()
+
 		painter.setBrush(self.color)
 		x, y, width, height = self.getActionRect(self._action.getInputPorts(), self._action.getOutputPorts())
 		painter.drawRect(QRectF(x, y, width, height))
@@ -268,6 +270,8 @@ class ActionGraphics(QGraphicsItem):
 				try:
 					portList[posIdx].setPos(posShift, y)
 					portList[negIdx].setPos(negShift, y)
+					print(portList[posIdx].scenePos())
+					print(portList[negIdx].scenePos())
 				except IndexError:
 					return
 				
