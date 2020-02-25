@@ -190,13 +190,13 @@ class BlackBoxEditorDialog(QDialog):
 			if port.isOptional() and port.getDataType() != type(None):
 				default = port.getDefaultValue()
 				t = port.getDataType()
-				bad=False
+				bad = False
 				try:
 					result = t(default)
 				except ValueError:
 					bad = True
 				else:
-					if t == bool and result == False:
+					if t == bool and result is False:
 						bad = True
 						
 				if t == str:
