@@ -248,7 +248,7 @@ class Action(QObject, Entity):
 		"""
 		Gives str with return type(s), explicitly made for making the method signature.
 
-		:return: rtype
+		:return: return type(s) of the action
 		:rtype: str
 		"""
 
@@ -276,9 +276,9 @@ class Action(QObject, Entity):
 
 	def getParamStr(self) -> str:
 		"""
-		Generates the string of inputs needed into the action's method Def
+		Generates the string of inputs needed for the action's method definition
 
-		:return: out
+		:return: list of parameters needed for the action, starting with a ", ".
 		:rtype: str
 		"""
 
@@ -296,33 +296,31 @@ class Action(QObject, Entity):
 		Generates the docstring for the action. Adds the necessary spacing after docstring.
 		If the function has no inputs or outputs, the docstring states this.
 
-		:return: out
+		:return: doc string describing action, inputs, and outputs
 		:rtype: str
 		"""
-		if self.getAnnotoation():
+		if self.getAnnotation():
 			out = '\t\t"""\n'
-			out += self.getAnnotoation() + '\n\n'
+			out += '\t\t' + self.getAnnotation() + '\n\n'
 			if self._inputs or self._outputs:
 				for p in self._inputs:
-					out += '\t\t:param ' + p.getName() + ": " + p.getAnnotoation() + '\n'
+					out += '\t\t:param ' + p.getName() + ": " + p.getAnnotation() + '\n'
 					out += '\t\t:type ' + p.getName() + ': ' + p.getDataType().__name__ + '\n'
-				for o in self._outputs:
-					out += '\t\t:return ' + o.getName() + ': ' + o.getAnnotoation() + '\n'
-					out += '\t\t:rtype ' + o.getName() + ': ' + o.getDataType().__name__ + '\n'
+				
+				# we can only have one return tag, so we just combine everything.
+				if self._outputs:
+					annotations = [p.getAnnotation() for p in self._outputs]
+					types = [p.getDataType().__name__ for p in self._outputs]
+					out += '\t\t:return: ({})\n'.format(", ".join(annotations))
+					out += '\t\t:rtype: ({})\n'.format(", ".join(types))
+				else:
+					out += '\t\t:return: None\n'
+					out += '\t\t:rtype: NoneType\n'
+					
 			out += '\t\t"""\n\n'
 			return out
 		else:
 			return '\t\t"""\n\t\tThis action has no annotations, inputs, or outputs.\n\t\t"""\n'
-
-	def getAnnotoation(self, p: port) -> str:
-		"""
-		Gives the annotation (specified/written by user) on what information is going through port p.
-
-		:return: annotation
-		:rtype: str
-		"""
-
-		return self.getProperties().getProperty("Annotations")[1].getValue()
 
 	def getMethodCode(self):
 		"""
@@ -335,7 +333,7 @@ class Action(QObject, Entity):
 		"""
 		Generates the entirety of the code needed for the action, including spacing afterwards.
 
-		:return: code
+		:return: callable definition (method) that performs the action if executed
 		:rtype: str
 		"""
 

@@ -41,6 +41,8 @@ class ActionPipeline(Action):
 		Action.__init__(self)
 		self._actions = []
 		self._wireSet = WireSet()
+		self._varName = 'a'
+		self._varMap = []  # This stores (varName, port) tuples
 	
 	def addAction(self, action: 'ActionWrapper') -> None:
 		"""
@@ -291,7 +293,7 @@ class ActionPipeline(Action):
 		"""
 		In this case, just returns unique name of action pipeline, since AP name uniqueness is enforced within the GUI.
 
-		:return: name
+		:return: name of action pipeline
 		:rtype: str
 		"""
 
@@ -301,27 +303,90 @@ class ActionPipeline(Action):
 		"""
 		Generates the entirety of the code necessary for the action, including space afterwards.
 
-		:return: code
+		:return: code 'guts' that will be contained in the action pipeline's call/method
 		:rtype: str
 		"""
 
-		varName = 'a'
 		code = ""
-		varMap = []  # This stores (varName, port) tuples
-		for	a in self._actions:
-			for o in a.getOutputPorts():
-				varMap.append((varName,o))
-				varName = self.incr(varName)  # TODO: Finish this
 
-	def incr(self, var: str) -> str:
+		for	a in self._actions:  
+			if a.getOutputPorts():  # Getting outputs named and written to code
+				o = a.getOutputPorts()[0]
+				varName = self.getVarName(o)
+				code += varName  # only one output
+				if len(a.getOutputPorts()) > 1:  # if output is a tuple
+					for o in a.getOutputPorts()[1:]:
+						varName = self.getVarName(o)
+						code += ", " + varName
+			
+			code += ' = ' + a.getMethodName + '('
+
+			if a.getInputPorts():
+				i = a.getInputPorts()[0]
+				varName = self.getVarName(i)
+				code += varName  # only one input
+				if len(a.getInputPorts()) > 1:  # if multiple inputs
+					for i in a.getInputPorts()[1:]:
+						varName = self.getVarName(i)
+						code += ", " + varName
+			
+			code += ')\n'
+		
+		code += '\n'
+
+	def getVarName(self, p: Port) -> str:
 		"""
-		increments a string from a to z, then to aa to zz, and so on.
+		Gets the name of a variable associated to a port. If none, creates one.
+
+		:return: name associated to port
+		:rtype: str
+		"""
+
+		# Check if port already has name. if so, return immediately
+		allports = [tmp[1] for tmp in self._varMap]
+		if p in allports:
+			# idk if this is very effective but should get the job done
+			return self._varMap[[tmp[1] for tmp in self._varMap].index(p)][0]
+		
+		# Check if port is connected by wire to other ports.
+		cnctdPorts = []
+		if p.getInputWire():
+			cnctdPorts.append(p.getInputWire().getSourcePort())
+		for w in p.getOutputWires():
+			cnctdPorts.append(w.getDestPort())
+		
+		# If so, check if connected ports have names, and assign same name to all.
+		newName = True
+		for lp in cnctdPorts:
+			if lp in allports:
+				name = self._varMap[[tmp[1] for tmp in self._varMap].index(lp)][0]
+				newName = False
+				break
+
+		if newName:
+			name = self._varName
+			self.incrVarName()
+
+		# adds all connected ports to varMap with their shared variable name, if they aren't in there already.
+		self._varMap.append((name, p))
+		for tmp in cnctdPorts:
+			if tmp not in allports:
+				self._varMap.append((name, tmp))
+
+		return name
+
+	def incrVarName(self, var: str = None) -> str:
+		"""
+		increments a string from a to z, then to aa, to zz, and so on.
 
 		:param var: string of interest
 		:type var: str
 		:return: incremented string
 		:rtype: str
 		"""
+		
+		if var is None:
+			var = self._varName
 
 		zs = var.rstrip('z')
 		num_replacements = len(var) - len(zs)

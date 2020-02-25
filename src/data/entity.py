@@ -98,3 +98,21 @@ class Entity:
 		:rtype: NoneType
 		"""
 		self.getProperties().getProperty("Name")[1].setValue(newName)
+	
+	def getAnnotation(self) -> str:
+		"""
+		Gets the annotation for this Entity. The annotation is given by the user.
+
+		:return: The user's comment about this entity.
+		:rtype: str
+		"""
+		return self.getProperties().getProperty("Annotation")[1].getValue()
+	
+	def setAnnotation(self, annotation: str) -> None:
+		"""
+		Sets the annotation for this Entity. The annotation is given by the user.
+
+		:param annotation: The user's comment about this entity.
+		:type annotation: str
+		"""
+		return self.getProperties().getProperty("Annotation")[1].setValue(annotation)
