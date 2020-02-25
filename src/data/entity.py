@@ -97,5 +97,4 @@ class Entity:
 		:return: None
 		:rtype: NoneType
 		"""
-		print("Setting name to:", newName)
 		self.getProperties().getProperty("Name")[1].setValue(newName)

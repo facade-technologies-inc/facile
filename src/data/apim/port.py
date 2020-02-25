@@ -30,6 +30,7 @@ class PortException(Exception):
     def __init__(self, msg: str):
         Exception.__init__(self, msg)
 
+
 class Port(Entity):
     """
     A Port defines the interface between an Action (ActionPipeline or ComponentAction) and the outside world.
@@ -42,7 +43,7 @@ class Port(Entity):
         ensure that references between ports and wires maintain synchronized.
     """
 
-    def __init__(self, dataType: type = str, isOptional: bool = False):
+    def __init__(self, dataType: type = type(None), isOptional: bool = False):
         """
         Constructs a Port Object.
         
@@ -66,6 +67,7 @@ class Port(Entity):
         self._dataType: type = None
         self._optional: bool = isOptional
         self._action: 'ac.Action' = None
+        self._default = None
 
         self.setDataType(dataType)
 
@@ -174,6 +176,9 @@ class Port(Entity):
             self._dataType = newType
         else:
             raise TypeError("setDataType()'s input parameter must specify a Python type [e.g. int, str, bool].")
+        
+        if self._action is not None:
+            self._action.synchronizeWrappers()
 
     def setOptional(self, isOptional: bool) -> None:
         """
@@ -185,7 +190,59 @@ class Port(Entity):
         :rtype: NoneType
         """
         self._optional = isOptional
-
+        
+        if not isOptional:
+            self._default = None
+        
+        if self._action is not None:
+            self._action.synchronizeWrappers()
+            
+    def setDefaultValue(self, value) -> None:
+        """
+        Sets the default value of the port if the port is optional.
+        
+        :raises: PortException if the port is not optional
+        
+        :param value: the default value to set
+        :type value: the same type as the port.
+        :return: None
+        :rtype: NoneType
+        """
+        if not self._optional:
+            raise PortException("Cannot set a default value for a port that is not optional")
+        
+        self._default = value
+        
+        if self._action is not None:
+            self._action.synchronizeWrappers()
+        
+    def getDefaultValue(self):
+        """
+        Get the default value of the port iff the port is optional
+        
+        :raises: PortException if the port is not optional
+        
+        :return: The default value
+        :rtype: The same type as the port
+        """
+        if not self._optional:
+            raise PortException("The port has no default value because it is not optional.")
+        
+        return self._default
+        
+    def setName(self, name: str) -> None:
+        """
+        Sets the name of the port
+        
+        :param name: The new name to set
+        :type name: str
+        :return: None
+        :rtype: NoneType
+        """
+        Entity.setName(self, name)
+        if self._action is not None:
+            self._action.synchronizeWrappers()
+        
     def isOptional(self) -> bool:
         """
         Returns True if the Port doesn't necessarily have to be connected, False if it MUST be connected.
@@ -230,7 +287,9 @@ class Port(Entity):
         """
         
         newPort = Port(self._dataType, self._optional)
-        # TODO: Copy properties (CAREFULLY) once ports are entities
+        newPort.setName(self.getName())
+        if self.isOptional():
+            newPort.setDefaultValue(self._default)
         return newPort
     
     def mirror(self, port: 'Port') -> None:
@@ -247,4 +306,6 @@ class Port(Entity):
         
         self._optional = port.isOptional()
         self._dataType = port.getDataType()
-        # TODO: Copy properties (CAREFULLY) once ports are entities
+        self._default = port._default
+        self.setName(port.getName())
+        

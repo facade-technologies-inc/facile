@@ -13,6 +13,9 @@
   <property name="windowTitle">
    <string>Facile</string>
   </property>
+  <property name="statusTip">
+   <string/>
+  </property>
   <property name="unifiedTitleAndToolBarOnMac">
    <bool>true</bool>
   </property>
@@ -34,7 +37,7 @@
      <x>0</x>
      <y>0</y>
      <width>1017</width>
-     <height>26</height>
+     <height>25</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -79,7 +82,6 @@
    <addaction name="menuView"/>
    <addaction name="menuHelp"/>
   </widget>
-  <widget class="QStatusBar" name="statusbar"/>
   <widget class="QDockWidget" name="dockWidget_2">
    <property name="windowTitle">
     <string>Project Explorer</string>
@@ -154,8 +156,20 @@
    </widget>
   </widget>
   <widget class="QToolBar" name="toolBar">
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
    <property name="windowTitle">
     <string>toolBar</string>
+   </property>
+   <property name="iconSize">
+    <size>
+     <width>80</width>
+     <height>80</height>
+    </size>
    </property>
    <attribute name="toolBarArea">
     <enum>LeftToolBarArea</enum>
@@ -163,8 +177,7 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
-   <addaction name="actionStart_App"/>
-   <addaction name="actionStop_App"/>
+   <addaction name="actionPower_App"/>
    <addaction name="separator"/>
    <addaction name="actionAutoExplore"/>
    <addaction name="actionManualExplore"/>
@@ -172,11 +185,14 @@
    <addaction name="actionAdd_Behavior"/>
    <addaction name="separator"/>
    <addaction name="actionAdd_Action_Pipeline"/>
+   <addaction name="actionValidate"/>
+   <addaction name="actionShow_API_Compiler"/>
   </widget>
+  <widget class="QStatusBar" name="statusBar"/>
   <action name="actionOpen_Project">
    <property name="icon">
     <iconset resource="../../../icons.qrc">
-     <normaloff>:/icon/resources/icons/pastel/open_box.png</normaloff>:/icon/resources/icons/pastel/open_box.png</iconset>
+     <normaloff>:/icon/resources/icons/office/open-door.png</normaloff>:/icon/resources/icons/office/open-door.png</iconset>
    </property>
    <property name="text">
     <string>Open Project</string>
@@ -185,7 +201,7 @@
   <action name="actionSave_Project">
    <property name="icon">
     <iconset resource="../../../icons.qrc">
-     <normaloff>:/icon/resources/icons/pastel/save.png</normaloff>:/icon/resources/icons/pastel/save.png</iconset>
+     <normaloff>:/icon/resources/icons/office/save.png</normaloff>:/icon/resources/icons/office/save.png</iconset>
    </property>
    <property name="text">
     <string>Save</string>
@@ -194,7 +210,7 @@
   <action name="actionSave_as">
    <property name="icon">
     <iconset resource="../../../icons.qrc">
-     <normaloff>:/icon/resources/icons/pastel/save_as.png</normaloff>:/icon/resources/icons/pastel/save_as.png</iconset>
+     <normaloff>:/icon/resources/icons/office/save-as.png</normaloff>:/icon/resources/icons/office/save-as.png</iconset>
    </property>
    <property name="text">
     <string>Save As . . .</string>
@@ -203,7 +219,7 @@
   <action name="actionFrom_Scratch">
    <property name="icon">
     <iconset resource="../../../icons.qrc">
-     <normaloff>:/icon/resources/icons/pastel/create.png</normaloff>:/icon/resources/icons/pastel/create.png</iconset>
+     <normaloff>:/icon/resources/icons/office/edit-file.png</normaloff>:/icon/resources/icons/office/edit-file.png</iconset>
    </property>
    <property name="text">
     <string>From Scratch</string>
@@ -212,7 +228,7 @@
   <action name="actionFrom_Existing_Project">
    <property name="icon">
     <iconset resource="../../../icons.qrc">
-     <normaloff>:/icon/resources/icons/pastel/copy.png</normaloff>:/icon/resources/icons/pastel/copy.png</iconset>
+     <normaloff>:/icon/resources/icons/office/copy.png</normaloff>:/icon/resources/icons/office/copy.png</iconset>
    </property>
    <property name="text">
     <string>From Existing Project</string>
@@ -227,7 +243,7 @@
    </property>
    <property name="icon">
     <iconset resource="../../../icons.qrc">
-     <normaloff>:/icon/resources/icons/pastel/right_arrow.png</normaloff>:/icon/resources/icons/pastel/right_arrow.png</iconset>
+     <normaloff>:/icon/resources/icons/office/visibility-behavior-green.png</normaloff>:/icon/resources/icons/office/visibility-behavior-green.png</iconset>
    </property>
    <property name="text">
     <string>Show Behaviors</string>
@@ -245,7 +261,7 @@
    </property>
    <property name="icon">
     <iconset resource="../../../icons.qrc">
-     <normaloff>:/icon/resources/icons/pastel/image.png</normaloff>:/icon/resources/icons/pastel/image.png</iconset>
+     <normaloff>:/icon/resources/icons/office/picture.png</normaloff>:/icon/resources/icons/office/picture.png</iconset>
    </property>
    <property name="text">
     <string>Show Component Images</string>
@@ -257,7 +273,7 @@
    </property>
    <property name="icon">
     <iconset resource="../../../icons.qrc">
-     <normaloff>:/icon/resources/icons/pastel/space_shuttle.png</normaloff>:/icon/resources/icons/pastel/space_shuttle.png</iconset>
+     <normaloff>:/icon/resources/icons/office/auto-explore.png</normaloff>:/icon/resources/icons/office/auto-explore.png</iconset>
    </property>
    <property name="text">
     <string>Auto Explore</string>
@@ -275,7 +291,7 @@
    </property>
    <property name="icon">
     <iconset resource="../../../icons.qrc">
-     <normaloff>:/icon/resources/icons/pastel/robot.png</normaloff>:/icon/resources/icons/pastel/robot.png</iconset>
+     <normaloff>:/icon/resources/icons/office/manual-explore.png</normaloff>:/icon/resources/icons/office/manual-explore.png</iconset>
    </property>
    <property name="text">
     <string>Manual Explore</string>
@@ -290,7 +306,7 @@
   <action name="actionManage_Project">
    <property name="icon">
     <iconset resource="../../../icons.qrc">
-     <normaloff>:/icon/resources/icons/pastel/settings.png</normaloff>:/icon/resources/icons/pastel/settings.png</iconset>
+     <normaloff>:/icon/resources/icons/office/settings.png</normaloff>:/icon/resources/icons/office/settings.png</iconset>
    </property>
    <property name="text">
     <string>Project Settings</string>
@@ -299,7 +315,7 @@
   <action name="actionAdd_Behavior">
    <property name="icon">
     <iconset resource="../../../icons.qrc">
-     <normaloff>:/icon/resources/icons/pastel/add_arrow.png</normaloff>:/icon/resources/icons/pastel/add_arrow.png</iconset>
+     <normaloff>:/icon/resources/icons/office/add-visibility-behavior.png</normaloff>:/icon/resources/icons/office/add-visibility-behavior.png</iconset>
    </property>
    <property name="text">
     <string>Add Behavior</string>
@@ -308,28 +324,20 @@
     <string>Add a visibility behavior to the target GUI model</string>
    </property>
   </action>
-  <action name="actionStart_App">
+  <action name="actionPower_App">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="icon">
     <iconset resource="../../../icons.qrc">
-     <normaloff>:/icon/resources/icons/pastel/play.png</normaloff>:/icon/resources/icons/pastel/play.png</iconset>
+     <normaloff>:/icon/resources/icons/office/turn-on.png</normaloff>
+     <normalon>:/icon/resources/icons/office/shutdown.png</normalon>:/icon/resources/icons/office/turn-on.png</iconset>
    </property>
    <property name="text">
-    <string>Start App</string>
+    <string>Start/Stop App</string>
    </property>
    <property name="toolTip">
     <string>Start running this project's target application</string>
-   </property>
-  </action>
-  <action name="actionStop_App">
-   <property name="icon">
-    <iconset resource="../../../icons.qrc">
-     <normaloff>:/icon/resources/icons/pastel/power_off.png</normaloff>:/icon/resources/icons/pastel/power_off.png</iconset>
-   </property>
-   <property name="text">
-    <string>Stop App</string>
-   </property>
-   <property name="toolTip">
-    <string>Stop running this project's target application</string>
    </property>
   </action>
   <action name="actionShow_Token_Tags">
@@ -338,7 +346,7 @@
    </property>
    <property name="icon">
     <iconset resource="../../../icons.qrc">
-     <normaloff>:/icon/resources/icons/pastel/tag.png</normaloff>:/icon/resources/icons/pastel/tag.png</iconset>
+     <normaloff>:/icon/resources/icons/office/tags.png</normaloff>:/icon/resources/icons/office/tags.png</iconset>
    </property>
    <property name="text">
     <string>Show Token Tags</string>
@@ -353,13 +361,40 @@
   <action name="actionAdd_Action_Pipeline">
    <property name="icon">
     <iconset resource="../../../icons.qrc">
-     <normaloff>:/icon/resources/icons/pastel/add_person.png</normaloff>:/icon/resources/icons/pastel/add_person.png</iconset>
+     <normaloff>:/icon/resources/icons/office/new-flow.png</normaloff>:/icon/resources/icons/office/new-flow.png</iconset>
    </property>
    <property name="text">
     <string>Add Action Pipeline</string>
    </property>
    <property name="toolTip">
     <string>Create a new action pipeline</string>
+   </property>
+  </action>
+  <action name="actionShow_API_Compiler">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../../../icons.qrc">
+     <normaloff>:/icon/resources/icons/office/compile-python.png</normaloff>:/icon/resources/icons/office/compile-python.png</iconset>
+   </property>
+   <property name="text">
+    <string>Show API Compiler</string>
+   </property>
+   <property name="toolTip">
+    <string>Compile</string>
+   </property>
+  </action>
+  <action name="actionValidate">
+   <property name="icon">
+    <iconset resource="../../../icons.qrc">
+     <normaloff>:/icon/resources/icons/office/verify.png</normaloff>:/icon/resources/icons/office/verify.png</iconset>
+   </property>
+   <property name="text">
+    <string>Validate</string>
+   </property>
+   <property name="toolTip">
+    <string>Validate the TGUIM and APIM</string>
    </property>
   </action>
  </widget>

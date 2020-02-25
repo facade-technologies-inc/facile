@@ -23,9 +23,12 @@ view, but can be zoomed.
 """
 
 
-from PySide2.QtWidgets import QGraphicsScene
+from PySide2.QtWidgets import QGraphicsScene, QGraphicsTextItem, QGraphicsRectItem
+
+import data.statemachine as sm
 from gui.facilegraphicsview import FacileGraphicsView
 from graphics.apim.actionpipelinegraphics import ActionPipelineGraphics
+from graphics.apim.portgraphics import PortGraphics
 
 
 class FacileActionGraphicsView(FacileGraphicsView):
@@ -37,7 +40,26 @@ class FacileActionGraphicsView(FacileGraphicsView):
 	
 	def showAction(self, action: 'Action') -> None:
 		newScene = QGraphicsScene()
-		newScene.addItem(ActionPipelineGraphics(action))
+		
+		# Add the action pipeline graphics
+		ap = ActionPipelineGraphics(action)
+		br = ap.boundingRect()
+		newScene.addItem(ap)
+		
+		# Add the action pipeline name
+		nameItem = QGraphicsTextItem(action.getName())
+		nameItem.setPos(-br.width()/2, -br.height()/2 - PortGraphics.TOTAL_HEIGHT/2)
+		newScene.addItem(nameItem)
+		
 		self.setScene(newScene)
 	
 
+	def refresh(self) -> None:
+		"""
+		Clears the scene and re-creates it.
+		
+		:return: None
+		:rtype: NoneType
+		"""
+		cap = sm.StateMachine.instance.getCurrentActionPipeline()
+		self.showAction(cap)
