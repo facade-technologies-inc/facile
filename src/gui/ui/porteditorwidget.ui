@@ -94,9 +94,23 @@
     </widget>
    </item>
    <item>
+    <widget class="QLabel" name="label_2">
+     <property name="text">
+      <string>     </string>
+     </property>
+    </widget>
+   </item>
+   <item>
     <widget class="QCheckBox" name="checkBoxOptional">
      <property name="text">
       <string/>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="label">
+     <property name="text">
+      <string>     </string>
      </property>
     </widget>
    </item>
@@ -129,7 +143,7 @@
      </property>
      <property name="icon">
       <iconset resource="../../../icons.qrc">
-       <normaloff>:/icon/resources/icons/pastel/delete.png</normaloff>:/icon/resources/icons/pastel/delete.png</iconset>
+       <normaloff>:/icon/resources/icons/office/delete.png</normaloff>:/icon/resources/icons/office/delete.png</iconset>
      </property>
      <property name="iconSize">
       <size>
