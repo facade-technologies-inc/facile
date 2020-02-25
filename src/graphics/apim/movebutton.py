@@ -17,6 +17,9 @@
 	| Technologies Inc.                                                            |
 	|                                                                              |
 	\------------------------------------------------------------------------------/
+	
+This module contains the MoveButton class. Move Buttons have either an upward-facing arrow or
+downward-facing arrow. They only emit 1 signal - clicked.
 """
 from enum import Enum
 
@@ -28,6 +31,10 @@ from graphics.apim.actiongraphics import ActionGraphics
 from graphics.apim.portgraphics import PortGraphics
 
 class MoveButton(QObject, QGraphicsItem):
+	"""
+	The MoveButton classed is a button that can be put in a graphics view. It can only have an up
+	or a down arrow currently because that's all that's needed.
+	"""
 	
 	clicked = Signal()
 	
