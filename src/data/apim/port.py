@@ -288,6 +288,8 @@ class Port(Entity):
         
         newPort = Port(self._dataType, self._optional)
         newPort.setName(self.getName())
+        if self.isOptional():
+            newPort.setDefaultValue(self._default)
         return newPort
     
     def mirror(self, port: 'Port') -> None:
@@ -304,4 +306,6 @@ class Port(Entity):
         
         self._optional = port.isOptional()
         self._dataType = port.getDataType()
+        self._default = port._default
         self.setName(port.getName())
+        

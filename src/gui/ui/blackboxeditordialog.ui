@@ -146,7 +146,7 @@
            <x>0</x>
            <y>0</y>
            <width>1360</width>
-           <height>85</height>
+           <height>73</height>
           </rect>
          </property>
         </widget>
@@ -265,13 +265,23 @@
            <x>0</x>
            <y>0</y>
            <width>1360</width>
-           <height>84</height>
+           <height>73</height>
           </rect>
          </property>
         </widget>
        </widget>
       </item>
      </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="errorLabel">
+     <property name="styleSheet">
+      <string notr="true">color: red;</string>
+     </property>
+     <property name="text">
+      <string>Errors:</string>
+     </property>
     </widget>
    </item>
    <item>

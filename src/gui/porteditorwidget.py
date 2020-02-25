@@ -51,8 +51,29 @@ class PortEditorWidget(QWidget):
 		
 		if allowOptional:
 			self.ui.optionalButton.clicked.connect(self.onOptionalButtonClicked)
+		
+		self.updateDefaultEditorState()
+		
+	def updateDefaultEditorState(self) -> None:
+		"""
+		If the port is required, set the default editor text to "None" and disable.
+		Else, enable it and set it to the port's default value.
+		
+		:return: None
+		:rtype: NoneType
+		"""
+		if self.ui.optionalButton.text() == "Optional":
+			if self._port._default:
+				self.ui.defaultEdit.setText(str(self._port._default))
+			else:
+				self.ui.defaultEdit.setText("")
+				self.ui.defaultEdit.setPlaceholderText("Default Value")
+			self.ui.defaultEdit.setEnabled(True)
+		else:
+			self.ui.defaultEdit.setText('None')
+			self.ui.defaultEdit.setEnabled(False)
 			
-	def onOptionalButtonClicked(self):
+	def onOptionalButtonClicked(self) -> None:
 		"""
 		Switch the text on the button between "Required" and "Optional"
 		
@@ -63,8 +84,7 @@ class PortEditorWidget(QWidget):
 			self.ui.optionalButton.setText("Optional")
 		else:
 			self.ui.optionalButton.setText("Required")
-			self.ui.defaultEdit.setText('None')
-			self.ui.defaultEdit.setEnabled(False)
+		self.updateDefaultEditorState()
 			
 	def getPort(self) -> 'Port':
 		"""
@@ -96,15 +116,29 @@ class PortEditorWidget(QWidget):
 		"""
 		Sets all the values of the port values to the values of the editors
 		
+		.. note:: This function will update the underlying port. Don't call it unless you're
+			absolutely certain that the values in the editors are good.
+		
 		:return: None
 		:rtype: NoneType
 		"""
-		self._port.setName(self.ui.nameEdit.text())
+		p = self.previewPort()
+		self._port.mirror(p)
+		
+	def previewPort(self) -> 'Port':
+		"""
+		Returns a new port with all values from editors set.
+		
+		:return: The new port object
+		:rtype: Port
+		"""
+		p = Port()
+		p.setName(self.ui.nameEdit.text())
 		
 		if self.ui.optionalButton.text() == 'Optional':
-			self._port.setOptional(True)
+			p.setOptional(True)
 		else:
-			self._port.setOptional(False)
+			p.setOptional(False)
 		
 		try:
 			dataType = eval(self.ui.typeEdit.text())
@@ -113,7 +147,9 @@ class PortEditorWidget(QWidget):
 			# TODO: Figure out what to do in the case that we didn't recognize it as a type.
 			pass
 		else:
-			self._port.setDataType(dataType)
+			p.setDataType(dataType)
+		
+		if p.isOptional():
+			p.setDefaultValue(self.ui.defaultEdit.text())
 			
-		if self._port.isOptional():
-			self._port.setDefaultValue(self.ui.defaultEdit.text())
+		return p
