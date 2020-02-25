@@ -247,8 +247,9 @@ class ValidatorView(QWidget):
 			self.ui.algorithmProgressBar.setStyleSheet(ValidatorView.WARNING_PROGRESSBAR)
 		else:
 			self.ui.algorithmProgressBar.setStyleSheet(ValidatorView.ERROR_PROGRESSBAR)
-		
+			
 		self.ui.algorithmProgressBar.show()
+
 
 	def addWidgetToMessage(self, msg: ValidatorMessage) -> None:
 		"""
