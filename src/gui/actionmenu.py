@@ -57,7 +57,16 @@ class ActionMenu(QWidget):
 		self.ui = Ui_ActionMenu()
 		self.ui.setupUi(self)
 		
-		#Widget Initialization
+		self.clearActions()
+		
+	def clearActions(self) -> None:
+		"""
+		removes all action widgets from the action menu
+		
+		:return: None
+		:rtype: NoneType
+		"""
+		# Widget Initialization
 		self.ui._centralWidget = QWidget()
 		self.ui._itemLayout = QVBoxLayout()
 		
@@ -65,7 +74,6 @@ class ActionMenu(QWidget):
 		self.ui.menuItemScrollArea.setWidget(self.ui._centralWidget)
 		self.ui._itemLayout.addStretch()
 		
-	
 	def addAction(self, action: "Action") -> None:
 		"""
 		Creates an ActionMenuItem for the given action and adds it to this ActionMenu.

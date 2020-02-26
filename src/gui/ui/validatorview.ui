@@ -189,21 +189,51 @@
        <item>
         <widget class="QPushButton" name="runButton">
          <property name="text">
-          <string>Run</string>
+          <string/>
+         </property>
+         <property name="icon">
+          <iconset resource="../../../icons.qrc">
+           <normaloff>:/icon/resources/icons/office/verify.png</normaloff>:/icon/resources/icons/office/verify.png</iconset>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>40</width>
+           <height>40</height>
+          </size>
          </property>
         </widget>
        </item>
        <item>
         <widget class="QPushButton" name="stopButton">
          <property name="text">
-          <string>Stop</string>
+          <string/>
+         </property>
+         <property name="icon">
+          <iconset resource="../../../icons.qrc">
+           <normaloff>:/icon/resources/icons/office/stop.png</normaloff>:/icon/resources/icons/office/stop.png</iconset>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>40</width>
+           <height>40</height>
+          </size>
          </property>
         </widget>
        </item>
        <item>
         <widget class="QPushButton" name="clearButton">
          <property name="text">
-          <string>Clear</string>
+          <string/>
+         </property>
+         <property name="icon">
+          <iconset resource="../../../icons.qrc">
+           <normaloff>:/icon/resources/icons/office/trash.png</normaloff>:/icon/resources/icons/office/trash.png</iconset>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>40</width>
+           <height>40</height>
+          </size>
          </property>
         </widget>
        </item>
@@ -232,7 +262,7 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>700</width>
+          <width>727</width>
           <height>219</height>
          </rect>
         </property>
@@ -265,6 +295,8 @@
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="../../../icons.qrc"/>
+ </resources>
  <connections/>
 </ui>
