@@ -28,7 +28,7 @@ from typing import Dict, List
 
 from PySide2.QtWidgets import QGraphicsItem, QApplication, QGraphicsView, QGraphicsScene, \
 	QWidget, QStyleOptionGraphicsItem
-from PySide2.QtGui import QPainter, QPainterPath, QColor
+from PySide2.QtGui import QPainter, QPainterPath, QColor, Qt
 from PySide2.QtCore import QRectF, Slot, SIGNAL, QObject
 from graphics.apim.portgraphics import PortGraphics
 from data.apim.action import Action
@@ -63,6 +63,7 @@ class ActionGraphics(QGraphicsItem):
 		"""
 		QGraphicsItem.__init__(self, parent)
 		self.setFlag(QGraphicsItem.ItemIsSelectable)
+		self.setCursor(Qt.ArrowCursor)
 		self._action = action
 		QObject.connect(action, SIGNAL('updated()'), self.updateGraphics)
 		
@@ -83,7 +84,7 @@ class ActionGraphics(QGraphicsItem):
 	def updateGraphics(self) -> None:
 		"""
 		Updates all graphics and sub-graphics for this action.
-		
+
 		:return: None
 		:rtype: NoneType
 		"""
@@ -207,6 +208,18 @@ class ActionGraphics(QGraphicsItem):
 		self._height = height
 		
 		return x, y, width, height
+	
+	def updateActionRect(self) -> None:
+		"""
+		Updates the action rectangle's width and height attributes
+		
+		:return: None
+		:rtype: NoneType
+		"""
+		inputPorts = self._action.getInputPorts()
+		outputPorts = self._action.getOutputPorts()
+		
+		self.getActionRect(inputPorts, outputPorts)
 		
 	def shape(self) -> QPainterPath:
 		"""
@@ -230,7 +243,6 @@ class ActionGraphics(QGraphicsItem):
 		:return: None
 		:rtype: NoneType
 		"""
-		
 
 		painter.setBrush(self.color)
 		x, y, width, height = self.getActionRect(self._action.getInputPorts(), self._action.getOutputPorts())

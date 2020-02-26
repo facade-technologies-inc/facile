@@ -33,6 +33,7 @@ from data.project import Project
 from data.statemachine import StateMachine
 from data.tguim.component import Component
 from data.tguim.visibilitybehavior import VisibilityBehavior
+from data.apim.componentaction import ComponentAction
 from gui.copyprojectdialog import CopyProjectDialog
 from gui.manageprojectdialog import ManageProjectDialog
 from gui.newprojectdialog import NewProjectDialog
@@ -66,6 +67,10 @@ class FacileView(QMainWindow):
 		self.ui.validatorDockWidget.setWidget(self.ui.validatorView)
 		
 		self._blinker = None
+		
+		#State label in status bar
+		self.ui.stateLabel = QLabel("")
+		self.ui.statusBar.addPermanentWidget(self.ui.stateLabel)
 		
 		#Action Menu Initialization
 		self._componentActionMenu = ActionMenu()
@@ -274,6 +279,8 @@ class FacileView(QMainWindow):
 		:return: None
 		:rtype: NoneType
 		"""
+		
+		self.ui.actionPower_App.setChecked(True)
 		if confirm:
 			title = "Confirm Application Termination"
 			message = "Are you sure you'd like to terminate the target application?"
@@ -282,6 +289,7 @@ class FacileView(QMainWindow):
 			response = QMessageBox.StandardButton.Yes
 		
 		if response == QMessageBox.StandardButton.Yes:
+			self.ui.actionPower_App.setChecked(True)
 			self._project.stopTargetApplication()
 			self._stateMachine.stopApp()
 			self.info("The target application has been\nterminated.")
@@ -301,6 +309,15 @@ class FacileView(QMainWindow):
 		if type(entity) == Component:
 			self.ui.projectExplorerView.model().selectComponent(entity)
 			self._stateMachine.componentClicked(entity)
+			
+			# show all component actions in the component action menu
+			cType = entity.getProperties().getProperty('Class Name')[1].getValue()
+			specs = self._project.getAPIModel().getSpecifications(cType)
+			self._componentActionMenu.clearActions()
+			self.ui.actionMenuTabWidget.setCurrentWidget(self._componentActionMenu)
+			for spec in specs:
+				action = ComponentAction(entity, spec)
+				self._componentActionMenu.addAction(action)
 			
 		elif type(entity) == VisibilityBehavior:
 			self.ui.projectExplorerView.model().selectBehavior(entity)

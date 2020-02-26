@@ -27,7 +27,7 @@ from enum import Enum, auto
 
 from PySide2.QtCore import Slot, QTimer
 from PySide2.QtGui import QStandardItem, QStandardItemModel, Qt, QIcon, QPixmap
-from PySide2.QtWidgets import QGraphicsScene, QDialog, QLabel, QVBoxLayout, QWidget
+from PySide2.QtWidgets import QGraphicsScene, QDialog, QLabel, QVBoxLayout, QWidget, QSizePolicy
 
 import data.tguim.visibilitybehavior as vb
 from gui.facilegraphicsview import FacileGraphicsView
@@ -36,6 +36,7 @@ from gui.blackboxeditordialog import BlackBoxEditorDialog
 from qt_models.propeditordelegate import PropertyEditorDelegate
 from data.configvars import ConfigVars
 from data.apim.actionpipeline import ActionPipeline
+from gui.apicompilerdialog import ApiCompilerDialog
 
 
 class StateMachine:
@@ -80,6 +81,13 @@ class StateMachine:
 	class ExplorationMode(Enum):
 		AUTO = auto()
 		MANUAL = auto()
+		
+	status_text = {
+		State.WAIT_FOR_PROJECT: "Waiting for project",
+		State.MODEL_MANIPULATION: "Manipulating models",
+		State.ADDING_VB: "Adding a Visibility Behavior",
+		State.EXPLORATION: "Exploring the target GUI"
+	}
 		
 	# We can get the State machine instance from anywhere in the code using StateMachine.instance
 	# NOTE: This is not supposed to act as a Singleton because we make new state machines
@@ -183,8 +191,7 @@ class StateMachine:
 		# If the app was just started, we don't want to change the state, but we do want to
 		# enable/disable the controls.
 		elif event == StateMachine.Event.START_APP:
-			self.view.ui.actionStart_App.setEnabled(False)
-			self.view.ui.actionStop_App.setEnabled(True)
+			self.view.ui.actionPower_App.setChecked(True)
 			self.view.appWatcher.start()
 			if self.curState == StateMachine.State.MODEL_MANIPULATION:
 				self.view.ui.actionManualExplore.setEnabled(True)
@@ -193,8 +200,7 @@ class StateMachine:
 		# If the app was just terminated, we must leave the exploration state if we're in it and
 		# we will toggle the app controls
 		elif event == StateMachine.Event.STOP_APP:
-			self.view.ui.actionStart_App.setEnabled(True)
-			self.view.ui.actionStop_App.setEnabled(False)
+			self.view.ui.actionPower_App.setChecked(False)
 			self.view.ui.actionManualExplore.setEnabled(False)
 			self.view.ui.actionAutoExplore.setEnabled(False)
 			if self.curState == StateMachine.State.EXPLORATION:
@@ -260,8 +266,8 @@ class StateMachine:
 		# Advance to the next state
 		if nextState is not None:
 			self.stateHandlers[nextState](event, self.curState, *args, **kwargs)
-			print("State Change:", self.curState.name, "->", nextState.name)
 			self.curState = nextState
+			self.view.ui.stateLabel.setText(StateMachine.status_text.get(self.curState,"UNKNOWN STATE") + "...   ")
 	
 	############################################################################
 	# State Handlers - 1 for each state. Called when entering state.
@@ -295,6 +301,11 @@ class StateMachine:
 		ui.apiModelView = FacileActionGraphicsView()
 		ui.viewSplitter.addWidget(ui.targetGUIModelView)
 		ui.viewSplitter.addWidget(ui.apiModelView)
+		
+		# add spacers to toolbar.
+		w = QWidget()
+		w.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+		ui.toolBar.insertWidget(ui.actionValidate, w)
 		
 		# create blank model to show that no project is open.
 		blankProjectExplorer = QStandardItemModel()
@@ -336,7 +347,7 @@ class StateMachine:
 					action = ui.menuRecent_Projects_2.addAction(proj)
 					action.triggered.connect(v.onOpenRecentProject)
 					icon = QIcon()
-					icon.addPixmap(QPixmap(":/icon/resources/icons/pastel/open_box.png"),QIcon.Normal, QIcon.Off)
+					icon.addPixmap(QPixmap(":/icon/resources/icons/office/open-door.png"), QIcon.Normal, QIcon.Off)
 					action.setIcon(icon)
 
 		# Connecting the configVars' change signal to logic that will update the TGUIM View
@@ -357,10 +368,17 @@ class StateMachine:
 		ui.actionAutoExplore.triggered.connect(v.onAutomaticExploration)
 		ui.actionManualExplore.triggered.connect(v.onManualExploration)
 		ui.actionAdd_Behavior.triggered.connect(v.onAddBehaviorTriggered)
-		ui.actionStart_App.triggered.connect(v.onStartAppTriggered)
-		ui.actionStop_App.triggered.connect(lambda: v.onStopAppTriggered(confirm=True))
 		ui.actionShow_Behaviors.triggered.connect(self.configVars.setShowBehaviors)
 		ui.actionShow_Token_Tags.triggered.connect(self.configVars.setShowTokenTags)
+		ui.actionValidate.triggered.connect(ui.validatorView.ran.emit)
+		
+		def onPowerApp(checked):
+			if checked == True:
+				v.onStartAppTriggered()
+			else:
+				v.onStopAppTriggered(confirm=True)
+		
+		ui.actionPower_App.triggered.connect(onPowerApp)
 		
 		def onNewActionPipeline():
 			ap = ActionPipeline()
@@ -371,9 +389,16 @@ class StateMachine:
 			else:
 				self._project.getAPIModel().addActionPipeline(ap)
 				v._actionPipelinesMenu.addAction(ap)
+				ui.actionMenuTabWidget.setCurrentWidget(v._actionPipelinesMenu)
 		
 		ui.actionAdd_Action_Pipeline.triggered.connect(onNewActionPipeline)
 		v._actionPipelinesMenu.actionSelected.connect(self.setCurrentActionPipeline)
+		
+		def onAPICompiler():
+			apicomp = ApiCompilerDialog()
+			apicomp.exec_()
+	
+		ui.actionShow_API_Compiler.triggered.connect(onAPICompiler)
 
 		# Disable actions
 		ui.actionSave_Project.setEnabled(False)
@@ -384,10 +409,16 @@ class StateMachine:
 		ui.actionShow_Behaviors.setEnabled(False)
 		ui.actionShow_Token_Tags.setEnabled(False)
 		ui.actionAdd_Behavior.setEnabled(False)
-		ui.actionStart_App.setEnabled(False)
-		ui.actionStop_App.setEnabled(False)
+		ui.actionPower_App.setEnabled(False)
 		ui.actionManage_Project.setEnabled(False)
 		ui.actionAdd_Action_Pipeline.setEnabled(False)
+		ui.actionShow_API_Compiler.setEnabled(False)
+		ui.actionValidate.setEnabled(False)
+		
+		# disable validator buttons
+		ui.validatorView.ui.runButton.setEnabled(False)
+		ui.validatorView.ui.stopButton.setEnabled(False)
+		ui.validatorView.ui.clearButton.setEnabled(False)
 	
 	def _state_MODEL_MANIPULATION(self, event: Event, previousState: State, *args,
 	                              **kwargs) -> None:
@@ -440,8 +471,7 @@ class StateMachine:
 			propertyDelegate.propertyUpdated.connect(onPropUpdate)
 			ui.propertyEditorView.setItemDelegate(propertyDelegate)
 			ui.targetGUIModelView.setScene(v._project.getTargetGUIModel().getScene())
-			ui.actionStop_App.setEnabled(False)
-			ui.actionStart_App.setEnabled(True)
+			ui.actionPower_App.setChecked(False)
 			ui.actionManage_Project.setEnabled(True)
 		
 		if previousState == StateMachine.State.EXPLORATION:
@@ -453,13 +483,11 @@ class StateMachine:
 		if self._project.getProcess():
 			ui.actionAutoExplore.setEnabled(True)
 			ui.actionManualExplore.setEnabled(True)
-			ui.actionStop_App.setEnabled(True)
-			ui.actionStart_App.setEnabled(False)
+			ui.actionPower_App.setChecked(True)
 		else:
 			ui.actionManualExplore.setEnabled(False)
 			ui.actionAutoExplore.setEnabled(False)
-			ui.actionStop_App.setEnabled(False)
-			ui.actionStart_App.setEnabled(True)
+			ui.actionPower_App.setChecked(False)
 		
 		ui.actionSave_Project.setEnabled(True)
 		ui.actionSave_as.setEnabled(True)
@@ -470,6 +498,13 @@ class StateMachine:
 		ui.actionManualExplore.setChecked(False)
 		ui.actionAutoExplore.setChecked(False)
 		ui.actionAdd_Action_Pipeline.setEnabled(True)
+		ui.actionPower_App.setEnabled(True)
+		ui.actionShow_API_Compiler.setEnabled(True)
+		ui.actionValidate.setEnabled(True)
+		
+		# enable validator buttons
+		ui.validatorView.ui.runButton.setEnabled(True)
+		ui.validatorView.ui.clearButton.setEnabled(True)
 	
 	def _state_ADDING_VB(self, event: Event, previousState: State, *args, **kwargs) -> None:
 		"""
@@ -492,8 +527,9 @@ class StateMachine:
 		self.view.ui.actionShow_Behaviors.setEnabled(True)
 		self.view.ui.actionShow_Token_Tags.setEnabled(True)
 		self.view.ui.actionAdd_Behavior.setEnabled(True)
-		self.view.ui.actionStart_App.setEnabled(True)
-		self.view.ui.actionStop_App.setEnabled(True)
+		self.view.ui.actionPower_App.setEnabled(True)
+		self.view.ui.actionShow_API_Compiler.setEnabled(True)
+		self.view.ui.actionValidate.setEnabled(True)
 	
 	def _state_EXPLORATION(self, event: Event, previousState: State, *args, **kwargs) -> None:
 		"""
@@ -527,8 +563,9 @@ class StateMachine:
 		self.view.ui.actionShow_Behaviors.setEnabled(True)
 		self.view.ui.actionShow_Token_Tags.setEnabled(True)
 		self.view.ui.actionAdd_Behavior.setEnabled(False)
-		self.view.ui.actionStart_App.setEnabled(False)
-		self.view.ui.actionStop_App.setEnabled(True)
+		self.view.ui.actionPower_App.setEnabled(True)
+		self.view.ui.actionShow_API_Compiler.setEnabled(True)
+		self.view.ui.actionValidate.setEnabled(True)
 	
 	############################################################################
 	# Slots (Entry points for other parts of Facile)

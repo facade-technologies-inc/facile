@@ -52,7 +52,6 @@ class FacileActionGraphicsView(FacileGraphicsView):
 		newScene.addItem(nameItem)
 		
 		self.setScene(newScene)
-	
 
 	def refresh(self) -> None:
 		"""

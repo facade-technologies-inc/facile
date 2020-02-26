@@ -107,7 +107,7 @@ class ActionPipelineGraphics(ActionGraphics):
 		self._actionGraphics.clear()
 		for actionGraphics in newOrdering:
 			self._actionGraphics.append(actionGraphics)
-	
+
 	def updateWireGraphics(self) -> None:
 		"""
 		Syncs the internal wire graphics with the action pipeline's internal wires.
@@ -167,7 +167,7 @@ class ActionPipelineGraphics(ActionGraphics):
 		self._wireGraphics.clear()
 		for wireGraphics in newOrdering:
 			self._wireGraphics.append(wireGraphics)
-	
+
 	def placeActions(self) -> None:
 		"""
 		Moves all of the sub-actions to their proper positions.
@@ -180,12 +180,14 @@ class ActionPipelineGraphics(ActionGraphics):
 		self.getActionRect(inputs, outputs)
 		
 		offset = ActionPipelineGraphics.V_SPACE + PortGraphics.TOTAL_HEIGHT
+
 		for i in range(len(self._actionGraphics)):
 			actionGraphics = self._actionGraphics[i]
 			actionHeight = ActionGraphics.MAX_HEIGHT + ActionGraphics.V_SPACE
 			y = i * actionHeight - actionHeight*len(self._actionGraphics)/2 + offset
 			actionGraphics.setPos(0, y)
-			
+			actionGraphics.updateMoveButtonVisibility()
+
 	def getActionRect(self, inputPorts: QGraphicsItem, outputPorts: QGraphicsItem) -> list:
 		"""
 		Gets the bounding rect of the action.
@@ -289,6 +291,3 @@ class ActionPipelineGraphics(ActionGraphics):
 	# 		if self._actionGraphics.index(dstActionGFX) == self._actionGraphics.index(srcActionGFX) + 1:
 	# 			# This wire goes between adjacent actions. Add a lane in between actions.
 	# 			rowIndex = self._actionGraphics.index(srcActionGFX)
-
-
-
