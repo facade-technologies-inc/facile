@@ -25,8 +25,9 @@ to the actual target GUI.
 import psutil
 from PySide2.QtCore import QElapsedTimer, QTimer, QThread, Signal
 
+from tguiil.componentfinder import ComponentFinder, ComponentNotFoundException
 from tguiil.application import Application
-from tguiil.observer import Observer
+from tguiil.matchoption import MatchOption
 from tguiil.tokens import Token
 
 
@@ -77,39 +78,15 @@ class Blinker(QThread):
 		app = Application(backend=self._backend)
 		app.setProcess(self._process)
 		
-		timestamp = app.getStartTime()
-		bestCertainty = 0
-		closestComponent = None
-		if self._process.is_running():
-			# work acts as a stack. Each element is a 2-tuple where the first element
-			# is a GUI component and the second element is the parent super token.
-			work = [win for win in app.windows()]
-			while len(work) > 0:
-				curComponent = work.pop()
-				try:
-					token = Token.createToken(timestamp, curComponent)
-				except Token.CreationException as e:
-					print(str(e))
-				else:
-					decision, certainty = self._superToken.shouldContain(token)
-					if decision == Token.Match.EXACT:
-						self.initiateBlinkSequence(curComponent)
-						return
-					elif decision == Token.Match.CLOSE:
-						if certainty > bestCertainty:
-							closestComponent = curComponent
-							bestCertainty = certainty
-				
-				children = curComponent.children()
-				for child in children:
-					work.append(child)
-			
-			if closestComponent:
-				self.initiateBlinkSequence(closestComponent)
-				return
-			else:
-				info = "The selected component could not be\nfound in the target GUI."
-				self.componentNotFound.emit(info)
+		options = {MatchOption.ExactToken, MatchOption.CloseToken, MatchOption.PWABestMatch}
+		finder = ComponentFinder(app, options)
+		
+		try:
+			component = finder.find(self._superToken)
+		except ComponentNotFoundException:
+			self.componentNotFound.emit("The selected component could not be\nfound in the target GUI.")
+		else:
+			self.initiateBlinkSequence(component)
 	
 	def initiateBlinkSequence(self, component: 'Component') -> None:
 		"""
