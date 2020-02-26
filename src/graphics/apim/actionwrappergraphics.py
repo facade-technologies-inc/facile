@@ -21,10 +21,12 @@
 
 from PySide2.QtGui import QPainter, QColor, QFont, QFontMetricsF, Qt
 from PySide2.QtCore import QRectF
-from PySide2.QtWidgets import QWidget, QStyleOptionGraphicsItem, QGraphicsSceneContextMenuEvent
+from PySide2.QtWidgets import QWidget, QStyleOptionGraphicsItem, QGraphicsSceneContextMenuEvent, \
+	QGraphicsItem
 
 import data.statemachine as sm
 from graphics.apim.actiongraphics import ActionGraphics
+from graphics.apim.movebutton import MoveButton
 from qt_models.actionwrappermenu import ActionWrapperMenu
 
 class ActionWrapperGraphics(ActionGraphics):
@@ -51,16 +53,43 @@ class ActionWrapperGraphics(ActionGraphics):
 		"""
 		ActionGraphics.__init__(self, action, parent)
 		
+		self.setAcceptHoverEvents(True)
+		
 		self.color = ActionWrapperGraphics.COLOR
 		
 		def delete():
 			action.getParent().removeAction(action)
 			sm.StateMachine.instance.view.ui.apiModelView.refresh()
 			
-			
 		self.menu = ActionWrapperMenu()
 		self.menu.onDelete(delete)
 		
+		# create buttons for moving action in sequence
+		self.upButton = MoveButton(MoveButton.Direction.Up, self)
+		self.downButton = MoveButton(MoveButton.Direction.Down, self)
+		self.upButton.clicked.connect(self.promote)
+		self.downButton.clicked.connect(self.demote)
+		self.upButton.hide()
+		self.downButton.hide()
+		
+		self.updateGraphics()
+		
+	def updateGraphics(self) -> None:
+		"""
+		Update the graphics for the action wrapper and all children graphics.
+		
+		:return: None
+		:rtype: NoneType
+		"""
+		ActionGraphics.updateGraphics(self)
+		
+		self.updateActionRect()
+		
+		# update position of move buttons
+		hOffset = ActionGraphics.H_SPACE / 4
+		vOffset = MoveButton.HEIGHT + 20
+		self.upButton.setPos(self._width/2 - hOffset, -self._height/2 + vOffset)
+		self.downButton.setPos(self._width/2 - hOffset, self._height/2 - vOffset)
 	
 	def paint(self, painter: QPainter, option: QStyleOptionGraphicsItem, index: QWidget) -> None:
 		"""
@@ -116,3 +145,97 @@ class ActionWrapperGraphics(ActionGraphics):
 		:rtype: NoneType
 		"""
 		self.menu.exec_(event.screenPos())
+		
+	def updateMoveButtonVisibility(self) -> None:
+		"""
+		Show the appropriate movement buttons based on location of the action in the action
+		pipeline sequence
+		
+		:return:
+		"""
+		
+		if not self.isUnderMouse():
+			self.upButton.hide()
+			self.downButton.hide()
+			return
+		
+		totalNumActions = len(self._action.getParent().getActions())
+		idx = self._action.getParent().getActions().index(self._action)
+		
+		if idx == 0:
+			self.upButton.hide()
+		else:
+			self.upButton.show()
+		
+		if idx == totalNumActions - 1:
+			self.downButton.hide()
+		else:
+			self.downButton.show()
+	
+	def hoverEnterEvent(self, event) -> None:
+		"""
+		show move buttons when hovered over.
+
+		:param event: The hover event.
+		:type event: QGraphicsSceneHoverEvent
+		:return: None
+		:rtype: NoneType
+		"""
+		self.updateMoveButtonVisibility()
+	
+	def hoverLeaveEvent(self, event) -> None:
+		"""
+		hide buttons when hovered over.
+
+		:param event: The hover event.
+		:type event: QGraphicsSceneHoverEvent
+		:return: None
+		:rtype: NoneType
+		"""
+		self.updateMoveButtonVisibility()
+		
+	def promote(self) -> None:
+		"""
+		Move the action up (sooner) in the sequence of execution.
+		
+		:return: None
+		:rtype: NoneType
+		"""
+		actionList = self._action.getParent().getActions()
+		totalNumActions = len(actionList)
+		idx = actionList.index(self._action)
+		
+		if idx == 0:
+			return
+		
+		temp = actionList[idx-1]
+		actionList[idx-1] = actionList[idx]
+		actionList[idx] = temp
+		
+		self._action.getParent().changeSequence(actionList)
+		
+		for view in self.scene().views():
+			view.refresh()
+	
+	def demote(self) -> None:
+		"""
+		Move the action down (later) in the sequence of execution.
+
+		:return: None
+		:rtype: NoneType
+		"""
+		actionList = self._action.getParent().getActions()
+		totalNumActions = len(actionList)
+		idx = actionList.index(self._action)
+		
+		if idx > totalNumActions - 1:
+			return
+		
+		temp = actionList[idx + 1]
+		actionList[idx + 1] = actionList[idx]
+		actionList[idx] = temp
+		
+		self._action.getParent().changeSequence(actionList)
+		
+		for view in self.scene().views():
+			view.refresh()

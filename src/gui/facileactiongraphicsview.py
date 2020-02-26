@@ -53,7 +53,6 @@ class FacileActionGraphicsView(FacileGraphicsView):
 		
 		self.setScene(newScene)
 	
-
 	def refresh(self) -> None:
 		"""
 		Clears the scene and re-creates it.

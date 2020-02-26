@@ -29,6 +29,7 @@ class CompilationProfile:
 		Create a Enum class for documentation choice(s).
 		"""
 		
+		EPub = 4
 		Doc = 3
 		Html = 2
 		Pdf = 1

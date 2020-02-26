@@ -39,6 +39,7 @@ from gui.ui.ui_validatorview import Ui_Form as Ui_ValidatorView
 
 from data.validatormessage import ValidatorMessage
 from data.validator import Validator
+import data.statemachine as sm
 
 class ValidatorView(QWidget):
 	"""
@@ -119,7 +120,18 @@ class ValidatorView(QWidget):
 		self.dataValidator.updateProgress.connect(self.updateProgress, type=Qt.BlockingQueuedConnection)
 		
 		self.ran.connect(self.onRun)
-		self.stopped.connect(self.dataValidator.stop)
+		self.stopped.connect(self.onStop)
+		
+	@Slot()
+	def onStop(self) -> None:
+		"""
+		Stop the validator and set buttons to correct state.
+		
+		:return:
+		"""
+		self.dataValidator.stop()
+		self.ui.runButton.setEnabled(True)
+		self.ui.stopButton.setEnabled(False)
 		
 	@Slot()
 	def onRun(self) -> None:
@@ -132,6 +144,9 @@ class ValidatorView(QWidget):
 		"""
 		self.clear()
 		self.dataValidator.start()
+		self.ui.runButton.setEnabled(False)
+		self.ui.stopButton.setEnabled(True)
+		sm.StateMachine.instance.view.ui.actionValidate.setEnabled(False)
 	
 	@Slot()
 	def clear(self) -> None:
@@ -178,6 +193,8 @@ class ValidatorView(QWidget):
 		
 		# set worst level to 0
 		self._mostSevere = 0
+		
+		self.ui.clearButton.setEnabled(False)
 
 	@Slot()
 	def refresh(self) -> None:
@@ -219,7 +236,6 @@ class ValidatorView(QWidget):
 		:return: None
 		:rtype: NoneType
 		"""
-		print("message received:", msg)
 		self.addWidgetToMessage(msg)
 		self.allMessages.append(msg)
 		self.ui.messageLayout.insertWidget(0, msg.widget)
@@ -249,6 +265,8 @@ class ValidatorView(QWidget):
 			self.ui.algorithmProgressBar.setStyleSheet(ValidatorView.ERROR_PROGRESSBAR)
 			
 		self.ui.algorithmProgressBar.show()
+		
+		self.ui.clearButton.setEnabled(True)
 
 
 	def addWidgetToMessage(self, msg: ValidatorMessage) -> None:
@@ -291,5 +309,10 @@ class ValidatorView(QWidget):
 		
 		self.ui.algorithmProgressBar.setValue(round(progress, 2))
 		self.ui.algorithmProgressBar.show()
+		
+		if progress >= 100:
+			self.ui.runButton.setEnabled(True)
+			self.ui.stopButton.setEnabled(False)
+			sm.StateMachine.instance.view.ui.actionValidate.setEnabled(True)
 		
 
