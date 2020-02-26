@@ -32,6 +32,7 @@ from graphics.apim.portgraphics import PortGraphics
 class ActionPipelineGraphics(ActionGraphics):
 
 	SIDE_MARGIN = 50
+	V_SPACE = 50
 	
 	def __init__(self, actionPipeline: 'ActionPipeline', parent=None) -> 'ActionPipelineGraphics':
 		"""
@@ -116,6 +117,8 @@ class ActionPipelineGraphics(ActionGraphics):
 		"""
 		
 		newOrdering = []
+
+		columnAssignmentLedger, rowAssignmentLedger = self.allocateWireLanes()
 		
 		# map all of the wires to wire graphics.
 		for refWire in self._action.getWireSet().getWires():
@@ -134,8 +137,23 @@ class ActionPipelineGraphics(ActionGraphics):
 			srcPortGraphics = pm[refWire.getSourcePort()]
 			dstPortGraphics = pm[refWire.getDestPort()]
 
-			# Generate the current wire's graphics. TODO I think I want to move this outside the loop...
-			self._wireMapping[refWire].updateGraphics(srcPortGraphics, dstPortGraphics)
+			# Generate the current wire's graphics.
+			# Need to determine the wire's starting and ending "rows". A row falls between sub actions.
+			if refWire.getSourcePort.getAction() == self._action:
+				# If current wire's srcPort belongs to this action, wire's srcActionRow = 0.
+				srcActionRow = 0
+			else:
+				srcActionGFX = self._actionMapping[refWire.getSourcePort.getAction()]
+				srcActionRow = self._actionGraphics.index(srcActionGFX)
+
+			if refWire.getDestPort.getAction == self._action:
+				# If current wire's dstPort belongs to this action, wire's srcActionRow = # of actions + 1.
+				dstActionRow = len(self._actionGraphics) + 1
+			else:
+				dstActionGFX = self._actionMapping[refWire.getDestPort.getAction()]
+				dstActionRow = self._actionGraphics.index(dstActionGFX)
+			self._wireMapping[refWire].updateGraphics(srcPortGraphics, dstPortGraphics, srcActionRow, dstActionRow,
+													  columnAssignmentLedger, rowAssignmentLedger)
 			
 			newOrdering.append(self._wireMapping[refWire])
 		
@@ -161,7 +179,7 @@ class ActionPipelineGraphics(ActionGraphics):
 		outputs = self._action.getOutputPorts()
 		self.getActionRect(inputs, outputs)
 		
-		offset = ActionGraphics.V_SPACE + PortGraphics.TOTAL_HEIGHT
+		offset = ActionPipelineGraphics.V_SPACE + PortGraphics.TOTAL_HEIGHT
 		for i in range(len(self._actionGraphics)):
 			actionGraphics = self._actionGraphics[i]
 			actionHeight = ActionGraphics.MAX_HEIGHT + ActionGraphics.V_SPACE
@@ -219,7 +237,7 @@ class ActionPipelineGraphics(ActionGraphics):
 		self.placeActions()
 
 	def allocateWireLanes(self) -> '(dict[str: list[int]], dict[int: list[int]])':
-		wires = [wire for wire in self._wireMapping.keys()]
+		wires = [wire for wire in self._action.getWireSet().getWires()]
 		colLanes = {"leftColumn": [0, 0], "rightColumn": [0, 0]}  # {col: [total_lanes, lanes_assigned], ...}
 		rowLanes = {i: [0, 0] for i in range(len(wires)+1)}  # {row: [total_lanes, lanes_assigned], ...}
 

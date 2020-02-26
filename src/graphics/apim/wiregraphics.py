@@ -117,15 +117,25 @@ class WireGraphics(QAbstractGraphicsShapeItem):
 		painter.setPen(pen)
 		painter.drawPath(path)
 
-	def updateGraphics(self, srcPortGraphics: 'PortGraphics', destPortGraphics: 'PortGraphics'):
+	def updateGraphics(self, srcPortGraphics: 'PortGraphics', destPortGraphics: 'PortGraphics', srcActionRow
+					   colAssignmentLedger: 'dict[str: list[int]]', rowAssignmentLedger: 'dict[int: list[int]]'):
 		srcPosition = srcPortGraphics.scenePos()
 		destPosition = destPortGraphics.scenePos()
+
+		self.getParent()
 
 		# Set the source point.
 		self._pathPoints.append((srcPosition.x(), srcPosition.y() + PortGraphics.TOTAL_HEIGHT/2))
 
 		# TODO: add intermediate points.
-		self._pathPoints.append((0, 0))
+		# Move down to first allocated row lane.
+
+		# Does this wire move between adjacent actions?
+		# If so move down to first available lane, then cut over above the destination port.
+
+		# Else, Move down to first available lane, decide which column to use, cut over to first available
+		# lane in the column, move down to lane in destination row, cut over above the destination port.
+
 
 		# Set the destination point.
 		self._pathPoints.append((destPosition.x(), destPosition.y() - PortGraphics.TOTAL_HEIGHT/2))
@@ -150,6 +160,14 @@ if __name__ == "__main__":
 	actPipeline.addInputPort(inPort1)
 	actPipeline.addInputPort(inPort2)
 	actPipeline.addOutputPort(outPort1)
+
+	#Sub-Actions
+	act1 = ActionPipeline()
+	act2 = ActionPipeline()
+	act3 = ActionPipeline()
+
+
+
 
 	actPipeline.connect(inPort1, outPort1)
 
