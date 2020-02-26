@@ -148,7 +148,7 @@ class Observer(QThread):
 				curComponent, parentSuperToken = work.pop()
 				if curComponent.friendly_class_name() not in Observer.ignoreTypes:
 					try:
-						token = Observer.createToken(appTimeStamp, curComponent)
+						token = Token.createToken(appTimeStamp, curComponent)
 					
 					# List boxes have a ton of children that we probably don't care about.
 					# There are probably other types like it where we just want to ignore the
@@ -167,93 +167,6 @@ class Observer(QThread):
 				children = curComponent.children()
 				for child in children:
 					work.append((child, nextParentSuperToken))
-	
-	@staticmethod
-	def createToken(timeStamp: datetime, component: pywinauto.base_wrapper.BaseWrapper) -> Token:
-		"""
-		Create a token from a pywinauto control.
-		
-		:raises: Token.CreationException
-		
-		:param timeStamp: The time that the application instance was created.
-		:type timeStamp: datetime
-		:param component: A pywinauto control from the target GUI.
-		:type component: pywinauto.base_wrapper
-		:return: The token that was created from the pywinauto control.
-		:rtype: Token
-		"""
-		
-		try:
-			parent = component.parent()
-			if parent:
-				parentTitle = parent.window_text()
-				parentType = parent.friendly_class_name()
-			else:
-				parentTitle = ""
-				parentType = ""
-			
-			topLevelParent = component.top_level_parent()
-			topLevelParentTitle = topLevelParent.window_text()
-			topLevelParentType = topLevelParent.friendly_class_name()
-			
-			# Information we can get about any element
-			id = component.control_id()
-			isDialog = component.is_dialog()
-			isEnabled = component.is_enabled()
-			isVisible = component.is_visible()
-			processID = component.process_id()
-			rectangle = component.rectangle()
-			texts = component.texts()[1:]
-			title = component.window_text()
-			numControls = component.control_count()
-			image = None  # component.capture_as_image()
-			typeOf = component.friendly_class_name()
-			
-			# get text of all children that are not editable.
-			childrenTexts = []
-			for child in component.children():
-				if type(child) != pywinauto.controls.win32_controls.EditWrapper:
-					try:
-						text = child.text()
-						if text is None:
-							text = child.window_text()
-						if text is None:
-							text = ""
-						childrenTexts.append(text)
-					except:
-						childrenTexts.append("")
-			
-			# additional information we can get about uia elements
-			try:
-				autoID = component.automation_id()
-				shownState = component.get_show_state()
-				expandState = component.get_expand_state()
-			except:
-				autoID = None
-				expandState = None
-				shownState = None
-			
-			# construct control identifiers
-			# There are 4 possible control identifiers:
-			#   - title
-			#   - friendly class
-			#   - title + friendly class
-			#   - closest text + friendly class (only if the title is empty)
-			
-			if title is None:
-				title = ""
-			
-			controlIdentifiers = [title, typeOf, title + typeOf]
-		except Exception as e:
-			raise Token.CreationException("Could not build token: {}".format(str(e)))
-		
-		# create a new token
-		token = Token(timeStamp, id, isDialog, isEnabled, isVisible, processID, typeOf,
-		              rectangle, texts, title, numControls, controlIdentifiers, parentTitle,
-		              parentType, topLevelParentTitle, topLevelParentType, childrenTexts, image,
-		              autoID, expandState, shownState)
-		
-		return token
 	
 	def matchToSuperToken(self, token: Token, parentSuperToken: SuperToken) -> SuperToken:
 		"""

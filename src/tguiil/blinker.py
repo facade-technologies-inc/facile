@@ -87,7 +87,7 @@ class Blinker(QThread):
 			while len(work) > 0:
 				curComponent = work.pop()
 				try:
-					token = Observer.createToken(timestamp, curComponent)
+					token = Token.createToken(timestamp, curComponent)
 				except Token.CreationException as e:
 					print(str(e))
 				else:
