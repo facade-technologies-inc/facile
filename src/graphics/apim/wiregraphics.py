@@ -25,6 +25,7 @@ sys.path.append(os.path.abspath("../../"))
 sys.path.append(os.path.abspath("../../gui/rc/"))
 ##########################
 
+from typing import Dict, List
 from PySide2.QtWidgets import QWidget, QGraphicsItem, QStyleOptionGraphicsItem, QApplication, QGraphicsView, \
 	QGraphicsScene, QAbstractGraphicsShapeItem
 from PySide2.QtCore import QRectF
@@ -37,6 +38,7 @@ from graphics.apim.portgraphics import PortGraphics
 from data.apim.actionpipeline import ActionPipeline
 import graphics.apim.actionpipelinegraphics as actPipelineGrfxModule
 from data.apim.port import Port
+from data.apim.actionwrapper import ActionWrapper
 #############################
 
 
@@ -117,12 +119,13 @@ class WireGraphics(QAbstractGraphicsShapeItem):
 		painter.setPen(pen)
 		painter.drawPath(path)
 
-	def updateGraphics(self, srcPortGraphics: 'PortGraphics', destPortGraphics: 'PortGraphics', srcActionRow
-					   colAssignmentLedger: 'dict[str: list[int]]', rowAssignmentLedger: 'dict[int: list[int]]'):
+	def updateGraphics(self, srcPortGraphics: 'PortGraphics', destPortGraphics: 'PortGraphics', srcRow: int,
+					   dstRow: int, colAssignmentLedger: Dict[str, List[int]],
+					   rowAssignmentLedger: Dict[int, List[int]]):
 		srcPosition = srcPortGraphics.scenePos()
 		destPosition = destPortGraphics.scenePos()
 
-		self.getParent()
+		#To get the action pipeline graphics -> self.getParent()
 
 		# Set the source point.
 		self._pathPoints.append((srcPosition.x(), srcPosition.y() + PortGraphics.TOTAL_HEIGHT/2))
@@ -164,12 +167,27 @@ if __name__ == "__main__":
 	#Sub-Actions
 	act1 = ActionPipeline()
 	act2 = ActionPipeline()
-	act3 = ActionPipeline()
 
+	prt1_1 = Port()
+	prt2_1 = Port()
+	prt3_1 = Port()
+	prt1_2 = Port()
+	prt2_2 = Port()
+	prt3_2 = Port()
 
+	act1.addInputPort(prt1_1)
+	act1.addInputPort(prt2_1)
+	act1.addOutputPort(prt3_1)
 
+	act2.addInputPort(prt1_2)
+	act2.addOutputPort(prt2_2)
+	act2.addInputPort(prt3_2)
 
-	actPipeline.connect(inPort1, outPort1)
+	aw1 = ActionWrapper(act1, actPipeline)
+	aw2 = ActionWrapper(act2, actPipeline)
+
+	actPipeline.connect(actPipeline.getInputPorts()[0], aw2.getInputPorts()[1])
+	actPipeline.connect(aw1.getOutputPorts()[0], aw2.getInputPorts()[0])
 
 	# Create the graphics.
 	actPipelineGFX = actPipelineGrfxModule.ActionPipelineGraphics(actPipeline)

@@ -244,6 +244,7 @@ class ActionGraphics(QGraphicsItem):
 		:rtype: NoneType
 		"""
 
+		self.placePorts()
 		painter.setBrush(self.color)
 		x, y, width, height = self.getActionRect(self._action.getInputPorts(), self._action.getOutputPorts())
 		painter.drawRect(QRectF(x, y, width, height))
@@ -289,7 +290,14 @@ class ActionGraphics(QGraphicsItem):
 				
 		spread(-self._height / 2, self._inputPortGraphics)
 		spread(self._height / 2, self._outputPortGraphics)
-		
+
+	def getHeight(self):
+		self.updateActionRect()
+		return self._height
+
+	def getWidth(self):
+		self.updateActionRect()
+		return self._width
 		
 if __name__ == "__main__":
 	app = QApplication()

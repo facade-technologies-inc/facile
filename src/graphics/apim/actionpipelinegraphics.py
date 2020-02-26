@@ -33,6 +33,7 @@ class ActionPipelineGraphics(ActionGraphics):
 
 	SIDE_MARGIN = 50
 	V_SPACE = 50
+	HORIZONTAL_ROW_BUFFER = 5
 	
 	def __init__(self, actionPipeline: 'ActionPipeline', parent=None) -> 'ActionPipelineGraphics':
 		"""
@@ -70,7 +71,7 @@ class ActionPipelineGraphics(ActionGraphics):
 		self.updateActionGraphics()
 
 		ActionGraphics.update(self)
-		self.updateWireGraphics()
+		#self.updateWireGraphics()
 	
 	def updateActionGraphics(self) -> None:
 		"""
@@ -177,15 +178,14 @@ class ActionPipelineGraphics(ActionGraphics):
 		"""
 		inputs = self._action.getInputPorts()
 		outputs = self._action.getOutputPorts()
-		self.getActionRect(inputs, outputs)
+		selfx, selfy, width, height = self.getActionRect(inputs, outputs)
 		
 		offset = ActionPipelineGraphics.V_SPACE + PortGraphics.TOTAL_HEIGHT
-
 		for i in range(len(self._actionGraphics)):
 			actionGraphics = self._actionGraphics[i]
-			actionHeight = ActionGraphics.MAX_HEIGHT + ActionGraphics.V_SPACE
-			y = i * actionHeight - actionHeight*len(self._actionGraphics)/2 + offset
-			actionGraphics.setPos(0, y)
+			actionHeight = ActionGraphics.MAX_HEIGHT + ActionPipelineGraphics.V_SPACE
+			y = selfy + i * actionHeight + offset
+			actionGraphics.setPos(0, y + actionHeight/2)
 			actionGraphics.updateMoveButtonVisibility()
 
 	def getActionRect(self, inputPorts: QGraphicsItem, outputPorts: QGraphicsItem) -> list:
@@ -202,15 +202,17 @@ class ActionPipelineGraphics(ActionGraphics):
 		x, y, width, height = ActionGraphics.getActionRect(self, inputPorts, outputPorts)
 		
 		# resize the action to fit all actions and wires inside.
-		count = 0
 		maxChildWidth = 0
+		numActions = len(self._actionGraphics)
+
 		for actionGraphics in self._actionGraphics:
-			count += 1
 			br = actionGraphics.boundingRect()
-			y -= br.height()/2 - 50
-			height += ActionGraphics.MAX_HEIGHT + ActionGraphics.V_SPACE
 			curChildWidth = br.width() + ActionPipelineGraphics.SIDE_MARGIN*2
 			maxChildWidth = max(maxChildWidth, curChildWidth)
+
+		height = ActionGraphics.MAX_HEIGHT * numActions + \
+				 ActionPipelineGraphics.V_SPACE * (numActions + 1) + \
+				 PortGraphics.TOTAL_HEIGHT
 			
 		self._width = max(self._width, maxChildWidth)
 		self._height = height
