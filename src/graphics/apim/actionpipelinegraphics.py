@@ -180,12 +180,13 @@ class ActionPipelineGraphics(ActionGraphics):
 		outputs = self._action.getOutputPorts()
 		selfx, selfy, width, height = self.getActionRect(inputs, outputs)
 		
-		offset = ActionPipelineGraphics.V_SPACE + PortGraphics.TOTAL_HEIGHT
+		offset = (ActionGraphics.MAX_HEIGHT + PortGraphics.TOTAL_HEIGHT)/2 + ActionPipelineGraphics.V_SPACE
+		
 		for i in range(len(self._actionGraphics)):
 			actionGraphics = self._actionGraphics[i]
 			actionHeight = ActionGraphics.MAX_HEIGHT + ActionPipelineGraphics.V_SPACE
 			y = selfy + i * actionHeight + offset
-			actionGraphics.setPos(0, y + actionHeight/2)
+			actionGraphics.setPos(0, y)
 			actionGraphics.updateMoveButtonVisibility()
 
 	def getActionRect(self, inputPorts: QGraphicsItem, outputPorts: QGraphicsItem) -> list:
