@@ -20,13 +20,14 @@
 """
 
 from PySide2.QtWidgets import QGraphicsItem, QWidget, QStyleOptionGraphicsItem
-from PySide2.QtGui import QPainter, QColor
-from PySide2.QtCore import QRectF, Slot
+from PySide2.QtGui import QPainter, QColor, QTransform
+from PySide2.QtCore import QRectF, Slot, QPointF
 
 from graphics.apim.actiongraphics import ActionGraphics
 from graphics.apim.actionwrappergraphics import ActionWrapperGraphics
 from graphics.apim.wiregraphics import WireGraphics
 from graphics.apim.portgraphics import PortGraphics
+from graphics.apim.connectionindicator import ConnectionIndicator
 
 
 class ActionPipelineGraphics(ActionGraphics):
@@ -51,6 +52,11 @@ class ActionPipelineGraphics(ActionGraphics):
 		
 		self._actionMapping = {}
 		self._wireMapping = {}
+		
+		# item used to draw lines between ports being connected.
+		self.connectionIndicator = ConnectionIndicator(self)
+		self.connectionIndicator.hide()
+		self.stagingConnection = None
 		
 		ActionPipelineGraphics.updateGraphics(self)
 	
@@ -210,3 +216,38 @@ class ActionPipelineGraphics(ActionGraphics):
 		self.getActionRect(self._action.getInputPorts(), self._action.getOutputPorts())
 		ActionGraphics.paint(self, painter, option, index)
 		self.placeActions()
+	
+	def mousePressEvent(self, event):
+		print("pressed")
+		
+		item = self.scene().itemAt(event.scenePos(), QTransform())
+		if type(item) == PortGraphics:
+			self.stagingConnection = self
+			self.connectionIndicator.show()
+		event.accept()
+	
+	def mouseMoveEvent(self, event):
+		print('almost')
+		if self.stagingConnection is None:
+			return
+		
+		print("moved")
+		pg = self.stagingConnection
+		srcP = QPointF(pg.x(), pg.y() + PortGraphics.TOTAL_HEIGHT / 2)
+		destP = event.scenePos()
+		
+		self.connectionIndicator.setSrc(srcP)
+		self.connectionIndicator.setDest(destP)
+		self.connectionIndicator.prepareGeometryChange()
+		event.accept()
+	
+	def mouseReleasedEvent(self, event):
+		print("released")
+		
+		item = self.scene().itemAt(event.scenePos(), QTransform)
+		if type(item) == PortGraphics:
+			self._action.connect(self.stagingConnection._port, item._port)
+			
+		self.stagingConnection = None
+		self.connectionIndicator.hide()
+		event.accept()
