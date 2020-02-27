@@ -127,21 +127,24 @@ class WireGraphics(QAbstractGraphicsShapeItem):
 	def updateGraphics(self, srcPortGraphics: 'PortGraphics', destPortGraphics: 'PortGraphics', srcRow: int,
 					   dstRow: int, colAssignmentLedger: Dict[str, List[int]],
 					   rowAssignmentLedger: Dict[int, List[int]]):
-		
 		srcPosition = srcPortGraphics.scenePos()
 		destPosition = destPortGraphics.scenePos()
 
-		#print(srcRow, dstRow)
-		#To get the action pipeline graphics -> self.getParent()
+		# Claim lanes on the row ledger.
+		rowAssignmentLedger[srcRow][1] += 1
+		if srcRow != dstRow:
+			rowAssignmentLedger[dstRow][1] += 1
 
 		# Set the source point.
 		self._pathPoints.append((srcPosition.x(), srcPosition.y() + PortGraphics.TOTAL_HEIGHT/2))
 
 		# TODO: add intermediate points.
-		# Move down to first allocated row lane. # TODO Right now just going to middle of the row.
+		# Move down to first allocated row lane.
 		prevX = self._pathPoints[-1][0]
 		prevY = self._pathPoints[-1][1]
-		nextY = prevY + apg.ActionPipelineGraphics.V_SPACE / 2
+		rowSpace = apg.ActionPipelineGraphics.V_SPACE
+		laneOffset = (rowSpace / (rowAssignmentLedger[srcRow][0]+1)) * rowAssignmentLedger[srcRow][1]
+		nextY = prevY + laneOffset
 		self._pathPoints.append((prevX, nextY))
 
 		# Does this wire move between adjacent actions?
@@ -152,12 +155,40 @@ class WireGraphics(QAbstractGraphicsShapeItem):
 		# Else, decide which column to use, cut over to first available lane in the column,
 		# move down to lane in destination row, cut over above the destination port.
 		else:
-			if srcPosition.x() < 0 and colAssignmentLedger['leftColumn'][1] < colAssignmentLedger['leftColumn'][0]:
-				# Source port is biased left and there are still lanes available in the left column. Go left.
-				self.parentItem().
+			prevX = self._pathPoints[-1][0]
+			prevY = self._pathPoints[-1][1]
+			actPipeWidth = self.parentItem().getWidth()
+			if srcPosition.x() < 0:
+				# Source port is biased left. Go left.
+				# Claim lane on the Column ledger.
+				colAssignmentLedger["leftColumn"][1] += 1
+
+				laneOffset = (rowSpace / (colAssignmentLedger["leftColumn"][0]+1)) \
+							 * colAssignmentLedger["leftColumn"][1]
+				leftDist = actPipeWidth / 2 - abs(srcPosition.x()) - apg.ActionPipelineGraphics.SIDE_MARGIN
+				self._pathPoints.append((prevX - leftDist - laneOffset, prevY))
+			else:
+				# Source port is biased right or centered. Go right.
+				# Claim lane on the Column ledger.
+				colAssignmentLedger["rightColumn"][1] += 1
+
+				laneOffset = (rowSpace / (colAssignmentLedger["rightColumn"][0] + 1)) \
+							 * colAssignmentLedger["rightColumn"][1]
+				rightDist = actPipeWidth / 2 - srcPosition.x() - apg.ActionPipelineGraphics.SIDE_MARGIN
+				self._pathPoints.append((prevX + rightDist + laneOffset, prevY))
+
+			# Move down to destination row. -> V_Space above destination port's y.
+			prevX = self._pathPoints[-1][0]
+			newY = (destPosition.y() - PortGraphics.TOTAL_HEIGHT/2) - apg.ActionPipelineGraphics.V_SPACE
+			laneOffset = (rowSpace / (rowAssignmentLedger[dstRow][0] + 1)) * rowAssignmentLedger[dstRow][1]
+			self._pathPoints.append((prevX, newY + laneOffset))
+
+			# Move over to above the destination port.
+			prevY = self._pathPoints[-1][1]
+			self._pathPoints.append((destPosition.x(), prevY))
 
 		# Set the destination point.
-		#self._pathPoints.append((destPosition.x(), destPosition.y() - PortGraphics.TOTAL_HEIGHT/2))
+		self._pathPoints.append((destPosition.x(), destPosition.y() - PortGraphics.TOTAL_HEIGHT/2))
 
 		#self.prepareGeometryChange()
 
@@ -205,9 +236,10 @@ if __name__ == "__main__":
 	aw1 = ActionWrapper(act1, actPipeline)
 	aw2 = ActionWrapper(act2, actPipeline)
 
-	actPipeline.connect(actPipeline.getInputPorts()[0], aw1.getInputPorts()[0])
+	actPipeline.connect(actPipeline.getInputPorts()[1], actPipeline.getOutputPorts()[0])
 	actPipeline.connect(aw1.getOutputPorts()[0], aw2.getInputPorts()[0])
-	#actPipeline.connect(aw2.getOutputPorts()[0], actPipeline.getOutputPorts()[0])
+	actPipeline.connect(actPipeline.getInputPorts()[0], aw2.getInputPorts()[1])
+	actPipeline.connect(actPipeline.getInputPorts()[1], aw1.getInputPorts()[0])
 
 	# Create the graphics.
 	actPipelineGFX = actPipelineGrfxModule.ActionPipelineGraphics(actPipeline)

@@ -79,6 +79,10 @@ class ActionGraphics(QGraphicsItem):
 		
 		self._interactivePorts = True
 		ActionGraphics.updateGraphics(self)
+
+		self._width = 0
+		self._height = 0
+
 		
 	@Slot()
 	def updateGraphics(self) -> None:

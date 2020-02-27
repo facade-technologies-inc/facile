@@ -165,12 +165,12 @@ class ActionPipelineGraphics(ActionGraphics):
 				self._wireGraphics.append(newWireGraphics)
 				self._wireMapping[refWire] = newWireGraphics
 
-			srcAction = refWire.getSourcePort().getAction().getName()
-			srcPort = refWire.getSourcePort().getName()
-			dstAction = refWire.getDestPort().getAction().getName()
-			dstPort = refWire.getDestPort().getName()
-			msg = "WIRE! {}: {} -> {}: {}".format(srcAction, srcPort, dstAction, dstPort)
-			print(msg)
+			# srcAction = refWire.getSourcePort().getAction().getName()
+			# srcPort = refWire.getSourcePort().getName()
+			# dstAction = refWire.getDestPort().getAction().getName()
+			# dstPort = refWire.getDestPort().getName()
+			# msg = "WIRE! {}: {} -> {}: {}".format(srcAction, srcPort, dstAction, dstPort)
+			# print(msg)
 
 			# update any wire graphics that are already in the mapping.
 			srcPortGraphics = self.getPortGraphics(refWire.getSourcePort())
@@ -185,9 +185,9 @@ class ActionPipelineGraphics(ActionGraphics):
 				srcActionGFX = self._actionMapping[refWire.getSourcePort().getAction()]
 				srcActionRow = self._actionGraphics.index(srcActionGFX) + 1
 
-			if refWire.getDestPort().getAction == self._action:
-				# If current wire's dstPort belongs to this action, wire's dstActionRow = # of actions + 1.
-				dstActionRow = len(self._actionGraphics) + 1
+			if refWire.getDestPort().getAction() == self._action:
+				# If current wire's dstPort belongs to this action, wire's dstActionRow = # of actions.
+				dstActionRow = len(self._actionGraphics)
 			else:
 				dstActionGFX = self._actionMapping[refWire.getDestPort().getAction()]
 				dstActionRow = self._actionGraphics.index(dstActionGFX)
@@ -227,8 +227,8 @@ class ActionPipelineGraphics(ActionGraphics):
 			actionHeight = ActionGraphics.MAX_HEIGHT + ActionPipelineGraphics.V_SPACE
 			y = selfy + i * actionHeight + offset
 			
-			msg = "{} -> ({}, {})".format(actionGraphics.getAction().getName(), str(0), str(y))
-			print("Moving Internal Action:", msg)
+			# msg = "{} -> ({}, {})".format(actionGraphics.getAction().getName(), str(0), str(y))
+			# print("Moving Internal Action:", msg)
 			
 			actionGraphics.setPos(0, y)
 			actionGraphics.updateMoveButtonVisibility()
@@ -288,7 +288,7 @@ class ActionPipelineGraphics(ActionGraphics):
 	def allocateWireLanes(self) -> '(dict[str: list[int]], dict[int: list[int]])':
 		wires = [wire for wire in self._action.getWireSet().getWires()]
 		colLanes = {"leftColumn": [0, 0], "rightColumn": [0, 0]}  # {col: [total_lanes, lanes_assigned], ...}
-		rowLanes = {i: [0, 0] for i in range(len(wires)+1)}  # {row: [total_lanes, lanes_assigned], ...}
+		rowLanes = {i: [0, 0] for i in range(len(self._actionGraphics)+1)}  # {row: [total_lanes, lanes_assigned], ...}
 
 		# Heuristic: For the columns to the sides of the actions, just allocate ~1/2 as many lanes as there are wires.
 		colLanes["leftColumn"][0] = (len(wires)//2) + 1
@@ -306,7 +306,6 @@ class ActionPipelineGraphics(ActionGraphics):
 			numPipelineOutputs = len(self._action.getOutputPorts())
 			numLastSubActionOutputs = len(self._actionGraphics[-1].getAction().getOutputPorts())
 			numLastRowLanes = numPipelineOutputs + numLastSubActionOutputs
-			#print(rowLanes.keys())
 			rowLanes[len(rowLanes.keys())-1][0] = numLastRowLanes
 
 			# Allocate lanes between sub Actions.
