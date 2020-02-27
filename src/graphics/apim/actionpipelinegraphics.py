@@ -121,6 +121,16 @@ class ActionPipelineGraphics(ActionGraphics):
 		:return: The PortGraphics for the port
 		:rtype: PortGraphics
 		"""
+		
+		pm = {}
+		pm.update(self._inputPortMapping)
+		pm.update(self._outputPortMapping)
+		for a in self._actionGraphics:
+			pm.update(a._inputPortMapping)
+			pm.update(a._outputPortMapping)
+			
+		return pm[port]
+		
 		pg = ActionGraphics.getPortGraphics(self, port)
 		if pg is not None:
 			return pg
