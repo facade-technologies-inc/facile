@@ -17,31 +17,14 @@
 	| Technologies Inc.                                                            |
 	|                                                                              |
 	\------------------------------------------------------------------------------/
+	
+This file contains the MatchOption class which is used to specify which matching schemes will be
+used to find a component.
 """
-from typing import Set
+
 from enum import Enum
 
-from tguiil.matchoption import MatchOption
-
-
-class CompilationProfile:
-	class DocType(Enum):
-		"""
-		Create a Enum class for documentation choice(s).
-		"""
-		
-		EPub = 4
-		Doc = 3
-		Html = 2
-		Pdf = 1
-	
-	def __init__(self, docTypes: Set['CompilationProfile.DocType'], compResOpts: Set['MatchOption'],
-	             apiFolderDir, interpExeDir):
-		"""
-		Construct the CompilationProfile containing the information from ApiCompilerDialog.
-		"""
-		
-		self.compResOpts = compResOpts
-		self.docTypes = docTypes
-		self.apiFolderDir = apiFolderDir
-		self.interpExeDir = interpExeDir
+class MatchOption(Enum):
+	ExactToken = 1
+	CloseToken = 2
+	PWABestMatch = 3

@@ -58,7 +58,26 @@ class Application(pywinauto.Desktop):
 		
 		# store time stamp as int
 		self._startTime = int(datetime.now().strftime("%y%m%d%H%M%S").lstrip("0"))
-	
+		self._process = None
+		
+	def is_process_running(self) -> bool:
+		"""
+		Determine if the application is running or not.
+		
+		.. note:: this function is named this way to match pywinauto.application.Application.is_process_running
+		
+		:return: True if running, False otherwise.
+		:rtype: bool
+		"""
+		if self._process is None:
+			return False
+		
+		for pid in self.getPIDs():
+			if psutil.Process(pid = pid).is_running():
+				return True
+			
+		return False
+		
 	def setProcess(self, process: psutil.Process) -> None:
 		"""
 		Sets the application's process. This method should be called directly after the Application object is
