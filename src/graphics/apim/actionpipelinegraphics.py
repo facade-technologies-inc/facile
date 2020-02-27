@@ -71,7 +71,7 @@ class ActionPipelineGraphics(ActionGraphics):
 		self.updateActionGraphics()
 
 		ActionGraphics.update(self)
-		#self.updateWireGraphics()
+		self.updateWireGraphics()
 	
 	def updateActionGraphics(self) -> None:
 		"""
@@ -135,6 +135,9 @@ class ActionPipelineGraphics(ActionGraphics):
 			pm.update(self._inputPortMapping)
 			pm.update(self._outputPortMapping)
 
+			print("SourcePort: ", refWire.getSourcePort())
+			print("DestPort: ", refWire.getDestPort())
+			print("portMapping keys: ", pm.keys())
 			srcPortGraphics = pm[refWire.getSourcePort()]
 			dstPortGraphics = pm[refWire.getDestPort()]
 
@@ -262,7 +265,8 @@ class ActionPipelineGraphics(ActionGraphics):
 			numPipelineOutputs = len(self._action.getOutputPorts())
 			numLastSubActionOutputs = len(self._actionGraphics[-1].getAction().getOutputPorts())
 			numLastRowLanes = numPipelineOutputs + numLastSubActionOutputs
-			rowLanes[len(wires)+1][0] = numLastRowLanes
+			print(rowLanes.keys())
+			rowLanes[len(rowLanes.keys())-1][0] = numLastRowLanes
 
 			# Allocate lanes between sub Actions.
 			if len(self._actionGraphics) > 1:

@@ -33,6 +33,7 @@ from PySide2.QtGui import QPainterPath, QPainter, QColor, QPen, QPainterPathStro
 
 from data.apim.wire import Wire
 from graphics.apim.portgraphics import PortGraphics
+import graphics.apim.actionpipelinegraphics as apg
 
 # For test script. ##########
 from data.apim.actionpipeline import ActionPipeline
@@ -132,6 +133,10 @@ class WireGraphics(QAbstractGraphicsShapeItem):
 
 		# TODO: add intermediate points.
 		# Move down to first allocated row lane.
+		prevX = self._pathPoints[-1][0]
+		prevY = self._pathPoints[-1][1]
+		nextY = prevY + apg.ActionPipelineGraphics.V_SPACE / 2
+		self._pathPoints.append(prevX, nextY)
 
 		# Does this wire move between adjacent actions?
 		# If so move down to first available lane, then cut over above the destination port.
@@ -176,7 +181,7 @@ if __name__ == "__main__":
 	prt3_2 = Port()
 
 	act1.addInputPort(prt1_1)
-	act1.addInputPort(prt2_1)
+	#act1.addInputPort(prt2_1)
 	act1.addOutputPort(prt3_1)
 
 	act2.addInputPort(prt1_2)
