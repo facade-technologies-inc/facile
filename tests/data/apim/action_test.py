@@ -232,6 +232,11 @@ class TestAction(unittest.TestCase):
 		
 		self.assertRaises(TypeError, lambda: portB.setDataType("not a type"))
 		
+		portA.setOptional(False)
+		self.assertRaises(PortException, lambda: portA.setDefaultValue(1))
+		portA.setOptional(True)
+		portA.setDefaultValue(1)
+		
 	def test_ActionWrapper(self):
 		# make an action pipeline
 		ap = ActionPipeline()
@@ -274,3 +279,4 @@ class TestAction(unittest.TestCase):
 		
 		self.assertRaises(ActionException, lambda: ActionPipeline().addAction(w))
 		self.assertRaises(ActionException, lambda: parent.addAction(w))
+		

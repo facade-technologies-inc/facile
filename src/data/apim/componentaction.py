@@ -23,18 +23,33 @@ component from the TGUIM.
 """
 
 from data.apim.action import Action
+from data.apim.port import Port
+from data.apim.actionspecification import ActionSpecification
 
 class ComponentAction(Action):
 	
-	def __init__(self, targetComponent: 'Component' = None, codeSpec: str = ""):
+	def __init__(self, targetComponent: 'Component', actionSpec: 'ActionSpecification'):
 		"""
-		The ComponentAction class is used to describe a
-		:param targetComponent:
-		:param codeSpec:
+		The ComponentAction class is used to describe an action on a specific component
+		
+		:param targetComponent: the component to act on
+		:type targetComponent: Component
+		:param actionSpec: The specification for how to perform the action.
+		:type actionSpec: ActionSpecification
 		"""
 		Action.__init__(self)
 		self._target = targetComponent
-		self._codeSpec = codeSpec
+		self._spec = actionSpec
+		
+		for input in actionSpec.inputs:
+			p = Port.copy(input)
+			self.addInputPort(p)
+			
+		for output in actionSpec.outputs:
+			p = Port.copy(output)
+			self.addOutputPort(p)
+			
+		self.setName(actionSpec.name)
 
 	def getTargetComponent(self) -> 'Component':
 		"""
@@ -58,12 +73,13 @@ class ComponentAction(Action):
 
 	def getMethodCode(self) -> str:
 		"""
-		Returns the codeSpec
+		Returns the code spec
 
 		:return: code necessary to perform action
 		:rtype: str
 		"""
 
-		return self._codeSpec
+		return self._spec.code
 	
 	# TODO: Add more methods once we've clearly defined what we're doing with this class.
+		
