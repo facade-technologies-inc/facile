@@ -104,6 +104,10 @@ class WireGraphics(QAbstractGraphicsShapeItem):
 		path.moveTo(*self._pathPoints[0])
 		for point in self._pathPoints[1:]:
 			path.lineTo(*point)
+			
+		# print("Points:")
+		# for x,y in self._pathPoints:
+		# 	print("\t", x, y)
 
 		return path
 
@@ -123,10 +127,11 @@ class WireGraphics(QAbstractGraphicsShapeItem):
 	def updateGraphics(self, srcPortGraphics: 'PortGraphics', destPortGraphics: 'PortGraphics', srcRow: int,
 					   dstRow: int, colAssignmentLedger: Dict[str, List[int]],
 					   rowAssignmentLedger: Dict[int, List[int]]):
+		
 		srcPosition = srcPortGraphics.scenePos()
 		destPosition = destPortGraphics.scenePos()
 
-		print(srcRow, dstRow)
+		#print(srcRow, dstRow)
 		#To get the action pipeline graphics -> self.getParent()
 
 		# Set the source point.
@@ -154,7 +159,7 @@ class WireGraphics(QAbstractGraphicsShapeItem):
 		# Set the destination point.
 		#self._pathPoints.append((destPosition.x(), destPosition.y() - PortGraphics.TOTAL_HEIGHT/2))
 
-		self.prepareGeometryChange()
+		#self.prepareGeometryChange()
 
 
 if __name__ == "__main__":
@@ -177,7 +182,9 @@ if __name__ == "__main__":
 
 	#Sub-Actions
 	act1 = ActionPipeline()
+	act1.setName("action pipeline 1")
 	act2 = ActionPipeline()
+	act2.setName("action pipeline 2")
 
 	prt1_1 = Port()
 	prt2_1 = Port()
@@ -189,6 +196,7 @@ if __name__ == "__main__":
 	act1.addInputPort(prt1_1)
 	#act1.addInputPort(prt2_1)
 	act1.addOutputPort(prt3_1)
+	prt3_1.setName("OUTPUT")
 
 	act2.addInputPort(prt1_2)
 	act2.addOutputPort(prt2_2)
@@ -199,6 +207,7 @@ if __name__ == "__main__":
 
 	actPipeline.connect(actPipeline.getInputPorts()[0], aw1.getInputPorts()[0])
 	actPipeline.connect(aw1.getOutputPorts()[0], aw2.getInputPorts()[0])
+	#actPipeline.connect(aw2.getOutputPorts()[0], actPipeline.getOutputPorts()[0])
 
 	# Create the graphics.
 	actPipelineGFX = actPipelineGrfxModule.ActionPipelineGraphics(actPipeline)

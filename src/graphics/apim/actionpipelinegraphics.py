@@ -69,8 +69,7 @@ class ActionPipelineGraphics(ActionGraphics):
 		"""
 		self.prepareGeometryChange()
 		self.updateActionGraphics()
-
-		ActionGraphics.update(self)
+		ActionGraphics.updateGraphics(self)
 		self.updateWireGraphics()
 	
 	def updateActionGraphics(self) -> None:
@@ -108,6 +107,8 @@ class ActionPipelineGraphics(ActionGraphics):
 		self._actionGraphics.clear()
 		for actionGraphics in newOrdering:
 			self._actionGraphics.append(actionGraphics)
+			
+		self.placeActions()
 	
 	def getPortGraphics(self, port: 'Port') -> PortGraphics:
 		"""
@@ -121,6 +122,16 @@ class ActionPipelineGraphics(ActionGraphics):
 		:return: The PortGraphics for the port
 		:rtype: PortGraphics
 		"""
+		
+		pm = {}
+		pm.update(self._inputPortMapping)
+		pm.update(self._outputPortMapping)
+		for a in self._actionGraphics:
+			pm.update(a._inputPortMapping)
+			pm.update(a._outputPortMapping)
+			
+		return pm[port]
+		
 		pg = ActionGraphics.getPortGraphics(self, port)
 		if pg is not None:
 			return pg
@@ -153,6 +164,13 @@ class ActionPipelineGraphics(ActionGraphics):
 				newWireGraphics = WireGraphics(refWire, self)
 				self._wireGraphics.append(newWireGraphics)
 				self._wireMapping[refWire] = newWireGraphics
+
+			srcAction = refWire.getSourcePort().getAction().getName()
+			srcPort = refWire.getSourcePort().getName()
+			dstAction = refWire.getDestPort().getAction().getName()
+			dstPort = refWire.getDestPort().getName()
+			msg = "WIRE! {}: {} -> {}: {}".format(srcAction, srcPort, dstAction, dstPort)
+			print(msg)
 
 			# update any wire graphics that are already in the mapping.
 			srcPortGraphics = self.getPortGraphics(refWire.getSourcePort())
@@ -188,6 +206,8 @@ class ActionPipelineGraphics(ActionGraphics):
 		self._wireGraphics.clear()
 		for wireGraphics in newOrdering:
 			self._wireGraphics.append(wireGraphics)
+			
+		
 
 	def placeActions(self) -> None:
 		"""
@@ -206,6 +226,10 @@ class ActionPipelineGraphics(ActionGraphics):
 			actionGraphics = self._actionGraphics[i]
 			actionHeight = ActionGraphics.MAX_HEIGHT + ActionPipelineGraphics.V_SPACE
 			y = selfy + i * actionHeight + offset
+			
+			msg = "{} -> ({}, {})".format(actionGraphics.getAction().getName(), str(0), str(y))
+			print("Moving Internal Action:", msg)
+			
 			actionGraphics.setPos(0, y)
 			actionGraphics.updateMoveButtonVisibility()
 
@@ -282,7 +306,7 @@ class ActionPipelineGraphics(ActionGraphics):
 			numPipelineOutputs = len(self._action.getOutputPorts())
 			numLastSubActionOutputs = len(self._actionGraphics[-1].getAction().getOutputPorts())
 			numLastRowLanes = numPipelineOutputs + numLastSubActionOutputs
-			print(rowLanes.keys())
+			#print(rowLanes.keys())
 			rowLanes[len(rowLanes.keys())-1][0] = numLastRowLanes
 
 			# Allocate lanes between sub Actions.
