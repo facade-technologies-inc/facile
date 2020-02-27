@@ -176,6 +176,8 @@ class WireGraphics(QAbstractGraphicsShapeItem):
 		:return: None
 		:rtype: NoneType
 		"""
+		self._pathPoints = []
+
 		srcPosition = srcPortGraphics.scenePos()
 		destPosition = destPortGraphics.scenePos()
 
