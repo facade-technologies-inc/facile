@@ -45,7 +45,7 @@ from data.apim.actionwrapper import ActionWrapper
 
 class WireGraphics(QAbstractGraphicsShapeItem):
 	"""
-
+	Defines graphics for wires between ports in an action pipeline in the APIM View.
 	"""
 
 	PEN_WIDTH = 5
@@ -69,6 +69,12 @@ class WireGraphics(QAbstractGraphicsShapeItem):
 		self._pathPoints = []
 
 	def boundingRect(self) -> QRectF:
+		"""
+		Defines the rectangle bounding the WireGraphics object.
+
+		:return: A QRectF object.
+		:rtype: QRectF
+		"""
 		xVals = [x for x, y in self._pathPoints]
 		yVals = [y for x, y in self._pathPoints]
 
@@ -99,7 +105,12 @@ class WireGraphics(QAbstractGraphicsShapeItem):
 
 		return stroker.createStroke(path).simplified()
 
-	def buildPath(self):
+	def buildPath(self) -> QPainterPath:
+		"""
+		Constructs a QPainterPath from the points defined in the updateGraphics function.
+		:return: A QPainterPath.
+		:rtype: QPainterPath
+		"""
 		path = QPainterPath()
 		path.moveTo(*self._pathPoints[0])
 		for point in self._pathPoints[1:]:
@@ -112,6 +123,13 @@ class WireGraphics(QAbstractGraphicsShapeItem):
 		return path
 
 	def paint(self, painter: QPainter, option: QStyleOptionGraphicsItem, index: QWidget) -> None:
+		"""
+		Defines how the WireGraphics gets painted (color, width, etc.).
+		:param painter: A QPainter
+		:param option: A QStyleOptionGraphicsItem
+		:param index: A QWidget
+		:return: None
+		"""
 		path = self.buildPath()
 
 		pen = QPen()
@@ -126,7 +144,38 @@ class WireGraphics(QAbstractGraphicsShapeItem):
 
 	def updateGraphics(self, srcPortGraphics: 'PortGraphics', destPortGraphics: 'PortGraphics', srcRow: int,
 					   dstRow: int, colAssignmentLedger: Dict[str, List[int]],
-					   rowAssignmentLedger: Dict[int, List[int]]):
+					   rowAssignmentLedger: Dict[int, List[int]]) -> None:
+		"""
+		Calculates the points which define the path the WireGraphics follows.
+
+		:param srcPortGraphics: The WireGraphics' source port's graphics. Used to determine the starting point of the
+		wire's graphics.
+		:type srcPortGraphics: PortGraphics
+		:param destPortGraphics: The WireGraphics' destination port's graphics. Used to determine the ending point of
+		the wire's graphics.
+		:type destPortGraphics: PortGraphics
+		:param srcRow: The "row" index that the WireGraphics originates from. A row is defined as being the horizontal
+		space between actions within the ActionPipelineGraphics. E.g., a pipeline with 2 sub-actions would have three
+		rows: row 0 between the pipeline's input ports and the first sub-action, row 1 between the sub-actions, and row
+		2 between the last sub-action and the pipeline's output ports.
+		:type srcRow: int
+		:param dstRow: The index of the "row" where the WireGraphics ends. (See srcRow param for definition of "row").
+		:type dstRow: int
+		:param colAssignmentLedger: The data structure that is passed to each WireGraphics object to coordinate the
+		the spacing of the wires along the two vertical edges (columns) of the pipeline so that none overlap
+		undesirably. This structure defines how many "lanes" are available in each column. A WireGraphics object claims
+		a row by incrementing the lanes_used value. The x coordinate of the wire's path going down the column is
+		calculated using the total_lanes and lanes_used values ==> laneOffset = (1/total_lanes+1)*lanes_used.
+		colAssignmentLedger looks like:
+		{"leftColumn" : [total_lanes, lanes_used], "rightColumn": [total_lanes, lanes_used]}
+		:type colAssignmentLedger: Dict[str, List[int]]
+		:param rowAssignmentLedger: Analogous to the colAssignmentLedger param - coordinates the spacing of the
+		wires along the horizontal rows in the PipelineGraphics. rowAssignmentLedger looks like:
+		{row_index : [total_lanes, lanes_used], ...}
+		:type rowAssignmentLedger: Dict[str, List[int]]
+		:return: None
+		:rtype: NoneType
+		"""
 		srcPosition = srcPortGraphics.scenePos()
 		destPosition = destPortGraphics.scenePos()
 
@@ -138,7 +187,6 @@ class WireGraphics(QAbstractGraphicsShapeItem):
 		# Set the source point.
 		self._pathPoints.append((srcPosition.x(), srcPosition.y() + PortGraphics.TOTAL_HEIGHT/2))
 
-		# TODO: add intermediate points.
 		# Move down to first allocated row lane.
 		prevX = self._pathPoints[-1][0]
 		prevY = self._pathPoints[-1][1]
