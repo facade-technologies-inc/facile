@@ -126,27 +126,31 @@ class WireGraphics(QAbstractGraphicsShapeItem):
 		srcPosition = srcPortGraphics.scenePos()
 		destPosition = destPortGraphics.scenePos()
 
+		print(srcRow, dstRow)
 		#To get the action pipeline graphics -> self.getParent()
 
 		# Set the source point.
 		self._pathPoints.append((srcPosition.x(), srcPosition.y() + PortGraphics.TOTAL_HEIGHT/2))
 
 		# TODO: add intermediate points.
-		# Move down to first allocated row lane.
+		# Move down to first allocated row lane. # TODO Right now just going to middle of the row.
 		prevX = self._pathPoints[-1][0]
 		prevY = self._pathPoints[-1][1]
 		nextY = prevY + apg.ActionPipelineGraphics.V_SPACE / 2
 		self._pathPoints.append((prevX, nextY))
 
 		# Does this wire move between adjacent actions?
-		# If so move down to first available lane, then cut over above the destination port.
-
-		# Else, Move down to first available lane, decide which column to use, cut over to first available
-		# lane in the column, move down to lane in destination row, cut over above the destination port.
-
+		# If so, cut over above the destination port's x coordinate.
+		if srcRow == dstRow:
+			prevY = self._pathPoints[-1][1]
+			self._pathPoints.append((destPosition.x(), prevY))
+		# Else, decide which column to use, cut over to first available lane in the column,
+		# move down to lane in destination row, cut over above the destination port.
+		else:
+			pass
 
 		# Set the destination point.
-		self._pathPoints.append((destPosition.x(), destPosition.y() - PortGraphics.TOTAL_HEIGHT/2))
+		#self._pathPoints.append((destPosition.x(), destPosition.y() - PortGraphics.TOTAL_HEIGHT/2))
 
 		self.prepareGeometryChange()
 
@@ -191,7 +195,7 @@ if __name__ == "__main__":
 	aw1 = ActionWrapper(act1, actPipeline)
 	aw2 = ActionWrapper(act2, actPipeline)
 
-	actPipeline.connect(actPipeline.getInputPorts()[0], aw2.getInputPorts()[1])
+	actPipeline.connect(actPipeline.getInputPorts()[0], aw1.getInputPorts()[0])
 	actPipeline.connect(aw1.getOutputPorts()[0], aw2.getInputPorts()[0])
 
 	# Create the graphics.

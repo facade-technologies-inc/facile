@@ -165,7 +165,7 @@ class ActionPipelineGraphics(ActionGraphics):
 				srcActionRow = 0
 			else:
 				srcActionGFX = self._actionMapping[refWire.getSourcePort().getAction()]
-				srcActionRow = self._actionGraphics.index(srcActionGFX)
+				srcActionRow = self._actionGraphics.index(srcActionGFX) + 1
 
 			if refWire.getDestPort().getAction == self._action:
 				# If current wire's dstPort belongs to this action, wire's dstActionRow = # of actions + 1.
