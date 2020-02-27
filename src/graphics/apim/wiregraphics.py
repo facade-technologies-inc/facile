@@ -147,7 +147,9 @@ class WireGraphics(QAbstractGraphicsShapeItem):
 		# Else, decide which column to use, cut over to first available lane in the column,
 		# move down to lane in destination row, cut over above the destination port.
 		else:
-			pass
+			if srcPosition.x() < 0 and colAssignmentLedger['leftColumn'][1] < colAssignmentLedger['leftColumn'][0]:
+				# Source port is biased left and there are still lanes available in the left column. Go left.
+				self.parentItem().
 
 		# Set the destination point.
 		#self._pathPoints.append((destPosition.x(), destPosition.y() - PortGraphics.TOTAL_HEIGHT/2))
