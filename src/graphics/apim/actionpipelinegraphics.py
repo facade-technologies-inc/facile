@@ -69,7 +69,6 @@ class ActionPipelineGraphics(ActionGraphics):
 		"""
 		self.prepareGeometryChange()
 		self.updateActionGraphics()
-
 		ActionGraphics.updateGraphics(self)
 		self.updateWireGraphics()
 	
@@ -108,6 +107,8 @@ class ActionPipelineGraphics(ActionGraphics):
 		self._actionGraphics.clear()
 		for actionGraphics in newOrdering:
 			self._actionGraphics.append(actionGraphics)
+			
+		self.placeActions()
 	
 	def getPortGraphics(self, port: 'Port') -> PortGraphics:
 		"""
@@ -164,6 +165,13 @@ class ActionPipelineGraphics(ActionGraphics):
 				self._wireGraphics.append(newWireGraphics)
 				self._wireMapping[refWire] = newWireGraphics
 
+			srcAction = refWire.getSourcePort().getAction().getName()
+			srcPort = refWire.getSourcePort().getName()
+			dstAction = refWire.getDestPort().getAction().getName()
+			dstPort = refWire.getDestPort().getName()
+			msg = "WIRE! {}: {} -> {}: {}".format(srcAction, srcPort, dstAction, dstPort)
+			print(msg)
+
 			# update any wire graphics that are already in the mapping.
 			srcPortGraphics = self.getPortGraphics(refWire.getSourcePort())
 			dstPortGraphics = self.getPortGraphics(refWire.getDestPort())
@@ -198,6 +206,8 @@ class ActionPipelineGraphics(ActionGraphics):
 		self._wireGraphics.clear()
 		for wireGraphics in newOrdering:
 			self._wireGraphics.append(wireGraphics)
+			
+		
 
 	def placeActions(self) -> None:
 		"""
@@ -216,6 +226,10 @@ class ActionPipelineGraphics(ActionGraphics):
 			actionGraphics = self._actionGraphics[i]
 			actionHeight = ActionGraphics.MAX_HEIGHT + ActionPipelineGraphics.V_SPACE
 			y = selfy + i * actionHeight + offset
+			
+			msg = "{} -> ({}, {})".format(actionGraphics.getAction().getName(), str(0), str(y))
+			print("Moving Internal Action:", msg)
+			
 			actionGraphics.setPos(0, y)
 			actionGraphics.updateMoveButtonVisibility()
 
@@ -270,8 +284,6 @@ class ActionPipelineGraphics(ActionGraphics):
 		self.getActionRect(self._action.getInputPorts(), self._action.getOutputPorts())
 		ActionGraphics.paint(self, painter, option, index)
 		self.placeActions()
-		
-		painter.drawRect(-20, -20, 40, 40)
 
 	def allocateWireLanes(self) -> '(dict[str: list[int]], dict[int: list[int]])':
 		wires = [wire for wire in self._action.getWireSet().getWires()]

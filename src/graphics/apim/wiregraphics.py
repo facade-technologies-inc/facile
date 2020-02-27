@@ -105,9 +105,9 @@ class WireGraphics(QAbstractGraphicsShapeItem):
 		for point in self._pathPoints[1:]:
 			path.lineTo(*point)
 			
-		print("Points:")
-		for x,y in self._pathPoints:
-			print("\t", x, y)
+		# print("Points:")
+		# for x,y in self._pathPoints:
+		# 	print("\t", x, y)
 
 		return path
 
@@ -194,6 +194,7 @@ if __name__ == "__main__":
 	act1.addInputPort(prt1_1)
 	#act1.addInputPort(prt2_1)
 	act1.addOutputPort(prt3_1)
+	prt3_1.setName("OUTPUT")
 
 	act2.addInputPort(prt1_2)
 	act2.addOutputPort(prt2_2)
