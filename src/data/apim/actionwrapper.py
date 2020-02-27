@@ -24,6 +24,8 @@ This module contains the ActionWrapper class.
 from typing import List, Dict
 
 from data.apim.action import Action
+from data.apim.actionpipeline import ActionPipeline
+from data.apim.componentaction import ComponentAction
 
 
 class ActionWrapper(Action):
@@ -165,3 +167,32 @@ class ActionWrapper(Action):
 		myPortList.clear()
 		for port in newOrdering:
 			myPortList.append(port)
+
+	def getMethodName(self) -> str:
+		"""
+		Returns method name based on actionRef type.
+
+		:return: method name
+		:rtype: str
+		"""
+
+		if isinstance(self._actionRef, ActionPipeline):
+			return self._actionRef.getMethodName()
+		elif isinstance(self._actionRef, ComponentAction):
+			if self._actionRef.getTargetComponent() is None:
+				return '_' + self._actionRef.getActionName()  # TODO: We have to make sure that these actions have unique names
+			return '_' + self._actionRef.getTargetComponent().getId() + '_' + self._actionRef.getActionName()
+
+	def getMethodCode(self) -> str:
+		"""
+		Returns the code "guts" of the actionRef
+
+		:return: Code to perform referenced action
+		:rtype: str
+		"""
+		
+		return self._actionRef.getMethodCode()
+
+
+
+

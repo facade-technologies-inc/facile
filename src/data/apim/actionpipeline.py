@@ -292,6 +292,7 @@ class ActionPipeline(Action):
 	def getMethodName(self) -> str:
 		"""
 		In this case, just returns unique name of action pipeline, since AP name uniqueness is enforced within the GUI.
+		However, should only be called by actionwrapper.
 
 		:return: name of action pipeline
 		:rtype: str
@@ -309,44 +310,49 @@ class ActionPipeline(Action):
 
 		code = ""
 
-		for	a in self._actions:  
+		for	a in self._actions: 
+			code += '\t\t' 
 			if a.getOutputPorts():  # Getting outputs named and written to code
 				o = a.getOutputPorts()[0]
-				varName = self.getVarName(o)
-				code += varName  # only one output
-				if len(a.getOutputPorts()) > 1:  # if output is a tuple
+				code += self.getVarName(o)  # only one output
+				if len(a.getOutputPorts()) > 1:  # if several outputs
 					for o in a.getOutputPorts()[1:]:
-						varName = self.getVarName(o)
-						code += ", " + varName
+						code += ", " + self.getVarName(o)
 			
-			code += ' = ' + a.getMethodName + '('
+			code += ' = ' + a.getMethodName() + '('
 
 			if a.getInputPorts():
 				i = a.getInputPorts()[0]
-				varName = self.getVarName(i)
-				code += varName  # only one input
+				code += self.getVarName(i)  # only one input
 				if len(a.getInputPorts()) > 1:  # if multiple inputs
 					for i in a.getInputPorts()[1:]:
-						varName = self.getVarName(i)
-						code += ", " + varName
+						code += ", " + self.getVarName(i)
 			
 			code += ')\n'
 		
-		code += '\n'
+		if self.getOutputPorts():
+			code += '\n\t\treturn '
+			o = self.getOutputPorts()[0]
+			code += self.getVarName(o)  # only one output
+			if len(self.getOutputPorts()) > 1:  # if several outputs
+				for o in self.getOutputPorts()[1:]:
+					code += ", " + self.getVarName(o)
 
-	def getVarName(self, p: Port) -> str:
+		code += '\n\n'
+
+	def getVarName(self, p: 'Port') -> str:
 		"""
-		Gets the name of a variable associated to a port. If none, creates one.
+		Gets the name of a variable associated to a port. If none, creates one and increments max varName used.
 
 		:return: name associated to port
 		:rtype: str
 		"""
 
-		# Check if port already has name. if so, return immediately
+		# Check if port already has name. if so, return immediately.
 		allports = [tmp[1] for tmp in self._varMap]
 		if p in allports:
 			# idk if this is very effective but should get the job done
-			return self._varMap[[tmp[1] for tmp in self._varMap].index(p)][0]
+			return self._varMap[allports.index(p)][0]
 		
 		# Check if port is connected by wire to other ports.
 		cnctdPorts = []
@@ -359,7 +365,7 @@ class ActionPipeline(Action):
 		newName = True
 		for lp in cnctdPorts:
 			if lp in allports:
-				name = self._varMap[[tmp[1] for tmp in self._varMap].index(lp)][0]
+				name = self._varMap[allports.index(lp)][0]
 				newName = False
 				break
 
@@ -375,19 +381,14 @@ class ActionPipeline(Action):
 
 		return name
 
-	def incrVarName(self, var: str = None) -> str:
+	def incrVarName(self) -> None:
 		"""
-		increments a string from a to z, then to aa, to zz, and so on.
+		Increments varName from a to z, then to aa, to zz, and so on.
 
-		:param var: string of interest
-		:type var: str
-		:return: incremented string
-		:rtype: str
+		:return: None
 		"""
 		
-		if var is None:
-			var = self._varName
-
+		var = self._varName
 		zs = var.rstrip('z')
 		num_replacements = len(var) - len(zs)
 		newName = zs[:-1] + self.incrChar(zs[-1]) if zs else 'a'
@@ -396,7 +397,7 @@ class ActionPipeline(Action):
 
 	def incrChar(self, var: str) -> str:
 		"""
-		increments character to z, then loops to a
+		Increments character by 1 unless it is 'z', in which case 'a' is returned
 
 		:param var: character of interest
 		:type var: str

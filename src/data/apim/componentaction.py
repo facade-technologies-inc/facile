@@ -35,5 +35,35 @@ class ComponentAction(Action):
 		Action.__init__(self)
 		self._target = targetComponent
 		self._codeSpec = codeSpec
+
+	def getTargetComponent(self) -> 'Component':
+		"""
+		Returns the target componemt of the action.
+
+		:return: Target component
+		:rtype: Component
+		"""
+
+		return self._target
+
+	def getActionName(self) -> str:
+		"""
+		Gets the name of the action. Only for use with creating method name in action wrapper. *NOT UNIQUE*
+
+		:return: Action name
+		:rtype: str
+		"""
+
+		return self.getName()
+
+	def getMethodCode(self) -> str:
+		"""
+		Returns the codeSpec
+
+		:return: code necessary to perform action
+		:rtype: str
+		"""
+
+		return self._codeSpec
 	
 	# TODO: Add more methods once we've clearly defined what we're doing with this class.

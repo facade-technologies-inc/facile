@@ -267,7 +267,7 @@ class Action(QObject, Entity):
 		else:
 			return 'None'
 
-	def getMethodName(self):
+	def getMethodName(self) -> None:
 		"""
 		Must be overwritten in children classes; raises exception here if not.
 		"""
@@ -299,28 +299,35 @@ class Action(QObject, Entity):
 		:return: doc string describing action, inputs, and outputs
 		:rtype: str
 		"""
+		out = '\t\t"""\n'
+		noDoc = True
+
 		if self.getAnnotation():
-			out = '\t\t"""\n'
+			noDoc = False
 			out += '\t\t' + self.getAnnotation() + '\n\n'
-			if self._inputs or self._outputs:
-				for p in self._inputs:
-					out += '\t\t:param ' + p.getName() + ": " + p.getAnnotation() + '\n'
-					out += '\t\t:type ' + p.getName() + ': ' + p.getDataType().__name__ + '\n'
-				
-				# we can only have one return tag, so we just combine everything.
-				if self._outputs:
-					annotations = [p.getAnnotation() for p in self._outputs]
-					types = [p.getDataType().__name__ for p in self._outputs]
-					out += '\t\t:return: ({})\n'.format(", ".join(annotations))
-					out += '\t\t:rtype: ({})\n'.format(", ".join(types))
-				else:
-					out += '\t\t:return: None\n'
-					out += '\t\t:rtype: NoneType\n'
-					
+
+		if self._inputs or self._outputs:
+			noDoc = False
+
+			for p in self._inputs:
+				out += '\t\t:param ' + p.getName() + ': ' + p.getAnnotation() + '\n'
+				out += '\t\t:type ' + p.getName() + ': ' + p.getDataType().__name__ + '\n'
+			
+			# we can only have one return tag, so we just combine everything.
+			if self._outputs:
+				annotations = [p.getAnnotation() for p in self._outputs]
+				types = [p.getDataType().__name__ for p in self._outputs]
+				out += '\t\t:return: ({})\n'.format(", ".join(annotations))
+				out += '\t\t:rtype: ({})\n'.format(", ".join(types))
+			else:
+				out += '\t\t:return: None\n'
+				out += '\t\t:rtype: NoneType\n'
+		
+		if noDoc:
+			return '\t\t"""\n\t\tThis action has no annotations, inputs, or outputs.\n\t\t"""\n'
+		else:
 			out += '\t\t"""\n\n'
 			return out
-		else:
-			return '\t\t"""\n\t\tThis action has no annotations, inputs, or outputs.\n\t\t"""\n'
 
 	def getMethodCode(self):
 		"""
