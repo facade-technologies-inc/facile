@@ -155,8 +155,6 @@ class ActionPipelineGraphics(ActionGraphics):
 				self._wireMapping[refWire] = newWireGraphics
 
 			# update any wire graphics that are already in the mapping.
-			print("SourcePort: ", refWire.getSourcePort())
-			print("DestPort: ", refWire.getDestPort())
 			srcPortGraphics = self.getPortGraphics(refWire.getSourcePort())
 			dstPortGraphics = self.getPortGraphics(refWire.getDestPort())
 
@@ -166,11 +164,11 @@ class ActionPipelineGraphics(ActionGraphics):
 				# If current wire's srcPort belongs to this action, wire's srcActionRow = 0.
 				srcActionRow = 0
 			else:
-				srcActionGFX = self._actionMapping[refWire.getSourcePort.getAction()]
+				srcActionGFX = self._actionMapping[refWire.getSourcePort().getAction()]
 				srcActionRow = self._actionGraphics.index(srcActionGFX)
 
 			if refWire.getDestPort().getAction == self._action:
-				# If current wire's dstPort belongs to this action, wire's srcActionRow = # of actions + 1.
+				# If current wire's dstPort belongs to this action, wire's dstActionRow = # of actions + 1.
 				dstActionRow = len(self._actionGraphics) + 1
 			else:
 				dstActionGFX = self._actionMapping[refWire.getDestPort().getAction()]

@@ -136,7 +136,7 @@ class WireGraphics(QAbstractGraphicsShapeItem):
 		prevX = self._pathPoints[-1][0]
 		prevY = self._pathPoints[-1][1]
 		nextY = prevY + apg.ActionPipelineGraphics.V_SPACE / 2
-		self._pathPoints.append(prevX, nextY)
+		self._pathPoints.append((prevX, nextY))
 
 		# Does this wire move between adjacent actions?
 		# If so move down to first available lane, then cut over above the destination port.
