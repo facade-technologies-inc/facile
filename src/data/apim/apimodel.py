@@ -21,15 +21,15 @@
 This module contains the ApiModel class which is the top-level class for building the API Model.
 """
 
+import os
 from typing import List, Tuple
 
 from PySide2.QtCore import QObject, Signal
-from PySide2.QtWidgets import QDialog
 
 from data.apim.actionpipeline import ActionPipeline
 from data.apim.componentaction import ComponentAction
 from data.apim.actionwrapper import ActionWrapper
-from gui.blackboxeditordialog import BlackBoxEditorDialog
+from data.apim.actionspecification import ActionSpecification
 
 class ApiModel(QObject):
 	"""
@@ -52,7 +52,53 @@ class ApiModel(QObject):
 		"""
 		
 		self._actionPipelines = []
+		self._specifications = {}
 		
+		self.initializeSpecifications()
+		
+	def initializeSpecifications(self) -> None:
+		"""
+		Read all action specifications from the database.
+		
+		The specifications are stored in a dictionary mapping each unique target to a list of
+		ActionSpecification objects.
+		
+		:return: None
+		:rtype: NoneType
+		"""
+		specDir = os.path.abspath("../database/component_actions")
+		for file in os.listdir(specDir):
+			if file.endswith(".action"):
+				filepath = os.path.join(specDir, file)
+				aS = ActionSpecification().fromFile(filepath)
+				
+				# Map all targets to the specification for easy lookup later.
+				for target in aS.viableTargets:
+					if target in self._specifications:
+						self._specifications[target].append(aS)
+					else:
+						self._specifications[target] = [aS]
+						
+	def getSpecifications(self, target: str = "all") -> List[ActionSpecification]:
+		"""
+		Get all the action specifications for a specific target.
+		
+		If target is all, all specifications will be returned.
+		
+		:param target: The target of the specification to retrieve.
+		:type target: str
+		:return: A list of action specifications for the given target
+		:rtype:
+		"""
+		# Get all action specifications as a list
+		if target == "all":
+			specs = set()
+			for target in self._specifications:
+				specs.update(self._specifications[target])
+			return list(specs)
+		else:
+			return self._specifications.get(target, [])[:]
+			
 	def getActionPipelines(self) -> List[ActionPipeline]:
 		"""
 		Gets a list of all ActionPipelines.
