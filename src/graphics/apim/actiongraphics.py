@@ -300,8 +300,6 @@ class ActionGraphics(QGraphicsItem):
 				try:
 					portList[posIdx].setPos(posShift, y)
 					portList[negIdx].setPos(negShift, y)
-					print(portList[posIdx].scenePos())
-					print(portList[negIdx].scenePos())
 				except IndexError:
 					return
 				

@@ -70,7 +70,7 @@ class ActionPipelineGraphics(ActionGraphics):
 		self.prepareGeometryChange()
 		self.updateActionGraphics()
 
-		ActionGraphics.update(self)
+		ActionGraphics.updateGraphics(self)
 		self.updateWireGraphics()
 	
 	def updateActionGraphics(self) -> None:
@@ -260,6 +260,8 @@ class ActionPipelineGraphics(ActionGraphics):
 		self.getActionRect(self._action.getInputPorts(), self._action.getOutputPorts())
 		ActionGraphics.paint(self, painter, option, index)
 		self.placeActions()
+		
+		painter.drawRect(-20, -20, 40, 40)
 
 	def allocateWireLanes(self) -> '(dict[str: list[int]], dict[int: list[int]])':
 		wires = [wire for wire in self._action.getWireSet().getWires()]
@@ -282,7 +284,7 @@ class ActionPipelineGraphics(ActionGraphics):
 			numPipelineOutputs = len(self._action.getOutputPorts())
 			numLastSubActionOutputs = len(self._actionGraphics[-1].getAction().getOutputPorts())
 			numLastRowLanes = numPipelineOutputs + numLastSubActionOutputs
-			print(rowLanes.keys())
+			#print(rowLanes.keys())
 			rowLanes[len(rowLanes.keys())-1][0] = numLastRowLanes
 
 			# Allocate lanes between sub Actions.

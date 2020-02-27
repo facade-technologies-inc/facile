@@ -104,6 +104,10 @@ class WireGraphics(QAbstractGraphicsShapeItem):
 		path.moveTo(*self._pathPoints[0])
 		for point in self._pathPoints[1:]:
 			path.lineTo(*point)
+			
+		print("Points:")
+		for x,y in self._pathPoints:
+			print("\t", x, y)
 
 		return path
 
@@ -126,7 +130,7 @@ class WireGraphics(QAbstractGraphicsShapeItem):
 		srcPosition = srcPortGraphics.scenePos()
 		destPosition = destPortGraphics.scenePos()
 
-		print(srcRow, dstRow)
+		#print(srcRow, dstRow)
 		#To get the action pipeline graphics -> self.getParent()
 
 		# Set the source point.
@@ -152,7 +156,7 @@ class WireGraphics(QAbstractGraphicsShapeItem):
 		# Set the destination point.
 		#self._pathPoints.append((destPosition.x(), destPosition.y() - PortGraphics.TOTAL_HEIGHT/2))
 
-		self.prepareGeometryChange()
+		#self.prepareGeometryChange()
 
 
 if __name__ == "__main__":
