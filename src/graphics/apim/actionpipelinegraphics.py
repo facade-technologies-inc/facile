@@ -108,6 +108,30 @@ class ActionPipelineGraphics(ActionGraphics):
 		self._actionGraphics.clear()
 		for actionGraphics in newOrdering:
 			self._actionGraphics.append(actionGraphics)
+	
+	def getPortGraphics(self, port: 'Port') -> PortGraphics:
+		"""
+		Gets the port graphics for any port that is owned by either this action pipeline or any
+		actions inside of the this action pipeline.
+		
+		.. note:: This function returns None if the port was not found.
+		
+		:param port: The port to get the PortGraphics for.
+		:type port: Port
+		:return: The PortGraphics for the port
+		:rtype: PortGraphics
+		"""
+		pg = ActionGraphics.getPortGraphics(self, port)
+		if pg is not None:
+			return pg
+		
+		else:
+			for action in self._actionGraphics:
+				pg = action.getPortGraphics(port)
+				if pg:
+					return pg
+		
+		raise Exception("Port Graphics not found!")
 
 	def updateWireGraphics(self) -> None:
 		"""
@@ -131,30 +155,25 @@ class ActionPipelineGraphics(ActionGraphics):
 				self._wireMapping[refWire] = newWireGraphics
 
 			# update any wire graphics that are already in the mapping.
-			pm = {}  # pm: "port Mapping"
-			pm.update(self._inputPortMapping)
-			pm.update(self._outputPortMapping)
-
 			print("SourcePort: ", refWire.getSourcePort())
 			print("DestPort: ", refWire.getDestPort())
-			print("portMapping keys: ", pm.keys())
-			srcPortGraphics = pm[refWire.getSourcePort()]
-			dstPortGraphics = pm[refWire.getDestPort()]
+			srcPortGraphics = self.getPortGraphics(refWire.getSourcePort())
+			dstPortGraphics = self.getPortGraphics(refWire.getDestPort())
 
 			# Generate the current wire's graphics.
 			# Need to determine the wire's starting and ending "rows". A row falls between sub actions.
-			if refWire.getSourcePort.getAction() == self._action:
+			if refWire.getSourcePort().getAction() == self._action:
 				# If current wire's srcPort belongs to this action, wire's srcActionRow = 0.
 				srcActionRow = 0
 			else:
 				srcActionGFX = self._actionMapping[refWire.getSourcePort.getAction()]
 				srcActionRow = self._actionGraphics.index(srcActionGFX)
 
-			if refWire.getDestPort.getAction == self._action:
+			if refWire.getDestPort().getAction == self._action:
 				# If current wire's dstPort belongs to this action, wire's srcActionRow = # of actions + 1.
 				dstActionRow = len(self._actionGraphics) + 1
 			else:
-				dstActionGFX = self._actionMapping[refWire.getDestPort.getAction()]
+				dstActionGFX = self._actionMapping[refWire.getDestPort().getAction()]
 				dstActionRow = self._actionGraphics.index(dstActionGFX)
 			self._wireMapping[refWire].updateGraphics(srcPortGraphics, dstPortGraphics, srcActionRow, dstActionRow,
 													  columnAssignmentLedger, rowAssignmentLedger)

@@ -100,6 +100,23 @@ class ActionGraphics(QGraphicsItem):
 		:rtype: Action
 		"""
 		return self._action
+	
+	def getPortGraphics(self, port: Port) -> PortGraphics:
+		"""
+		Gets the port graphics for any port that is owned by this action.
+		
+		.. note:: This function returns None if the port was not found.
+
+		:param port: The port to get the PortGraphics for.
+		:type port: Port
+		:return: The PortGraphics for the port
+		:rtype: PortGraphics
+		"""
+		pm = {}  # pm: "port Mapping"
+		pm.update(self._inputPortMapping)
+		pm.update(self._outputPortMapping)
+		
+		return pm.get(port, None)
 
 	def updatePortGraphics(self) -> None:
 		"""
