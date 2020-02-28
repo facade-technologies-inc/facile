@@ -17,27 +17,14 @@
 	| Technologies Inc.                                                            |
 	|                                                                              |
 	\------------------------------------------------------------------------------/
+	
+This file contains the MatchOption class which is used to specify which matching schemes will be
+used to find a component.
 """
 
-import pywinauto
-from typing import Set
-from tguiil.matchoption import MatchOption
-from tguiil.componentfinder import ComponentFinder
-from data.tguim.targetguimodel import TargetGuiModel as tgm
+from enum import Enum
 
-class BaseApplication():
-    def __init__(self, exeLoc: str, options: Set[MatchOption], backend: str = 'uia'):
-        self.app = pywinauto.Application(backend)
-        self._options = options
-        self._exeLoc= exeLoc
-
-    def start(self):
-        self.app = self.app.start(self._exeLoc)
-
-    def stop(self):
-        self.app.kill()
-
-    def findComponent(self, compID: int):
-        cf = ComponentFinder(self.app, self._options)
-        comp = tgm.getComponent(compID)
-        return cf.find(comp.getSuperToken())
+class MatchOption(Enum):
+	ExactToken = 1
+	CloseToken = 2
+	PWABestMatch = 3

@@ -22,30 +22,40 @@ This file contains the Compiler class - the part of Facile that interprets a use
 work in the gui, converting it into the desired API.
 """
 
-import io
 from data.statemachine import StateMachine as sm
 from data.compilationprofile import CompilationProfile
+from shutil import copyfile
 
 class Compiler():
 
-    def __init__(self, compProf: 'CompilationProfile' = None, name: str = 'MyCustom', backend: str = 'uia'):
+    def __init__(self, compProf: 'CompilationProfile' = None, name: str = 'MyCustom', backend: str = 'uia') -> None:
         """
         Initializes the compiler with required information.
+
+        :return: None
         """
 
-        #TODO: Default location to desirable place? or do it when the user is entering it in the gui?
-        #TODO: change var names based on whats actually in compilation profile
         self._compProf = compProf
         self._name = name
-        self._saveFolder = compProf.apiFolderDir + "/" + self._name + "API" + "/"
+        self._saveFolder = compProf.apiFolderDir + "/" + self._name + "API/"
         self._backend = backend
         self._exeLoc = compProf.interpExeDir
+        self._opts = compProf.compResOpts
         self._apim = sm._project.getAPIModel()
-        self._necessaryFiles = ["../../tguiil/componentfinder.py", "../../tguiil/application.py", "../../tguiil/tokens.py", "../../tguiil/supertokens.py", "../../tguiil/matchoption.py"]
 
-    def createCustomApp(self) -> None:
+        # List was reduced in size by making custom, "stripped" versions of files that only
+        #  have the required functions & dependencies. That way no need to import graphics files and all that.
+        self._necessaryFiles = ["./baseFiles/tguiil/componentfinder.py", "./baseFiles/tguiil/application.py",
+                                "./baseFiles/tguiil/tokens.py", "./baseFiles/tguiil/supertokens.py",
+                                "./baseFiles/tguiil/matchoption.py", "./baseFiles/data/entity.py",
+                                "./baseFiles/data/tguim/component.py", "./baseFiles/data/tguim/visibilitybehavior.py",
+                                "./baseFiles/data/properties.py", "./baseFiles/data/tguim/condition.py"]
+
+    def generateCustomApp(self) -> None:
         """
-        Creates the custom application class.
+        Creates the custom application class/file.
+
+        :return: None
         """
 
         with open(self._saveFolder +"application.py", "w+") as f:
@@ -55,7 +65,7 @@ class Compiler():
 
                 class Application(BaseApplication):
                     def __init__(self):
-                        BaseApplication.__init__(self, "''' + self._backend + '", "' + self._exeLoc + '''")
+                        BaseApplication.__init__(self, "''' + self._exeLoc + '", "' + self._opts + '", "' + self._backend + '''")
             ''')
 
             aps, cas = self._apim.getActionsByType()
@@ -66,16 +76,24 @@ class Compiler():
             for ap in aps:
                 f.write(ap.getMethod())
 
-    def addNecessaryFiles(self):
+    def copyNecessaryFiles(self) -> None:
         """
         Adds all necessary files for compiler to work into created directory
+
+        :return: None
         """
 
-        #TODO: Fill out
-        pass
+        for path in self._necessaryFiles:
+            # Make sure to copy necessary files into baseFiles dir, and remove unnecessary fns and dependencies.
+            copyfile(path, self._saveFolder + path[12:])
 
+    def compileAPI(self) -> None:
+        """
+        Generates the functional API: the final result of compilation.
 
+        :return: None
+        """
 
-        
-
-
+        self.copyNecessaryFiles()
+        copyfile('./baseApplication.py', self._saveFolder)
+        self.generateCustomApp()
