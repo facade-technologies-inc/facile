@@ -24,7 +24,7 @@ This module contains the ActionWrapper class.
 from typing import List, Dict
 
 from data.apim.action import Action
-from data.apim.actionpipeline import ActionPipeline
+import data.apim.actionpipeline as ap
 from data.apim.componentaction import ComponentAction
 
 
@@ -40,7 +40,7 @@ class ActionWrapper(Action):
 	The ActionWrapper can be thought of as a black-box for any other action.
 	"""
 	
-	def __init__(self, actionRef: 'Action', parent: 'ActionPipeline') -> 'ActionWrapper':
+	def __init__(self, actionRef: 'Action', parent: 'ap.ActionPipeline') -> 'ActionWrapper':
 		"""
 		Constructs a WrapperAction that stores a reference to an action.
 		
@@ -88,7 +88,7 @@ class ActionWrapper(Action):
 		"""
 		self._actionRef = None
 	
-	def getParent(self) -> 'ActionPipeline':
+	def getParent(self) -> 'ap.ActionPipeline':
 		"""
 		Get the parent ActionPipeline to this action wrapper.
 		
@@ -99,7 +99,7 @@ class ActionWrapper(Action):
 	
 	def forgetParent(self) -> None:
 		"""
-		Sets teh action reference to None
+		Sets the action reference to None
 		
 		:return: None
 		:rtype: NoneType
@@ -176,7 +176,7 @@ class ActionWrapper(Action):
 		:rtype: str
 		"""
 
-		if isinstance(self._actionRef, ActionPipeline):
+		if isinstance(self._actionRef, ap.ActionPipeline):
 			return self._actionRef.getMethodName()
 		elif isinstance(self._actionRef, ComponentAction):
 			if self._actionRef.getTargetComponent() is None:
