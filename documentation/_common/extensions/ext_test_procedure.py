@@ -360,8 +360,14 @@ def setup(app):
 		atp_file.write(atp_header)
 		
 		for proc in test_procedures:
+			
 			title = proc['title']
 			intro = proc['intro']
+			print(title)
+			count = 0
+			for step, result in proc['steps']:
+				count += 1
+				print('\t', str(count) + ". " + step)
 			refer = "\n".join(["- {}".format(r) for r in proc['refer']])
 			equip = "\n".join(["- {}".format(e) for e in proc['equip']])
 			summa = proc['summa']
