@@ -37,7 +37,7 @@ class WireSet:
         """
         self._wires: list = []
 
-    def addWire(self, sourcePort: 'Port', destPort: 'Port') -> None:
+    def addWire(self, sourcePort: 'Port', destPort: 'Port') -> 'Wire or None':
         """
         Creates a new wire and adds it to the set of wires (WireSet).
 
@@ -51,8 +51,9 @@ class WireSet:
         :type sourcePort: Port
         :param destPort: The Port to be connected to the output of the wire.
         :type destPort: Port
-        :return: None
-        :rtype: NoneType
+        :return: A reference to the wire newly created wire. Return None if there is already a wire existing between
+        the two given ports.
+        :rtype: Wire or NoneType
         """
         # Check to see if the new wire is redundant with a wire that already exists in the WireSet.
         newWireAlreadyInSet = False
@@ -71,6 +72,9 @@ class WireSet:
             sourcePort.addOutputWire(newWire)  # Connect the wire to its source Port.
             destPort.setInputWire(newWire)  # Connect the wire to its destination Port.
             self._wires.append(newWire)  # Add the Wire to the WireSet.
+            return newWire
+        else:
+            return None
 
     def deleteWire(self, sourcePort: 'Port', destPort: 'Port') -> None:
         """

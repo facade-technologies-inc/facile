@@ -242,7 +242,7 @@ class Port(Entity):
         Entity.setName(self, name)
         if self._action is not None:
             self._action.synchronizeWrappers()
-        
+
     def isOptional(self) -> bool:
         """
         Returns True if the Port doesn't necessarily have to be connected, False if it MUST be connected.
@@ -308,4 +308,3 @@ class Port(Entity):
         self._dataType = port.getDataType()
         self._default = port._default
         self.setName(port.getName())
-        
