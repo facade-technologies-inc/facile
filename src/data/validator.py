@@ -57,7 +57,8 @@ class Validator(QThread):
 			algo()
 			
 		self.updateProgress.emit(100)
-			
+	
+	# Validate if there is at least one action pipeline
 	def algorithm_at_least_one_actionpipeline(self):
 		tempAPIModel = sm.StateMachine.instance._project.getAPIModel()
 		if len(tempAPIModel.getActionPipelines()) == 0:
@@ -153,29 +154,3 @@ class Validator(QThread):
 		:rtype: NoneType
 		"""
 		self._running = False
-
-
-
-# def algorithm_01_test_INFO(self):
-# 	for i in range(100):
-# 		if not self._running:
-# 			return
-# 		now = datetime.now()
-# 		message = ValidatorMessage("INFO: test Message" + str(now), ValidatorMessage.Level.Info)
-# 		self.sentMessage.emit(message)
-#
-# def algorithm_02_test_WARNING(self):
-# 	for i in range(100):
-# 		if not self._running:
-# 			return
-# 		now = datetime.now()
-# 		message = ValidatorMessage("WARNING: test Message" + str(now), ValidatorMessage.Level.Warning)
-# 		self.sentMessage.emit(message)
-#
-# def algorithm_03_test_ERROR(self):
-# 	for i in range(100):
-# 		if not self._running:
-# 			return
-# 		now = datetime.now()
-# 		message = ValidatorMessage("ERROR: test Message" + str(now), ValidatorMessage.Level.Error)
-# 		self.sentMessage.emit(message)
