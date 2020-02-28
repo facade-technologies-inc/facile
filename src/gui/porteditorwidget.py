@@ -48,7 +48,7 @@ class PortEditorWidget(QWidget):
 		else:
 			self._port = Port()
 		self.updateEditor()
-		
+
 		if allowOptional:
 			self.ui.optionalButton.clicked.connect(self.onOptionalButtonClicked)
 		

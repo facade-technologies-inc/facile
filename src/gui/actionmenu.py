@@ -83,12 +83,12 @@ class ActionMenu(QWidget):
 		:return: None
 		:rtype: Nonetype
 		"""
-		sm.StateMachine.instance._project.getAPIModel().addActionPipeline(action)
+		if isinstance(action, ActionPipeline):
+			sm.StateMachine.instance._project.getAPIModel().addActionPipeline(action)
 		menuItem = ActionMenuItem(action)
 		self.ui._itemLayout.addWidget(menuItem)
 		self.actionSelected.emit(action)
-		
-	
+
 	def setLabelText(self, text: str) -> None:
 		"""
 		Setting the label for the menu's description.

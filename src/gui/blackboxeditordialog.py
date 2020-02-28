@@ -155,7 +155,7 @@ class BlackBoxEditorDialog(QDialog):
 			if port.getName() in inputNames:
 				errors.append("Duplicate name '{}' in input ports is not allowed".format(port.getName()))
 			inputNames.add(port.getName())
-		
+
 		# Make sure all outputs have unique names.
 		outputNames = set()
 		for port in outputPorts:
@@ -236,12 +236,17 @@ class BlackBoxEditorDialog(QDialog):
 			newPorts.append(port)
 			if port.getAction() is None:
 				self._action.addInputPort(port)
-		
+				
 		# remove old input ports from the action.
 		for port in self._action.getInputPorts():
 			if port not in newPorts:
 				self._action.removePort(port)
-		
+
+		# remove old input ports from the action.
+		for port in self._action.getInputPorts():
+			if port not in newPorts:
+				self._action.removePort(port)
+
 		# add new output ports to the action.
 		ol = self.ui.outputLayout
 		newPorts = []
@@ -252,7 +257,7 @@ class BlackBoxEditorDialog(QDialog):
 			newPorts.append(port)
 			if port.getAction() is None:
 				self._action.addOutputPort(port)
-		
+
 		# remove old output ports from the action.
 		for port in self._action.getOutputPorts():
 			if port not in newPorts:
