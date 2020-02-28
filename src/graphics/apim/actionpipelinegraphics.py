@@ -216,14 +216,34 @@ class ActionPipelineGraphics(ActionGraphics):
 		self.getActionRect(self._action.getInputPorts(), self._action.getOutputPorts())
 		ActionGraphics.paint(self, painter, option, index)
 		self.placeActions()
+		
+	def getPortGraphicsAtPos(self, x, y):
+		rect = QRectF(x - 1, y - 1, 2, 2)
+		items = self.scene().items(rect)
+		
+		# get the port graphics under the mouse if it exists.
+		for item in items:
+			if type(item) == PortGraphics:
+				return item
+		return None
 	
 	def mousePressEvent(self, event):
-		print("pressed")
 		
-		item = self.scene().itemAt(event.scenePos(), QTransform())
-		if type(item) == PortGraphics:
-			self.stagingConnection = self
-			self.connectionIndicator.show()
+		# get the port under the mouse
+		pg = self.getPortGraphicsAtPos(event.scenePos().x(), event.scenePos().y())
+		if not pg:
+			return
+		
+		# connect from tip of port to cursor
+		x = pg.scenePos().x()
+		y = pg.scenePos().y() + PortGraphics.TOTAL_HEIGHT/2
+		self.connectionIndicator.setSrc(QPointF(x, y))
+		self.connectionIndicator.setDest(QPointF(event.scenePos().x(), event.scenePos().y()))
+		
+		# stage the port to be the source for potential connections
+		self.stagingConnection = pg
+		self.connectionIndicator.show()
+			
 		event.accept()
 	
 	def mouseMoveEvent(self, event):
@@ -232,21 +252,30 @@ class ActionPipelineGraphics(ActionGraphics):
 			return
 		
 		print("moved")
-		pg = self.stagingConnection
-		srcP = QPointF(pg.x(), pg.y() + PortGraphics.TOTAL_HEIGHT / 2)
-		destP = event.scenePos()
+		item = self.scene().itemAt(event.scenePos(), QTransform())
+		if type(item) == PortGraphics and item is not self.stagingConnection:
+			x = item.scenePos().x()
+			y = item.scenePos().y() - PortGraphics.TOTAL_HEIGHT / 2
+			destP = QPointF(x, y)
+		else:
+			destP = event.scenePos()
 		
-		self.connectionIndicator.setSrc(srcP)
 		self.connectionIndicator.setDest(destP)
 		self.connectionIndicator.prepareGeometryChange()
 		event.accept()
 	
-	def mouseReleasedEvent(self, event):
+	def mouseReleaseEvent(self, event):
 		print("released")
 		
-		item = self.scene().itemAt(event.scenePos(), QTransform)
-		if type(item) == PortGraphics:
-			self._action.connect(self.stagingConnection._port, item._port)
+		# get the port under the mouse
+		pg = self.getPortGraphicsAtPos(event.scenePos().x(), event.scenePos().y())
+		if not pg:
+			return
+		
+		print("ON DST PORT")
+		if self.stagingConnection:
+			self._action.connect(self.stagingConnection._port, pg._port)
+			print("connected")
 			
 		self.stagingConnection = None
 		self.connectionIndicator.hide()
