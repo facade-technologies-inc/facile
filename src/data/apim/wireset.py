@@ -22,7 +22,7 @@ This module contains the WireSet class.
 """
 from typing import List
 
-from data.apim.port import Port, PortException
+import data.apim.port as pt
 from data.apim.wire import Wire
 
 
@@ -37,7 +37,7 @@ class WireSet:
         """
         self._wires: list = []
 
-    def addWire(self, sourcePort: 'Port', destPort: 'Port') -> None:
+    def addWire(self, sourcePort: 'pt.Port', destPort: 'pt.Port') -> 'Wire or None':
         """
         Creates a new wire and adds it to the set of wires (WireSet).
 
@@ -51,8 +51,9 @@ class WireSet:
         :type sourcePort: Port
         :param destPort: The Port to be connected to the output of the wire.
         :type destPort: Port
-        :return: None
-        :rtype: NoneType
+        :return: A reference to the wire newly created wire. Return None if there is already a wire existing between
+        the two given ports.
+        :rtype: Wire or NoneType
         """
         # Check to see if the new wire is redundant with a wire that already exists in the WireSet.
         newWireAlreadyInSet = False
@@ -63,7 +64,7 @@ class WireSet:
 
         if not newWireAlreadyInSet:
             if destPort.getInputWire() is not None:
-                raise PortException("The destination port already has an input!")
+                raise pt.PortException("The destination port already has an input!")
 
         # Only add wires that are unique (not redundant).
         if not newWireAlreadyInSet:
@@ -71,8 +72,11 @@ class WireSet:
             sourcePort.addOutputWire(newWire)  # Connect the wire to its source Port.
             destPort.setInputWire(newWire)  # Connect the wire to its destination Port.
             self._wires.append(newWire)  # Add the Wire to the WireSet.
+            return newWire
+        else:
+            return None
 
-    def deleteWire(self, sourcePort: 'Port', destPort: 'Port') -> None:
+    def deleteWire(self, sourcePort: 'pt.Port', destPort: 'pt.Port') -> None:
         """
         Deletes a wire with the given ports from the set. If there is no wire with the specified ports,
         nothing happens.
@@ -111,7 +115,7 @@ class WireSet:
         if wire:
             self.deleteWire(wire.getSourcePort(), wire.getDestPort())
 
-    def containsWire(self, sourcePort: 'Port', destPort: 'Port') -> 'bool':
+    def containsWire(self, sourcePort: 'pt.Port', destPort: 'pt.Port') -> 'bool':
         """
         Checks if a Wire with the given Ports exists in the WireSet.
 
@@ -138,7 +142,7 @@ class WireSet:
         """
         return self._wires[:]
 
-    def getWiresWithSrcPort(self, sourcePort: 'Port') -> list:
+    def getWiresWithSrcPort(self, sourcePort: 'pt.Port') -> list:
         """
         Gets a list of the Wires that have the given source Port.
 
@@ -149,7 +153,7 @@ class WireSet:
         """
         return sourcePort.getOutputWires()
 
-    def getWireWithDestPort(self, destPort: 'Port') -> 'Wire':
+    def getWireWithDestPort(self, destPort: 'pt.Port') -> 'Wire':
         """
         Gets the Wire connected
 

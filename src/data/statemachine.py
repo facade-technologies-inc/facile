@@ -338,10 +338,10 @@ class StateMachine:
 			import data.project as proj
 			recentProjects = proj.Project.getRecents(limit=10)
 		except json.JSONDecodeError as e:
-			ui.menuRecent_Projects.addAction("Error loading recent projects.")
+			ui.menuRecent_Projects_2.addAction("Error loading recent projects.")
 		else:
 			if len(recentProjects) == 0:
-				ui.menuRecent_Projects.addAction("No recent projects.")
+				ui.menuRecent_Projects_2.addAction("No recent projects.")
 			else:
 				for proj in recentProjects[:10]:
 					action = ui.menuRecent_Projects_2.addAction(proj)

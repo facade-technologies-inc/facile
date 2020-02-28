@@ -52,15 +52,13 @@ class ActionWrapperGraphics(ActionGraphics):
 		:rtype: ActionGraphics
 		"""
 		ActionGraphics.__init__(self, action, parent)
-		
 		self.setAcceptHoverEvents(True)
-		
 		self.color = ActionWrapperGraphics.COLOR
 		
 		def delete():
 			action.getParent().removeAction(action)
 			sm.StateMachine.instance.view.ui.apiModelView.refresh()
-			
+
 		self.menu = ActionWrapperMenu()
 		self.menu.onDelete(delete)
 		
@@ -90,7 +88,7 @@ class ActionWrapperGraphics(ActionGraphics):
 		vOffset = MoveButton.HEIGHT + 20
 		self.upButton.setPos(self._width/2 - hOffset, -self._height/2 + vOffset)
 		self.downButton.setPos(self._width/2 - hOffset, self._height/2 - vOffset)
-	
+
 	def paint(self, painter: QPainter, option: QStyleOptionGraphicsItem, index: QWidget) -> None:
 		"""
 		Paint the graphics of the action wrapper including action name, number, and ports.
@@ -193,6 +191,15 @@ class ActionWrapperGraphics(ActionGraphics):
 		:rtype: NoneType
 		"""
 		self.updateMoveButtonVisibility()
+		
+	def mousePressEvent(self, event):
+		"""
+		Let mouse press events pass through to the action pipeline for making wires.
+		
+		:param event: The event carrying the location of the mouse press.
+		:return: QGraphicsSceneMouseEvent
+		"""
+		event.ignore()
 		
 	def promote(self) -> None:
 		"""

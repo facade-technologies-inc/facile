@@ -79,19 +79,49 @@ class ActionGraphics(QGraphicsItem):
 		
 		self._interactivePorts = True
 		ActionGraphics.updateGraphics(self)
+
+		self._width = 0
+		self._height = 0
+
 		
 	@Slot()
 	def updateGraphics(self) -> None:
 		"""
 		Updates all graphics and sub-graphics for this action.
-		
+
 		:return: None
 		:rtype: NoneType
 		"""
 		self.prepareGeometryChange()
 		self.updatePortGraphics()
 		return QGraphicsItem.update(self)
+
+	def getAction(self):
+		"""
+		Returns the ActionGraphics' Action. Used by WireGraphics to get a reference to the ActionPipeline to add a wire.
+
+		:return: The Action associated with the ActionGraphics.
+		:rtype: Action
+		"""
+		return self._action
+	
+	def getPortGraphics(self, port: Port) -> PortGraphics:
+		"""
+		Gets the port graphics for any port that is owned by this action.
 		
+		.. note:: This function returns None if the port was not found.
+
+		:param port: The port to get the PortGraphics for.
+		:type port: Port
+		:return: The PortGraphics for the port
+		:rtype: PortGraphics
+		"""
+		pm = {}  # pm: "port Mapping"
+		pm.update(self._inputPortMapping)
+		pm.update(self._outputPortMapping)
+		
+		return pm.get(port, None)
+
 	def updatePortGraphics(self) -> None:
 		"""
 		Creates the port graphics for the action.
@@ -148,6 +178,8 @@ class ActionGraphics(QGraphicsItem):
 		
 		synchronizePortList(self._inputPortGraphics, self._action.getInputPorts(), self._inputPortMapping)
 		synchronizePortList(self._outputPortGraphics, self._action.getOutputPorts(), self._outputPortMapping)
+		self.getActionRect(self._action.getInputPorts(), self._action.getOutputPorts())
+		self.placePorts()
 	
 	def boundingRect(self) -> QRectF:
 		"""
@@ -232,7 +264,7 @@ class ActionGraphics(QGraphicsItem):
 		:return: None
 		:rtype: NoneType
 		"""
-		
+
 		self.placePorts()
 		painter.setBrush(self.color)
 		x, y, width, height = self.getActionRect(self._action.getInputPorts(), self._action.getOutputPorts())
@@ -277,7 +309,14 @@ class ActionGraphics(QGraphicsItem):
 				
 		spread(-self._height / 2, self._inputPortGraphics)
 		spread(self._height / 2, self._outputPortGraphics)
-		
+
+	def getHeight(self):
+		self.updateActionRect()
+		return self._height
+
+	def getWidth(self):
+		self.updateActionRect()
+		return self._width
 		
 if __name__ == "__main__":
 	app = QApplication()
