@@ -43,11 +43,22 @@ class BaseApplication():
         cf = ComponentFinder(self.app, self._options)
 
         try:
-			with open('./' + self._name + '.tguim', 'r') as tguimFile:
-				d = json.loads(tguimFile.read())
-				tgm = TargetGuiModel.fromDict(d)
+            with open('./' + self._name + '.tguim', 'r') as tguimFile:
+                d = json.loads(tguimFile.read())
+                tgm = TargetGuiModel.fromDict(d)
         except:
-            print("Couldn't load from {}".format('./' + self._name + '.tguim')
-			
-        comp = tgm.getComponent(compID)
-        return cf.find(comp.getSuperToken())
+            print("Couldn't load from {}".format('./' + self._name + '.tguim'))
+            return
+        else:
+            comp = tgm.getComponent(compID)
+            self.forceShow(comp)
+            return cf.find(comp.getSuperToken())
+
+    def forceShow(self, comp: 'Component'):
+        """
+        Attempts to force show the component using visibility behaviors.
+
+        :return: None
+        """
+
+        pass
