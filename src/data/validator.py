@@ -68,9 +68,9 @@ class Validator(QThread):
 	# Validate if all of the input ports for all the ACTIONS inside action pipelines have incoming wires.
 	def algorithm_all_actions_inports_has_wiresin(self):
 		tempAPIPipes = sm.StateMachine.instance._project.getAPIModel().getActionPipelines()
-		for i in tempAPIPipes[:]:
-			if not isinstance(i, ActionPipeline):
-				tempAPIPipes.remove(i)
+		# for i in tempAPIPipes[:]:
+		# 	if not isinstance(i, ActionPipeline):
+		# 		tempAPIPipes.remove(i)
 
 		for pipes in tempAPIPipes:
 			for action in pipes.getActions():
@@ -82,11 +82,8 @@ class Validator(QThread):
 						self.sentMessage.emit(message)
 	
 	# Validate if all of the input ports for all the ACTION PIPELINES have incoming wires.
-	def algorithm_apipip_inport_has_wiresin(self):
+	def algorithm_all_actionpips_inport_has_wiresin(self):
 		tempAPIPipes = sm.StateMachine.instance._project.getAPIModel().getActionPipelines()
-		for i in tempAPIPipes[:]:
-			if not isinstance(i, ActionPipeline):
-				tempAPIPipes.remove(i)
 
 		for pipes in tempAPIPipes:
 			for port in pipes.getInputPorts():
@@ -97,11 +94,8 @@ class Validator(QThread):
 					self.sentMessage.emit(message)
 
 	# Validate if all of the output ports for all the ACTION PIPELINES have incoming wires.
-	def algorithm_apipip_outport_has_wiresin(self):
+	def algorithm_all_actionpips_outport_has_wiresin(self):
 		tempAPIPipes = sm.StateMachine.instance._project.getAPIModel().getActionPipelines()
-		for i in tempAPIPipes[:]:
-			if not isinstance(i, ActionPipeline):
-				tempAPIPipes.remove(i)
 		
 		for pipes in tempAPIPipes:
 			for port in pipes.getOutputPorts():
@@ -114,11 +108,8 @@ class Validator(QThread):
 	# Validate if there are two or more actions having the same name.
 	def algorithm_no_duplicated_action_name(self):
 		tempAPIPipes = sm.StateMachine.instance._project.getAPIModel().getActionPipelines()
-		for i in tempAPIPipes[:]:
-			if not isinstance(i, ActionPipeline):
-				tempAPIPipes.remove(i)
-		
-		allActionNames = {}
+
+		allActionNames = set()
 		for pipes in tempAPIPipes:
 			for action in pipes.getActions():
 				if action.getName() in allActionNames:
@@ -129,6 +120,28 @@ class Validator(QThread):
 				else:
 					allActionNames.add(action.getName())
 	
+	# Validate if all input ports for all ACTION PIPELINES having outgoing wires
+	def algorithm_all_actionpips_inport_wiresout(self):
+		tempAPIPipes = sm.StateMachine.instance._project.getAPIModel().getActionPipelines()
+
+		for pipes in tempAPIPipes:
+			for port in pipes.getInputPorts():
+				if len(port.getOutputWires()) == 0:
+					message = ValidatorMessage("WARNING: There is no output wire for the input port " + port.getName() +
+					                           " at action pipeline " + pipes.getName(),
+					                           ValidatorMessage.Level.Warning)
+					self.sentMessage.emit(message)
+	
+	# Validate if all action names are valid python identifiers
+	def algorithm_action_names_are_python_identifiers(self):
+		tempAPIPipes = sm.StateMachine.instance._project.getAPIModel().getActionPipelines()
+
+		for pipes in tempAPIPipes:
+			for action in pipes.getActions():
+				if not action.getName().isidentifier():
+					message = ValidatorMessage("WARNING: The action name " + action.getName() + " is not python valid identifier",
+					                           ValidatorMessage.Level.Warning)
+					self.sentMessage.emit(message)
 	
 
 	@Slot()
