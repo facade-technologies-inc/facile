@@ -29,6 +29,7 @@ from PySide2.QtCore import QObject, Signal
 from data.apim.actionpipeline import ActionPipeline
 from data.apim.componentaction import ComponentAction
 from data.apim.actionwrapper import ActionWrapper
+from gui.blackboxeditordialog import BlackBoxEditorDialog
 from data.apim.actionspecification import ActionSpecification
 
 class ApiModel(QObject):
@@ -82,7 +83,6 @@ class ApiModel(QObject):
 	def getSpecifications(self, target: str = "all") -> List[ActionSpecification]:
 		"""
 		Get all the action specifications for a specific target.
-		
 		If target is all, all specifications will be returned.
 		
 		:param target: The target of the specification to retrieve.

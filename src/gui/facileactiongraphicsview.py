@@ -27,7 +27,7 @@ from PySide2.QtWidgets import QGraphicsScene, QGraphicsTextItem, QGraphicsRectIt
 
 import data.statemachine as sm
 from gui.facilegraphicsview import FacileGraphicsView
-from graphics.apim.actionpipelinegraphics import ActionPipelineGraphics
+import graphics.apim.actionpipelinegraphics as apg
 from graphics.apim.portgraphics import PortGraphics
 
 
@@ -42,7 +42,7 @@ class FacileActionGraphicsView(FacileGraphicsView):
 		newScene = QGraphicsScene()
 		
 		# Add the action pipeline graphics
-		ap = ActionPipelineGraphics(action)
+		ap = apg.ActionPipelineGraphics(action)
 		br = ap.boundingRect()
 		newScene.addItem(ap)
 		
@@ -52,7 +52,7 @@ class FacileActionGraphicsView(FacileGraphicsView):
 		newScene.addItem(nameItem)
 		
 		self.setScene(newScene)
-	
+
 	def refresh(self) -> None:
 		"""
 		Clears the scene and re-creates it.
