@@ -3,12 +3,12 @@ import sys
 import os
 
 # These lines allow us to import things as if we were running facile.py
-sys.path.insert(0, os.path.abspath("./src/"))
-sys.path.insert(0, os.path.abspath("./src/gui/rc/"))
+sys.path.insert(0, os.path.abspath("../../../src/"))
+# sys.path.insert(0, os.path.abspath("./src/gui/rc/"))
 
 import unittest
 from data.apim.actionpipeline import ActionPipeline
-from data.apim.port import Port
+import data.apim.port as pt
 
 class TestCompiler(unittest.TestCase):
 	
@@ -21,19 +21,19 @@ class TestCompiler(unittest.TestCase):
 		ap.setName("myAction")
 		
 		# set the input ports
-		p1 = Port()
+		p1 = pt.Port()
 		p1.setDataType(int)
 		p1.setName("input1")
 		p1.setOptional(False)
 		ap.addInputPort(p1)
-		p2 = Port()
+		p2 = pt.Port()
 		p2.setDataType(bool)
 		p2.setName("input2")
 		p2.setOptional(False)
 		ap.addInputPort(p2)
 		
 		# set the output ports
-		p3 = Port()
+		p3 = pt.Port()
 		p3.setDataType(str)
 		p3.setName("output1")
 		ap.addOutputPort(p3)
@@ -50,19 +50,19 @@ class TestCompiler(unittest.TestCase):
 		ap.setName("myAction")
 		
 		# set the input ports
-		p1 = Port()
+		p1 = pt.Port()
 		p1.setDataType(int)
 		p1.setName("input1")
 		p1.setOptional(False)
 		ap.addInputPort(p1)
-		p2 = Port()
+		p2 = pt.Port()
 		p2.setDataType(bool)
 		p2.setName("input2")
 		p2.setOptional(False)
 		ap.addInputPort(p2)
 		
 		# set the output ports
-		p3 = Port()
+		p3 = pt.Port()
 		p3.setDataType(str)
 		p3.setName("output1")
 		ap.addOutputPort(p3)
@@ -119,7 +119,7 @@ class TestCompiler(unittest.TestCase):
 		"""'''
 		self.assertTrue(ap.getDocStr().strip() == doc)
 		
-		p4 = Port()
+		p4 = pt.Port()
 		p4.setName("numLoginAttempts")
 		p4.setDataType(int)
 		p4.setAnnotation("The number of login attempts it took to succeed (-1 if no success).")
