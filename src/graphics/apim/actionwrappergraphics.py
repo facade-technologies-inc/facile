@@ -192,6 +192,15 @@ class ActionWrapperGraphics(ActionGraphics):
 		"""
 		self.updateMoveButtonVisibility()
 		
+	def mousePressEvent(self, event):
+		"""
+		Let mouse press events pass through to the action pipeline for making wires.
+		
+		:param event: The event carrying the location of the mouse press.
+		:return: QGraphicsSceneMouseEvent
+		"""
+		event.ignore()
+		
 	def promote(self) -> None:
 		"""
 		Move the action up (sooner) in the sequence of execution.

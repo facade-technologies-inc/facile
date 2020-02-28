@@ -19,14 +19,17 @@
 	\------------------------------------------------------------------------------/
 """
 
+from typing import Tuple, Dict, List
+
 from PySide2.QtWidgets import QGraphicsItem, QWidget, QStyleOptionGraphicsItem
-from PySide2.QtGui import QPainter, QColor
-from PySide2.QtCore import QRectF, Slot
+from PySide2.QtGui import QPainter, QColor, QTransform
+from PySide2.QtCore import QRectF, Slot, QPointF
 
 from graphics.apim.actiongraphics import ActionGraphics
 from graphics.apim.actionwrappergraphics import ActionWrapperGraphics
 from graphics.apim.wiregraphics import WireGraphics
 from graphics.apim.portgraphics import PortGraphics
+from graphics.apim.connectionindicator import ConnectionIndicator
 
 
 class ActionPipelineGraphics(ActionGraphics):
@@ -53,6 +56,11 @@ class ActionPipelineGraphics(ActionGraphics):
 		
 		self._actionMapping = {}
 		self._wireMapping = {}
+		
+		# item used to draw lines between ports being connected.
+		self.connectionIndicator = ConnectionIndicator(self)
+		self.connectionIndicator.hide()
+		self.stagingConnection = None
 		
 		ActionPipelineGraphics.updateGraphics(self)
 	
@@ -284,8 +292,128 @@ class ActionPipelineGraphics(ActionGraphics):
 		self.getActionRect(self._action.getInputPorts(), self._action.getOutputPorts())
 		ActionGraphics.paint(self, painter, option, index)
 		self.placeActions()
+		
+	def getPortGraphicsAtPos(self, x: float, y: float) -> None:
+		"""
+		If there is a port at the position x, y, return it. The port does not have to be the
+		item with the greatest Z value. This is different from the scene.itemAt function which only
+		gets the top item.
+		
+		:param x: the scene x coordinate.
+		:type x: float
+		:param y: the scene y coordinate.
+		:type y: float
+		:return: the port graphics item at position (x, y)
+		:rtype: PortGraphics
+		"""
+		rect = QRectF(x - 1, y - 1, 2, 2)
+		items = self.scene().items(rect)
+		
+		# get the port graphics under the mouse if it exists.
+		for item in items:
+			if type(item) == PortGraphics:
+				return item
+		return None
+	
+	def mousePressEvent(self, event):
+		"""
+		When the mouse button is pressed, keep the starting point to use as the source of the wire.
+		
+		:param event: The event that carries the location of the mouse press
+		:type event: QGraphicsSceneMouseEvent
+		:return: None
+		:rtype: NoneType
+		"""
+		# get the port under the mouse
+		pg = self.getPortGraphicsAtPos(event.scenePos().x(), event.scenePos().y())
+		if not pg:
+			return
+		
+		if not pg.getPort().isValidSource():
+			return
+		
+		# connect from tip of port to cursor
+		x = pg.scenePos().x()
+		y = pg.scenePos().y() + PortGraphics.TOTAL_HEIGHT/2
+		self.connectionIndicator.setSrc(QPointF(x, y))
+		self.connectionIndicator.setDest(QPointF(event.scenePos().x(), event.scenePos().y()))
+		
+		# stage the port to be the source for potential connections
+		self.stagingConnection = pg
+		self.connectionIndicator.setColor(ConnectionIndicator.BAD_COLOR)
+		self.connectionIndicator.show()
+			
+		event.accept()
+	
+	def mouseMoveEvent(self, event):
+		"""
+		When the mouse is moved, update the destination and color of the indicator.
 
-	def allocateWireLanes(self) -> '(dict[str: list[int]], dict[int: list[int]])':
+		:param event: The event that carries the location of the mouse move
+		:type event: QGraphicsSceneMouseEvent
+		:return: None
+		:rtype: NoneType
+		"""
+		if self.stagingConnection is None:
+			return
+		
+		destP = event.scenePos()
+		pg = self.getPortGraphicsAtPos(event.scenePos().x(), event.scenePos().y())
+		if pg is not self.stagingConnection and pg is not None:
+			
+			# if it's a valid connection, color the indicator and snap to middle of port.
+			src = self.stagingConnection.getPort()
+			dst = pg.getPort()
+			if self._action.connectionIsValid(src, dst):
+				x = pg.scenePos().x()
+				y = pg.scenePos().y() - PortGraphics.TOTAL_HEIGHT / 2
+				destP = QPointF(x, y)
+				self.connectionIndicator.setColor(ConnectionIndicator.GOOD_COLOR)
+			else:
+				self.connectionIndicator.setColor(ConnectionIndicator.BAD_COLOR)
+				
+		# If the src port is the dest port, color it bad.
+		elif pg is self.stagingConnection:
+			self.connectionIndicator.setColor(ConnectionIndicator.BAD_COLOR)
+			
+		# If we're not over a port, just use the base color.
+		else:
+			self.connectionIndicator.setColor(ConnectionIndicator.BASE_COLOR)
+		
+		self.connectionIndicator.setDest(destP)
+		self.connectionIndicator.prepareGeometryChange()
+		event.accept()
+	
+	def mouseReleaseEvent(self, event):
+		"""
+		When the mouse button is released, connect a wire if the mouse is over a port and the
+		connection would be valid.
+
+		:param event: The event that carries the location of the mouse press
+		:type event: QGraphicsSceneMouseEvent
+		:return: None
+		:rtype: NoneType
+		"""
+		pg = self.getPortGraphicsAtPos(event.scenePos().x(), event.scenePos().y())
+		if pg is not self.stagingConnection and pg is not None:
+			
+			# if it's a valid connection, color the indicator and snap to middle of port.
+			src = self.stagingConnection.getPort()
+			dst = pg.getPort()
+			if self._action.connectionIsValid(src, dst):
+				self._action.connect(self.stagingConnection._port, pg._port)
+			
+		self.stagingConnection = None
+		self.connectionIndicator.hide()
+		event.accept()
+
+	def allocateWireLanes(self) -> Tuple[Dict[str, List[int]], Dict[int, List[int]]]:
+		"""
+		Determine how many lanes to put between action and on the sides of the action pipelines.
+		
+		:return: TODO: Insert explanation of what's returned here.
+		:rtype: Tuple[Dict[str, List[int]], Dict[int, List[int]]]
+		"""
 		wires = [wire for wire in self._action.getWireSet().getWires()]
 		colLanes = {"leftColumn": [0, 0], "rightColumn": [0, 0]}  # {col: [total_lanes, lanes_assigned], ...}
 		rowLanes = {i: [0, 0] for i in range(len(self._actionGraphics)+1)}  # {row: [total_lanes, lanes_assigned], ...}

@@ -33,6 +33,7 @@ from PySide2.QtWidgets import QGraphicsScene, QGraphicsItem, QApplication, QGrap
 from qt_models.portmenu import PortMenu
 import data.apim.port as port
 from data.apim.actionwrapper import ActionWrapper
+import graphics.apim.actionpipelinegraphics as apg
 
 class PortGraphics(QGraphicsItem):
 	"""
@@ -71,6 +72,7 @@ class PortGraphics(QGraphicsItem):
 		:type menuEnabled: bool
 		"""
 		QGraphicsItem.__init__(self, parent)
+		self.setAcceptDrops(True)
 		self.setFlag(QGraphicsItem.ItemIsSelectable)
 		self._port = port
 		self._menuEnabled = menuEnabled
@@ -180,6 +182,10 @@ class PortGraphics(QGraphicsItem):
 		
 		self.setSelected(True)
 		self.menu.exec_(event.screenPos())
+	
+	def mousePressEvent(self, event):
+		event.ignore()
+
 
 if __name__ == "__main__":
 	app = QApplication()
