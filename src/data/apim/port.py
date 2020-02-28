@@ -24,6 +24,8 @@ import data.apim.wire as wr
 import data.apim.action as ac
 from data.entity import Entity
 from data.properties import Properties
+import data.apim.actionpipeline as ap
+import data.apim.actionwrapper as aw
 
 
 class PortException(Exception):
@@ -308,3 +310,23 @@ class Port(Entity):
         self._dataType = port.getDataType()
         self._default = port._default
         self.setName(port.getName())
+        
+    def isValidSource(self) -> bool:
+        """
+        Determine whether the port is a valid source or not.
+        
+        :return: True if it's a valid source.
+        :rtype: bool
+        """
+        
+        if self._action is None:
+            return False
+        
+        at = type(self._action)
+        if at == ap.ActionPipeline:
+            return self in self._action.getInputPorts()
+        
+        if at == aw.ActionWrapper:
+            return self in self._action.getOutputPorts()
+        
+        return False

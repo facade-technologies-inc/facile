@@ -34,6 +34,7 @@ from PySide2.QtGui import QPainterPath, QPainter, QColor, QPen, QPainterPathStro
 from data.apim.wire import Wire
 from graphics.apim.portgraphics import PortGraphics
 import graphics.apim.actionpipelinegraphics as apg
+from qt_models.wiremenu import WireMenu
 
 # For test script. ##########
 from data.apim.actionpipeline import ActionPipeline
@@ -67,6 +68,13 @@ class WireGraphics(QAbstractGraphicsShapeItem):
 		self.setFlag(QGraphicsItem.ItemIsSelectable)
 		self._wire = wire
 		self._pathPoints = []
+		
+		def delete():
+			ap = self.parentItem().getAction()
+			ap.disconnect(self._wire.getSourcePort(), self._wire.getDestPort())
+		
+		self.menu = WireMenu()
+		self.menu.onDelete(delete)
 
 	def boundingRect(self) -> QRectF:
 		"""
@@ -239,8 +247,17 @@ class WireGraphics(QAbstractGraphicsShapeItem):
 
 		# Set the destination point.
 		self._pathPoints.append((destPosition.x(), destPosition.y() - PortGraphics.TOTAL_HEIGHT/2))
-
-		#self.prepareGeometryChange()
+	
+	def contextMenuEvent(self, event):
+		"""
+		When right-clicked, the user can choose to delete the wire.
+		
+		:param event: the event carrying the location of the right-click
+		:return: None
+		"""
+		self.menu.prerequest()
+		self.menu.exec_(event.screenPos())
+	
 
 
 if __name__ == "__main__":

@@ -26,7 +26,7 @@ from typing import List
 
 from data.apim.action import Action, ActionException
 from data.apim.actionwrapper import ActionWrapper
-from data.apim.port import Port, PortException
+import data.apim.port as pt
 from data.apim.wireset import WireSet
 from data.apim.wire import WireException
 
@@ -97,7 +97,7 @@ class ActionPipeline(Action):
 		self.updated.emit()
 		return True
 	
-	def connect(self, portA: 'Port', portB: 'Port') -> 'Wire':
+	def connect(self, portA: 'pt.Port', portB: 'pt.Port') -> 'Wire':
 		"""
 		Insert a wire to carry data from port A to port B. Returns a reference to the newly created Wire.
 		
@@ -117,13 +117,13 @@ class ActionPipeline(Action):
 		allowableActions = [self] + self._actions
 		
 		if portA.getAction() not in allowableActions:
-			raise PortException("The source port is invalid")
+			raise pt.PortException("The source port is invalid")
 		
 		if portB.getAction() not in allowableActions:
-			raise PortException("The destination port is invalid")
+			raise pt.PortException("The destination port is invalid")
 		
 		if portB.getInputWire() is not None:
-			raise PortException("The destination port already has an input wire.")
+			raise pt.PortException("The destination port already has an input wire.")
 		
 		if not self.connectionIsValid(portA, portB):
 			raise WireException("The connection is not a valid configuration.")
@@ -153,10 +153,10 @@ class ActionPipeline(Action):
 		allowableActions = [self] + self._actions
 		
 		if portA.getAction() not in allowableActions:
-			raise PortException("The source port is invalid")
+			raise pt.PortException("The source port is invalid")
 		
 		if portB.getAction() not in allowableActions:
-			raise PortException("The destination port is invalid")
+			raise pt.PortException("The destination port is invalid")
 		
 		wireFound = False
 		if portB.getInputWire() is not None:
@@ -219,15 +219,16 @@ class ActionPipeline(Action):
 				self._wireSet.deleteWiresConnectedToPort(port)
 				return removed
 			else:
-				raise PortException("The port does not belong to this action pipeline or any children")
+				raise pt.PortException("The port does not belong to this action pipeline or any children")
 		else:
-			raise PortException("The port does not have an action.")
+			raise pt.PortException("The port does not have an action.")
 		
 		self.updated.emit()
 		
 	def connectionIsValid(self, portA: 'Port', portB: 'Port') -> bool:
 		"""
-		Determines if a wire can be used to connect portA to portB.
+		Determines if a wire can be used to connect portA to portB. The port B must not have an
+		input wire.
 		
 		Not all wiring configurations are valid. Please follow the wiring table below:
 		
@@ -258,6 +259,9 @@ class ActionPipeline(Action):
 				return True
 			elif portB.getAction() in self._actions and portB in portB.getAction().getInputPorts():
 				return True
+			
+		if portB.getInputWire():
+			return False
 		
 		if portA in self.getInputPorts():
 			return isPortBValid()
