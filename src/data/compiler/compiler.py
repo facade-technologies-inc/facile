@@ -19,16 +19,17 @@
     \------------------------------------------------------------------------------/
 
 This file contains the Compiler class - the part of Facile that interprets a user's 
-work in the gui, converting it into the desired API.
+work in the gui, and converts it into the desired API.
 """
 
 from data.statemachine import StateMachine as sm
 from data.compilationprofile import CompilationProfile
+from data.tguim.targetguimodel import TargetGuiModel
 from shutil import copyfile
 
 class Compiler():
 
-    def __init__(self, compProf: 'CompilationProfile' = None, name: str = 'MyCustom', backend: str = 'uia') -> None:
+    def __init__(self, compProf: 'CompilationProfile' = None) -> None:
         """
         Initializes the compiler with required information.
 
@@ -36,12 +37,13 @@ class Compiler():
         """
 
         self._compProf = compProf
-        self._name = name
+        self._name = sm._project.getName()
         self._saveFolder = compProf.apiFolderDir + "/" + self._name + "API/"
-        self._backend = backend
+        self._backend = sm._project.getBackend()
         self._exeLoc = compProf.interpExeDir
         self._opts = compProf.compResOpts
         self._apim = sm._project.getAPIModel()
+        self._apim = sm._project.getTargetGUIModel()
 
         # List was reduced in size by making custom, "stripped" versions of files that only
         #  have the required functions & dependencies. That way no need to import graphics files and all that.
@@ -65,7 +67,7 @@ class Compiler():
 
                 class Application(BaseApplication):
                     def __init__(self):
-                        BaseApplication.__init__(self, "''' + self._exeLoc + '", "' + self._opts + '", "' + self._backend + '''")
+                        BaseApplication.__init__(self, "''' + self._exeLoc + '", "' + self._opts + '", "' + self._name + '", "' + self._backend + '''")
             ''')
 
             aps, cas = self._apim.getActionsByType()
@@ -87,6 +89,17 @@ class Compiler():
             # Make sure to copy necessary files into baseFiles dir, and remove unnecessary fns and dependencies.
             copyfile(path, self._saveFolder + path[12:])
 
+    def saveTGUIM(self):
+        """
+        Saves the tguim in the API folder. Saves project as well.
+
+        :return: None
+        """
+
+        sm._project.save()
+        path = sm._project.getTargetGUIModelFile()
+        copyfile(path, self._saveFolder)  # tguim saved to root, alongside baseapp and customapp
+
     def compileAPI(self) -> None:
         """
         Generates the functional API: the final result of compilation.
@@ -95,5 +108,6 @@ class Compiler():
         """
 
         self.copyNecessaryFiles()
+        self.saveTGUIM()
         copyfile('./baseApplication.py', self._saveFolder)
         self.generateCustomApp()
