@@ -28,6 +28,7 @@ So I decided to make an extension that just directly writes the rst code in the 
 phase.
 """
 
+import textwrap
 import random
 import pandas as pd
 import os
@@ -216,7 +217,8 @@ def read_procedure_data(filename):
 		proc['preco'] = [c for c in df['Pre-Test Conditions'] if type(c) == str]
 		proc['steps'] = []
 		proc['figre'] = {}
-		
+
+		# parse steps and link expected results to
 		for i in range(len(df['Steps (Action)'])):
 			if type(df['Steps (Action)'][i]) == str and type(df['Steps (Expected Result)'][i]) == str:
 				crumbs = df['Steps (Expected Result)'][i].split()
@@ -231,11 +233,12 @@ def read_procedure_data(filename):
 								ref_name = crumb[1:].split('.')[0].replace("_", "")+random_string_generator(8, rchars)
 								proc['figre'][img_filename] = (ref_name, "")
 							df['Steps (Expected Result)'][i] = df['Steps (Expected Result)'][i].replace("@"+img_filename, ':num:`Fig. #{}`'.format(ref_name.lower()))
+
 				proc['steps'].append((df['Steps (Action)'][i], df['Steps (Expected Result)'][i]))
 			else:
 				break
-		
-		
+
+		# link figure names to references and captions
 		for i in range(len(df['Figure (filename)'])):
 			if type(df['Figure (filename)'][i]) == str and type(df['Figure (caption)'][i]) == str:
 				fname = df['Figure (filename)'][i]
@@ -243,12 +246,30 @@ def read_procedure_data(filename):
 				if fname in proc['figre']:
 					proc['figre'][fname] = (proc['figre'][fname][0], caption)
 				else:
-					raise Exception("Figure {} cannot be included without refering to it using "
-					                "'@' in testcase {}".format(fname, name))
-				proc['steps'].append((df['Steps (Action)'][i], df['Steps (Expected Result)'][i]))
+					raise Exception("Figure {} cannot be included without refering to it using '@' in testcase {}".format(fname, name))
 			else:
 				break
-		
+
+		# Make sure that we passed the right number of steps
+		print("\n" + "="*80)
+		print(proc['reqno'], proc['title'] + ":")
+		count = 0
+		for step, result in proc['steps']:
+			count += 1
+			for num, line in enumerate(textwrap.wrap(step, 75)):
+				if num == 0:
+					print("\t{:02}. {}".format(count, line))
+				else:
+					print("\t    {}".format(line))
+
+		print()
+		if len(df['Steps (Action)']) == len(proc['steps']):
+			print("\tPASS: Parsed Correctly")
+		else:
+			print("\tFAIL: Expected {} steps, but got {} steps".format(str(len(df['Steps (Action)'])), str(len(proc['steps']))))
+			raise Exception("ERROR: Wrong number of steps parsed.")
+		print("="*80 + "\n")
+
 		test_procedures.append(proc)
 	return test_procedures
 
@@ -363,11 +384,6 @@ def setup(app):
 			
 			title = proc['title']
 			intro = proc['intro']
-			print(title)
-			count = 0
-			for step, result in proc['steps']:
-				count += 1
-				print('\t', str(count) + ". " + step)
 			refer = "\n".join(["- {}".format(r) for r in proc['refer']])
 			equip = "\n".join(["- {}".format(e) for e in proc['equip']])
 			summa = proc['summa']
