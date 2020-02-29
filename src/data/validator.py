@@ -57,24 +57,32 @@ class Validator(QThread):
 			algo()
 			
 		self.updateProgress.emit(100)
-	
-	# Validate if there is at least one action pipeline
+
 	def algorithm_at_least_one_actionpipeline(self):
+		"""
+		Validate if there is at least one action pipeline. If not, send out error messages.
+		
+		:return: None
+		:rtype: NoneType
+		"""
 		tempAPIModel = sm.StateMachine.instance._project.getAPIModel()
 		if len(tempAPIModel.getActionPipelines()) == 0:
 			message = ValidatorMessage("ERROR: There is no action pipeline existing in the project",
 			                           ValidatorMessage.Level.Error)
 			self.sentMessage.emit(message)
 	
-	# Validate if all of the input ports for all the ACTIONS inside action pipelines have incoming wires.
 	def algorithm_all_actions_inports_has_wiresin(self):
+		"""
+		Validate if all of the input ports for all the ACTIONS inside action pipelines have incoming wires.
+		If not, send out error messages.
+		
+		:return: None
+		:rtype: NoneType
+		"""
 		tempAPIPipes = sm.StateMachine.instance._project.getAPIModel().getActionPipelines()
-		# for i in tempAPIPipes[:]:
-		# 	if not isinstance(i, ActionPipeline):
-		# 		tempAPIPipes.remove(i)
 
-		for pipes in tempAPIPipes:
-			for action in pipes.getActions():
+		for pipe in tempAPIPipes:
+			for action in pipe.getActions():
 				for port in action.getInputPorts():
 					if port.getInputWire() is None:
 						message = ValidatorMessage(
@@ -82,37 +90,52 @@ class Validator(QThread):
 							ValidatorMessage.Level.Error)
 						self.sentMessage.emit(message)
 	
-	# Validate if all of the input ports for all the ACTION PIPELINES have incoming wires.
 	def algorithm_all_actionpips_inport_has_wiresin(self):
+		"""
+		Validate if all of the input ports for all the ACTION PIPELINES have incoming wires. If not, send out error messages.
+		
+		:return: None
+		:rtype: NoneType
+		"""
 		tempAPIPipes = sm.StateMachine.instance._project.getAPIModel().getActionPipelines()
 
-		for pipes in tempAPIPipes:
-			for port in pipes.getInputPorts():
+		for pipe in tempAPIPipes:
+			for port in pipe.getInputPorts():
 				if port.getInputWire() is None:
 					message = ValidatorMessage("ERROR: There is no input wire for the input port " + port.getName() +
-					                           " at action pipeline " + pipes.getName(),
+					                           " at action pipeline " + pipe.getName(),
 					                           ValidatorMessage.Level.Error)
 					self.sentMessage.emit(message)
 
-	# Validate if all of the output ports for all the ACTION PIPELINES have incoming wires.
 	def algorithm_all_actionpips_outport_has_wiresin(self):
+		"""
+		Validate if all of the output ports for all the ACTION PIPELINES have incoming wires. If not, send out error messages.
+		
+		:return: None
+		:rtype: NoneType
+		"""
 		tempAPIPipes = sm.StateMachine.instance._project.getAPIModel().getActionPipelines()
 		
-		for pipes in tempAPIPipes:
-			for port in pipes.getOutputPorts():
+		for pipe in tempAPIPipes:
+			for port in pipe.getOutputPorts():
 				if port.getInputWire() is None:
 					message = ValidatorMessage("ERROR: There is no input wire for the output port " + port.getName() +
-					                           " for action pipeline " + pipes.getName(),
+					                           " for action pipeline " + pipe.getName(),
 					                           ValidatorMessage.Level.Error)
 					self.sentMessage.emit(message)
 	
-	# Validate if there are two or more actions having the same name.
 	def algorithm_no_duplicated_action_name(self):
+		"""
+		Validate if there are two or more actions having the same name. If so, send out error messages.
+		
+		:return: None
+		:rtype: NoneType
+		"""
 		tempAPIPipes = sm.StateMachine.instance._project.getAPIModel().getActionPipelines()
 
 		allActionNames = set()
-		for pipes in tempAPIPipes:
-			for action in pipes.getActions():
+		for pipe in tempAPIPipes:
+			for action in pipe.getActions():
 				if action.getName() in allActionNames:
 					message = ValidatorMessage("ERROR: There is a duplicated name '" + action.getName() +
 					                           "' for action " + action.getName(),
@@ -121,30 +144,90 @@ class Validator(QThread):
 				else:
 					allActionNames.add(action.getName())
 	
-	# Validate if all input ports for all ACTION PIPELINES having outgoing wires
+
 	def algorithm_all_actionpips_inport_wiresout(self):
+		"""
+		Validate if all input ports for all ACTION PIPELINES having outgoing wires. If not, send out warning messages.
+		
+		:return: None
+		:rtype: NoneType
+		"""
 		tempAPIPipes = sm.StateMachine.instance._project.getAPIModel().getActionPipelines()
 
-		for pipes in tempAPIPipes:
-			for port in pipes.getInputPorts():
+		for pipe in tempAPIPipes:
+			for port in pipe.getInputPorts():
 				if len(port.getOutputWires()) == 0:
 					message = ValidatorMessage("WARNING: There is no output wire for the input port " + port.getName() +
-					                           " at action pipeline " + pipes.getName(),
+					                           " at action pipeline " + pipe.getName(),
 					                           ValidatorMessage.Level.Warning)
 					self.sentMessage.emit(message)
 	
-	# Validate if all action names are valid python identifiers
 	def algorithm_action_names_are_python_identifiers(self):
+		"""
+		Validate if all action names are valid python identifiers. If not, send out warning messages.
+		
+		:return: None
+		:rtype: NoneType
+		"""
 		tempAPIPipes = sm.StateMachine.instance._project.getAPIModel().getActionPipelines()
 
-		for pipes in tempAPIPipes:
-			for action in pipes.getActions():
+		for pipe in tempAPIPipes:
+			for action in pipe.getActions():
 				if not action.getName().isidentifier():
 					message = ValidatorMessage("WARNING: The action name " + action.getName() + " is not python valid identifier",
 					                           ValidatorMessage.Level.Warning)
 					self.sentMessage.emit(message)
 	
+	def algorithm_wire_not_connect_to_previous_action(self):
+		"""
+		Validate if wire connect an action to a previous action. If so, send out an error message.
+		
+		:return: None
+		:rtype: NoneType
+		"""
+		tempAPIPipes = sm.StateMachine.instance._project.getAPIModel().getActionPipelines()
 
+		for pipe in tempAPIPipes:
+			for action in pipe.getActions():
+				for port in action.getOutputPorts():
+					for wire in port.getOutputWires():
+						print(wire)
+						destActionIndex = pipe.getActions().index(wire.getDestPort().getAction())
+						print(destActionIndex)
+						currActionIndex = pipe.getActions().index(action)
+						print(currActionIndex)
+						if destActionIndex < currActionIndex:
+							message = ValidatorMessage(
+								"Wrong Sequence from action " + action.getName() + " to action "
+								+ wire.getDestPort().getAction().getName()
+								+ " . Cannot connect an action from later in the sequence of execution to a previous one.",
+					                           ValidatorMessage.Level.Error)
+							self.sentMessage.emit(message)
+							
+	def algorithm_connected_ports_should_have_same_dataType(self):
+		"""
+		Validate if two connected ports have same data type. If not, send out warning messages.
+		
+		:return: None
+		:rtype: NoneType
+		"""
+		tempAPIPipes = sm.StateMachine.instance._project.getAPIModel().getActionPipelines()
+
+		for pipe in tempAPIPipes:
+			for wire in pipe.getWireSet().getWires():
+				dataTypeSrc = wire.getSourcePort().getDataType()
+				dataTypeDest = wire.getDestPort().getDataType()
+				if dataTypeSrc is not dataTypeDest:
+					message = ValidatorMessage("WARNING: The source port " + wire.getSourcePort().getName()
+					                           + " and the destination port " + wire.getDestPort().getName()
+					                           + " do not have the same data type.",
+					                           ValidatorMessage.Level.Warning)
+					self.sentMessage.emit(message)
+					
+	
+	# TODO: what if I put actionpipeline inside of actionpipeline. Do more manual testing on it.
+		
+	
 	@Slot()
 	def stop(self):
 		"""
