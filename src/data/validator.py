@@ -46,7 +46,6 @@ class Validator(QThread):
 		algorithms = [getattr(self, method_name) for method_name in dir(self)
 		              if callable(getattr(self, method_name)) and
 		              method_name.startswith("algorithm_")]
-		print(algorithms)
 		
 		for algoNum in range(len(algorithms)):
 			algo = algorithms[algoNum]
@@ -73,7 +72,7 @@ class Validator(QThread):
 	
 	def algorithm_all_actions_inports_has_wiresin(self):
 		"""
-		Validate if all of the input ports for all the ACTIONS inside action pipelines have incoming wires.
+		Validate if all of the required input ports for all the ACTIONS inside action pipelines have incoming wires.
 		If not, send out error messages.
 		
 		:return: None
@@ -84,28 +83,28 @@ class Validator(QThread):
 		for pipe in tempAPIPipes:
 			for action in pipe.getActions():
 				for port in action.getInputPorts():
-					if port.getInputWire() is None:
+					if port.getInputWire() is None and not port.isOptional():
 						message = ValidatorMessage(
 							"ERROR: There is no input wire for the input port " + port.getName() + " at action " + action.getName(),
 							ValidatorMessage.Level.Error)
 						self.sentMessage.emit(message)
 	
-	def algorithm_all_actionpips_inport_has_wiresin(self):
-		"""
-		Validate if all of the input ports for all the ACTION PIPELINES have incoming wires. If not, send out error messages.
-		
-		:return: None
-		:rtype: NoneType
-		"""
-		tempAPIPipes = sm.StateMachine.instance._project.getAPIModel().getActionPipelines()
-
-		for pipe in tempAPIPipes:
-			for port in pipe.getInputPorts():
-				if port.getInputWire() is None:
-					message = ValidatorMessage("ERROR: There is no input wire for the input port " + port.getName() +
-					                           " at action pipeline " + pipe.getName(),
-					                           ValidatorMessage.Level.Error)
-					self.sentMessage.emit(message)
+	# def algorithm_all_actionpips_inport_has_wiresin(self):
+	# 	"""
+	# 	Validate if all of the input ports for all the ACTION PIPELINES have incoming wires. If not, send out error messages.
+	#
+	# 	:return: None
+	# 	:rtype: NoneType
+	# 	"""
+	# 	tempAPIPipes = sm.StateMachine.instance._project.getAPIModel().getActionPipelines()
+	#
+	# 	for pipe in tempAPIPipes:
+	# 		for port in pipe.getInputPorts():
+	# 			if port.getInputWire() is None:
+	# 				message = ValidatorMessage("ERROR: There is no input wire for the input port " + port.getName() +
+	# 				                           " at action pipeline " + pipe.getName(),
+	# 				                           ValidatorMessage.Level.Error)
+	# 				self.sentMessage.emit(message)
 
 	def algorithm_all_actionpips_outport_has_wiresin(self):
 		"""
@@ -188,21 +187,19 @@ class Validator(QThread):
 		tempAPIPipes = sm.StateMachine.instance._project.getAPIModel().getActionPipelines()
 
 		for pipe in tempAPIPipes:
-			for action in pipe.getActions():
-				for port in action.getOutputPorts():
-					for wire in port.getOutputWires():
-						print(wire)
-						destActionIndex = pipe.getActions().index(wire.getDestPort().getAction())
-						print(destActionIndex)
-						currActionIndex = pipe.getActions().index(action)
-						print(currActionIndex)
-						if destActionIndex < currActionIndex:
-							message = ValidatorMessage(
-								"Wrong Sequence from action " + action.getName() + " to action "
-								+ wire.getDestPort().getAction().getName()
-								+ " . Cannot connect an action from later in the sequence of execution to a previous one.",
-					                           ValidatorMessage.Level.Error)
-							self.sentMessage.emit(message)
+			for wire in pipe.getWireSet().getWires():
+				srcAction = wire.getSourcePort().getAction()
+				dstAction = wire.getDestPort().getAction()
+				actions = pipe.getActions()
+				destActionIndex = actions.index(srcAction)
+				currActionIndex = actions.index(dstAction)
+				if destActionIndex < currActionIndex:
+					message = ValidatorMessage(
+						"Wrong Sequence from action " + srcAction.getName() + " to action "
+						+ dstAction.getName()
+						+ " . Cannot connect an action from later in the sequence of execution to a previous one.",
+						ValidatorMessage.Level.Error)
+					self.sentMessage.emit(message)
 							
 	def algorithm_connected_ports_should_have_same_dataType(self):
 		"""
