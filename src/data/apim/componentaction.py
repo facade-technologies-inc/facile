@@ -50,6 +50,7 @@ class ComponentAction(Action):
 			self.addOutputPort(p)
 			
 		self.setName(actionSpec.name)
+		self.setAnnotation(self._spec.description)
 
 	def getTargetComponent(self) -> 'Component':
 		"""
@@ -71,7 +72,7 @@ class ComponentAction(Action):
 
 		if self._target is None:
 			return '_' + self.getName()  # TODO: We have to make sure that these actions have unique names
-		return '_' + self._target.getId() + '_' + self.getName()
+		return '_' + str(self._target.getId()) + '_' + self.getName()
 
 	def getMethodCode(self) -> str:
 		"""
@@ -81,12 +82,7 @@ class ComponentAction(Action):
 		:rtype: str
 		"""
 
-		code = '\t\ttry:'
-		code += self._spec.code.replace('\n', '\n\t\t')
-		code += '''
-		except:
-			
-		'''
+		code = '\n\t\ttry:'
+		code += self._spec.code.replace('\n', '\n\t\t\t')
 
-
-		return '\t\tcomp = self.findComponent(' + self._target.getId() + ')\n' + code
+		return '\t\tcomp = self.findComponent(' + str(self._target.getId()) + ')\n' + code[:-3]

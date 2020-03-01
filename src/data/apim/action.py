@@ -304,11 +304,10 @@ class Action(QObject, Entity):
 
 		if self.getAnnotation():
 			noDoc = False
-			out += '\t\t' + self.getAnnotation()
+			out += '\t\t' + self.getAnnotation() + '\n\n'
 
 		if self._inputs or self._outputs:
 			noDoc = False
-			out += '\n\n'
 
 			for p in self._inputs:
 				out += '\t\t:param ' + p.getName() + ': ' + p.getAnnotation() + '\n'
@@ -323,6 +322,9 @@ class Action(QObject, Entity):
 			else:
 				out += '\t\t:return: None\n'
 				out += '\t\t:rtype: NoneType\n'
+		else:
+			out += '\t\t:return: None\n'
+			out += '\t\t:rtype: NoneType\n'
 		
 		if noDoc:
 			return '\t\t"""\n\t\tThis action has no annotations, inputs, or outputs.\n\t\t"""\n'
@@ -346,6 +348,7 @@ class Action(QObject, Entity):
 		"""
 
 		code = self.getMethodSignature()
+		code += self.getDocStr()
 		code += self.getMethodCode()
 		code += '\n'
 

@@ -4,16 +4,18 @@ import os
 
 # These lines allow us to import things as if we were running facile.py
 sys.path.insert(0, os.path.abspath("../../../src/"))
-# sys.path.insert(0, os.path.abspath("./src/gui/rc/"))
+sys.path.insert(0, os.path.abspath("../../../src/gui/rc/"))
 
 import unittest
+import difflib
 from data.apim.actionwrapper import ActionWrapper
 from data.apim.actionpipeline import ActionPipeline
 from data.apim.componentaction import ComponentAction
 from data.tguim.component import Component
 from data.apim.actionspecification import ActionSpecification
-from data.tguim.targetguimodel import TargetGuiModel
+from data.project import Project
 import data.apim.port as pt
+from PySide2.QtWidgets import QApplication
 
 class TestCompiler(unittest.TestCase):
 	
@@ -147,8 +149,10 @@ class TestCompiler(unittest.TestCase):
 		This function makes sure that the code is generated
 		correctly for any action pipeline.
 		"""
+		app = QApplication([])
 
-		tguim = TargetGuiModel()
+		proj = Project('test', 'test project', '', 'uia')
+		tguim = proj.getTargetGUIModel()
 
 		ap = ActionPipeline()  # should have id 0
 		ap2 = ActionPipeline()  # should have id 1
@@ -216,7 +220,10 @@ class TestCompiler(unittest.TestCase):
 		correctly for any action with an arbitrary number of ports.
 		"""
 
-		tguim = TargetGuiModel()
+		app = QApplication([])
+
+		proj = Project('test', 'test project', '', 'uia')
+		tguim = proj.getTargetGUIModel()
 
 		comp1 = Component(tguim)  # should have id 0
 		comp2 = Component(tguim)  # should have id 1
@@ -228,26 +235,42 @@ class TestCompiler(unittest.TestCase):
 		a2 = ComponentAction(comp2, spec2)
 
 		method1 =  '''\
-	def _0_click(self) -> None:
+	def _4_click(self) -> None:
 		"""
 		Left-click a component.
-		"""
-		
-		comp = self.findComponent(0)
-		comp.set_focus()
-		comp.click()
-'''
-		method2 = '''\
-	def _1_write(self, value: str) -> None:
-		"""
-		Write to a component.
-		
-		:param value: Value to be written.
-		:type value: str
+
+		:return: None
+		:rtype: NoneType
 		"""
 
-		comp = self.findComponent(1)
-		comp.set_edit_text(value)
+		comp = self.findComponent(4)
+
+		try:
+			comp.set_focus()
+			comp.click()
+
 '''
-		self.assertTrue(a1.getMethod() == method1)
-		self.assertTrue(a2.getMethod() == method2)
+		method2 = '''\
+	def _5_write(self, value: str) -> None:
+		"""
+		Write to a component.
+
+		:param value: Value to be written.
+		:type value: str
+		:return: None
+		:rtype: NoneType
+		"""
+
+		comp = self.findComponent(5)
+
+		try:
+			comp.set_edit_text(value)
+
+'''
+		print([li for li in difflib.ndiff(a1.getMethod(), method1) if li[0] != ' '])
+
+		print([li for li in difflib.ndiff(a2.getMethod(), method2) if li[0] != ' '])
+		print(a2.getMethod())
+
+		self.assertTrue(a1.getMethod().replace(" "*4, "\t").strip() == method1.replace(" "*4, "\t").strip())
+		self.assertTrue(a2.getMethod().replace(" "*4, "\t").strip() == method2.replace(" "*4, "\t").strip())
