@@ -191,7 +191,10 @@ class Validator(QThread):
 				srcAction = wire.getSourcePort().getAction()
 				dstAction = wire.getDestPort().getAction()
 				actions = pipe.getActions()
-				print(actions)
+
+				if srcAction is pipe or dstAction is pipe:
+					continue
+
 				destActionIndex = actions.index(srcAction)
 				currActionIndex = actions.index(dstAction)
 				if destActionIndex < currActionIndex:
