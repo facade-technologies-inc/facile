@@ -5,10 +5,10 @@ inputs = []
 outputs = [
 	{
 		"name": "value",
+		"description": "Value obtained from reading component text.",
 		"type": str,
-		"description": "The value read."
 	}
 ]
 code = """
-return cw.read()
+return comp.read()
 """
