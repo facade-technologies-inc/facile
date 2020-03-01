@@ -61,15 +61,17 @@ class ComponentAction(Action):
 
 		return self._target
 
-	def getActionName(self) -> str:
+	def getMethodName(self) -> str:
 		"""
-		Gets the name of the action. Only for use with creating method name in action wrapper. *NOT UNIQUE*
+		Gets the name of the action. *UNIQUE TO COMPONENT STORED*
 
-		:return: Action name
+		:return: Method name
 		:rtype: str
 		"""
 
-		return self.getName()
+		if self._target is None:
+			return '_' + self.getName()  # TODO: We have to make sure that these actions have unique names
+		return '_' + self._target.getId() + '_' + self.getName()
 
 	def getMethodCode(self) -> str:
 		"""
@@ -79,7 +81,12 @@ class ComponentAction(Action):
 		:rtype: str
 		"""
 
-		return self._spec.code
-	
-	# TODO: Add more methods once we've clearly defined what we're doing with this class.
-		
+		code = '\t\ttry:'
+		code += self._spec.code.replace('\n', '\n\t\t')
+		code += '''
+		except:
+			
+		'''
+
+
+		return '\t\tcomp = self.findComponent(' + self._target.getId() + ')\n' + code

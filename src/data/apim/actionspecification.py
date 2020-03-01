@@ -101,6 +101,7 @@ class ActionSpecification:
 			p = Port()
 			p.setName(input["name"])
 			p.setDataType(input["type"])
+			p.setAnnotation(input["description"])
 			p.setOptional(input.get("optional", False))
 			spec.inputs.append(p)
 		
@@ -108,6 +109,7 @@ class ActionSpecification:
 			p = Port()
 			p.setName(output["name"])
 			p.setDataType(output["type"])
+			p.setAnnotation(output["description"])
 			spec.outputs.append(p)
 			
 		return spec

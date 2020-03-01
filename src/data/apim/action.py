@@ -304,10 +304,11 @@ class Action(QObject, Entity):
 
 		if self.getAnnotation():
 			noDoc = False
-			out += '\t\t' + self.getAnnotation() + '\n\n'
+			out += '\t\t' + self.getAnnotation()
 
 		if self._inputs or self._outputs:
 			noDoc = False
+			out += '\n\n'
 
 			for p in self._inputs:
 				out += '\t\t:param ' + p.getName() + ': ' + p.getAnnotation() + '\n'

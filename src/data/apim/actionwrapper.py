@@ -25,7 +25,6 @@ from typing import List, Dict
 
 from data.apim.action import Action
 import data.apim.actionpipeline as ap
-from data.apim.componentaction import ComponentAction
 
 
 class ActionWrapper(Action):
@@ -170,18 +169,14 @@ class ActionWrapper(Action):
 
 	def getMethodName(self) -> str:
 		"""
-		Returns method name based on actionRef type.
+		Returns method name using actionRef's getMethodName definition.
 
 		:return: method name
 		:rtype: str
 		"""
 
-		if isinstance(self._actionRef, ap.ActionPipeline):
-			return self._actionRef.getMethodName()
-		elif isinstance(self._actionRef, ComponentAction):
-			if self._actionRef.getTargetComponent() is None:
-				return '_' + self._actionRef.getActionName()  # TODO: We have to make sure that these actions have unique names
-			return '_' + self._actionRef.getTargetComponent().getId() + '_' + self._actionRef.getActionName()
+		return self._actionRef.getMethodName()
+
 
 	def getMethodCode(self) -> str:
 		"""

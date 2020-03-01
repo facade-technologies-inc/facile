@@ -25,7 +25,7 @@ that will be created in the generated API.
 from typing import List
 
 from data.apim.action import Action, ActionException
-from data.apim.actionwrapper import ActionWrapper
+import data.apim.actionwrapper as aw
 from data.apim.port import Port, PortException
 from data.apim.wireset import WireSet
 from data.apim.wire import WireException
@@ -61,7 +61,7 @@ class ActionPipeline(Action):
 		:rtype: NoneType
 		"""
 		
-		if type(action) != ActionWrapper:
+		if type(action) != aw.ActionWrapper:
 			raise ActionException("The Action being added to the ActionPipeline must be a ActionWrapper")
 		
 		if action.getParent() is not self:
@@ -310,6 +310,9 @@ class ActionPipeline(Action):
 
 		code = ""
 
+		for p in self.getInputPorts():  # Assumes unique input port names, which should be enforced in gui.
+			self._varMap.append((p.getName(), p))
+
 		for	a in self._actions: 
 			code += '\t\t' 
 			if a.getOutputPorts():  # Getting outputs named and written to code
@@ -318,8 +321,9 @@ class ActionPipeline(Action):
 				if len(a.getOutputPorts()) > 1:  # if several outputs
 					for o in a.getOutputPorts()[1:]:
 						code += ", " + self.getVarName(o)
+				code += ' = '
 			
-			code += ' = ' + a.getMethodName() + '('
+			code += a.getMethodName() + '('
 
 			if a.getInputPorts():
 				i = a.getInputPorts()[0]
@@ -328,10 +332,10 @@ class ActionPipeline(Action):
 					for i in a.getInputPorts()[1:]:
 						code += ", " + self.getVarName(i)
 			
-			code += ')\n'
+			code += ')'
 		
 		if self.getOutputPorts():
-			code += '\n\t\treturn '
+			code += '\n\n\t\treturn '
 			o = self.getOutputPorts()[0]
 			code += self.getVarName(o)  # only one output
 			if len(self.getOutputPorts()) > 1:  # if several outputs
@@ -339,6 +343,8 @@ class ActionPipeline(Action):
 					code += ", " + self.getVarName(o)
 
 		code += '\n\n'
+
+		return code
 
 	def getVarName(self, p: 'Port') -> str:
 		"""
@@ -393,7 +399,8 @@ class ActionPipeline(Action):
 		num_replacements = len(var) - len(zs)
 		newName = zs[:-1] + self.incrChar(zs[-1]) if zs else 'a'
 		newName += 'a' * num_replacements
-		return newName
+
+		self._varName = newName
 
 	def incrChar(self, var: str) -> str:
 		"""

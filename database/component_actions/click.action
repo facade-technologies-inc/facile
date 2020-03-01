@@ -1,9 +1,10 @@
 
 name = "click"
-description = "Left-click a button."
-targets = {'Button'}
+description = "Left-click a component."
+targets = {'Button', 'MenuItem', '_treeview_element', '_toolbar_element', '_listview_element'}
 inputs = []
 outputs = []
 code = """
-cw.click()
+comp.set_focus()
+comp.click()
 """

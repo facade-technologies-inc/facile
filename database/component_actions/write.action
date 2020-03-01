@@ -1,14 +1,15 @@
 name = "write"
-description = "write to a component"
+description = "Write to a component."
 targets = ['Edit']
 inputs = [
 	{
 		"name": "value",
 		"type": str,
+		"description": "Value to be written.",
 		"optional": False
 	}
 ]
 outputs = []
 code = """
-cw.write(value)
+comp.set_edit_text(value)
 """

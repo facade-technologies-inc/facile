@@ -47,7 +47,7 @@ class Entity:
 		self._id: int = Entity.count
 		self._properties = None
 	
-	def getId(self) -> None:
+	def getId(self) -> int:
 		"""
 		Gets the unique id for the entity.
 
