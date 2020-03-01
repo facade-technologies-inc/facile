@@ -10,7 +10,7 @@ if os.path.exists(os.path.abspath("../venv/")):
     python = os.path.abspath("../venv/Scripts/python.exe")
     uic = os.path.abspath("../venv/Scripts/pyside2-uic.exe")
 else:
-    python = sys.executable
+    python = None
     uic = 'pyside2-uic'
 
 print("Removing existing compiled UI files...")
@@ -27,6 +27,10 @@ for file in os.listdir(ui_folder):
         print("\t" + file)
 
         with open(dstFile, 'w') as fout:
-            proc = subprocess.Popen([python, uic, srcFile], stdout=fout)
+            if python:
+                args = [python, uic, srcFile]
+            else:
+                args = [uic, srcFile]
+            proc = subprocess.Popen(args, stdout=fout)
             return_code = proc.wait()
 print("Done")
