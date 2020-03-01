@@ -1,4 +1,5 @@
 import os
+import subprocess
 
 qrc = os.path.abspath("../icons.qrc")
 out = os.path.abspath("../src/gui/rc/icons_rc.py")
@@ -8,8 +9,13 @@ if os.path.exists(os.path.abspath("../venv/")):
     python = os.path.abspath("../venv/Scripts/python.exe")
     rcc = os.path.abspath("../venv/Scripts/pyside2-rcc.exe")
 
-    os.system('"{}" "{}" "{}" > "{}"'.format(python, rcc, qrc, out))
+    with open(out, 'w') as fout:
+        proc = subprocess.Popen([python, rcc, qrc], stdout=fout)
+        return_code = proc.wait()
 
 else:
-    os.system('pyside2-rcc "{}" > "{}"'.format(qrc, out))
+    with open(out, 'w') as fout:
+        proc = subprocess.Popen(["pyside2-rcc", qrc], stdout=fout)
+        return_code = proc.wait()
+
 print("Done")
