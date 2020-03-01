@@ -6,6 +6,7 @@ outputs = [
 	{
 		"name": "value",
 		"type": str,
+		"description": "The value read."
 	}
 ]
 code = """
