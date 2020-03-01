@@ -47,7 +47,7 @@ file_list_item = """
 
 
 if __name__ == "__main__":
-	
+	print("Compiling icons.qrc file")
 	file_list = ""
 	for root, dirs, files in os.walk(icons_dir):
 		for file in files:

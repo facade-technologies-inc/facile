@@ -176,12 +176,13 @@ class PortGraphics(QGraphicsItem):
 		:return: None
 		:rtype: NoneType
 		"""
-		
-		if not self._menuEnabled:
-			return QGraphicsItem.contextMenuEvent(self, event)
-		
-		self.setSelected(True)
-		self.menu.exec_(event.screenPos())
+		return QGraphicsItem.contextMenuEvent(event)
+
+		# if not self._menuEnabled:
+		# 	return QGraphicsItem.contextMenuEvent(self, event)
+		#
+		# self.setSelected(True)
+		# self.menu.exec_(event.screenPos())
 	
 	def mousePressEvent(self, event):
 		event.ignore()
