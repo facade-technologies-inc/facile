@@ -21,7 +21,7 @@
 This file contains the Compiler class - the part of Facile that interprets a user's 
 work in the gui, and converts it into the desired API.
 """
-
+import os
 import data.statemachine as sm
 from data.compilationprofile import CompilationProfile
 #from data.tguim.targetguimodel import TargetGuiModel
@@ -39,7 +39,7 @@ class Compiler():
         statem = sm.StateMachine.instance
         self._compProf = compProf
         self._name = statem._project.getName()
-        self._saveFolder = compProf.apiFolderDir + "/" + self._name + "API/"
+        self._saveFolder = compProf.apiFolderDir # just save it directly where the user wants it.
         self._backend = statem._project.getBackend()
         self._exeLoc = compProf.interpExeDir
         self._opts = compProf.compResOpts
@@ -86,9 +86,18 @@ class Compiler():
         :return: None
         """
 
+        # make necessary directories before copying files
+        targetDirs = ['data', 'data/tguim', 'tguiil']
+        for dir in targetDirs:
+            dir = os.path.join(self._saveFolder, dir)
+            if not os.path.exists(dir):
+                os.mkdir(dir)
+
+        curPath = os.path.abspath(__file__)
+        dir, filename = os.path.split(curPath)
         for path in self._necessaryFiles:
             # Make sure to copy necessary files into baseFiles dir, and remove unnecessary fns and dependencies.
-            copyfile(path, self._saveFolder + path[12:])
+            copyfile(os.path.join(dir, path), os.path.join(self._saveFolder, path[12:]))
 
     def saveTGUIM(self):
         """
