@@ -27,6 +27,7 @@ import data.statemachine as sm
 from PySide2.QtCore import Signal, Slot
 from PySide2.QtWidgets import QDialog, QWidget, QFileDialog
 from data.compilationprofile import CompilationProfile
+from data.compiler.compiler import Compiler
 from gui.ui.ui_apicompilerdialog import Ui_Dialog as Ui_ApiCompilerDialog
 from tguiil.matchoption import MatchOption
 from libs.bitness import getPythonBitness, isExecutable, appBitnessMatches, getExeBitness
@@ -199,4 +200,5 @@ class ApiCompilerDialog(QDialog):
 		# TODO: figure out why FindExecutable: There is no association for the file get printed
 		print("apicompilerdialog accepted")
 		self.setApiCompiler.emit(theCompilationProfile)
+		c = Compiler(theCompilationProfile).compileAPI()
 		return QDialog.accept(self)

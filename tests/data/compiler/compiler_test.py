@@ -197,8 +197,8 @@ class TestCompiler(unittest.TestCase):
 		aw5 = ActionWrapper(ap, ap2)
 		aw4 = ActionWrapper(a4, ap2)
 
-		ap.connect(p, a3.getInputPorts()[0])
-		ap2.connect(p1, p)
+		ap.connect(p, aw3.getInputPorts()[0])
+		ap2.connect(p1, aw5.getInputPorts()[0])
 
 		method1 = '''\
 	def custom1(self, value: str) -> None:
@@ -207,6 +207,8 @@ class TestCompiler(unittest.TestCase):
 
 		:param value: Value to be written.
 		:type value: str
+		:return: None
+		:rtype: NoneType
 		"""
 
 		_6_click()
@@ -222,6 +224,8 @@ class TestCompiler(unittest.TestCase):
 
 		:param value: Value to be written.
 		:type value: str
+		:return: None
+		:rtype: NoneType
 		"""
 
 		custom1(value)

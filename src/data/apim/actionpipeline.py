@@ -349,8 +349,6 @@ class ActionPipeline(Action):
 					code += ", " + self.getVarName(o)
 			code += '\n'
 
-		code += '\n'
-
 		return code
 
 	def getVarName(self, p: 'Port') -> str:
