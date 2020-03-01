@@ -24,12 +24,11 @@ that will be created in the generated API.
 
 from typing import List
 
-from data.apim.action import Action, ActionException
-
 import data.apim.actionwrapper as aw
 import data.apim.port as pt
 from data.apim.wireset import WireSet
 from data.apim.wire import WireException
+from data.apim.action import Action, ActionException
 
 class ActionPipeline(Action):
 	

@@ -23,11 +23,11 @@ This module contains the ActionWrapper class.
 
 from typing import List, Dict
 
-from data.apim.action import Action
+
 import data.apim.actionpipeline as ap
+import data.apim.action as act
 
-
-class ActionWrapper(Action):
+class ActionWrapper(act.Action):
 	"""
 	The purpose of the ActionWrapper class is to prevent copying of action pipelines and other
 	actions unnecessarily. The action wrapper allows us to update uses of an action very easily
@@ -39,7 +39,7 @@ class ActionWrapper(Action):
 	The ActionWrapper can be thought of as a black-box for any other action.
 	"""
 	
-	def __init__(self, actionRef: 'Action', parent: 'ap.ActionPipeline') -> 'ActionWrapper':
+	def __init__(self, actionRef: 'act.Action', parent: 'ap.ActionPipeline') -> 'ActionWrapper':
 		"""
 		Constructs a WrapperAction that stores a reference to an action.
 		
