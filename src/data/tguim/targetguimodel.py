@@ -26,10 +26,10 @@ from collections import OrderedDict
 from PySide2.QtCore import QObject, Slot, Signal
 
 from data.entity import Entity
-from data.tguim.component import Component
-from data.tguim.visibilitybehavior import VisibilityBehavior
 from graphics.tguim.tscene import TScene
 from tguiil.supertokens import SuperToken
+from data.tguim.component import Component
+from data.tguim.visibilitybehavior import VisibilityBehavior
 
 
 class TargetGuiModel(QObject):

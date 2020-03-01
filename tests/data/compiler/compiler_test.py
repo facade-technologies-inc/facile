@@ -11,11 +11,11 @@ import difflib
 from data.apim.actionwrapper import ActionWrapper
 from data.apim.actionpipeline import ActionPipeline
 from data.apim.componentaction import ComponentAction
-from data.tguim.component import Component
 from data.apim.actionspecification import ActionSpecification
 from data.project import Project
 import data.apim.port as pt
 from PySide2.QtWidgets import QApplication
+from data.tguim.component import Component
 
 class TestCompiler(unittest.TestCase):
 	

@@ -67,7 +67,9 @@ class ApiModel(QObject):
 		:return: None
 		:rtype: NoneType
 		"""
-		specDir = os.path.abspath("../../../database/component_actions")
+		curPath = os.path.abspath(__file__)
+		path, filename = os.path.split(curPath)
+		specDir = os.path.abspath(os.path.join(path,"../../../database/component_actions"))
 		for file in os.listdir(specDir):
 			if file.endswith(".action"):
 				filepath = os.path.join(specDir, file)

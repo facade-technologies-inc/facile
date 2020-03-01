@@ -22,9 +22,9 @@ This file contains the Compiler class - the part of Facile that interprets a use
 work in the gui, and converts it into the desired API.
 """
 
-from data.statemachine import StateMachine as sm
+import data.statemachine as sm
 from data.compilationprofile import CompilationProfile
-from data.tguim.targetguimodel import TargetGuiModel
+#from data.tguim.targetguimodel import TargetGuiModel
 from shutil import copyfile
 
 class Compiler():
@@ -36,14 +36,15 @@ class Compiler():
         :return: None
         """
 
+        statem = sm.StateMachine.instance
         self._compProf = compProf
-        self._name = sm._project.getName()
+        self._name = statem._project.getName()
         self._saveFolder = compProf.apiFolderDir + "/" + self._name + "API/"
-        self._backend = sm._project.getBackend()
+        self._backend = statem._project.getBackend()
         self._exeLoc = compProf.interpExeDir
         self._opts = compProf.compResOpts
-        self._apim = sm._project.getAPIModel()
-        self._apim = sm._project.getTargetGUIModel()
+        self._apim = statem._project.getAPIModel()
+        self._apim = statem._project.getTargetGUIModel()
 
         # List was reduced in size by making custom, "stripped" versions of files that only
         #  have the required functions & dependencies. That way no need to import graphics files and all that.
@@ -95,9 +96,9 @@ class Compiler():
 
         :return: None
         """
-
-        sm._project.save()
-        path = sm._project.getTargetGUIModelFile()
+        statem = sm.StateMachine.instance
+        statem._project.save()
+        path = statem._project.getTargetGUIModelFile()
         copyfile(path, self._saveFolder)  # tguim saved to root, alongside baseapp and customapp
 
     def compileAPI(self) -> None:

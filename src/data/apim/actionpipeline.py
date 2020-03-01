@@ -337,9 +337,9 @@ class ActionPipeline(Action):
 				if len(a.getInputPorts()) > 1:  # if multiple inputs
 					for i in a.getInputPorts()[1:]:
 						code += ", " + self.getVarName(i)
-			
+
 			code += ')\n'
-		
+
 		if self.getOutputPorts():
 			code += '\n\t\treturn '
 			o = self.getOutputPorts()[0]
@@ -416,5 +416,4 @@ class ActionPipeline(Action):
 		:return: incremented char
 		:rtype: str
 		"""
-
 		return chr(ord(var) + 1) if var != 'z' else 'a'

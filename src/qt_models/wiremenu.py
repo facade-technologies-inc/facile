@@ -38,7 +38,7 @@ class WireMenu(QMenu):
 		"""
 		QMenu.__init__(self)
 		
-		self._delete = self.addAction("Delete Action")
+		self._delete = self.addAction("Delete Wire")
 		
 		# TODO: set action icons
 
