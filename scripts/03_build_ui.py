@@ -7,10 +7,10 @@ ui_folder = os.path.abspath("../src/gui/ui/")
 if os.path.exists(os.path.abspath("../venv/")):
     python = os.path.abspath("../venv/Scripts/python.exe")
     uic = os.path.abspath("../venv/Scripts/pyside2-uic.exe")
-    cmdStr = "{} {} {{}} > {{}}".format(python, uic)
+    cmdStr = '"{}" "{}" "{{}}" > "{{}}"'.format(python, uic)
 
 else:
-    cmdStr = "pyside2-uic {} > {}"
+    cmdStr = 'pyside2-uic "{}" > "{}"'
 
 print("Removing existing compiled UI files...")
 for file in os.listdir(ui_folder):
