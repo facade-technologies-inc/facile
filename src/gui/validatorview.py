@@ -143,6 +143,9 @@ class ValidatorView(QWidget):
 		:rtype: NoneType
 		"""
 		self.clear()
+		self._mostSevere = 0
+		self.ui.algorithmProgressBar.setStyleSheet(ValidatorView.SAFE_PROGRESSBAR)
+		self.ui.algorithmProgressBar.setValue(0)
 		self.dataValidator.start()
 		self.ui.runButton.setEnabled(False)
 		self.ui.stopButton.setEnabled(True)
@@ -267,8 +270,6 @@ class ValidatorView(QWidget):
 		self.ui.algorithmProgressBar.show()
 		
 		self.ui.clearButton.setEnabled(True)
-
-
 
 	def addWidgetToMessage(self, msg: ValidatorMessage) -> None:
 		"""

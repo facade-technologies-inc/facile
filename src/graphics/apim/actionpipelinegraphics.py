@@ -394,6 +394,9 @@ class ActionPipelineGraphics(ActionGraphics):
 		:return: None
 		:rtype: NoneType
 		"""
+		if self.stagingConnection is None:
+			return
+
 		pg = self.getPortGraphicsAtPos(event.scenePos().x(), event.scenePos().y())
 		if pg is not self.stagingConnection and pg is not None:
 			
