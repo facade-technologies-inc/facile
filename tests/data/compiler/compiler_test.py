@@ -160,9 +160,22 @@ class TestCompiler(unittest.TestCase):
 		ap.setName('custom1')
 		ap.setAnnotation('testing the first pipeline')
 
+		p = pt.Port()
+		p.setName("value")
+		p.setDataType(str)
+		p.setAnnotation("Value to be written.")
+		p.setOptional(False)
+		ap.addInputPort(p)
+
 		ap2.setName('custom2')
 		ap2.setAnnotation('testing the second pipeline')
 
+		p1 = pt.Port()
+		p1.setName("value")
+		p1.setDataType(str)
+		p1.setAnnotation("Value to be written.")
+		p1.setOptional(False)
+		ap2.addInputPort(p1)
 
 		comp1 = Component(tguim)  # should have id 2
 		comp2 = Component(tguim)  # should have id 3
@@ -184,32 +197,42 @@ class TestCompiler(unittest.TestCase):
 		aw5 = ActionWrapper(ap, ap2)
 		aw4 = ActionWrapper(a4, ap2)
 
-		method1 = '''
-	def custom1(self, value) -> None:
-		"""
-		testing the first pipeline
-		
-		:param value: Value to be written.
-		:type value: str
-		"""
-		
-		_2_click()
-		_3_click()
-		_4_write(value)
-		'''
+		ap.connect(p, a3.getInputPorts()[0])
+		ap2.connect(p1, p)
 
-		method2 = '''
-	def custom2(self, value) -> None:
+		method1 = '''\
+	def custom1(self, value: str) -> None:
 		"""
 		testing the first pipeline
-		
+
 		:param value: Value to be written.
 		:type value: str
 		"""
-		
+
+		_6_click()
+		_7_click()
+		_8_write(value)
+
+'''
+
+		method2 = '''\
+	def custom2(self, value: str) -> None:
+		"""
+		testing the second pipeline
+
+		:param value: Value to be written.
+		:type value: str
+		"""
+
 		custom1(value)
-		a = _5_read()
-		'''
+		a = _9_read()
+
+'''
+
+		print([li for li in difflib.ndiff(ap.getMethod(), method1) if li[0] != ' '])
+		print(ap.getMethod())
+		print([li for li in difflib.ndiff(ap2.getMethod(), method2) if li[0] != ' '])
+		print(ap2.getMethod())
 
 		self.assertTrue(ap.getMethod() == method1)
 		self.assertTrue(ap2.getMethod() == method2)
@@ -270,7 +293,6 @@ class TestCompiler(unittest.TestCase):
 		print([li for li in difflib.ndiff(a1.getMethod(), method1) if li[0] != ' '])
 
 		print([li for li in difflib.ndiff(a2.getMethod(), method2) if li[0] != ' '])
-		print(a2.getMethod())
 
 		self.assertTrue(a1.getMethod().replace(" "*4, "\t").strip() == method1.replace(" "*4, "\t").strip())
 		self.assertTrue(a2.getMethod().replace(" "*4, "\t").strip() == method2.replace(" "*4, "\t").strip())

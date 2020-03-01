@@ -338,17 +338,18 @@ class ActionPipeline(Action):
 					for i in a.getInputPorts()[1:]:
 						code += ", " + self.getVarName(i)
 			
-			code += ')'
+			code += ')\n'
 		
 		if self.getOutputPorts():
-			code += '\n\n\t\treturn '
+			code += '\n\t\treturn '
 			o = self.getOutputPorts()[0]
 			code += self.getVarName(o)  # only one output
 			if len(self.getOutputPorts()) > 1:  # if several outputs
 				for o in self.getOutputPorts()[1:]:
 					code += ", " + self.getVarName(o)
+			code += '\n'
 
-		code += '\n\n'
+		code += '\n'
 
 		return code
 
