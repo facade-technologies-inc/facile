@@ -88,10 +88,10 @@ class ComponentAction(Action):
 
 		if self._target is None:
 			code = code[:-1] + 'except:\n\t\t\tprint("The action \'' + self.getName() + '\' was not executed ' \
-								'correctly. Please contact support to fix this issue.")\n\n'
+								'correctly. Please contact support for help.")\n\n'
 		else:
 			code = code[:-1] + 'except:\n\t\t\tprint("The action \'' + self.getName() + '\' was not executed ' \
 							   'correctly on component with ID ' + str(self._target.getId()) + '. Please ' \
-								'contact support to fix this issue.")\n\n'
+								'contact support for help.")\n\n'
 
 		return code
