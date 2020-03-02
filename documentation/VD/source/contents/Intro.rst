@@ -16,7 +16,7 @@ deliverable. :num:`Fig. #roadmap` shows the schedule of when each system require
 
 .. _ReqSchedule:
 
-.. figure:: ../../images/requirements_schedule.png
+.. figure:: ../../images/requirements_schedule_v2.png
 	:alt: requirements schedule
 
-	Requirements Schedule Rev 3: A detailed schedule for all requirements planned for the project.
+	Requirements Schedule Rev 2: A detailed schedule for all requirements planned for the project.
