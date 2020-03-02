@@ -26,7 +26,7 @@ from typing import List
 
 from data.apim.action import Action, ActionException
 from data.apim.actionwrapper import ActionWrapper
-from data.apim.port import Port, PortException
+import data.apim.port as pt
 from data.apim.wireset import WireSet
 from data.apim.wire import WireException
 
@@ -99,39 +99,41 @@ class ActionPipeline(Action):
 		self.updated.emit()
 		return True
 	
-	def connect(self, portA: 'Port', portB: 'Port') -> None:
+	def connect(self, portA: 'pt.Port', portB: 'pt.Port') -> 'Wire':
 		"""
-		Insert a wire to carry data from port A to port B.
+		Insert a wire to carry data from port A to port B. Returns a reference to the newly created Wire.
 		
 		:raises: PortException if either portA or portB do not belong to either this
 		ActionPipeline or any of its inner actions.
 		:raises: PortException if portB already has an input.
-		:raises: WireException if the connnection is invalid.
+		:raises: WireException if the connection is invalid.
 		
 		:param portA: The port that will be the source of the wire.
 		:type portA: Port
 		:param portB: The port that will be the destination of the wire.
 		:type portB: Port
-		:return: None
-		:rtype: NoneType
+		:return: The newly created Wire object connecting the given ports.
+		:rtype: Wire
 		"""
 		
 		allowableActions = [self] + self._actions
 		
 		if portA.getAction() not in allowableActions:
-			raise PortException("The source port is invalid")
+			raise pt.PortException("The source port is invalid")
 		
 		if portB.getAction() not in allowableActions:
-			raise PortException("The destination port is invalid")
+			raise pt.PortException("The destination port is invalid")
 		
 		if portB.getInputWire() is not None:
-			raise PortException("The destination port already has an input wire.")
+			raise pt.PortException("The destination port already has an input wire.")
 		
 		if not self.connectionIsValid(portA, portB):
 			raise WireException("The connection is not a valid configuration.")
 		
-		self._wireSet.addWire(portA, portB)
+		newWire = self._wireSet.addWire(portA, portB)
 		self.updated.emit()
+
+		return newWire
 	
 	def disconnect(self, portA: 'Port', portB: 'Port') -> None:
 		"""
@@ -153,10 +155,10 @@ class ActionPipeline(Action):
 		allowableActions = [self] + self._actions
 		
 		if portA.getAction() not in allowableActions:
-			raise PortException("The source port is invalid")
+			raise pt.PortException("The source port is invalid")
 		
 		if portB.getAction() not in allowableActions:
-			raise PortException("The destination port is invalid")
+			raise pt.PortException("The destination port is invalid")
 		
 		wireFound = False
 		if portB.getInputWire() is not None:
@@ -219,15 +221,16 @@ class ActionPipeline(Action):
 				self._wireSet.deleteWiresConnectedToPort(port)
 				return removed
 			else:
-				raise PortException("The port does not belong to this action pipeline or any children")
+				raise pt.PortException("The port does not belong to this action pipeline or any children")
 		else:
-			raise PortException("The port does not have an action.")
+			raise pt.PortException("The port does not have an action.")
 		
 		self.updated.emit()
 		
 	def connectionIsValid(self, portA: 'Port', portB: 'Port') -> bool:
 		"""
-		Determines if a wire can be used to connect portA to portB.
+		Determines if a wire can be used to connect portA to portB. The port B must not have an
+		input wire.
 		
 		Not all wiring configurations are valid. Please follow the wiring table below:
 		
@@ -258,6 +261,9 @@ class ActionPipeline(Action):
 				return True
 			elif portB.getAction() in self._actions and portB in portB.getAction().getInputPorts():
 				return True
+			
+		if portB.getInputWire():
+			return False
 		
 		if portA in self.getInputPorts():
 			return isPortBValid()
@@ -310,6 +316,9 @@ class ActionPipeline(Action):
 
 		code = ""
 
+		for p in self.getInputPorts():  # Assumes unique input port names, which should be enforced in gui.
+			self._varMap.append((p.getName(), p))
+
 		for	a in self._actions: 
 			code += '\t\t' 
 			if a.getOutputPorts():  # Getting outputs named and written to code
@@ -318,8 +327,8 @@ class ActionPipeline(Action):
 				if len(a.getOutputPorts()) > 1:  # if several outputs
 					for o in a.getOutputPorts()[1:]:
 						code += ", " + self.getVarName(o)
-			
-			code += ' = ' + a.getMethodName() + '('
+				code += ' = '
+			code += a.getMethodName() + '('
 
 			if a.getInputPorts():
 				i = a.getInputPorts()[0]
@@ -327,11 +336,10 @@ class ActionPipeline(Action):
 				if len(a.getInputPorts()) > 1:  # if multiple inputs
 					for i in a.getInputPorts()[1:]:
 						code += ", " + self.getVarName(i)
-			
-			code += ')\n'
+			code += ')'
 		
 		if self.getOutputPorts():
-			code += '\n\t\treturn '
+			code += '\n\n\t\treturn '
 			o = self.getOutputPorts()[0]
 			code += self.getVarName(o)  # only one output
 			if len(self.getOutputPorts()) > 1:  # if several outputs
@@ -339,6 +347,7 @@ class ActionPipeline(Action):
 					code += ", " + self.getVarName(o)
 
 		code += '\n\n'
+		return code
 
 	def getVarName(self, p: 'Port') -> str:
 		"""
@@ -393,7 +402,8 @@ class ActionPipeline(Action):
 		num_replacements = len(var) - len(zs)
 		newName = zs[:-1] + self.incrChar(zs[-1]) if zs else 'a'
 		newName += 'a' * num_replacements
-		return newName
+
+		self._varName = newName
 
 	def incrChar(self, var: str) -> str:
 		"""
