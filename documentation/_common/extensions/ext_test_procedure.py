@@ -206,7 +206,7 @@ def read_procedure_data(filename):
 
 		proc = {}
 		proc['reqno'] = name
-		proc['title'] = df['Title'][0]
+		proc['title'] = "({}) {}".format(proc['reqno'], df['Title'][0])
 		proc['intro'] = df['Introduction'][0]
 		proc['refer'] = [a for a in df['Referenced Documents'] if type(a) == str]
 		proc['equip'] = [b for b in df['Required Equipment'] if type(b) == str]

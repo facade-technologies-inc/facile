@@ -30,12 +30,12 @@ sys.path.append(os.path.abspath('../../_common/extensions'))
 
 # -- Project information -----------------------------------------------------
 
-project = 'Security Classification Guide'
+project = 'System Report'
 copyright = '2020, Facade Technologies Inc.'
 
 author = "Facade Technologies Inc."
 
-version = "A"
+version = "B1"
 release = version
 
 
@@ -45,16 +45,8 @@ release = version
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-	# 'ext_test_procedure',
+	'sphinx.ext.autosectionlabel',
 	'sphinx.ext.todo',
-	'sphinx.ext.autodoc',
-	'sphinx.ext.inheritance_diagram',
-	'sphinx.ext.autosummary',
-	'sphinx.ext.intersphinx',
-	'sphinx.ext.mathjax',
-	'sphinx.ext.viewcode',
-	'sphinx.ext.graphviz',
-	# 'autoapi.extension',
 	'ext_numfig'
 ]
 
@@ -71,18 +63,6 @@ exclude_patterns = ["**/ui"]
 # -- Options for numfig ------------------------------------------------------
 numfig_number_figures = True
 numfig_figure_caption_prefix = "Figure"
-
-
-# -- Options for AutoAPI -----------------------------------------------------
-# See https://sphinx-autoapi.readthedocs.io/en/latest/reference/config.html# for details
-autoapi_add_toctree_entry = False
-autoapi_type = "python"
-autoapi_dirs = ['../../../src']
-autoapi_template_dir = "../../_common/templates"
-autoapi_root = "docs/SDD/autoapi"
-autoapi_include_summaries = True
-autoapi_python_class_content = "both"
-autoapi_keep_files = True
 
 
 # -- Options for HTML output -------------------------------------------------
@@ -110,11 +90,11 @@ latex_favicon = "../../_common/images/facade_logo_favicon.ico"
 latex_show_pagerefs = True
 latex_show_urls = "footnote"
 
-rst_prolog = """
-.. warning:: **This document contains proprietary information. Duplication and dissemination of these documents is prohibited without the prior written consent of Facade Technologies Inc.**
-"""
-
-rst_epilog = rst_prolog
+# rst_prolog = """
+# .. warning:: **This document contains proprietary information. Duplication and dissemination of these documents is prohibited without the prior written consent of Facade Technologies Inc.**
+# """
+#
+# rst_epilog = rst_prolog
 
 latex_documents = [(
 	"index",
@@ -150,39 +130,14 @@ latex_elements = {
 		\rfoot{Proprietary - Limited Use and Access}
 		\cfoot{Duplication and dissemination of these documents is prohibited \\
 		without the prior written consent of Facade Technologies Inc.}
-		
-		\definecolor{myblue}{rgb}{0.4, 0.4, 0.5}
-		\titlecontents{chapter}[ 0em ]{ \vspace{0.75em} }
-              {Doc \, \contentslabel{.2em} \hspace{.5em}-- \hspace{.5em}}{}
-              {\hfill \textbf{\contentspage}}[]
-		\titlecontents{section}[ 2em ]{  }
-              {\hspace{3.5em} \contentslabel{2.5em}}{}
-              {\titlerule*[0.5pc]{.}\contentspage}[]
-	''',
-}
+	'''
 
-# latex_engine = 'xelatex'
-# latex_elements = {
-#     'fontpkg':
-#         r'''
-#         \setmainfont{DejaVu Serif}
-#         \setsansfont{DejaVu Sans}
-#         \setmonofont{DejaVu Sans Mono}
-#         ''',
-#     'preamble':
-#         r'''
-#         \usepackage[titles]{tocloft}
-#         \cftsetpnumwidth {1.25cm}\cftsetrmarg{1.5cm}
-#         \setlength{\cftchapnumwidth}{0.75cm}
-#         \setlength{\cftsecindent}{\cftchapnumwidth}
-#         \setlength{\cftsecnumwidth}{1.25cm}
-#         ''',
-#     'fncychap':
-#         r'''
-#         \usepackage[Bjornstrup]{fncychap}
-#         ''',
-#     'printindex':
-#         r'''
-#         \footnotesize\raggedright\printindex
-#         ''',
-# }
+	# 	\definecolor{myblue}{rgb}{0.4, 0.4, 0.5}
+	# 	\titlecontents{chapter}[ 0em ]{ \vspace{0.75em} }
+    #           {Doc \, \contentslabel{.2em} \hspace{.5em}-- \hspace{.5em}}{}
+    #           {\hfill \textbf{\contentspage}}[]
+	# 	\titlecontents{section}[ 2em ]{  }
+    #           {\hspace{3.5em} \contentslabel{2.5em}}{}
+    #           {\titlerule*[0.5pc]{.}\contentspage}[]
+	# ''',
+}
