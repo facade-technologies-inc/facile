@@ -172,44 +172,10 @@ check.sty"
 ounter.sty")))
 ("C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9\tex/latex/oberdiek\hypcap.st
 y") (sphinxmessages.sty)
-======================================================================
-starting package maintenance...
-installation directory: "C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9"
-package repository: http://mirrors.rit.edu/CTAN/systems/win32/miktex/tm/packages/
-visiting repository http://mirrors.rit.edu/CTAN/systems/win32/miktex/tm/packages/...
-repository type: remote package repository
-loading package repository manifest...
-downloading http://mirrors.rit.edu/CTAN/systems/win32/miktex/tm/packages/miktex-zzdb1-2.9.tar.lzma...
-0.20 MB, 1.93 Mbit/s
-package repository digest: 1dda22dbe70b3237a8431670882f34df
-going to download 364074 bytes
-going to install 16 file(s) (1 package(s))
-downloading http://mirrors.rit.edu/CTAN/systems/win32/miktex/tm/packages/pdfpages.tar.lzma...
-0.36 MB, 8.42 Mbit/s
-extracting files from pdfpages.tar.lzma...
-======================================================================
-
 ("C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9\tex/latex/pdfpages\pdfpages.
 sty"
 ("C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9\tex/latex/base\ifthen.sty")
 ("C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9\tex/latex/tools\calc.sty")
-======================================================================
-starting package maintenance...
-installation directory: "C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9"
-package repository: http://mirrors.rit.edu/CTAN/systems/win32/miktex/tm/packages/
-visiting repository http://mirrors.rit.edu/CTAN/systems/win32/miktex/tm/packages/...
-repository type: remote package repository
-loading package repository manifest...
-downloading http://mirrors.rit.edu/CTAN/systems/win32/miktex/tm/packages/miktex-zzdb1-2.9.tar.lzma...
-0.20 MB, 10.30 Mbit/s
-package repository digest: 1dda22dbe70b3237a8431670882f34df
-going to download 263309 bytes
-going to install 11 file(s) (1 package(s))
-downloading http://mirrors.rit.edu/CTAN/systems/win32/miktex/tm/packages/eso-pic.tar.lzma...
-0.26 MB, 11.57 Mbit/s
-extracting files from eso-pic.tar.lzma...
-======================================================================
-
 ("C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9\tex/latex/eso-pic\eso-pic.st
 y")
 ("C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9\tex/latex/pdfpages\pppdftex.
@@ -224,120 +190,76 @@ y"
 tex"
 ("C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9\tex/generic/xkeyval\xkvutils
 .tex")))
-======================================================================
-starting package maintenance...
-installation directory: "C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9"
-package repository: http://mirrors.rit.edu/CTAN/systems/win32/miktex/tm/packages/
-visiting repository http://mirrors.rit.edu/CTAN/systems/win32/miktex/tm/packages/...
-repository type: remote package repository
-loading package repository manifest...
-downloading http://mirrors.rit.edu/CTAN/systems/win32/miktex/tm/packages/miktex-zzdb1-2.9.tar.lzma...
-0.20 MB, 10.65 Mbit/s
-package repository digest: 1dda22dbe70b3237a8431670882f34df
-going to download 186064 bytes
-going to install 6 file(s) (1 package(s))
-downloading http://mirrors.rit.edu/CTAN/systems/win32/miktex/tm/packages/currfile.tar.lzma...
-0.19 MB, 10.56 Mbit/s
-extracting files from currfile.tar.lzma...
-======================================================================
-
 ("C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9\tex/latex/currfile\currfile.
 sty"
-======================================================================
-starting package maintenance...
-installation directory: "C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9"
-package repository: http://mirrors.rit.edu/CTAN/systems/win32/miktex/tm/packages/
-visiting repository http://mirrors.rit.edu/CTAN/systems/win32/miktex/tm/packages/...
-repository type: remote package repository
-loading package repository manifest...
-downloading http://mirrors.rit.edu/CTAN/systems/win32/miktex/tm/packages/miktex-zzdb1-2.9.tar.lzma...
-0.20 MB, 10.58 Mbit/s
-package repository digest: 1dda22dbe70b3237a8431670882f34df
-going to download 281928 bytes
-going to install 10 file(s) (1 package(s))
-downloading http://mirrors.rit.edu/CTAN/systems/win32/miktex/tm/packages/filehook.tar.lzma...
-0.28 MB, 11.81 Mbit/s
-extracting files from filehook.tar.lzma...
-======================================================================
-
 ("C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9\tex/latex/filehook\filehook.
 sty"))
-======================================================================
-starting package maintenance...
-installation directory: "C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9"
-package repository: http://mirrors.rit.edu/CTAN/systems/win32/miktex/tm/packages/
-visiting repository http://mirrors.rit.edu/CTAN/systems/win32/miktex/tm/packages/...
-repository type: remote package repository
-loading package repository manifest...
-downloading http://mirrors.rit.edu/CTAN/systems/win32/miktex/tm/packages/miktex-zzdb1-2.9.tar.lzma...
-0.20 MB, 11.10 Mbit/s
-package repository digest: 1dda22dbe70b3237a8431670882f34df
-going to download 175934 bytes
-going to install 5 file(s) (1 package(s))
-downloading http://mirrors.rit.edu/CTAN/systems/win32/miktex/tm/packages/gincltex.tar.lzma...
-0.18 MB, 10.83 Mbit/s
-extracting files from gincltex.tar.lzma...
-======================================================================
-
 ("C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9\tex/latex/gincltex\gincltex.
 sty"
-======================================================================
-starting package maintenance...
-installation directory: "C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9"
-package repository: http://mirrors.rit.edu/CTAN/systems/win32/miktex/tm/packages/
-visiting repository http://mirrors.rit.edu/CTAN/systems/win32/miktex/tm/packages/...
-repository type: remote package repository
-loading package repository manifest...
-downloading http://mirrors.rit.edu/CTAN/systems/win32/miktex/tm/packages/miktex-zzdb1-2.9.tar.lzma...
-0.20 MB, 11.26 Mbit/s
-package repository digest: 1dda22dbe70b3237a8431670882f34df
-going to download 254706 bytes
-going to install 4 file(s) (1 package(s))
-downloading http://mirrors.rit.edu/CTAN/systems/win32/miktex/tm/packages/svn-prov.tar.lzma...
-0.25 MB, 11.58 Mbit/s
-extracting files from svn-prov.tar.lzma...
-======================================================================
-
 ("C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9\tex/latex/svn-prov\svn-prov.
 sty")
-======================================================================
-starting package maintenance...
-installation directory: "C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9"
-package repository: http://mirrors.rit.edu/CTAN/systems/win32/miktex/tm/packages/
-visiting repository http://mirrors.rit.edu/CTAN/systems/win32/miktex/tm/packages/...
-repository type: remote package repository
-loading package repository manifest...
-downloading http://mirrors.rit.edu/CTAN/systems/win32/miktex/tm/packages/miktex-zzdb1-2.9.tar.lzma...
-0.20 MB, 11.10 Mbit/s
-package repository digest: 1dda22dbe70b3237a8431670882f34df
-going to download 790035 bytes
-going to install 13 file(s) (1 package(s))
-downloading http://mirrors.rit.edu/CTAN/systems/win32/miktex/tm/packages/adjustbox.tar.lzma...
-0.79 MB, 25.49 Mbit/s
-extracting files from adjustbox.tar.lzma...
-======================================================================
-
 ("C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9\tex/latex/adjustbox\adjustbo
 x.sty"
 ("C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9\tex/latex/adjustbox\adjcalc.
 sty")
 ("C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9\tex/latex/adjustbox\trimclip
 .sty"
+("C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9\tex/latex/collectbox\collect
+box.sty")
+("C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9\tex/latex/adjustbox\tc-pdfte
+x.def"))
 ======================================================================
 starting package maintenance...
 installation directory: "C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9"
-package repository: http://mirrors.rit.edu/CTAN/systems/win32/miktex/tm/packages/
-visiting repository http://mirrors.rit.edu/CTAN/systems/win32/miktex/tm/packages/...
+package repository: http://ftp.math.purdue.edu/mirrors/ctan.org/systems/win32/miktex/tm/packages/
+visiting repository http://ftp.math.purdue.edu/mirrors/ctan.org/systems/win32/miktex/tm/packages/...
 repository type: remote package repository
 loading package repository manifest...
-downloading http://mirrors.rit.edu/CTAN/systems/win32/miktex/tm/packages/miktex-zzdb1-2.9.tar.lzma...
-0.20 MB, 13.15 Mbit/s
-package repository digest: 1dda22dbe70b3237a8431670882f34df
-going to download 282583 bytes
+downloading http://ftp.math.purdue.edu/mirrors/ctan.org/systems/win32/miktex/tm/packages/miktex-zzdb1-2.9.tar.lzma...
+0.20 MB, 1.78 Mbit/s
+package repository digest: 96db9d6aa906b2bdd2c8abf270a18322
+going to download 140389 bytes
 going to install 5 file(s) (1 package(s))
-downloading http://mirrors.rit.edu/CTAN/systems/win32/miktex/tm/packages/collectbox.tar.lzma...
-0.28 MB, 17.80 Mbit/s
-extracting files from collectbox.tar.lzma...
-Can't spawn "pdflatex    -recorder  "19033_Technical_Data_Package.tex"": Inappropriate I/O control operation at C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9\scripts/latexmk\latexmk.pl line 9808.
+downloading http://ftp.math.purdue.edu/mirrors/ctan.org/systems/win32/miktex/tm/packages/ifoddpage.tar.lzma...
+0.14 MB, 2.07 Mbit/s
+extracting files from ifoddpage.tar.lzma...
+======================================================================
+
+("C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9\tex/latex/ifoddpage\ifoddpag
+e.sty")))
+======================================================================
+starting package maintenance...
+installation directory: "C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9"
+package repository: http://ftp.math.purdue.edu/mirrors/ctan.org/systems/win32/miktex/tm/packages/
+visiting repository http://ftp.math.purdue.edu/mirrors/ctan.org/systems/win32/miktex/tm/packages/...
+repository type: remote package repository
+loading package repository manifest...
+downloading http://ftp.math.purdue.edu/mirrors/ctan.org/systems/win32/miktex/tm/packages/miktex-zzdb1-2.9.tar.lzma...
+0.20 MB, 2.10 Mbit/s
+package repository digest: 96db9d6aa906b2bdd2c8abf270a18322
+going to download 281409 bytes
+going to install 7 file(s) (1 package(s))
+downloading http://ftp.math.purdue.edu/mirrors/ctan.org/systems/win32/miktex/tm/packages/filemod.tar.lzma...
+0.28 MB, 2.89 Mbit/s
+extracting files from filemod.tar.lzma...
+======================================================================
+
+("C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9\tex/latex/filemod\filemod-ex
+pmin.sty"))
+======================================================================
+starting package maintenance...
+installation directory: "C:\Users\kirim\AppData\Local\Programs\MiKTeX 2.9"
+package repository: http://ftp.math.purdue.edu/mirrors/ctan.org/systems/win32/miktex/tm/packages/
+visiting repository http://ftp.math.purdue.edu/mirrors/ctan.org/systems/win32/miktex/tm/packages/...
+repository type: remote package repository
+loading package repository manifest...
+downloading http://ftp.math.purdue.edu/mirrors/ctan.org/systems/win32/miktex/tm/packages/miktex-zzdb1-2.9.tar.lzma...
+0.20 MB, 2.48 Mbit/s
+package repository digest: 96db9d6aa906b2bdd2c8abf270a18322
+going to download 241246 bytes
+going to install 4 file(s) (1 package(s))
+downloading http://ftp.math.purdue.edu/mirrors/ctan.org/systems/win32/miktex/tm/packages/import.tar.lzma...
+0.24 MB, 2.91 Mbit/s
+extracting files from import.tar.lzma...
 Terminating on signal SIGHUP(1)
-^CTerminate batch job (Y/N)? 
+^C
