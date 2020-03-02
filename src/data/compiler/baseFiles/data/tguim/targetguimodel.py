@@ -229,7 +229,7 @@ class TargetGuiModel(QObject):
 		"""
 		tguim = TargetGuiModel()
 		tguim._root = Component.fromDict(d["root"], tguim)
-		tguim._root.createGraphics()
+		# tguim._root.createGraphics()
 		
 		# create all components (superficially)
 		for id, comp in d['components'].items():
@@ -275,10 +275,10 @@ class TargetGuiModel(QObject):
 			if parent:
 				parent._children.append(cur)
 
-			try:
-				cur.createGraphics()
-			except:
-				pass
+			# try:
+			# 	cur.createGraphics()
+			# except:
+			# 	pass
 			
 			if parent:
 				for child in [tguim._components[int(id)] for id in d["components"][str(cur._id)][
@@ -288,8 +288,8 @@ class TargetGuiModel(QObject):
 				for child in [tguim._components[int(id)] for id in d["root"]["children"]]:
 					work.append((child, cur))
 		
-		for vb in tguim._visibilityBehaviors.values():
-			vb.createGraphics()
+		# for vb in tguim._visibilityBehaviors.values():
+		# 	vb.createGraphics()
 		
 		Entity.count = d["Entity Count"]
 		SuperToken.id_counter = d["SuperToken Count"]

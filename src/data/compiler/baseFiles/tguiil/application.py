@@ -137,6 +137,31 @@ class Application(pywinauto.Desktop):
 		"""
 		return self._startTime
 
+	def start(self, exeLoc: str) -> None:
+		"""
+		Starts an executable and connects to it.
+
+		:param exeLoc: location of executable file
+		:type exeLoc: str
+		:return: None
+		"""
+
+		process = psutil.Popen([exeLoc])
+		self.setProcess(process)
+		time.sleep(1)
+
+	def kill(self) -> None:
+		"""
+		Kills the process.
+
+		:return: None
+		"""
+
+		if self._process:
+			self._process.kill()
+		else:
+			pass
+
 
 if __name__ == "__main__":
 	desktop = pywinauto.Desktop(backend="uia")

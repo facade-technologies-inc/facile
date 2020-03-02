@@ -63,8 +63,8 @@ class ComponentFinder:
 		
 		if self._app.is_process_running():
 			work = [win for win in self._app.windows()]
+
 			while len(work) > 0:
-				
 				if not self._app.is_process_running():
 					msg = "The application stopped before we could locate the component"
 					raise ComponentNotFoundException(msg)

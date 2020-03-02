@@ -1,6 +1,6 @@
 name = "read"
 description = "Read from a component."
-targets = {'Button', 'Edit', 'Static'}
+targets = {'Edit', 'Static'}
 inputs = []
 outputs = [
 	{
@@ -10,5 +10,5 @@ outputs = [
 	}
 ]
 code = """
-return comp.read()
+return comp.get_value()
 """

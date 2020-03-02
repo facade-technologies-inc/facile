@@ -74,7 +74,7 @@ from baseapplication import BaseApplication
 
 class Application(BaseApplication):
 \tdef __init__(self):
-\t\tBaseApplication.__init__(self, "''' + self._exeLoc + '", set([')
+\t\tBaseApplication.__init__(self, "''' + self._exeLoc + '", {')
 
             tmp = ''
             for i in self._opts:
@@ -82,7 +82,7 @@ class Application(BaseApplication):
 
             f.write(tmp[2:])
 
-            f.write(']), "' + self._name + '", "' + self._backend + '''")
+            f.write('}, "' + self._name + '", "' + self._backend + '''")
 
 ''')
 

@@ -19,22 +19,31 @@
 	\------------------------------------------------------------------------------/
 """
 
-import pywinauto
+
+import sys, os
+pathToThisFile, thisFile = os.path.split(os.path.abspath(__file__))
+sys.path.insert(0, pathToThisFile)
+
+
 import json
+import traceback
+#import pywinauto
 from typing import Set
+from tguiil.application import Application
 from tguiil.matchoption import MatchOption
 from tguiil.componentfinder import ComponentFinder
 from data.tguim.targetguimodel import TargetGuiModel
 
 class BaseApplication():
     def __init__(self, exeLoc: str, options: Set['MatchOption'], name: str, backend: str = 'uia'):
-        self.app = pywinauto.Application(backend = backend)
+        # Note that app is a custom Desktop instance from pywinauto, not an application instance.
+        self.app = Application(backend = backend)
         self._options = options
         self._exeLoc= exeLoc
         self._name = name
 
     def start(self):
-        self.app = self.app.start(self._exeLoc)
+        self.app.start(self._exeLoc)
 
     def stop(self):
         self.app.kill()
@@ -43,11 +52,12 @@ class BaseApplication():
         cf = ComponentFinder(self.app, self._options)
 
         try:
-            with open('./' + self._name + '.tguim', 'r') as tguimFile:
+            with open(os.path.join(pathToThisFile, self._name + ".tguim"), 'r') as tguimFile:
                 d = json.loads(tguimFile.read())
                 tgm = TargetGuiModel.fromDict(d)
         except:
             print("Couldn't load from {}".format('./' + self._name + '.tguim'))
+            traceback.print_exc()
             return
         else:
             comp = tgm.getComponent(compID)
@@ -61,4 +71,5 @@ class BaseApplication():
         :return: None
         """
 
+        # comp.wait('exists')
         pass
