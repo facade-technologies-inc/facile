@@ -25,7 +25,6 @@ from collections import OrderedDict
 from enum import Enum
 
 from data.property import Property
-from qt_models.propeditormodel import PropModel
 
 
 class Properties:
@@ -41,7 +40,6 @@ class Properties:
 		:rtype: Properties
 		"""
 		self._categories = OrderedDict()
-		self._model = PropModel(self)
 	
 	def newCategory(self, category: str) -> None:
 		"""
@@ -130,15 +128,6 @@ class Properties:
 				newProperties.addProperty(category, name, default, type, readOnly)
 		
 		return newProperties
-	
-	def getModel(self) -> PropModel:
-		"""
-		Gets the properties's objects model.
-
-		:return: Model of properties object.
-		:rtype: PropModel
-		"""
-		return self._model
 	
 	def getNumCategories(self) -> int:
 		"""

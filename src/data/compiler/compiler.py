@@ -25,8 +25,6 @@ import os
 import data.statemachine as sm
 from data.compilationprofile import CompilationProfile
 from shutil import copyfile
-from typing import Set
-import re
 
 class Compiler():
 
@@ -42,7 +40,7 @@ class Compiler():
         self._name = statem._project.getName()
         self._saveFolder = compProf.apiFolderDir + '/' # just save it directly where the user wants it.
         self._backend = statem._project.getBackend()
-        self._exeLoc = compProf.interpExeDir
+        self._exeLoc = statem._project.getExecutableFile()
         self._opts = compProf.compResOpts
         self._apim = statem._project.getAPIModel()
         self._tguim = statem._project.getTargetGUIModel()
@@ -53,7 +51,8 @@ class Compiler():
                                 "./baseFiles/tguiil/tokens.py", "./baseFiles/tguiil/supertokens.py",
                                 "./baseFiles/tguiil/matchoption.py", "./baseFiles/data/entity.py",
                                 "./baseFiles/data/tguim/component.py", "./baseFiles/data/tguim/visibilitybehavior.py",
-                                "./baseFiles/data/properties.py", "./baseFiles/data/tguim/condition.py"]
+                                "./baseFiles/data/properties.py", "./baseFiles/data/tguim/condition.py",
+                                "./baseFiles/data/tguim/targetguimodel.py", "./baseFiles/data/property.py"]
 
     def generateCustomApp(self) -> None:
         """
@@ -65,13 +64,17 @@ class Compiler():
         with open(self._saveFolder + "application.py", "w+") as f:
             
             f.write('''\
+import sys, os
+pathToThisFile, thisFile = os.path.split(os.path.abspath(__file__))
+sys.path.insert(0, pathToThisFile)
+
 from typing import Set
 from tguiil.matchoption import MatchOption
 from baseapplication import BaseApplication
 
 class Application(BaseApplication):
 \tdef __init__(self):
-\t\tBaseApplication.__init__(self, "''' + re.escape(self._exeLoc) + '", Set[')
+\t\tBaseApplication.__init__(self, "''' + self._exeLoc + '", set([')
 
             tmp = ''
             for i in self._opts:
@@ -79,7 +82,7 @@ class Application(BaseApplication):
 
             f.write(tmp[2:])
 
-            f.write('], "' + self._name + '", "' + self._backend + '''")
+            f.write(']), "' + self._name + '", "' + self._backend + '''")
 
 ''')
 
@@ -121,7 +124,9 @@ class Application(BaseApplication):
         statem = sm.StateMachine.instance
         statem._project.save()
         path = statem._project.getTargetGUIModelFile()
-        copyfile(path, self._saveFolder + 'targetGuiModel.tguim')  # tguim saved to root, alongside baseapp and customapp
+        name = statem._project.getName()
+
+        copyfile(path, self._saveFolder + name + '.tguim')  # tguim saved to root, alongside baseapp and customapp
 
     def compileAPI(self) -> None:
         """
@@ -135,6 +140,6 @@ class Application(BaseApplication):
 
         curPath = os.path.abspath(__file__)
         dir, filename = os.path.split(curPath)
-        copyfile(os.path.join(dir, 'baseApplication.py'), os.path.join(self._saveFolder, 'baseApplication.py'))
+        copyfile(os.path.join(dir, 'baseapplication.py'), os.path.join(self._saveFolder, 'baseapplication.py'))
 
         self.generateCustomApp()
