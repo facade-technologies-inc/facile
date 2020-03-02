@@ -329,7 +329,7 @@ class ActionPipeline(Action):
 						code += ", " + self.getVarName(o)
 				code += ' = '
 			
-			code += a.getMethodName() + '('
+			code += 'self.' + a.getMethodName() + '('
 
 			if a.getInputPorts():
 				i = a.getInputPorts()[0]

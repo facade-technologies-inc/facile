@@ -25,6 +25,8 @@ import os
 import data.statemachine as sm
 from data.compilationprofile import CompilationProfile
 from shutil import copyfile
+from typing import Set
+import re
 
 class Compiler():
 
@@ -63,11 +65,21 @@ class Compiler():
         with open(self._saveFolder + "application.py", "w+") as f:
             
             f.write('''\
+from typing import Set
+from tguiil.matchoption import MatchOption
 from baseapplication import BaseApplication
 
 class Application(BaseApplication):
-    def __init__(self):
-        BaseApplication.__init__(self, "''' + self._exeLoc + '", "' + self._opts + '", "' + self._name + '", "' + self._backend + '''")
+\tdef __init__(self):
+\t\tBaseApplication.__init__(self, "''' + re.escape(self._exeLoc) + '", Set[')
+
+            tmp = ''
+            for i in self._opts:
+                tmp += ', ' + str(i)
+
+            f.write(tmp[2:])
+
+            f.write('], "' + self._name + '", "' + self._backend + '''")
 
 ''')
 
@@ -75,7 +87,7 @@ class Application(BaseApplication):
 
             for action in cas:
                 f.write(action.getMethod())
-            
+
             for ap in aps:
                 f.write(ap.getMethod())
 
@@ -109,7 +121,7 @@ class Application(BaseApplication):
         statem = sm.StateMachine.instance
         statem._project.save()
         path = statem._project.getTargetGUIModelFile()
-        copyfile(path, self._saveFolder)  # tguim saved to root, alongside baseapp and customapp
+        copyfile(path, self._saveFolder + 'targetGuiModel.tguim')  # tguim saved to root, alongside baseapp and customapp
 
     def compileAPI(self) -> None:
         """
@@ -120,5 +132,9 @@ class Application(BaseApplication):
 
         self.copyNecessaryFiles()
         self.saveTGUIM()
-        copyfile('./baseApplication.py', self._saveFolder)
+
+        curPath = os.path.abspath(__file__)
+        dir, filename = os.path.split(curPath)
+        copyfile(os.path.join(dir, 'baseApplication.py'), os.path.join(self._saveFolder, 'baseApplication.py'))
+
         self.generateCustomApp()

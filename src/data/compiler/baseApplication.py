@@ -27,8 +27,8 @@ from tguiil.componentfinder import ComponentFinder
 from data.tguim.targetguimodel import TargetGuiModel
 
 class BaseApplication():
-    def __init__(self, exeLoc: str, options: Set[MatchOption], name: str, backend: str = 'uia'):
-        self.app = pywinauto.Application(backend)
+    def __init__(self, exeLoc: str, options: Set['MatchOption'], name: str, backend: str = 'uia'):
+        self.app = pywinauto.Application(backend = backend)
         self._options = options
         self._exeLoc= exeLoc
         self._name = name

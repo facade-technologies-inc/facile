@@ -211,9 +211,9 @@ class TestCompiler(unittest.TestCase):
 		:rtype: NoneType
 		"""
 
-		_6_click()
-		_7_click()
-		_8_write(value)
+		self._6_click()
+		self._7_click()
+		self._8_write(value)
 
 '''
 
@@ -228,8 +228,8 @@ class TestCompiler(unittest.TestCase):
 		:rtype: NoneType
 		"""
 
-		custom1(value)
-		a = _9_read()
+		self.custom1(value)
+		a = self._9_read()
 
 '''
 
@@ -275,6 +275,8 @@ class TestCompiler(unittest.TestCase):
 		try:
 			comp.set_focus()
 			comp.click()
+		except:
+			print("The action 'click' was not executed correctly on component with ID 4. Please contact support to fix this issue.")
 
 '''
 		method2 = '''\
@@ -292,6 +294,8 @@ class TestCompiler(unittest.TestCase):
 
 		try:
 			comp.set_edit_text(value)
+		except:
+			print("The action 'write' was not executed correctly on component with ID 5. Please contact support to fix this issue.")
 
 '''
 		print([li for li in difflib.ndiff(a1.getMethod(), method1) if li[0] != ' '])

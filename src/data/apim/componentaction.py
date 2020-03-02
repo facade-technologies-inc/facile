@@ -82,7 +82,16 @@ class ComponentAction(Action):
 		:rtype: str
 		"""
 
-		code = '\n\t\ttry:'
+		code = '\t\tcomp = self.findComponent(' + str(self._target.getId()) + ')\n'
+		code += '\n\t\ttry:'
 		code += self._spec.code.replace('\n', '\n\t\t\t')
 
-		return '\t\tcomp = self.findComponent(' + str(self._target.getId()) + ')\n' + code[:-3]
+		if self._target is None:
+			code = code[:-1] + 'except:\n\t\t\tprint("The action \'' + self.getName() + '\' was not executed ' \
+								'correctly. Please contact support to fix this issue.")\n\n'
+		else:
+			code = code[:-1] + 'except:\n\t\t\tprint("The action \'' + self.getName() + '\' was not executed ' \
+							   'correctly on component with ID ' + str(self._target.getId()) + '. Please ' \
+								'contact support to fix this issue.")\n\n'
+
+		return code
