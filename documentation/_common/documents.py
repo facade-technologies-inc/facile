@@ -64,7 +64,7 @@ releases = {
 	"TDP":        "B1",
 	"IDL":        "A1",
 	"SRD":        "D1",
-	"VD":         "A1",
+	"VD":         "B1",
 	"HDP":        "A1",
 	"SDP":        "B1", # Renamed from "Drawings"
 	"SVDD":       "A1",
