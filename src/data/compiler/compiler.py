@@ -24,7 +24,6 @@ work in the gui, and converts it into the desired API.
 import os
 import data.statemachine as sm
 from data.compilationprofile import CompilationProfile
-#from data.tguim.targetguimodel import TargetGuiModel
 from shutil import copyfile
 
 class Compiler():
@@ -39,12 +38,12 @@ class Compiler():
         statem = sm.StateMachine.instance
         self._compProf = compProf
         self._name = statem._project.getName()
-        self._saveFolder = compProf.apiFolderDir # just save it directly where the user wants it.
+        self._saveFolder = compProf.apiFolderDir + '/' # just save it directly where the user wants it.
         self._backend = statem._project.getBackend()
         self._exeLoc = compProf.interpExeDir
         self._opts = compProf.compResOpts
         self._apim = statem._project.getAPIModel()
-        self._apim = statem._project.getTargetGUIModel()
+        self._tguim = statem._project.getTargetGUIModel()
 
         # List was reduced in size by making custom, "stripped" versions of files that only
         #  have the required functions & dependencies. That way no need to import graphics files and all that.
@@ -61,15 +60,16 @@ class Compiler():
         :return: None
         """
 
-        with open(self._saveFolder +"application.py", "w+") as f:
+        with open(self._saveFolder + "application.py", "w+") as f:
             
             f.write('''\
-                from baseapplication import BaseApplication
+from baseapplication import BaseApplication
 
-                class Application(BaseApplication):
-                    def __init__(self):
-                        BaseApplication.__init__(self, "''' + self._exeLoc + '", "' + self._opts + '", "' + self._name + '", "' + self._backend + '''")
-            ''')
+class Application(BaseApplication):
+    def __init__(self):
+        BaseApplication.__init__(self, "''' + self._exeLoc + '", "' + self._opts + '", "' + self._name + '", "' + self._backend + '''")
+
+''')
 
             aps, cas = self._apim.getActionsByType()
 
@@ -105,6 +105,7 @@ class Compiler():
 
         :return: None
         """
+
         statem = sm.StateMachine.instance
         statem._project.save()
         path = statem._project.getTargetGUIModelFile()
