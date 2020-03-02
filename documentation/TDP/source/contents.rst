@@ -57,7 +57,7 @@ focused on automating repetitive tasks, or automating the GUI testing process. F
 solutions are either code-less meaning they can't easily be integrated into other software products, or they involve so
 much coding to use that someone without programming experience can't use them easily.
 
-Facile APIs provide a happy medium; they're easy to for someone with little or no programming experience to create and
+Facile APIs provide a happy medium; they're easy for someone with little or no programming experience to create and
 use, and they're flexible enough to be integrated into larger software products. The simplicity is achieved by producing
 an API that is tailored both to the target application and to the user's needs.
 
@@ -189,14 +189,20 @@ Mahr can even create Facile APIs for competitor products to compare results. Thi
 
 2.	A Facile API could be a partial remedy for IntelliWave’s unintuitive user interface. Not by changing it directly, but by acting as the glue between it and a different user interface. Mahr can satisfy their customers’ needs more directly by providing custom graphical user interfaces that simply use IntelliWave as a backend. These custom graphical user interfaces can be developed extremely quickly (in a matter of days possibly) using tools such as Qt Creator.
 
+.. todo:: WHAT DO WE CURRENTLY HAVE
+
 
 -------------------------------
 System Verification Plan / SRVM
 -------------------------------
 
+.. todo:: get from Nikhith
+
 -----------------------------
 Configuration Management Plan
 -----------------------------
+
+.. todo:: get from Nikhith
 
 -----------------------------
 Indentured Document List
