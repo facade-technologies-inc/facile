@@ -52,25 +52,13 @@ atp_header = warning + """
 Acceptance Test Procedures
 **************************
 
-This document contains the test procedures to verify every requirement that is currently verifiable. Every test 
-procedure has a corresponding data sheet that must be filled out and signed/delivered to the sponsor for every 
-deliverable. :num:`Fig. #roadmap` shows the schedule of when each system requirement will be verified by. 
-:num:`Fig. #reqschedule` shows a schedule of all system, subsystem, and sub-assembly requirement progress.
+This section contains detailed testing procedures that dictate whether Facile meets requirements or not. It currently
+contains only test procedures for requirements that can be fully verified at ISR. According to the test plan, 12 out of
+26 requirements can be verified at the time of ISR.
 
-.. _RoadMap:
-
-.. figure:: ../../images/road_map_v2.png
-	:alt: road map
-	
-	Visual schedule of system requirement verification
-
-.. _ReqSchedule:
-
-.. figure:: ../../images/requirements_schedule.png
-	:alt: requirements schedule
-	
-	A detailed schedule for all requirements planned to date.
-
+To pass a verification procedure, each step must pass. If any step of the verification procedure fails, the entire 
+verification procedure fails. Unless explicitly stated in the test description, it is assumed that completing a test 
+without issues constitutes passing the test.
 """
 
 data_sheets_header = warning + """
@@ -78,10 +66,12 @@ data_sheets_header = warning + """
 Data Sheets
 ***********
 
-This document contains a data sheet for each test case in the acceptance test procedure document.
+This document contains a data sheet for each test case in the Acceptance Test Procedures section.
 The data sheets in this document are meant to be left unfilled. When the tests are carried out,
 a new copy of this document will be created and the data sheets will be filled out.
 
+Each data sheet must have each row filled with pass/fail to be accepted. If any step of a verification procedure fails,
+the entire verification procedure fails and notes should be written down about the obtained results.
 """
 
 procedure_template = """

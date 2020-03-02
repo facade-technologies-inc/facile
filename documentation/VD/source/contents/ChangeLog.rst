@@ -2,7 +2,7 @@
 Change Log
 ==========
 
-..table:: Verification Document Current Release
+.. table:: Verification Document Current Release
 
     +-----------------+------------------+--------------+------------------------------+
     | Release Version | Internal Version | Last Updated | Approved By                  |
