@@ -274,7 +274,11 @@ class TargetGuiModel(QObject):
 			cur, parent = work.pop()
 			if parent:
 				parent._children.append(cur)
-			cur.createGraphics()
+
+			try:
+				cur.createGraphics()
+			except:
+				pass
 			
 			if parent:
 				for child in [tguim._components[int(id)] for id in d["components"][str(cur._id)][

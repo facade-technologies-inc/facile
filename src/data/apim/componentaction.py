@@ -23,8 +23,8 @@ component from the TGUIM.
 """
 
 from data.apim.action import Action
-from data.apim.port import Port
 from data.apim.actionspecification import ActionSpecification
+import data.apim.port as pt
 
 class ComponentAction(Action):
 	
@@ -42,11 +42,11 @@ class ComponentAction(Action):
 		self._spec = actionSpec
 		
 		for input in actionSpec.inputs:
-			p = Port.copy(input)
+			p = pt.Port.copy(input)
 			self.addInputPort(p)
 			
 		for output in actionSpec.outputs:
-			p = Port.copy(output)
+			p = pt.Port.copy(output)
 			self.addOutputPort(p)
 			
 		self.setName(actionSpec.name)

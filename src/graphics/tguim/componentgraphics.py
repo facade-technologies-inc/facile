@@ -342,10 +342,13 @@ class ComponentGraphics(QGraphicsItem):
 				                                      lnp.x(), lnp.y()))
 				
 				assert(not winner.overlapsWith(loser))
-				
-				sibsibs = [sibling.getGraphicsItem() for sibling in
-				            sib._dataComponent.getSiblings() if
-				            sibling is not sib._dataComponent]
+
+				try:
+					sibsibs = [sibling.getGraphicsItem() for sibling in
+								sib._dataComponent.getSiblings() if
+								sibling is not sib._dataComponent]
+				except:
+					sibsibs = []
 				
 				sibsibCollisions = sib.getCollidingComponents(sibsibs)
 				

@@ -24,7 +24,7 @@ This module contains the ActionSpecification class.
 import os, sys
 sys.path.append(os.path.abspath("../../"))
 
-from data.apim.port import Port
+import data.apim.port as pt
 
 class ActionSpecificationException(Exception):
 	def __init__(self, msg):
@@ -98,7 +98,7 @@ class ActionSpecification:
 			spec.viableTargets = targets
 		
 		for input in inputs:
-			p = Port()
+			p = pt.Port()
 			p.setName(input["name"])
 			p.setDataType(input["type"])
 			p.setAnnotation(input["description"])
@@ -106,7 +106,7 @@ class ActionSpecification:
 			spec.inputs.append(p)
 		
 		for output in outputs:
-			p = Port()
+			p = pt.Port()
 			p.setName(output["name"])
 			p.setDataType(output["type"])
 			p.setAnnotation(output["description"])
