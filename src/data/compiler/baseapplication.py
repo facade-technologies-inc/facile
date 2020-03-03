@@ -42,6 +42,15 @@ class BaseApplication():
         self._exeLoc= exeLoc
         self._name = name
 
+        try:
+            with open(os.path.join(pathToThisFile, self._name + ".tguim"), 'r') as tguimFile:
+                d = json.loads(tguimFile.read())
+                self._tgm = TargetGuiModel.fromDict(d)
+        except:
+            print("Couldn't load from {}".format('./' + self._name + '.tguim'))
+            self._tgm = None
+            traceback.print_exc()
+
     def start(self):
         self.app.start(self._exeLoc)
 
@@ -51,18 +60,12 @@ class BaseApplication():
     def findComponent(self, compID: int):
         cf = ComponentFinder(self.app, self._options)
 
-        try:
-            with open(os.path.join(pathToThisFile, self._name + ".tguim"), 'r') as tguimFile:
-                d = json.loads(tguimFile.read())
-                tgm = TargetGuiModel.fromDict(d)
-        except:
-            print("Couldn't load from {}".format('./' + self._name + '.tguim'))
-            traceback.print_exc()
-            return
-        else:
-            comp = tgm.getComponent(compID)
+        if self._tgm:
+            comp = self._tgm.getComponent(compID)
             self.forceShow(comp)
             return cf.find(comp.getSuperToken())
+        else:
+            return
 
     def forceShow(self, comp: 'Component'):
         """
