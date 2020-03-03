@@ -132,23 +132,23 @@ Pre-Test Conditions
 	+------+---------------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------------------------------------------+
 	|    5 | Type **python facile.py** in the **Command Prompt**                                                     | **Facile** should run.                                                                                                      |
 	+------+---------------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------------------------------------------+
-	|    6 | Click on **File** in the menu.                                                                          | See :num:`Fig. #tguicitest01dxsiivlx`                                                                                       |
+	|    6 | Click on **File** in the menu.                                                                          | See :num:`Fig. #tguicitest01beblmhow`                                                                                       |
 	+------+---------------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------------------------------------------+
-	|    7 | Click on **Recent Projects**                                                                            | See :num:`Fig. #tguicitest01dxsiivlx`                                                                                       |
+	|    7 | Click on **Recent Projects**                                                                            | See :num:`Fig. #tguicitest01beblmhow`                                                                                       |
 	+------+---------------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------------------------------------------+
-	|    8 | Click on a recent project that you created previously.                                                  | See :num:`Fig. #tguicitest01dxsiivlx`                                                                                       |
+	|    8 | Click on a recent project that you created previously.                                                  | See :num:`Fig. #tguicitest01beblmhow`                                                                                       |
 	+------+---------------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------------------------------------------+
 	|    9 | Click on **Start App**                                                                                  | **Target Application** will run                                                                                             |
 	+------+---------------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------------------------------------------+
 	|   10 | Click on **Auto Explore** or **Manual Explore**                                                         | **Target GUI** is shown in the view with components highlighted in red.                                                     |
 	+------+---------------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------------------------------------------+
-	|   11 | Click on any component of the **Target GUI Model**                                                      | See :num:`Fig. #tguicitest02etgpcyda` .                                                                                     |
+	|   11 | Click on any component of the **Target GUI Model**                                                      | See :num:`Fig. #tguicitest02qqvwguzj` .                                                                                     |
 	+------+---------------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------------------------------------------+
 	|   12 | Observe the **Project Explorer** view and **Property Editor** view on the left of the Target GUI view.  | Selected component of the **Target GUI**, it's properties, and its behavior are now shown in views. Test case is completed. |
 	+------+---------------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------------------------------------------+
 
 
-.. _TGUICItest01dxsIivlX:
+.. _TGUICItest01bEBLmHoW:
 
 .. figure:: ../../images/TGUICI_test_01.png
     :alt: A snippit of the Facile software system that shows the menu path to open an existing project.
@@ -157,7 +157,7 @@ Pre-Test Conditions
     
 
 
-.. _TGUICItest02eTgPcyDA:
+.. _TGUICItest02QQVWGuZJ:
 
 .. figure:: ../../images/TGUICI_test_02.png
     :alt: A snippit of Target Application's, Notepad, Target GUI with a selected component highlighted in red. 
@@ -235,11 +235,11 @@ Pre-Test Conditions
 	+------+-------------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------+
 	|   12 | Click on **Add Behavior**                                                           | Facile will enter the **ADD_VB** state and wait for the user to select 2 components.        |
 	+------+-------------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------+
-	|   13 | Click on 2 highlighted components that are shown in the view.                       | Refer to :num:`Fig. #tguibmtest01ouoynmmm`                                                  |
+	|   13 | Click on 2 highlighted components that are shown in the view.                       | Refer to :num:`Fig. #tguibmtest01yzofwbwy`                                                  |
 	+------+-------------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------+
 	|   14 | Select the new visibility behavior in the **project explorer**.                     | The properties for the selected visibility behavior will be shown in the Properties editor. |
 	+------+-------------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------+
-	|   15 | Double click on the right column of the Reaction Type property.                     | Refer to :num:`Fig. #tguibmtest02erqtrtaj`                                                  |
+	|   15 | Double click on the right column of the Reaction Type property.                     | Refer to :num:`Fig. #tguibmtest02whjmzbch`                                                  |
 	+------+-------------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------+
 	|   16 | Click on **Shows** or **Hides**                                                     | Reaction Type property is altered                                                           |
 	+------+-------------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------+
@@ -247,7 +247,7 @@ Pre-Test Conditions
 	+------+-------------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------+
 
 
-.. _TGUIBMtest01ouOyNMMm:
+.. _TGUIBMtest01YZOFWbwY:
 
 .. figure:: ../../images/TGUIBM_test_01.png
     :alt: A snippet of an arrow from the first component to the second component of the Target GUI. 
@@ -256,7 +256,7 @@ Pre-Test Conditions
     
 
 
-.. _TGUIBMtest02eRQTRtaJ:
+.. _TGUIBMtest02whJmZBCh:
 
 .. figure:: ../../images/TGUIBM_test_02.png
     :alt: A snippet of the options of Show or Hide in the dropdown menu. 
@@ -319,13 +319,13 @@ Pre-Test Conditions
 	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------------------------------------------------------------------+
 	|    5 | Type **python facile.py** in the **Command Prompt**                                                                                                                                                     | **Facile** should run.                                                                                                              |
 	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------------------------------------------------------------------+
-	|    6 | Click on **File**                                                                                                                                                                                       | Refer to :num:`Fig. #guitest01dddrqjjm`                                                                                             |
+	|    6 | Click on **File**                                                                                                                                                                                       | Refer to :num:`Fig. #guitest01kqbkcxlx`                                                                                             |
 	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------------------------------------------------------------------+
-	|    7 | Click on **New Project**                                                                                                                                                                                | Refer to :num:`Fig. #guitest01dddrqjjm`                                                                                             |
+	|    7 | Click on **New Project**                                                                                                                                                                                | Refer to :num:`Fig. #guitest01kqbkcxlx`                                                                                             |
 	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------------------------------------------------------------------+
-	|    8 | Click on **From Scratch**                                                                                                                                                                               | Refer to :num:`Fig. #guitest01dddrqjjm`                                                                                             |
+	|    8 | Click on **From Scratch**                                                                                                                                                                               | Refer to :num:`Fig. #guitest01kqbkcxlx`                                                                                             |
 	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------------------------------------------------------------------+
-	|    9 | Fill in **Project Name** and **Project Description.** Upload your **Project Folder** and **Target Application.** Choose the category the **Target Application** best fits under. Finally, click **OK.** | Project is saved with the *.fcl* extension in the selected folder. Refer to :num:`Fig. #guitest02ambeqpci`                          |
+	|    9 | Fill in **Project Name** and **Project Description.** Upload your **Project Folder** and **Target Application.** Choose the category the **Target Application** best fits under. Finally, click **OK.** | Project is saved with the *.fcl* extension in the selected folder. Refer to :num:`Fig. #guitest02blhwsudr`                          |
 	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------------------------------------------------------------------+
 	|   10 | Click on **Start App**                                                                                                                                                                                  | **Target Application** will pop up.                                                                                                 |
 	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------------------------------------------------------------------+
@@ -335,7 +335,7 @@ Pre-Test Conditions
 	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------------------------------------------------------------------+
 
 
-.. _GUItest01DddrqjJM:
+.. _GUItest01kQBKcxLx:
 
 .. figure:: ../../images/GUI_test_01.png
     :alt: A snippit of the Facile software system that shows the menu path to create a new project from scratch.
@@ -344,7 +344,7 @@ Pre-Test Conditions
     
 
 
-.. _GUItest02AMBeqpCi:
+.. _GUItest02BlHwsUDR:
 
 .. figure:: ../../images/GUI_test_02.png
     :alt: A snippit of the Facile project creation dialog. This dialog allows the user to specify some basic information about the project and application they wish to control.
@@ -420,7 +420,7 @@ Pre-Test Conditions
 	+------+--------------------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------+
 	|   11 | Click on a component in the **Target GUI Model Graphics View**                             | Highlighted component will have its properties shown in the **Property Editor** view.       |
 	+------+--------------------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------+
-	|   12 | Click on a property in the **Property Editor** view                                        | The property will come into focus. Refer to :num:`Fig. #propertytest01ikocenjo`             |
+	|   12 | Click on a property in the **Property Editor** view                                        | The property will come into focus. Refer to :num:`Fig. #propertytest01qblbqzzv`             |
 	+------+--------------------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------+
 	|   13 | Edit the property value (If editable)                                                      | The value of the property is edited.                                                        |
 	+------+--------------------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------+
@@ -428,7 +428,7 @@ Pre-Test Conditions
 	+------+--------------------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------+
 
 
-.. _propertytest01IKocEnJo:
+.. _propertytest01QblBqZzv:
 
 .. figure:: ../../images/property_test_01.png
     :alt: Shows the Facile software with the *Name* property selected. The *Name* property is always editable.
@@ -500,7 +500,7 @@ Pre-Test Conditions
 	+------+-------------------------------------------------------------------------------------+---------------------------------------------------------+
 	|    9 | Click on **File** again                                                             | Context menu of items will be shown                     |
 	+------+-------------------------------------------------------------------------------------+---------------------------------------------------------+
-	|   10 | Click on **Project Settings**                                                       | Refer to :num:`Fig. #settingstest01ddpnnvdn`            |
+	|   10 | Click on **Project Settings**                                                       | Refer to :num:`Fig. #settingstest01kwprozcv`            |
 	+------+-------------------------------------------------------------------------------------+---------------------------------------------------------+
 	|   11 | Edit any project setting and click on **Save**                                      | Project setting is edited and saved.                    |
 	+------+-------------------------------------------------------------------------------------+---------------------------------------------------------+
@@ -510,7 +510,7 @@ Pre-Test Conditions
 	+------+-------------------------------------------------------------------------------------+---------------------------------------------------------+
 
 
-.. _settingstest01ddPNNvDn:
+.. _settingstest01kWPROzcv:
 
 .. figure:: ../../images/settings_test_01.png
     :alt: Shows the Project Settings dialog.
@@ -604,25 +604,25 @@ Pre-Test Conditions
 	+------+------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------+
 	|   20 | Repeat past 5 steps till there is an input port and output port for bool, int, string, and float data types.                                                     | Dialog box with 4 input ports and output ports with data types of bool, int, string, and float are added.    |
 	+------+------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------+
-	|   21 | Click on **OK**                                                                                                                                                  | Refer to :num:`Fig. #apimcreationtest01kabqhimq`                                                             |
+	|   21 | Click on **OK**                                                                                                                                                  | Refer to :num:`Fig. #apimcreationtest01qbvgvevh`                                                             |
 	+------+------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------+
-	|   22 | Right click on an action in the **Action Menu** and click on **Add to Current Action Pipeline** to add an action pipeline to the current action pipeline.        | Refer to :num:`Fig. #apimcreationtest02omghmpgk`                                                             |
+	|   22 | Right click on an action in the **Action Menu** and click on **Add to Current Action Pipeline** to add an action pipeline to the current action pipeline.        | Refer to :num:`Fig. #apimcreationtest02tiuvmkod`                                                             |
 	+------+------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------+
-	|   23 | Right click on an action in the **Action Menu** and click on **Add to Current Action Pipeline** to add another action pipeline to the current action pipeline.   | Refer to :num:`Fig. #apimcreationtest03meennqiq`                                                             |
+	|   23 | Right click on an action in the **Action Menu** and click on **Add to Current Action Pipeline** to add another action pipeline to the current action pipeline.   | Refer to :num:`Fig. #apimcreationtest03wnpgbser`                                                             |
 	+------+------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------+
 	|   24 | Click on a input port at the top level of an action pipeline and draw a wire from it to an top level output port or a child input port with the same data type.  | A wire is drawn from an input port to a top level output port or a child input port with the same data type. |
 	+------+------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------+
-	|   25 | Repeat the last step several times.                                                                                                                              | Refer to :num:`Fig. #apimcreationtest04apkzlnci`                                                             |
+	|   25 | Repeat the last step several times.                                                                                                                              | Refer to :num:`Fig. #apimcreationtest04jncjphbx`                                                             |
 	+------+------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------+
 	|   26 | Wave cursor over the an action pipeline.                                                                                                                         | Blue up and down arrow box is shown.                                                                         |
 	+------+------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------+
-	|   27 | Click on blue up and down arrow to move an action pipeline up or down.                                                                                           | Refer to :num:`Fig. #apimcreationtest05xmbjlqmx`                                                             |
+	|   27 | Click on blue up and down arrow to move an action pipeline up or down.                                                                                           | Refer to :num:`Fig. #apimcreationtest05ptojfpyj`                                                             |
 	+------+------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------+
-	|   28 | Right click on an action in the API Model view and click on **delete** to delete an action pipeline from the current action pipeline.                            | Refer to :num:`Fig. #apimcreationtest06egyqdilj` Test case is completed.                                     |
+	|   28 | Right click on an action in the API Model view and click on **delete** to delete an action pipeline from the current action pipeline.                            | Refer to :num:`Fig. #apimcreationtest06cnmnswfb` Test case is completed.                                     |
 	+------+------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------+
 
 
-.. _APIMCreationtest01KaBQHIMq:
+.. _APIMCreationtest01QBVGvevH:
 
 .. figure:: ../../images/APIMCreation_test_01.png
     :alt: A snippit of the Facile system that shows an action pipeline in the API Model view with 4 input and output ports with the basic python data structures such as int, bool, float, and string.
@@ -631,7 +631,7 @@ Pre-Test Conditions
     
 
 
-.. _APIMCreationtest02omghmpGK:
+.. _APIMCreationtest02tIuvMkod:
 
 .. figure:: ../../images/APIMCreation_test_02.png
     :alt: A snippit of the Facile system that shows an action pipeline being added to the current action pipeline in the API Model view.
@@ -640,7 +640,7 @@ Pre-Test Conditions
     
 
 
-.. _APIMCreationtest03MEenNQiq:
+.. _APIMCreationtest03wNpGbSeR:
 
 .. figure:: ../../images/APIMCreation_test_03.png
     :alt: A snippit of the Facile system that shows another action pipeline being added to the current action pipeline in the API Model view.
@@ -649,7 +649,7 @@ Pre-Test Conditions
     
 
 
-.. _APIMCreationtest04ApkZlnci:
+.. _APIMCreationtest04JNcJPhbx:
 
 .. figure:: ../../images/APIMCreation_test_04.png
     :alt: A snippit of the Facile system that shows an action pipeline with several input and output ports connected with wires. API Model view.
@@ -658,7 +658,7 @@ Pre-Test Conditions
     
 
 
-.. _APIMCreationtest05XMBJlqMX:
+.. _APIMCreationtest05ptoJFPYj:
 
 .. figure:: ../../images/APIMCreation_test_05.png
     :alt: A snippit of the Facile system that shows an action pipeline with a modified alignment of the two action pipelines added to it with their wire port connections in the API Model view.
@@ -667,7 +667,7 @@ Pre-Test Conditions
     
 
 
-.. _APIMCreationtest06egyQdiLj:
+.. _APIMCreationtest06CNmNSwFB:
 
 .. figure:: ../../images/APIMCreation_test_06.png
     :alt: A snippit of the Facile system that shows an action pipeline that has been deleted from the current action pipeline in the API Model view.
@@ -741,7 +741,7 @@ Pre-Test Conditions
 	+------+--------------------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------------------------+
 	|   10 | Click on **Auto Explore** or **Manual Explore**                                                              | Target GUI model is shown in the view.                                                                                 |
 	+------+--------------------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------------------------+
-	|   11 | Click on the **Create New Action Pipeline** icon.                                                            | A action pipeline creation dialog is shown in a new window. Refer to :num:`Fig. #actionpipelinecreationtest01sksanbyj` |
+	|   11 | Click on the **Create New Action Pipeline** icon.                                                            | A action pipeline creation dialog is shown in a new window. Refer to :num:`Fig. #actionpipelinecreationtest01shrsbmzs` |
 	+------+--------------------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------------------------+
 	|   12 | Click on **Edit ports for:** and add a name.                                                                 | Name of ports for action pipeline is updated.                                                                          |
 	+------+--------------------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------------------------+
@@ -755,13 +755,13 @@ Pre-Test Conditions
 	+------+--------------------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------------------------+
 	|   17 | Click on **NoneType** under **Output Ports** and add the type data structure.                                | Type of data structure for output port is updated.                                                                     |
 	+------+--------------------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------------------------+
-	|   18 | Repeat past 5 steps till there is an input port and output port for bool, int, string, and float data types. | Refer to :num:`Fig. #actionpipelinecreationtest02jrkjxvwt`                                                             |
+	|   18 | Repeat past 5 steps till there is an input port and output port for bool, int, string, and float data types. | Refer to :num:`Fig. #actionpipelinecreationtest02ktwnzobg`                                                             |
 	+------+--------------------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------------------------+
-	|   19 | Click on **OK**                                                                                              | Refer to :num:`Fig. #actionpipelinecreationtest03xdievbir` Test Case is completed.                                     |
+	|   19 | Click on **OK**                                                                                              | Refer to :num:`Fig. #actionpipelinecreationtest03bllqsmde` Test Case is completed.                                     |
 	+------+--------------------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------------------------+
 
 
-.. _ActionPipelineCreationtest01SksanbYJ:
+.. _ActionPipelineCreationtest01SHrSbmZs:
 
 .. figure:: ../../images/ActionPipelineCreation_test_01.png
     :alt: A snippit of the Facile system action pipeline creation dialog. This Black Box Editor allows the user to add input and/or output ports to create an action pipeline. 
@@ -770,7 +770,7 @@ Pre-Test Conditions
     
 
 
-.. _ActionPipelineCreationtest02JRkJxVwt:
+.. _ActionPipelineCreationtest02KtWNZOBG:
 
 .. figure:: ../../images/ActionPipelineCreation_test_02.png
     :alt: A snippit of the Facile system action pipeline creation dialog that shows input and output ports of  bool, int, string, and float data types being added to the action pipeline.
@@ -779,7 +779,7 @@ Pre-Test Conditions
     
 
 
-.. _ActionPipelineCreationtest03xdieVBIR:
+.. _ActionPipelineCreationtest03bLLQsMDe:
 
 .. figure:: ../../images/ActionPipelineCreation_test_03.png
     :alt: A snippit of the Facile system that shows an action pipeline in the API Model view with 4 input and output ports with the basic python data structures such as int, bool, float, and string.
@@ -853,11 +853,11 @@ Pre-Test Conditions
 	+------+-------------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 	|   10 | Click on **Auto Explore** or **Manual Explore**                                     | Target GUI model is shown in the view.                                                                                                                              |
 	+------+-------------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-	|   11 | Click on a component in the **Target GUI Model**.                                   | All actions that can be performed on that component appear in the Action Menu view. Refer to :num:`Fig. #showrelevantactionstest01cxivoxkc` Test case is complete.  |
+	|   11 | Click on a component in the **Target GUI Model**.                                   | All actions that can be performed on that component appear in the Action Menu view. Refer to :num:`Fig. #showrelevantactionstest01mfsgpiye` Test case is complete.  |
 	+------+-------------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 
 
-.. _ShowRelevantActionstest01cxivOXKc:
+.. _ShowRelevantActionstest01mFSGpIyE:
 
 .. figure:: ../../images/ShowRelevantActions_test_01.png
     :alt: A snippit of the Facile software system that shows all relevant actions of the target GUI model in a Action Menu view under the Action Pipelines tab.
@@ -931,9 +931,9 @@ Pre-Test Conditions
 	+------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------------------------------+
 	|   10 | Click on **Auto Explore** or **Manual Explore**                                                                                                                    | Target GUI model is shown in the view.                                                                                       |
 	+------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------------------------------+
-	|   11 | Click on **Validate TGUIM and API** icon.                                                                                                                          | Refer to :num:`Fig. #validatortest01cvnlyuzo`  error message comes up for not having an action pipeline.                     |
+	|   11 | Click on **Validate TGUIM and API** icon.                                                                                                                          | Refer to :num:`Fig. #validatortest01nnkuvbvs`  error message comes up for not having an action pipeline.                     |
 	+------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------------------------------+
-	|   12 | Click on the **Create New Action Pipeline** icon.                                                                                                                  | A action pipeline creation dialog is shown in a new window. Refer to :num:`Fig. #actionpipelinecreationtest01fnbjqlre`       |
+	|   12 | Click on the **Create New Action Pipeline** icon.                                                                                                                  | A action pipeline creation dialog is shown in a new window.                                                                  |
 	+------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------------------------------+
 	|   13 | Click on **Edit ports for:** and add a name.                                                                                                                       | Name of ports for action pipeline is updated.                                                                                |
 	+------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------------------------------+
@@ -947,17 +947,17 @@ Pre-Test Conditions
 	+------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------------------------------+
 	|   18 | Click on **NoneType** under **Output Ports** and add the type data structure.                                                                                      | Type of data structure for output port is updated.                                                                           |
 	+------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------------------------------+
-	|   19 | Click on **Validate TGUIM and API** icon.                                                                                                                          | Refer to :num:`Fig. #validatortest02dplilsri`  warning message comes up for not using the input port of the action pipeline. |
+	|   19 | Click on **Validate TGUIM and API** icon.                                                                                                                          | Refer to :num:`Fig. #validatortest02utdfptrt`  warning message comes up for not using the input port of the action pipeline. |
 	+------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------------------------------+
-	|   20 | Right click on an action in the **Action Menu** and click on **Add to Current Action Pipeline** to add an action pipeline to the current action pipeline.          | Refer to :num:`Fig. #apimcreationtest03vpbvibna`                                                                             |
+	|   20 | Right click on an action in the **Action Menu** and click on **Add to Current Action Pipeline** to add an action pipeline to the current action pipeline.          | Refer to :num:`Fig. #apimcreationtest03fuvawlhk`                                                                             |
 	+------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------------------------------+
 	|   21 | Click on a input port at the top level of that action pipeline and draw a wire from it to an top level output port or a child input port with the same data type.  | A wire is drawn from an input port to a top level output port or a child input port with the same data type.                 |
 	+------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------------------------------+
-	|   22 | Click on **Validate TGUIM and API** icon.                                                                                                                          | Refer to :num:`Fig. #validatortest03kldiyits`  a green message comes up validating the **APIM**. Test case is completed.     |
+	|   22 | Click on **Validate TGUIM and API** icon.                                                                                                                          | Refer to :num:`Fig. #validatortest03dqyjxosd`  a green message comes up validating the **APIM**. Test case is completed.     |
 	+------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------------------------------+
 
 
-.. _Validatortest01CvNLyUZo:
+.. _Validatortest01nnkUVbVs:
 
 .. figure:: ../../images/Validator_test_01.png
     :alt: A snippit of the Facile software system that shows a message of thevalidator being run and warning message coming up.
@@ -966,16 +966,7 @@ Pre-Test Conditions
     
 
 
-.. _ActionPipelineCreationtest01fNBjQlRE:
-
-.. figure:: ../../images/ActionPipelineCreation_test_01.png
-    :alt: 
-    
-    
-    
-
-
-.. _Validatortest02dPlILSrI:
+.. _Validatortest02UTdFPTrt:
 
 .. figure:: ../../images/Validator_test_02.png
     :alt: A snippit of the Facile software system that shows a message of thevalidator being run and warning message coming up.
@@ -984,7 +975,7 @@ Pre-Test Conditions
     
 
 
-.. _APIMCreationtest03VpbViBna:
+.. _APIMCreationtest03FUvAwlhK:
 
 .. figure:: ../../images/APIMCreation_test_03.png
     :alt: A snippit of the Facile system that shows another action pipeline being added to the current action pipeline in the API Model view.
@@ -993,7 +984,7 @@ Pre-Test Conditions
     
 
 
-.. _Validatortest03KldIyiTs:
+.. _Validatortest03DqYJXOSd:
 
 .. figure:: ../../images/Validator_test_03.png
     :alt: A snippit of the Facile software system that shows a message of thevalidator being run and validated message coming up.
@@ -1056,19 +1047,19 @@ Pre-Test Conditions
 	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 	|    5 | Type **python facile.py** in the **Command Prompt**                                                                                                                                                     | **Facile** should run.                                                                                                                                                   |
 	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-	|    6 | Click on **File**                                                                                                                                                                                       | Refer to :num:`Fig. #guitest01akmtlgmf`                                                                                                                                  |
+	|    6 | Click on **File**                                                                                                                                                                                       | Refer to :num:`Fig. #guitest01enupyzjt`                                                                                                                                  |
 	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-	|    7 | Click on **New Project**                                                                                                                                                                                | Refer to :num:`Fig. #guitest01akmtlgmf`                                                                                                                                  |
+	|    7 | Click on **New Project**                                                                                                                                                                                | Refer to :num:`Fig. #guitest01enupyzjt`                                                                                                                                  |
 	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-	|    8 | Click on **From Scratch**                                                                                                                                                                               | Refer to :num:`Fig. #guitest01akmtlgmf`                                                                                                                                  |
+	|    8 | Click on **From Scratch**                                                                                                                                                                               | Refer to :num:`Fig. #guitest01enupyzjt`                                                                                                                                  |
 	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-	|    9 | Fill in **Project Name** and **Project Description.** Upload your **Project Folder** and **Target Application.** Choose the category the **Target Application** best fits under. Finally, click **OK.** | Project is saved with the *.fcl* extension in the selected folder. Refer to :num:`Fig. #guitest02osqodtkc`                                                               |
+	|    9 | Fill in **Project Name** and **Project Description.** Upload your **Project Folder** and **Target Application.** Choose the category the **Target Application** best fits under. Finally, click **OK.** | Project is saved with the *.fcl* extension in the selected folder. Refer to :num:`Fig. #guitest02xwspufay`                                                               |
 	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-	|   10 | In the Windows taskbar, click on **File Explorer** and navigate to your project folder.                                                                                                                 | A variety of files are shown. The main file is the name of your project with the *.fcl* extension. Refer to :num:`Fig. #extensiontest01nrhkjvwo` Test case is completed. |
+	|   10 | In the Windows taskbar, click on **File Explorer** and navigate to your project folder.                                                                                                                 | A variety of files are shown. The main file is the name of your project with the *.fcl* extension. Refer to :num:`Fig. #extensiontest01ngknapny` Test case is completed. |
 	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 
 
-.. _GUItest01aKmtlGMf:
+.. _GUItest01EnupyzJt:
 
 .. figure:: ../../images/GUI_test_01.png
     :alt: A snippit of the Facile software system that shows the menu path to create a new project from scratch.
@@ -1077,7 +1068,7 @@ Pre-Test Conditions
     
 
 
-.. _GUItest02oSQodtKc:
+.. _GUItest02xWSpUFaY:
 
 .. figure:: ../../images/GUI_test_02.png
     :alt: A snippit of the Facile project creation dialog. This dialog allows the user to specify some basic information abou the project and application they wish to control.
@@ -1086,7 +1077,7 @@ Pre-Test Conditions
     
 
 
-.. _extensiontest01NrhkjVwO:
+.. _extensiontest01ngknAPnY:
 
 .. figure:: ../../images/extension_test_01.png
     :alt: Shows the files in your project. The filenames in your project may differ, but the extensions should remain the same.
@@ -1149,21 +1140,21 @@ Pre-Test Conditions
 	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------+
 	|    5 | Type **python facile.py** in the **Command Prompt**                                                                                                                                                     | **Facile** should run.                                                                                                                           |
 	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------+
-	|    6 | Click on **File**                                                                                                                                                                                       | Refer to :num:`Fig. #guitest01eiwadzdr`                                                                                                          |
+	|    6 | Click on **File**                                                                                                                                                                                       | Refer to :num:`Fig. #guitest01ixddausg`                                                                                                          |
 	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------+
-	|    7 | Click on **New Project**                                                                                                                                                                                | Refer to :num:`Fig. #guitest01eiwadzdr`                                                                                                          |
+	|    7 | Click on **New Project**                                                                                                                                                                                | Refer to :num:`Fig. #guitest01ixddausg`                                                                                                          |
 	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------+
-	|    8 | Click on **From Scratch**                                                                                                                                                                               | Refer to :num:`Fig. #guitest01eiwadzdr`                                                                                                          |
+	|    8 | Click on **From Scratch**                                                                                                                                                                               | Refer to :num:`Fig. #guitest01ixddausg`                                                                                                          |
 	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------+
-	|    9 | Fill in **Project Name** and **Project Description.** Upload your **Project Folder** and **Target Application.** Choose the category the **Target Application** best fits under. Finally, click **OK.** | Project is saved with the *.fcl* extension in the selected folder. Refer to :num:`Fig. #guitest02eoovdksu`                                       |
+	|    9 | Fill in **Project Name** and **Project Description.** Upload your **Project Folder** and **Target Application.** Choose the category the **Target Application** best fits under. Finally, click **OK.** | Project is saved with the *.fcl* extension in the selected folder. Refer to :num:`Fig. #guitest02vrkxblay`                                       |
 	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------+
-	|   10 | In the Windows taskbar, click on **File Explorer** and navigate to your project folder.                                                                                                                 | A variety of files are shown. The main file is the name of your project with the *.fcl* extension. Refer to :num:`Fig. #extensiontest01molblhbg` |
+	|   10 | In the Windows taskbar, click on **File Explorer** and navigate to your project folder.                                                                                                                 | A variety of files are shown. The main file is the name of your project with the *.fcl* extension. Refer to :num:`Fig. #extensiontest01jwtqtmmh` |
 	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------+
-	|   11 | Right click on the project file (*.fcl* extension) and select **Open with**. Select a text editor to open the file with.                                                                                | Refer to :num:`Fig. #ppftest01mkjmfmkz` Test case completed.                                                                                     |
+	|   11 | Right click on the project file (*.fcl* extension) and select **Open with**. Select a text editor to open the file with.                                                                                | Refer to :num:`Fig. #ppftest01enpwiadd` Test case completed.                                                                                     |
 	+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------+
 
 
-.. _GUItest01EIwADzDR:
+.. _GUItest01IxddAuSG:
 
 .. figure:: ../../images/GUI_test_01.png
     :alt: A snippit of the Facile software system that shows the menu path to create a new project from scratch.
@@ -1172,7 +1163,7 @@ Pre-Test Conditions
     
 
 
-.. _GUItest02eoovdKsU:
+.. _GUItest02vRkxBlaY:
 
 .. figure:: ../../images/GUI_test_02.png
     :alt: A snippit of the Facile project creation dialog. This dialog allows the user to specify some basic information abou the project and application they wish to control.
@@ -1181,7 +1172,7 @@ Pre-Test Conditions
     
 
 
-.. _extensiontest01molbLhbg:
+.. _extensiontest01jWTqTMmH:
 
 .. figure:: ../../images/extension_test_01.png
     :alt: Shows the files in your project. The filenames in your project may differ, but the extensions should remain the same.
@@ -1190,7 +1181,7 @@ Pre-Test Conditions
     
 
 
-.. _PPFtest01mkJmFmKZ:
+.. _PPFtest01ENPwiADd:
 
 .. figure:: ../../images/PPF_test_01.png
     :alt: The content of the Project file is shown in human-readable format in the chosen text editor. In this case, we chose to use Notepad.

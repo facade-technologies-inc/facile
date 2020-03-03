@@ -26,7 +26,7 @@ author = "Facade Technologies Inc."
 import sys, os
 sys.path.append(os.path.abspath("../../_common/"))
 from documents import releases
-version = releases["Indentured Document List"]
+version = releases["IDL"]
 release = version
 
 
@@ -102,9 +102,9 @@ latex_show_urls = "footnote"
 latex_documents = [(
 	"index",
 
-	"19033_Facile_Drawings.tex",
+	"19033_Facile_IDL.tex",
 
-	"Facile Drawings",
+	"Facile Indentured Document List",
 
 	"\\textbf{Team 19033:} \\\\"
 	"Andrew Kirima \\\\ "
@@ -119,7 +119,7 @@ latex_documents = [(
 	"False"
 )]
 
-latex_toplevel_sectioning = 'section'
+# latex_toplevel_sectioning = 'section'
 
 latex_elements = {
 	'extraclassoptions': 'openany,oneside'

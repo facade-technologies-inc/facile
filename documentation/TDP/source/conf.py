@@ -30,7 +30,7 @@ sys.path.append(os.path.abspath('../../_common/extensions'))
 
 # -- Project information -----------------------------------------------------
 
-project = 'System Report'
+project = 'Iteration Documentation Package (ISR)'
 copyright = '2020, Facade Technologies Inc.'
 
 author = "Facade Technologies Inc."
@@ -99,9 +99,9 @@ latex_show_urls = "footnote"
 latex_documents = [(
 	"index",
 
-	"19033_Technical_Data_Package.tex",
+	"19033_Iteration_Documentation_Package_ISR.tex",
 
-	"Facile Technical Data Package",
+	"Facile Iteration Documentation Package (ISR)",
 
 	"\\textbf{Team 19033:} \\\\"
 	"Andrew Kirima \\\\ "

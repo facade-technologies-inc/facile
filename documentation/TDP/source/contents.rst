@@ -21,10 +21,14 @@ Change Log
     +-----+--------------------------------------------+--------------------------------------------+-------+-------------+------------+
     | No. | Change Description                         | Rationale                                  | Class | Approved By | Date       |
     +=====+============================================+============================================+=======+=============+============+
-    |     |                                            |                                            |       |             |            |
+    | 1   | Renamed document from "Technical Data      | Submitting the document for iteration      | 2     | Samuel      | 03/01/2020 |
+    |     | Package" to "Iteration Documentation       | review.                                    |       | Badger      |            |
+    |     | Package (ISR)"                             |                                            |       |             |            |
     +-----+--------------------------------------------+--------------------------------------------+-------+-------------+------------+
-
-.. todo:: Fill out change log
+    | 2   | Completely restructured and reworked the   | The CDR Report did not adhere to the       | 1     | Samuel      | 03/02/202  |
+    |     | System Report to incorporate mentor        | rubric.                                    |       | Badger      |            |
+    |     | feedback.                                  |                                            |       |             |            |
+    +-----+--------------------------------------------+--------------------------------------------+-------+-------------+------------+
 
 ---------------------
 Terms and Definitions
@@ -96,15 +100,15 @@ This chapter provides a full description of the delivered project including rati
 to requirements, critical technology, and use cases. A description of the concept of operations is also provided for the
 for the system as built at ISR.
 
---------------------
+~~~~~~~~~~~~~~~~~~~~
 As-Built Description
---------------------
+~~~~~~~~~~~~~~~~~~~~
 
 The deliverables for ISR are:
 
     - Facile source code v0.3 (Can generate simple Facile APIs)
     - ISR Presentation
-    - Iteration Documentation Package (this document)
+    - Iteration Documentation Package vB1 (this document)
 
 The goal of iteration two was to implement features in Facile that allow the user to produce a simple Facile API through
 the Facile GUI. The selected API was chosen to provide proof of concept rather than practicality. The generated API that
@@ -214,18 +218,27 @@ From this description, the process to build a Facile API can be broken down into
 
     ConOps Flow Rev B: A high-level workflow for the user of Facile.
 
-.. todo:: Show SBD and give description
-
 ~~~~~~~~~
 Use Cases
 ~~~~~~~~~
 
-Previously, it was claimed that Facile APIs have the following uses:
+In the :ref:`Description of Concept of Operations`, it was claimed that Facile APIs have the following uses:
 
 - Automate repetitive tasks.
 - Automate the GUI testing process.
 - Make multiple applications communicate that use Facile APIs as an ad hoc form of IPC.
 - Create new user interfaces that are bound to the the old user interface via a Facile API.
+
+:num:`Fig. #usecase` clearly shows these options for the Facile API User. :num:`Fig. #usecase` also shows the steps to
+create a Facile API. Although the Facile API Creator is shown separate from the Facile API User, the two actors are
+often the same person.
+
+.. _UseCase:
+
+.. figure:: ../images/UseCase.jpeg
+    :alt: Use Case Diagram
+
+    Use Case Diagram Rev A: A UML diagram showing both the Creator of the Facile API and the
 
 *Mahr Metrology Inc.* (Mahr) will be used as the subject to demonstrate both the practicality and value of each of these
 uses of Facile APIs. To understand why Mahr would use a Facile API, Mahr's background and current position must be
@@ -323,27 +336,28 @@ Option #3 is where Facile comes into play. Using a Facile API, Mahr can do quite
    using tools such as Qt Creator. Mahr is already cleverly using their custom API for this purpose, but once again;
    their API is developed manually making it more difficult to maintain.
 
+
+-------------------------------
+System Verification Plan / SRVM
+-------------------------------
+
+.. todo:: get from Nikhith
+
+-----------------------------
+Configuration Management Plan
+-----------------------------
+
+.. todo:: get from Nikhith
+
+-----------------------------
+Indentured Document List
+-----------------------------
+
+.. raw:: latex
+
+    INSERT_DOC=IDL
+
 ..
-    -------------------------------
-    System Verification Plan / SRVM
-    -------------------------------
-
-    .. todo:: get from Nikhith
-
-    -----------------------------
-    Configuration Management Plan
-    -----------------------------
-
-    .. todo:: get from Nikhith
-
-    -----------------------------
-    Indentured Document List
-    -----------------------------
-
-    .. raw:: latex
-
-        INSERT_DOC=IDL
-
     -----------------------------
     System Requirements Document
     -----------------------------
