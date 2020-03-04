@@ -11,7 +11,7 @@ Change Log
     +-----------------+------------------+--------------+------------------------------+
 
 .. table:: Indentured Document List Change Log
-    :widths: 5 40 23 8 12 12
+    :widths: 5 40 23 8 17 7
 
     +-----+--------------------------------------------+--------------------------------------------+-------+-------------+------------+
     | No. | Change Description                         | Rationale                                  | Class | Approved By | Date       |
@@ -23,18 +23,16 @@ Change Log
 Indentured Document List
 **************************
 
-:num:`Fig. #idl` shows a list of all documents and drawings in the iteration documentation package. The subsequent
+:numref:`IDL` shows a list of all documents and drawings in the iteration documentation package. The subsequent
 sections give descriptions for each item in the indentured document list
 
-
-.. _ConOpsFlow:
-
 .. figure:: ../images/IDL.png
+    :name: IDL
     :alt: Indentured Document List
 
     The indentured document list for the iteration documentation package.
 
-1. System Report - Iteration Documentation Package
+1 System Report - Iteration Documentation Package
     Gives a full description of the delivered project including rationale and scope of delivery due to
     requirements, critical technology, and use cases. A description of the ConOps is also given as well as the System
     Verification Plan. The verification flow diagram details verifications complete with expected dates, date completed, and
@@ -43,14 +41,14 @@ sections give descriptions for each item in the indentured document list
     project. Evidence, including data sheet and inspection reports are captured referencing document by number and version,
     software configuration, result, expected result, and pass/fail.
 
-2. Indentured Document List
+2 Indentured Document List
     The current document which describes all documents in the System Report.
 
-3. System Requirements Document
+3 System Requirements Document
     Describes all requirements of the Facile system. It includes a simplified SRVM and
     test procedure descriptions as well as the system block diagram and architecture diagram.
 
-4. Verification Documentation
+4 Verification Documentation
     Contains all test procedures to perform to verify the Facile system. It also contains all
     associated data sheets and an inspection report for any requirement that if verified through inspection.
 
@@ -66,14 +64,14 @@ sections give descriptions for each item in the indentured document list
     Contains procedures to verify any requirements that are verified by inspection. Facile has no
     requirements that are verified through inspection, so the section is left intentionally blank.
 
-5. Software Drawing Package
+5 Software Drawing Package
     The Software Drawing Package contains the software drawing for Facile.
 
-5.1 Software Drawing
+5.1 Top Level Assembly Drawing
     Contains the drawing number, cage code, date, revision, notes, and a table of one or more Part
     Numbers (PN) assigned to the software executable files that comprise a SW release.
 
-6. Software Description Document
+6 Software Description Document
     Provides a description of all versions of Facile and their capabilities. It also
     provides detailed descriptions about the underlying data structures and algorithms that Facile uses as well as
     documentation for all of Facile's source code to date.
@@ -96,6 +94,6 @@ sections give descriptions for each item in the indentured document list
     Breaks the source code down into modules, classes, and functions and shows the interface
     for each level. This documentation is created by the Facile developers as they code.
 
-7. User Manual
+7 User Manual
     Shows someone how to use Facile to generate a Facile API.
 

@@ -60,6 +60,7 @@ exclude_patterns = ["**/ui"]
 # -- Options for numfig ------------------------------------------------------
 numfig_number_figures = True
 numfig_figure_caption_prefix = "Figure"
+numfig = True
 
 
 # -- Options for AutoAPI -----------------------------------------------------

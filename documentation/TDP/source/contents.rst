@@ -341,23 +341,345 @@ Option #3 is where Facile comes into play. Using a Facile API, Mahr can do quite
 System Verification Plan / SRVM
 -------------------------------
 
-.. todo:: get from Nikhith
+This chapter contains an overview of how requirement verification will be performed in Facile.
+
+~~~~~~~~~~~~~~~~~
+SRVM System Level
+~~~~~~~~~~~~~~~~~
+As highlighted in :numref:`SRVM-SL`, for this iteration, the team fully verified SR4.3.1 Graphical User Interfaces by
+verifying all the sub-system requirements and sub assembly requirements associated with the SR4.3.1 Graphical User
+Interfaces.
+
+.. figure:: ../images/srvm_sl.png
+    :name: SRVM-SL
+    :alt: System-level SRVM
+
+    Facile's system level SRVM
+
+~~~~~~~~~~~~~~~~~~~~~
+SRVM Sub System Level
+~~~~~~~~~~~~~~~~~~~~~
+As highlighted in :numref:`SRVM-SSL`, for this iteration, the team fully verified SSR4.3.1.6 API Model Creation and
+SSR4.3.1.7 Validator. SSR4.3.1.6 API Model Creation was verified by fully verifying all the sub-assembly requirements
+associated with SSR4.3.1.6 API Model Creation.
+
+.. figure:: ../images/srvm_ssl.png
+    :name: SRVM-SSL
+    :alt: Subsystem level SRVM
+
+    Facile's subsystem level SRVM
+
+~~~~~~~~~~~~~~~~~~~~~~~
+SRVM Sub-Assembly Level
+~~~~~~~~~~~~~~~~~~~~~~~
+As highlighted in :numref:`SRVM-SAL`, for this iteration, the team fully verified all the sub-assembly requirements
+for the project. The verified sub-assembly requirements correspond to the SSR4.3.1.6 API Model Creation sub-system
+requirement.
+
+.. figure:: ../images/srvm_sal.png
+    :name: SRVM-SAL
+    :alt: Subassembly level SRVM
+
+    Facile's subassembly level SRVM
+
+~~~~~~~~~~~~~~~~~~~~~~~~~
+Verification Flow Diagram
+~~~~~~~~~~~~~~~~~~~~~~~~~
+The above verification flow diagram gives an overview of when a certain requirement shall be fully verified,
+:numref:`REQ-FLOW` also includes a flow which represent the order in which requirements shall be verified.
+
+.. figure:: ../images/system_req_flow.jpg
+    :name: REQ-FLOW
+    :alt: Verification Flow Diagram
+
+    Facile's verification flow diagram
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Verification Delivery System Level
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+:numref:`SDSL` represents the verification delivery plan at system level. There are two major changes that have been
+incorporated in this iteration- SR4.2.1 Operating System and SR4.2.4 Programming Language verification has been
+rejected. Originally, the verification for these two requirements were performed during CDR, however, the team
+determined that to accurately test these system requirements, a fully working Facile executable file is necessary.
+Hence, the verification delivery for SR4.2.1 and SR4.2.4 have been postponed till FAR as that is the iteration during
+which the team shall have a fully working Facile executable file.
+
+.. figure:: ../images/verification_delivery_SL.png
+    :name: SDSL
+    :alt: Verification Delivery System Level
+
+    Facile's verification delivery at the system level
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Verification Delivery Sub System Level
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+:numref:`SDSSL` represents the verification delivery plan at sub-system level. All the sub-system requirements
+pertaining to the SR4.3.1 Graphical User Interfaces have been fully verified. A new set of sub-system requirements have
+been flowed down for the next iteration, the new sub-system requirements correspond to the SR4.5.1 API Package, which is
+the primary goal in terms of development for the next iteration.
+
+.. figure:: ../images/verification_delivery_SSL.png
+    :name: SDSSL
+    :alt: Verification Delivery Subsystem Level
+
+    Facile's verification delivery at the subsystem level
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Verification Delivery Sub Assembly Level
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+:numref:`SDSAL` represents the verification delivery plan at sub-assembly level. All the sub-assembly requirements
+pertaining to the SSR4.3.1.6 API Model Creation have been fully verified in this iteration.
+
+Overall, in the delivery plan across all levels of system requirements, the team has a 100% delivery target for all the
+remaining requirements at FAR iteration, this would essentially leave no open actions by the end of the final iteration.
+
+.. figure:: ../images/verification_delivery_SAL.png
+    :name: SDSAL
+    :alt: Verification Delivery Subassembly Level
+
+    Facile's verification delivery at the subassembly level
 
 -----------------------------
 Configuration Management Plan
 -----------------------------
 
-.. todo:: get from Nikhith
+The configuration management describes how changes in the Facile system are handles internally and how we track changes.
 
------------------------------
-Indentured Document List
------------------------------
+~~~~~~~~~~~~~~~~~~~~~
+Configuration Process
+~~~~~~~~~~~~~~~~~~~~~
 
-.. raw:: latex
+The team has implemented a comprehensive configuration process for this project to keep track of all the changes that
+are made in various parts and phases of the project. The configuration process for this project is as follows:
 
-    INSERT_DOC=IDL
+.. figure:: ../images/configuration_management.jpg
+    :name: CMP-FLOW
+    :alt: Configuration Management Plan
+
+    Facile's configuration management plan.
+
+As shown in :numref:`CMP-FLOW` he first step is to propose a change, once a formal request is made, the change request
+will be evaluated to determine
+whether it is a software change or not. If the requested change is software, it shall be evaluated by the Software
+Change Control Board (SCCB), the board shall hold the power to approve or reject the requested change. If the board
+approves the change, the development team will proceed to implement the change into the program. Once the
+implementation, integration and testing has been performed as per the change request, there will be an evaluation to
+determine the impact of the change on the overall program. If the change is determined as a class 1, the configuration
+manager shall update all the necessary documents and immediately release them to keep the  stakeholders of the project
+informed. The other process flow would be for non software changes, any non software change will be evaluated by the
+Change Control Board (CCB), the change control board shall hold the power to approve or reject the requested change, if
+approved, the change will be implemented and an impact evaluation will be conducted to determine if the change is class
+1. If the requested change is class 1, the configuration manager shall update all the necessary documents and
+immediately release them to keep the stakeholders of the project informed.
+
+~~~~~~~~~~~~~~~~~~~~~~~
+Configuration Authority
+~~~~~~~~~~~~~~~~~~~~~~~
+
+This section describes the different roles referenced in the configuration management plan. The configuration role
+assignments have been made in :numref:`CONF-ROLES`.
+
+.. table:: Configuration Role Assignments
+    :name: CONF-ROLES
+
+    +-----------------------+--------------------------+
+    | Authority             | Person                   |
+    +=======================+==========================+
+    | SCCB                  | Samuel Badger            |
+    +-----------------------+--------------------------+
+    | CCB                   | Andrew Kirima            |
+    +-----------------------+--------------------------+
+    | Configuration Manager | Nikhith Vankireddy       |
+    +-----------------------+--------------------------+
+
+Software Change Control Board (SCCB)
+####################################
+
+The SCCB is a committee of Subject Mater Expert(s) (SME) who will make the decision regarding the implementation of a
+software change request. Any changes to the established Project Baseline agreed upon by sponsor will need the approval
+of SCCB. SCCB will consider multiple factors such as project phase, time constraint, resource constraint, and necessity
+of the change while making approval decision. The SCCB is the sole point of contact to the configuration manager, the
+SCCB must inform the configuration manager as soon a change is approved.
+
+It is herby noted that the SCCB shall be held accountable for any uninformed changes to the software baseline.
+
+Change Control Board (CCB)
+###########################
+The CCB is a committee of Subject Mater Expert(s) (SME) who will make the decision regarding the implementation of a
+non-software (system) change request. Any changes to the established Project Baseline agreed upon by sponsor will need
+the approval of CCB. CCB will consider multiple factors such as project phase, time constraint, resource constraint, and
+necessity of the change while making approval decision. The CCB is the sole point of contact to the configuration
+manager, the CCB must inform the configuration manager as soon as a change is approved.
+
+It is herby noted that the CCB shall be held accountable for any uninformed changes to the project baseline.
+
+Configuration Manager
+#####################
+
+The configuration manager is the primary entity responsible for implementing and keeping track of all the changes in the
+project. Both SCCB and CCB will report to the configuration manager. The configuration manager in consultation with the
+SCCB and CCB will update all necessary documentation when a change has been implemented into the program. The
+configuration manager is responsible for facilitating communication between the development team, project manager, and
+the sponsor regarding any changes that are approved/implemented. It is the duty of configuration manager to perform
+impact evaluation of the change on the project and determine whether the change is class 1 or class 2.
+
+It is herby noted that the configuration manager shall be held accountable for not updating and releasing documentation
+to all stakeholders as soon as a class 1 change is implemented in the project.
+
+~~~~~~~~~~~~~~~~~~~~~~~~
+Classification of Change
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+**Class I Change:** A class 1 change is categorized as a change whose impact affects the system(s) “form, fit, or function”
+such as the core functionality, performance or specifications like weight, interfaces or reliability. Any change that
+impacts/alters baseline project system requirements is categorized as a class 1 change. Project schedule, budget, and
+necessary resource availability are also considered class I changes. The configuration manager shall perform impact
+evaluation to determine if a change is class 1.   The established protocol for class 1 changes is that all necessary
+documentation shall be immediately updated and released to the project stakeholders.
+
+**Class II Change:** A class 2 change is categorized as a change whose impact does not affect the system(s) “form, fit, or
+function” such as the changes made to correct or alter documentation regarding typos, formatting, additional info., and
+things of that nature. Any change determined to not be a Class I change is defined as a Class II change. These chases
+are often referred to as “redline” changes. The configuration manager shall perform impact evaluation to determine if a
+change is class 2. The established protocol for class 2 changes is that all necessary documentation shall be updated and
+changes shall be tracked via a change log. A class 2 update is marked as an internal release.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Documentation Release Nomenclature
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+All the documents pertaining to this project will follow a release protocol depending on the degree of the change.
+:numref:`NOMENCLATURE` describes the difference between Class 1 and Class 2 changes.
+
+.. table:: Documentation Release Nomenclature
+    :name: NOMENCLATURE
+
+    +--------------------+-------------------------------------------------------------------------------------------------+
+    | Type of Change     | Nomenclature Description                                                                        |
+    +====================+=================================================================================================+
+    | Class 1 Change     | When a class 1 change occurs, the documents are immediately released to the project             |
+    |                    | stakeholders with a revision nomenclature that iterates from A through Z. If the revision of a  |
+    |                    | given document reaches Z, then the updated revision nomenclature iterates from AA through AZ.   |
+    |                    |                                                                                                 |
+    |                    | Example:                                                                                        |
+    |                    |                                                                                                 |
+    |                    | - Doc Release A0 shows that a new document has been released.                                   |
+    |                    | - Doc Release B0 shows that class 1 changes to the original document have been amended.         |
+    +--------------------+-------------------------------------------------------------------------------------------------+
+    | Class 2 Change     | When a class 2 change occurs, the documents are updated and its changes are tracked via a       |
+    |                    | change-log. Once all the necessary class 2 changes have been amended, the document is marked as |
+    |                    | an internal release via revision nomenclature that iterates from 0-infinity.                    |
+    |                    |                                                                                                 |
+    |                    | Example:                                                                                        |
+    |                    |                                                                                                 |
+    |                    | - Doc Release A1 shows that class 2 changes to the original document have been amended.         |
+    +--------------------+-------------------------------------------------------------------------------------------------+
+
+~~~~~~~~~~~~~~~~~
+Change Log Format
+~~~~~~~~~~~~~~~~~
+
+The change log is a sheet that keeps track of all the changes, irrespective of them being class 1 or class 2. The change
+log will display all the crucial elements pertaining regarding any/all changes that have historically been made inside a
+given document. The change log template for this project will be as follows. Both :numref:`RELEASE-TEMPLATE` and
+:numref:`LOG-TEMPLATE` are included at the beginning of all controlled documents.
+
+.. table:: Current Release Information Template
+    :name: RELEASE-TEMPLATE
+
+    +-----------------+------------------+--------------+------------------------------+
+    | Release Version | Internal Version | Last Updated | Approved By                  |
+    +=================+==================+==============+==============================+
+    | A-Z             | 1 - infinite     |              | Configuration Manager        |
+    +-----------------+------------------+--------------+------------------------------+
+
+.. table:: Change Log Template
+    :name: LOG-TEMPLATE
+    :widths: 5 40 23 8 12 12
+
+    +-----+--------------------------------------------+--------------------------------------------+-------+---------------+------------+
+    | No. | Change Description                         | Rationale                                  | Class | Approved By   | Date       |
+    +=====+============================================+============================================+=======+===============+============+
+    | #   | Comprehensive description of the change    | Reasoning for why the particular change    | 1 or  | Configuration |            |
+    |     | that has been made.                        | was made.                                  | 2     | Manager       |            |
+    +-----+--------------------------------------------+--------------------------------------------+-------+---------------+------------+
+
+~~~~~~~~~~~~~~~~~~~
+Configuration Tools
+~~~~~~~~~~~~~~~~~~~
+
+The team uses Git for software version control. The team performs all development related integration on the development
+branch, once the integration is successful, the team proceeds to perform system level tests, once the system level tests
+are successful, the development branch is merged into master branch. The merging of development branch into master
+branch is marked as a release version. There shall be a minimum of three release versions for Facile at each iteration:
+
+- Critical Design Review (CDR): Facile 0.2.0 (1st MVP)
+- Iteration Status Review (ISR): Facile 0.3.0 (2nd MVP)
+- Final Iteration Review (FAR): Facile 1.0.0 (Executable Software)
+
+In case bug(s) are found on the released software, a hotfix will be implemented and merged directly into the master
+branch prompting a release, I.E. Facile 0.2.1.
+
+A more detailed account of each of the software versions will be given in the Software Version Description Document
+(SVDD Release A)
+
+~~~~~~~~~~~~~~~~~~~~~~~~
+Agile Management Process
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+The team is following the agile framework in developing the software. Unlike the traditional “V” method where all of the
+project plan/design is completed before proceeding to development and testing, in agile, our team will be looping
+through the traditional “V” method at least 3 times (see :numref:`V-METHOD`) - The team shall create a Minimum Viable Product (MVP) at each
+iteration. In each iteration the team will create a small working subset of the project (MVP), the MVP is then evaluated
+during the iteration design review, the goal of the review is to get critical feedback regarding the existing MVP so
+that the team can improve on the next MVP and tailor the next MVP more towards the feedback that has been received in
+the prior review. This process conforms to the underlying ethos of agile as being a methodology that is used to adapt
+the end product to the exact needs of the customer.
+
+.. figure:: ../images/Agile.png
+    :name: V-METHOD
+    :alt: An agile adaptation of the V method
+
+    The agile method that the team is following when designing Facile.
+
+In this project, the team is following the SCRUM methodology within the agile framework.
+
+Each iteration consists of multiple sprints with a cadence of 2 weeks. Beginning of every sprint, the development team,
+scrum master and the sponsor meet to set certain goals for the sprint and decide on what needs to be achieved for the
+next 2 weeks. After the end of the sprint, the team holds a retrospective to analyze performance and come up with
+lessons learned so that the team can improve their performance for the next sprint. Our team decided to also use the
+stand-up meetings process which is part of scrum methodology, however, instead of daily stand-ups, the team does
+stand-up meetings thrice a week.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+System Requirement Burndown Plan
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+:numref:`BURNDOWN` the team’s burndown plan for all the system requirements associated with the project. All
+the requirements highlighted in green have been fully verified while the requirements highlighted in orange are
+partially verified. One of the reason this burndown plan is skewed, as in- a large proportion of requirements are being
+verified in the end at FAR, is because most of the requirements at FAR are Environment and Performance related, a
+complete Facile executable file is necessary to fully verify these requirements.
+
+.. figure:: ../images/SRBP.png
+    :name: BURNDOWN
+    :alt: The System Requirement Burndown Plan for the Facile project.
+
+    The System Requirement Burndown Plan for the Facile project.
 
 ..
+    -----------------------------
+    Indentured Document List
+    -----------------------------
+
+    .. raw:: latex
+
+        INSERT_DOC=IDL
+
+
     -----------------------------
     System Requirements Document
     -----------------------------
@@ -375,20 +697,13 @@ Indentured Document List
         INSERT_DOC=Verification
 
     ------------------------
-    Hardware Drawing Package
+    Software Drawing Package
     ------------------------
 
     .. raw:: latex
 
         INSERT_DOC=HDP
 
-    ----------------------------
-    Software Drawing Package
-    ----------------------------
-
-    .. raw:: latex
-
-        INSERT_DOC=SDP
 
     -------------------------------------
     Software Version Description Document
@@ -423,9 +738,3 @@ Indentured Document List
 
         INSERT_DOC=UserManual
 
-    ------------------------
-    Client Feedback Document
-    ------------------------
-
-    .. raw:: latex
-        INSERT_DOC=CFD

@@ -43,12 +43,10 @@ releases = {
 	"IDL":        "A1",
 	"SRD":        "D1",
 	"VD":         "B1",
-	"HDP":        "A1",
-	"SDP":        "B1", # Renamed from "Drawings"
+	"SDP":        "B1",
 	"SDD":        "B1",
 	"Models":     "A1",
 	"UserManual": "A1",
-	"CFD":        "A1",
 
 	# Documents no longer in TDP.
 	"Risk":       "A1",

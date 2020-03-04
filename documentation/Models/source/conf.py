@@ -12,30 +12,21 @@
 #
 import os
 import sys
-sys.path.insert(0, os.path.abspath('../../../src/data/apim'))
-sys.path.insert(0, os.path.abspath('../../../src/data/tguim'))
-sys.path.insert(0, os.path.abspath('../../../src/data'))
-sys.path.insert(0, os.path.abspath('../../../src/graphics/apim'))
-sys.path.insert(0, os.path.abspath('../../../src/graphics/tguim'))
-sys.path.insert(0, os.path.abspath('../../../src/graphics'))
-sys.path.insert(0, os.path.abspath('../../../src/gui/ui'))
-sys.path.insert(0, os.path.abspath('../../../src/gui'))
-sys.path.insert(0, os.path.abspath('../../../src/libs'))
-sys.path.insert(0, os.path.abspath('../../../src/qt_models'))
-sys.path.insert(0, os.path.abspath('../../../src/tguiil'))
-sys.path.insert(0, os.path.abspath('../../../src/'))
 
 sys.path.append(os.path.abspath('../../_common/extensions'))
 
 
 # -- Project information -----------------------------------------------------
 
-project = 'Iteration Documentation Package (ISR)'
+project = 'Models'
 copyright = '2020, Facade Technologies Inc.'
 
 author = "Facade Technologies Inc."
 
-version = "B1"
+import sys, os
+sys.path.append(os.path.abspath("../../_common/"))
+from documents import releases
+version = releases["SDP"]
 release = version
 
 
@@ -45,12 +36,10 @@ release = version
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-	'sphinx.ext.autosectionlabel',
-	'sphinx.ext.todo',
-	'ext_numfig'
+	'sphinx.ext.todo'
 ]
 
-
+numfig = True
 todo_include_todos = True
 
 # Add any paths that contain templates here, relative to this directory.
@@ -60,12 +49,6 @@ templates_path = ['_templates']
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
 exclude_patterns = ["**/ui"]
-
-# -- Options for numfig ------------------------------------------------------
-numfig_number_figures = True
-numfig_figure_caption_prefix = "Figure"
-numfig = True
-
 
 # -- Options for HTML output -------------------------------------------------
 
@@ -92,18 +75,12 @@ latex_favicon = "../../_common/images/facade_logo_favicon.ico"
 latex_show_pagerefs = True
 latex_show_urls = "footnote"
 
-# rst_prolog = """
-# .. warning:: **This document contains proprietary information. Duplication and dissemination of these documents is prohibited without the prior written consent of Facade Technologies Inc.**
-# """
-#
-# rst_epilog = rst_prolog
-
 latex_documents = [(
 	"index",
 
-	"19033_Iteration_Documentation_Package_ISR.tex",
+	"19033_Models.tex",
 
-	"Facile Iteration Documentation Package (ISR)",
+	"Models",
 
 	"\\textbf{Team 19033:} \\\\"
 	"Andrew Kirima \\\\ "
@@ -118,17 +95,17 @@ latex_documents = [(
 	"False"
 )]
 
-#latex_toplevel_sectioning = 'section'
+# latex_toplevel_sectioning = 'section'
 
 latex_elements = {
 	'extraclassoptions': r'oneside',
-	'preamble':          r'''
+	'preamble': r'''
 		\usepackage{pdfpages}
 		\usepackage{standalone}
 		\usepackage{import}
 		\usepackage{titletoc}
 		\usepackage{fancyhdr}
-		
+
 		\rfoot{Proprietary - Limited Use and Access}
 		\cfoot{Duplication and dissemination of these documents is prohibited \\
 		without the prior written consent of Facade Technologies Inc.}
@@ -136,10 +113,10 @@ latex_elements = {
 
 	# 	\definecolor{myblue}{rgb}{0.4, 0.4, 0.5}
 	# 	\titlecontents{chapter}[ 0em ]{ \vspace{0.75em} }
-    #           {Doc \, \contentslabel{.2em} \hspace{.5em}-- \hspace{.5em}}{}
-    #           {\hfill \textbf{\contentspage}}[]
+	#           {Doc \, \contentslabel{.2em} \hspace{.5em}-- \hspace{.5em}}{}
+	#           {\hfill \textbf{\contentspage}}[]
 	# 	\titlecontents{section}[ 2em ]{  }
-    #           {\hspace{3.5em} \contentslabel{2.5em}}{}
-    #           {\titlerule*[0.5pc]{.}\contentspage}[]
+	#           {\hspace{3.5em} \contentslabel{2.5em}}{}
+	#           {\titlerule*[0.5pc]{.}\contentspage}[]
 	# ''',
 }

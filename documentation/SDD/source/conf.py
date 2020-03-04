@@ -57,7 +57,7 @@ extensions = [
 	'sphinx.ext.mathjax',
 	'sphinx.ext.viewcode',
 	'sphinx.ext.graphviz',
-	'autoapi.extension',
+	# 'autoapi.extension',
 	'ext_numfig'
 ]
 
@@ -78,14 +78,14 @@ numfig_figure_caption_prefix = "Figure"
 
 # -- Options for AutoAPI -----------------------------------------------------
 # See https://sphinx-autoapi.readthedocs.io/en/latest/reference/config.html# for details
-autoapi_add_toctree_entry = False
-autoapi_type = "python"
-autoapi_dirs = ['../../../src']
-autoapi_template_dir = "../_common/templates"
-autoapi_root = "autoapi"
-autoapi_include_summaries = True
-autoapi_python_class_content = "both"
-autoapi_keep_files = True
+# autoapi_add_toctree_entry = False
+# autoapi_type = "python"
+# autoapi_dirs = ['../../../src']
+# autoapi_template_dir = "../_common/templates"
+# autoapi_root = "autoapi"
+# autoapi_include_summaries = True
+# autoapi_python_class_content = "both"
+# autoapi_keep_files = True
 
 
 # -- Options for HTML output -------------------------------------------------
@@ -133,7 +133,7 @@ latex_documents = [(
 	"False"
 )]
 
-latex_toplevel_sectioning = 'section'
+# latex_toplevel_sectioning = 'section'
 
 latex_elements = {
 	'extraclassoptions': 'openany,oneside'
