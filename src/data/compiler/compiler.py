@@ -72,6 +72,10 @@ from typing import Set
 from tguiil.matchoption import MatchOption
 from baseapplication import BaseApplication
 
+class ActionException(Exception):
+	def __init__(self, msg: str):
+		Exception.__init__(self, msg)
+
 class Application(BaseApplication):
 \tdef __init__(self):
 \t\tBaseApplication.__init__(self, "''' + self._exeLoc + '", {')
