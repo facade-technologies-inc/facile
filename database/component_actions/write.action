@@ -1,4 +1,4 @@
-name = "write"
+name = "Write"
 description = "Write to a component. Will be added to any existing text."
 targets = ['Edit']
 inputs = [

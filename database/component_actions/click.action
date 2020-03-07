@@ -1,5 +1,5 @@
 
-name = "click"
+name = "Click"
 description = "Left-click a component."
 targets = {'Button', 'MenuItem', '_treeview_element', '_toolbar_element', '_listview_element'}
 inputs = []

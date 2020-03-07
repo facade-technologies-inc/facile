@@ -1,4 +1,4 @@
-name = "write"
+name = "Set Text"
 description = "Write to a component, overwriting any existing text."
 targets = ['Edit']
 inputs = [
