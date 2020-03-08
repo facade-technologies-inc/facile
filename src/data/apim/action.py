@@ -36,11 +36,9 @@ class ActionException(Exception):
 		Exception.__init__(self, msg)
 
 
-class Action(QObject, Entity):
+class Action(Entity):
 	
 	allPorts = set()
-	
-	updated = Signal()
 	
 	def __init__(self):
 		"""
@@ -101,7 +99,7 @@ class Action(QObject, Entity):
 		Action.allPorts.add(port)
 		self._inputs.append(port)
 		self.synchronizeWrappers()
-		self.updated.emit()
+		self.triggerUpdate()
 	
 	def addOutputPort(self, port: 'pt.Port') -> None:
 		"""
@@ -125,7 +123,7 @@ class Action(QObject, Entity):
 		Action.allPorts.add(port)
 		self._outputs.append(port)
 		self.synchronizeWrappers()
-		self.updated.emit()
+		self.triggerUpdate()
 		
 	def getInputPorts(self) -> List['pt.Port']:
 		"""
@@ -178,7 +176,7 @@ class Action(QObject, Entity):
 			port.setAction(None)
 		
 		self.synchronizeWrappers()
-		self.updated.emit()
+		self.triggerUpdate()
 		return found
 
 	def registerWrapper(self, wrapper: 'ActionWrapper') -> None:

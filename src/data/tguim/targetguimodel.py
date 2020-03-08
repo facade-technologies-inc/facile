@@ -49,12 +49,14 @@ class TargetGuiModel(QObject):
 		:rtype: TargetGuiModel
 		"""
 		QObject.__init__(self)
-		self._scene = TScene(self)
 		self._root = Component(self)  # Note: remains constant. Represents the application.
-		
+
+		# maps component id to component
 		self._components = OrderedDict()  # Note: Root Component not stored here.
+
+		# maps visibility behavior id to visibility behavior
 		self._visibilityBehaviors = OrderedDict()
-		
+
 		# Allows easy lookup of components given a super token
 		self._superTokenToComponentMapping = {None: None}
 	
@@ -66,15 +68,6 @@ class TargetGuiModel(QObject):
 		:rtype: Component
 		"""
 		return self._root
-	
-	def getScene(self) -> 'TScene':
-		"""
-		Gets the associated graphics scene
-		
-		:return: The GraphicsScene associated with the TargetGuiModel
-		:rtype: TScene
-		"""
-		return self._scene
 	
 	def getComponents(self) -> dict:
 		"""
@@ -240,15 +233,14 @@ class TargetGuiModel(QObject):
 		"""
 		tguim = TargetGuiModel()
 		tguim._root = Component.fromDict(d["root"], tguim)
-		tguim._root.createGraphics()
 		
-		# create all components (superficially)
+		# create all components
 		for id, comp in d['components'].items():
 			newComp = Component.fromDict(comp, tguim)
 			tguim._components[int(id)] = newComp
 			tguim._superTokenToComponentMapping[newComp.getSuperToken()] = newComp
 		
-		# create all visibility behaviors (superficially)
+		# create all visibility behaviors
 		for id, vb in d['behaviors'].items():
 			newVB = VisibilityBehavior.fromDict(vb, tguim)
 			tguim._visibilityBehaviors[int(id)] = newVB
@@ -278,7 +270,9 @@ class TargetGuiModel(QObject):
 		for vb in tguim._visibilityBehaviors.values():
 			vb._srcComponent = tguim._components[vb._srcComponent]
 			vb._destComponent = tguim._components[vb._destComponent]
-		
+
+
+		# TODO: Don't create graphics, but still link up children.
 		# create graphics for all entities.
 		work = [(tguim._root, None)]
 		while work:
@@ -290,7 +284,7 @@ class TargetGuiModel(QObject):
 				cur.createGraphics()
 			except:
 				pass
-			
+
 			if parent:
 				for child in [tguim._components[int(id)] for id in d["components"][str(cur._id)][
 					"children"]]:
@@ -298,10 +292,10 @@ class TargetGuiModel(QObject):
 			else:
 				for child in [tguim._components[int(id)] for id in d["root"]["children"]]:
 					work.append((child, cur))
-		
+
 		for vb in tguim._visibilityBehaviors.values():
 			vb.createGraphics()
-		
+
 		Entity.count = d["Entity Count"]
 		SuperToken.id_counter = d["SuperToken Count"]
 		

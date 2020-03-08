@@ -355,7 +355,6 @@ class ComponentGraphics(QGraphicsItem):
 				if sibsibCollisions:
 					work.insert(0, (sib, sibsibCollisions))
 					
-			
 
 	def getMargin(self) -> float:
 		"""
@@ -673,9 +672,11 @@ class ComponentGraphics(QGraphicsItem):
 	def triggerSceneUpdate(self):
 		"""
 		Update the scene.
-
 		"""
 		self.scene().invalidate(self.scene().sceneRect(), QGraphicsScene.ItemLayer)
+
+	def onDataUpdated(self):
+		self.triggerSceneUpdate()
 
 	def __repr__(self):
 		"""
