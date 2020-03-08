@@ -172,6 +172,7 @@ class FacileView(QMainWindow):
 		newProjectDialog = NewProjectDialog()
 		newProjectDialog.projectCreated.connect(self.setProject)
 		newProjectDialog.exec_()
+		self.onSaveProjectTriggered()
 	
 	@Slot()
 	def onNewProjectFromExistingTriggered(self) -> None:
@@ -186,6 +187,7 @@ class FacileView(QMainWindow):
 		copyProjectDialog = CopyProjectDialog()
 		copyProjectDialog.projectCreated.connect(self.setProject)
 		copyProjectDialog.exec_()
+		self.onSaveProjectTriggered()
 	
 	@Slot()
 	def onOpenRecentProject(self) -> None:
