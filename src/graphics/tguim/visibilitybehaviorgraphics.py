@@ -43,11 +43,12 @@ class VBGraphics(QAbstractGraphicsShapeItem):
 		:rtype: NoneType
 		"""
 		QAbstractGraphicsShapeItem.__init__(self)
+		parent.addItem(self)
 		self._dataVB = dataVisibilityBehavior
 		self.setFlag(QGraphicsItem.ItemIsSelectable)
-		self._srcComponentCenterPoint = self._dataVB.getSrcComponent().getGraphicsItem().boundingRect().center()
-		self._destComponentCenterPoint = self._dataVB.getDestComponent().getGraphicsItem().boundingRect().center()
-		parent.addItem(self)
+
+		self._srcComponentCenterPoint = self.scene().getGraphics(self._dataVB.getSrcComponent()).boundingRect().center()
+		self._destComponentCenterPoint = self.scene().getGraphics(self._dataVB.getDestComponent()).boundingRect().center()
 		self._boundingRect = None
 		self._x1, self._x2, self._y1, self._y2 = 0, 0, 0, 0
 		
@@ -61,15 +62,14 @@ class VBGraphics(QAbstractGraphicsShapeItem):
 		"""
 		if self._boundingRect:
 			return self._boundingRect
+
+		srcPos = self.scene().getGraphics(self._dataVB.getSrcComponent()).scenePos()
+		dstPos = self.scene().getGraphics(self._dataVB.getDestComponent()).scenePos()
 		
-		leftCornerX = min(self._dataVB.getSrcComponent().getGraphicsItem().scenePos().x(),
-		                  self._dataVB.getDestComponent().getGraphicsItem().scenePos().x())
-		leftCornerY = min(self._dataVB.getSrcComponent().getGraphicsItem().scenePos().y(),
-		                  self._dataVB.getDestComponent().getGraphicsItem().scenePos().y())
-		width = abs(self._dataVB.getSrcComponent().getGraphicsItem().scenePos().x()
-		            - self._dataVB.getDestComponent().getGraphicsItem().scenePos().x())
-		height = abs(self._dataVB.getSrcComponent().getGraphicsItem().scenePos().y()
-		             - self._dataVB.getDestComponent().getGraphicsItem().scenePos().y())
+		leftCornerX = min(srcPos.x(), dstPos.x())
+		leftCornerY = min(srcPos.y(), dstPos.y())
+		width =       abs(srcPos.x()- dstPos.x())
+		height =      abs(srcPos.y()- dstPos.y())
 		return QRectF(leftCornerX, leftCornerY, width, height)
 	
 	def paint(self, painter: QPainter, option, widget):
@@ -101,11 +101,14 @@ class VBGraphics(QAbstractGraphicsShapeItem):
 			pen.setWidth(10)
 			painter.setPen(pen)
 
+			srcBR = self.scene().getGraphics(self._dataVB.getSrcComponent()).boundingRect(withMargins=False)
+			dstBR = self.scene().getGraphics(self._dataVB.getDestComponent()).boundingRect(withMargins=False)
+
 			lengthSrcNodeSrcEdgeList = len(self._dataVB.getSrcComponent().getSrcVisibilityBehaviors())
 			lengthDesNodeDesEdgeList = len(self._dataVB.getDestComponent().getDestVisibilityBehaviors())
-			heightSrcNode = self._dataVB.getSrcComponent().getGraphicsItem().boundingRect(withMargins=False).height()
-			heightDesNode = self._dataVB.getDestComponent().getGraphicsItem().boundingRect(withMargins=False).height()
-			widthDesNode = self._dataVB.getDestComponent().getGraphicsItem().boundingRect(withMargins=False).width()
+			heightSrcNode = srcBR.height()
+			heightDesNode = dstBR.height()
+			widthDesNode = dstBR.width()
 			# This is the index(+1 avoid 0 in calculation) of the edge at the SourceNode's edgeSrcList
 			srcNodeIndex = self._dataVB.getSrcComponent().getSrcVisibilityBehaviors().index(
 			self._dataVB) + 1
@@ -113,11 +116,14 @@ class VBGraphics(QAbstractGraphicsShapeItem):
 			desNodeIndex = self._dataVB.getDestComponent().getDestVisibilityBehaviors().index(
 			self._dataVB) + 1
 
+			srcPos = self.scene().getGraphics(self._dataVB.getSrcComponent()).scenePos()
+			dstPos = self.scene().getGraphics(self._dataVB.getDestComponent()).scenePos()
+
 			# ComponentGraphics.MARGIN = 20
-			x1 = self._dataVB.getSrcComponent().getGraphicsItem().scenePos().x() + 20  # x does not change, stay at the left most of the node
-			y1 = self._dataVB.getSrcComponent().getGraphicsItem().scenePos().y() + (heightSrcNode / (lengthSrcNodeSrcEdgeList + 1)) * srcNodeIndex
-			x2 = self._dataVB.getDestComponent().getGraphicsItem().scenePos().x() + widthDesNode + 20
-			y2 = self._dataVB.getDestComponent().getGraphicsItem().scenePos().y() + (heightDesNode / (lengthDesNodeDesEdgeList + 1)) * desNodeIndex
+			x1 = srcPos.x() + 20  # x does not change, stay at the left most of the node
+			y1 = srcPos.y() + (heightSrcNode / (lengthSrcNodeSrcEdgeList + 1)) * srcNodeIndex
+			x2 = dstPos.x() + widthDesNode + 20
+			y2 = dstPos.y() + (heightDesNode / (lengthDesNodeDesEdgeList + 1)) * desNodeIndex
 			self._x1 = x1
 			self._x2 = x2
 			self._y1 = y1
@@ -208,8 +214,10 @@ class VBGraphics(QAbstractGraphicsShapeItem):
 		"""
 		
 		baseComponent = self.getOneComponentDownRoot()
-		baseComponentWidth = baseComponent.getGraphicsItem().boundingRect(withMargins=False).width()
-		baseComponentHeight = baseComponent.getGraphicsItem().boundingRect(withMargins=False).height()
+		baseBR = self.scene().getGraphics(baseComponent).boundingRect(withMargins=False)
+		basePos = self.scene().getGraphics(baseComponent).scenePos()
+		baseComponentWidth = baseBR.width()
+		baseComponentHeight = baseBR.height()
 		path = QPainterPath()
 		
 		#TODO: If the component is the root component, VBGraphics may overlap with other components easily.FIX IT
@@ -229,17 +237,17 @@ class VBGraphics(QAbstractGraphicsShapeItem):
 			leftInTrue = True
 		elif (x2 - x1) > (1/3 * baseComponentWidth) and y1 <= y2:
 			path.moveTo(x1, y1)
-			path.lineTo(baseComponent.getGraphicsItem().scenePos().x() - x1/3, y1)
-			path.lineTo(baseComponent.getGraphicsItem().scenePos().x() - x1/3,
-			            baseComponent.getGraphicsItem().scenePos().y() - y1/3)
-			path.lineTo(baseComponentWidth + x1, baseComponent.getGraphicsItem().scenePos().y() - y1/3)
+			path.lineTo(basePos.x() - x1/3, y1)
+			path.lineTo(basePos.x() - x1/3,
+			            basePos.y() - y1/3)
+			path.lineTo(baseComponentWidth + x1, basePos.y() - y1/3)
 			path.lineTo(baseComponentWidth + x1, y2)
 			path.lineTo(x2, y2)
 			leftInTrue = False
 		elif (x2 - x1) > (1/3 * baseComponentWidth) and y1 > y2:
 			path.moveTo(x1, y1)
-			path.lineTo(baseComponent.getGraphicsItem().scenePos().x() - x1/3, y1)
-			path.lineTo(baseComponent.getGraphicsItem().scenePos().x() - x1/3,
+			path.lineTo(basePos.x() - x1/3, y1)
+			path.lineTo(basePos.x() - x1/3,
 			            baseComponentHeight + y1/3)
 			path.lineTo(baseComponentWidth + x1, baseComponentHeight + y1/3)
 			path.lineTo(baseComponentWidth + x1, y2)

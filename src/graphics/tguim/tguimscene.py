@@ -60,6 +60,16 @@ class TGUIMScene(QGraphicsScene):
 			graphics = self.createVisibilityBehaviorGraphics(vb)
 			self.addItem(graphics)
 
+		def onNewComponent(newComponent):
+			parentGraphics = self.getGraphics(newComponent.getParent())
+			self.createComponentGraphics(newComponent, parentGraphics)
+
+		def onNewBehavior(newBehavior):
+			self.createVisibilityBehaviorGraphics(newBehavior)
+
+		self._targetGuiModel.newComponent.connect(onNewComponent)
+		self._targetGuiModel.newBehavior.connect(onNewBehavior)
+
 	def createComponentGraphics(self, dataItem: 'Component', parent: 'ComponentGraphics') -> 'ComponentGraphics':
 		"""
 		Create the graphics for a component
@@ -91,6 +101,8 @@ class TGUIMScene(QGraphicsScene):
 	def getGraphics(self, dataItem):
 		"""
 		Gets the graphics associated with either a component or a visibility behavior.
+
+		.. note:: alternatively, this method can take in the id of a component or visibility behavior.
 
 		:param dataItem: The component or visibility behavior to get the graphics for.
 		:type dataItem: Component or VisibilityBehavior

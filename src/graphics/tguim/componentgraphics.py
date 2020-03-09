@@ -152,7 +152,6 @@ class ComponentGraphics(QGraphicsItem):
 			parentIsScene = True
 			self.setFlag(QGraphicsItem.ItemIsMovable)
 		else:
-
 			parent = self.scene().getGraphics(self._dataComponent.getParent())
 			parentIsScene = False
 
@@ -165,10 +164,6 @@ class ComponentGraphics(QGraphicsItem):
 		# Resolve collisions with siblings
 		self.checkForCollisions(siblings)
 
-		# If component isn't placed inside the parent, expand the parent
-		# if parentIsScene:
-		# 	self.expandSelf()
-		# el
 		if not parentIsScene:
 			allContained = True
 			for sib in siblings:

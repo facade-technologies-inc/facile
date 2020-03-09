@@ -67,7 +67,6 @@ class VisibilityBehavior(Entity):
 		# TODO: Add a "trigger action" data member?
 		
 		if srcComp and destComp:
-			self.createGraphics()
 			
 			predefined = ["Base", "Visibility Behavior"]
 			custom = {}

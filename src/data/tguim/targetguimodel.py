@@ -39,7 +39,9 @@ class TargetGuiModel(QObject):
 	the Observer.
 	"""
 	dataChanged = Signal(int)
-	
+	newComponent = Signal(Component)
+	newBehavior = Signal(VisibilityBehavior)
+
 	def __init__(self) -> 'TargetGuiModel':
 		"""
 		Constructs a TargetGuiModel object.
@@ -133,6 +135,7 @@ class TargetGuiModel(QObject):
 		self._superTokenToComponentMapping[newSuperToken] = newComponent
 		self._components[newComponent.getId()] = newComponent
 		self.dataChanged.emit(newComponent.getId())
+		self.newComponent.emit(newComponent)
 		return newComponent
 	
 	def getVisibilityBehaviors(self) -> dict:
@@ -187,6 +190,7 @@ class TargetGuiModel(QObject):
 		dest = newVisBehavior.getDestComponent()
 		src.addSrcVisibilityBehavior(newVisBehavior)
 		dest.addDestVisibilityBehavior(newVisBehavior)
+		self.newBehavior.emit(newVisBehavior)
 	
 	def asDict(self) -> dict:
 		"""
