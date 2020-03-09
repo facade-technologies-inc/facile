@@ -29,7 +29,7 @@ import data.statemachine as sm
 
 
 class VBGraphics(QAbstractGraphicsShapeItem):
-	def __init__(self, dataVisibilityBehavior: 'VisibilityBehavior', parent: 'TScene'):
+	def __init__(self, dataVisibilityBehavior: 'VisibilityBehavior', parent: 'TGUIMScene'):
 		"""
 		Construct the VBGraphics class.
 		'src' means the source component, the one triggering the vb.
@@ -38,7 +38,7 @@ class VBGraphics(QAbstractGraphicsShapeItem):
 		:param dataVisibilityBehavior: get the data of a VisibilityBehavior
 		:type dataVisibilityBehavior: VisibilityBehavior
 		:param parent: The parent of the visibility behavior (This will always be the scene)
-		:type parent: TScene
+		:type parent: TGUIMScene
 		:return: None
 		:rtype: NoneType
 		"""

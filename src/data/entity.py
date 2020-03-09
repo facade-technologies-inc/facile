@@ -43,7 +43,7 @@ class Entity(QObject):
 		:return: The constructed Entity
 		:rtype: Entity
 		"""
-		
+		QObject.__init__(self)
 		Entity.count += 1
 		self._id: int = Entity.count
 		self._properties = None

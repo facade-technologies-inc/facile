@@ -18,33 +18,89 @@
     |                                                                              |
     \------------------------------------------------------------------------------/
 
-This module contains the TScene class.
+This module contains the TGUIMScene class.
 """
 
 from PySide2.QtCore import Signal, QTimer
 from PySide2.QtWidgets import QGraphicsScene
 
+from graphics.tguim.componentgraphics import ComponentGraphics
+import graphics.tguim.visibilitybehaviorgraphics as vbg
 
-class TScene(QGraphicsScene):
+class TGUIMScene(QGraphicsScene):
 	itemSelected = Signal(int)
 	itemBlink = Signal(int)
 	
 	def __init__(self, targetGUIModel: 'TargetGuiModel'):
 		"""
-		Construct the TScene class
+		Construct the TGUIMScene class
 
 		:param targetGUIModel: get the TargetGuiModel of the project
 		:type targetGUIModel: TargetGuiModel
 		"""
 		QGraphicsScene.__init__(self)
 		self._targetGuiModel = targetGUIModel
-		
-		def snap():
-			self.setSceneRect(self.itemsBoundingRect())
-			
-		snapTimer = QTimer(self)
-		snapTimer.timeout.connect(snap)
-		snapTimer.start(1000)
+		self._dataToGraphicsMapping = {}
+
+		# Create all component graphics
+		work = [(self._targetGuiModel.getRoot(), ComponentGraphics(self._targetGuiModel.getRoot(), (0,0,0,0), None))]
+		while len(work) > 0:
+			data, parentGraphics = work.pop()
+
+			# add the root's component to the scene.
+			if data is self._targetGuiModel.getRoot():
+				self.addItem(parentGraphics)
+
+			for child in data.getChildren():
+				graphics = self.createComponentGraphics(child, parentGraphics)
+				work.append((child, graphics))
+
+		# Create all visibility behavior graphics
+		for vb in targetGUIModel.getVisibilityBehaviors():
+			graphics = self.createVisibilityBehaviorGraphics(vb)
+			self.addItem(graphics)
+
+	def createComponentGraphics(self, dataItem: 'Component', parent: 'ComponentGraphics') -> 'ComponentGraphics':
+		"""
+		Create the graphics for a component
+
+		:param dataItem: The component to make a graphics item for
+		:type dataItem: Component
+		:param parent: The parent to the new graphics item.
+		:type parent: ComponentGraphics
+		:return: None
+		:rtype: NoneType
+		"""
+		graphics = ComponentGraphics(dataItem, dataItem.getSuperToken().posRelativeToParent, parent)
+		self._dataToGraphicsMapping[dataItem] = graphics
+		return graphics
+
+	def createVisibilityBehaviorGraphics(self, dataItem: 'VisibilityBehavior') -> 'VisibilityBehaviorGraphics':
+		"""
+		Create the graphics for a visibility behavior
+
+		:param dataItem: The visibility behavior to create the graphics for.
+		:type dataItem: VisibilityBehavior
+		:return: None
+		:rtype: NoneType
+		"""
+		graphics = vbg.VBGraphics(dataItem, self)
+		self._dataToGraphicsMapping[dataItem] = graphics
+		return graphics
+
+	def getGraphics(self, dataItem):
+		"""
+		Gets the graphics associated with either a component or a visibility behavior.
+
+		:param dataItem: The component or visibility behavior to get the graphics for.
+		:type dataItem: Component or VisibilityBehavior
+		:return: The graphics associated with dataItem.
+		:rtype: ComponentGraphics or VBGraphics
+		"""
+		if type(dataItem) is int:
+			dataItem = self._targetGuiModel.getComponent(dataItem)
+
+		return self._dataToGraphicsMapping.get(dataItem, None)
 	
 	def getTargetGUIModel(self) -> 'TargetGuiModel':
 		"""

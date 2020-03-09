@@ -26,8 +26,7 @@ from copy import deepcopy
 
 from PySide2.QtCore import Slot, QTimer, QItemSelection
 from PySide2.QtGui import Qt, QCloseEvent, QKeyEvent
-from PySide2.QtWidgets import QMainWindow, QFileDialog, QMessageBox, QLabel, \
-	QGraphicsOpacityEffect
+from PySide2.QtWidgets import QMainWindow, QFileDialog, QMessageBox, QLabel, QGraphicsOpacityEffect
 
 from data.project import Project
 from data.statemachine import StateMachine
@@ -42,6 +41,8 @@ from gui.ui.ui_facileview import Ui_MainWindow as Ui_FacileView
 from qt_models.projectexplorermodel import ProjectExplorerModel
 from tguiil.blinker import Blinker
 from gui.actionmenu import ActionMenu
+
+import data.statemachine as sm
 
 
 class FacileView(QMainWindow):
@@ -256,8 +257,9 @@ class FacileView(QMainWindow):
 		index = selectedIndexes[0]
 		entity = index.internalPointer()
 		if not isinstance(entity, (ProjectExplorerModel.LeafIndex, str)):
-			self._project.getTargetGUIModel().getScene().clearSelection()
-			entity.getGraphicsItem().setSelected(True)
+			scene = sm.StateMachine.instance.view.ui.targetGUIModelView.scene()
+			scene.clearSelection()
+			scene.getGraphics(entity).setSelected(True)
 			self.ui.propertyEditorView.setModel(entity.getProperties().getModel())
 			self.ui.propertyEditorView.expandAll()
 	

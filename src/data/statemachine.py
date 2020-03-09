@@ -37,7 +37,7 @@ from qt_models.propeditordelegate import PropertyEditorDelegate
 from data.configvars import ConfigVars
 from data.apim.actionpipeline import ActionPipeline
 from gui.apicompilerdialog import ApiCompilerDialog
-
+from graphics.tguim.tguimscene import TGUIMScene
 
 class StateMachine:
 	"""
@@ -457,10 +457,12 @@ class StateMachine:
 		
 		if event == StateMachine.Event.PROJECT_OPENED:
 			v.setWindowTitle("Facile - " + self._project.getMainProjectFile())
-			# p.save()
+			p.save()
 			p.addToRecents()
-			p.getTargetGUIModel().getScene().itemSelected.connect(v.onItemSelected)
-			p.getTargetGUIModel().getScene().itemBlink.connect(v.onItemBlink)
+			scene = TGUIMScene(p.getTargetGUIModel())
+			ui.targetGUIModelView.setScene(scene)
+			scene.itemSelected.connect(v.onItemSelected)
+			scene.itemBlink.connect(v.onItemBlink)
 			p.getTargetGUIModel().dataChanged.connect(lambda: ui.projectExplorerView.update())
 			projectExplorerModel = v._project.getProjectExplorerModel(ui.projectExplorerView)
 			ui.projectExplorerView.setModel(projectExplorerModel)
@@ -470,7 +472,6 @@ class StateMachine:
 			propertyDelegate = PropertyEditorDelegate()
 			propertyDelegate.propertyUpdated.connect(onPropUpdate)
 			ui.propertyEditorView.setItemDelegate(propertyDelegate)
-			ui.targetGUIModelView.setScene(v._project.getTargetGUIModel().getScene())
 			ui.actionPower_App.setChecked(False)
 			ui.actionManage_Project.setEnabled(True)
 		
