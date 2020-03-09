@@ -272,29 +272,19 @@ class TargetGuiModel(QObject):
 			vb._destComponent = tguim._components[vb._destComponent]
 
 
-		# TODO: Don't create graphics, but still link up children.
-		# create graphics for all entities.
+		# Link up all children.
 		work = [(tguim._root, None)]
 		while work:
 			cur, parent = work.pop()
+
 			if parent:
 				parent._children.append(cur)
-
-			try:
-				cur.createGraphics()
-			except:
-				pass
-
-			if parent:
-				for child in [tguim._components[int(id)] for id in d["components"][str(cur._id)][
-					"children"]]:
-					work.append((child, cur))
+				child_ids = d["components"][str(cur._id)]["children"]
 			else:
-				for child in [tguim._components[int(id)] for id in d["root"]["children"]]:
-					work.append((child, cur))
+				child_ids = d["root"]["children"]
 
-		for vb in tguim._visibilityBehaviors.values():
-			vb.createGraphics()
+			for child in [tguim._components[int(id)] for id in child_ids]:
+				work.append((child, cur))
 
 		Entity.count = d["Entity Count"]
 		SuperToken.id_counter = d["SuperToken Count"]
