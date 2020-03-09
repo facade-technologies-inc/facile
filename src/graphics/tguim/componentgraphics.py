@@ -58,7 +58,6 @@ class ComponentGraphics(QGraphicsItem):
 		"""
 
 		QGraphicsItem.__init__(self, parent)
-		print(self.scene())
 		self.setFlag(QGraphicsItem.ItemIsSelectable)
 
 		if parent is None:
