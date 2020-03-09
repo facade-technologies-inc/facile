@@ -62,7 +62,10 @@ class TGUIMScene(QGraphicsScene):
 
 		def onNewComponent(newComponent):
 			parentGraphics = self.getGraphics(newComponent.getParent())
-			self.createComponentGraphics(newComponent, parentGraphics)
+			graphics = self.createComponentGraphics(newComponent, parentGraphics)
+			if parentGraphics is None:
+				self.addItem(graphics)
+
 
 		def onNewBehavior(newBehavior):
 			self.createVisibilityBehaviorGraphics(newBehavior)
