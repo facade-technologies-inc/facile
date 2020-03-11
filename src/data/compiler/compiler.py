@@ -35,24 +35,24 @@ class Compiler():
         :return: None
         """
 
-        statem = sm.StateMachine.instance
+        self.statem = sm.StateMachine.instance
         self._compProf = compProf
-        self._name = statem._project.getName()
+        self._name = self.statem._project.getName()
         self._saveFolder = compProf.apiFolderDir + '/' # just save it directly where the user wants it.
-        self._backend = statem._project.getBackend()
-        self._exeLoc = statem._project.getExecutableFile()
+        self._backend = self.statem._project.getBackend()
+        self._exeLoc = self.statem._project.getExecutableFile()
         self._opts = compProf.compResOpts
-        self._apim = statem._project.getAPIModel()
-        self._tguim = statem._project.getTargetGUIModel()
+        self._apim = self.statem._project.getAPIModel()
+        self._tguim = self.statem._project.getTargetGUIModel()
 
         # List was reduced in size by making custom, "stripped" versions of files that only
         #  have the required functions & dependencies. That way no need to import graphics files and all that.
-        self._necessaryFiles = ["./baseFiles/tguiil/componentfinder.py", "./baseFiles/tguiil/application.py",
-                                "./baseFiles/tguiil/tokens.py", "./baseFiles/tguiil/supertokens.py",
-                                "./baseFiles/tguiil/matchoption.py", "./baseFiles/data/entity.py",
-                                "./baseFiles/data/tguim/component.py", "./baseFiles/data/tguim/visibilitybehavior.py",
-                                "./baseFiles/data/properties.py", "./baseFiles/data/tguim/condition.py",
-                                "./baseFiles/data/tguim/targetguimodel.py", "./baseFiles/data/property.py"]
+        self._necessaryFiles = ["../../tguiil/componentfinder.py", "../../tguiil/application.py",
+                                "../../tguiil/tokens.py", "../../tguiil/supertokens.py",
+                                "../../tguiil/matchoption.py", "../../data/entity.py",
+                                "../../data/tguim/component.py", "../../data/tguim/visibilitybehavior.py",
+                                "../../data/properties.py", "../../data/tguim/condition.py",
+                                "../../data/tguim/targetguimodel.py", "../../data/property.py"]
 
     def generateCustomApp(self) -> None:
         """
@@ -125,10 +125,9 @@ class Application(BaseApplication):
         :return: None
         """
 
-        statem = sm.StateMachine.instance
-        statem._project.save()
-        path = statem._project.getTargetGUIModelFile()
-        name = statem._project.getName()
+        self.statem._project.save()
+        path = self.statem._project.getTargetGUIModelFile()
+        name = self.statem._project.getName()
 
         copyfile(path, self._saveFolder + name + '.tguim')  # tguim saved to root, alongside baseapp and customapp
 
