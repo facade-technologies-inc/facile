@@ -43,7 +43,12 @@ class TGUIMScene(QGraphicsScene):
 		self._dataToGraphicsMapping = {}
 
 		# Create all component graphics
-		work = [(self._targetGuiModel.getRoot(), ComponentGraphics(self._targetGuiModel.getRoot(), (0,0,0,0), None))]
+		# WARNING: We create an invisible graphics item for the root, which is a bit weird. If there's a
+		# graphics-related bug, look into this.
+		root = self._targetGuiModel.getRoot()
+		rootGraphics = ComponentGraphics(root, (0,0,0,0), None)
+		self._dataToGraphicsMapping[root] = rootGraphics
+		work = [(root, rootGraphics)]
 		while len(work) > 0:
 			data, parentGraphics = work.pop()
 
@@ -61,11 +66,14 @@ class TGUIMScene(QGraphicsScene):
 			self.addItem(graphics)
 
 		def onNewComponent(newComponent):
+			from pprint import pprint
+			pprint(newComponent.getSuperToken())
+
 			parentGraphics = self.getGraphics(newComponent.getParent())
 			graphics = self.createComponentGraphics(newComponent, parentGraphics)
 			if parentGraphics is None:
+				print("IS TOP LEVEL")
 				self.addItem(graphics)
-
 
 		def onNewBehavior(newBehavior):
 			self.createVisibilityBehaviorGraphics(newBehavior)
