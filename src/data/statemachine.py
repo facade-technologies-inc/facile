@@ -257,10 +257,12 @@ class StateMachine:
 					self.view.ui.actionManualExplore.setChecked(False)
 					self.view.ui.actionAutoExplore.setChecked(False)
 		
-		# If we've been requested to stop exploration and we're in the exploration state, go to the
-		# MODEL_MANIPULATION state
+		# If we've been requested to stop exploration and we're in the exploration state, update the tguim by
+		# resolving component collisions, then go to the MODEL_MANIPULATION state.
 		elif event == StateMachine.Event.STOP_EXPLORATION:
 			if self.curState == StateMachine.State.EXPLORATION:
+				# tguim = self._project.getTargetGUIModel() # TODO: Uncomment and work on
+				# tguim.resolveComponentCollisions()
 				nextState = StateMachine.State.MODEL_MANIPULATION
 		
 		# Advance to the next state

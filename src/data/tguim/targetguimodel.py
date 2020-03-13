@@ -60,6 +60,16 @@ class TargetGuiModel(QObject):
 
 		# Allows easy lookup of components given a super token
 		self._superTokenToComponentMapping = {None: None}
+
+	def resolveComponentCollisions(self) -> None:
+		"""
+		Resolves any component collisions that are present, when called.
+
+		:return: None
+		:rtype: NoneType
+		"""
+
+		pass
 	
 	def getRoot(self) -> 'Component':
 		"""
@@ -129,6 +139,8 @@ class TargetGuiModel(QObject):
 			parentComponent = self._root
 		else:
 			parentComponent = self._superTokenToComponentMapping[parentToken]
+			if parentComponent is None:
+				print('THIS SHOULDNT HAPPEN----------: ' + newSuperToken.getTokens()[0].title)
 		
 		newComponent = Component(self, parentComponent, newSuperToken)
 		

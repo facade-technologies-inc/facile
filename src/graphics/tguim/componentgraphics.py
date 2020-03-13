@@ -22,7 +22,7 @@ This module contains the ComponentGraphics class.
 """
 import sys
 import copy
-import numpy as np
+import time
 from PySide2.QtCore import QRectF
 from PySide2.QtGui import QPainterPath, QColor, QPen, Qt, QFont, QFontMetricsF
 from PySide2.QtWidgets import QGraphicsScene, QGraphicsItem, QGraphicsSceneContextMenuEvent, QMenu
@@ -37,13 +37,14 @@ class ComponentGraphics(QGraphicsItem):
 	based on the component class.
 	"""
 
-	MIN_WIDTH = 0
-	MIN_HEIGHT = 0
-	MAX_MARGIN = 30
-	MIN_MARGIN = 10
-	MARGIN_PROP = 0.05
-	PEN_WIDTH = 1.0
-	TITLEBAR_H = 40  # NOTE: Must be smaller than minimum margin
+	MIN_WIDTH = 0       	# Minimum component width
+	MIN_HEIGHT = 0			# Minimum component height
+	MAX_MARGIN = 10			# Maximum margin length
+	MIN_MARGIN = 2			# Minimum margin length
+	MARGIN_PROP = 0.01		# Proportion of component width to use as margin
+	PEN_WIDTH = 1.5			# Width of component borders
+	TITLEBAR_H = 0			# Titlebar height
+	WINDOW_SPACING = 100		# Vertical spacing between windows in TGUIM
 
 	TRIM = 1
 
@@ -59,6 +60,7 @@ class ComponentGraphics(QGraphicsItem):
 
 		QGraphicsItem.__init__(self, parent)
 		self.setFlag(QGraphicsItem.ItemIsSelectable)
+		self.timestamp = time.time()
 
 		if parent is None:
 			self.isRoot = True  # TODO: Have to resize scene to smallest possible
@@ -75,30 +77,28 @@ class ComponentGraphics(QGraphicsItem):
 		# --- This is where the components get resized to avoid collisions. ---
 
 		if self._dataComponent.getParent() is None:
-			# No margin: we want the normal size
-			# TODO: Might not do anything
 			self._margin = 0
-			self._width = max(ComponentGraphics.MIN_WIDTH, 2 * rect[2])
-			self._height = max(ComponentGraphics.MIN_HEIGHT, 2 * rect[3])
-			self.setPos(max(0, 2 * rect[0]), max(0, 2 * rect[1]))
+			self._width = max(ComponentGraphics.MIN_WIDTH, rect[2])
+			self._height = max(ComponentGraphics.MIN_HEIGHT, rect[3])
+			self.setPos(max(0, rect[0]), max(0, rect[1]))
 		elif self._dataComponent.getParent().getParent() is None:
-			# We want just a titlebar
+			# scene or top-level window
 			self._margin = 0
-			self._width = max(ComponentGraphics.MIN_WIDTH, 2 * rect[2])
-			self._height = max(ComponentGraphics.MIN_HEIGHT, 2 * rect[3] + ComponentGraphics.TITLEBAR_H)
-			self.setPos(max(0, 2 * rect[0]), max(0, 2 * rect[1] + ComponentGraphics.TITLEBAR_H))
+			self._width = max(ComponentGraphics.MIN_WIDTH, rect[2])
+			self._height = max(ComponentGraphics.MIN_HEIGHT, rect[3])
+			self.setPos(100, 0)  # Forces windows to snap to top-left, aligned vertically.
 		else:
 			# Margin is dynamically assigned, with a max/min value to use
 			self._margin = max(ComponentGraphics.MIN_MARGIN, min(ComponentGraphics.MAX_MARGIN,
 			                                                     ComponentGraphics.MARGIN_PROP * min(rect[2], rect[3])))
 
-			self._width = max(ComponentGraphics.MIN_WIDTH, 2 * (rect[2] - self._margin))
+			self._width = max(ComponentGraphics.MIN_WIDTH, rect[2] - 2*self._margin)
 			self._height = max(ComponentGraphics.MIN_HEIGHT,
-			                   2 * (rect[3] - self._margin) + ComponentGraphics.TITLEBAR_H)
-			self.setPos(max(0, 2 * rect[0] + self._margin),
-			            max(0, 2 * rect[1] + self._margin + ComponentGraphics.TITLEBAR_H))
+			                   rect[3] - 2*self._margin + ComponentGraphics.TITLEBAR_H)
+			self.setPos(max(0, rect[0] + self._margin),
+			            max(0, rect[1] + self._margin + ComponentGraphics.TITLEBAR_H))
 
-		self.adjustPositioning()
+		self.adjustPositioningInit()
 		self.menu = ComponentMenu()
 		self.menu.onBlink(lambda: self.scene().blinkComponent(self._dataComponent.getId()))
 
@@ -106,6 +106,16 @@ class ComponentGraphics(QGraphicsItem):
 			self.triggerSceneUpdate()
 		except:
 			pass
+
+	def getDataComponent(self) -> 'Component':
+		"""
+		Returns self's datacomponent, ie the Component object this componentGraphics is representing
+
+		:return: This ComponentGraphic's dataComponent
+		:rtype: Component
+		"""
+
+		return self._dataComponent
 		
 	def getNumMoves(self) -> int:
 		"""
@@ -126,6 +136,76 @@ class ComponentGraphics(QGraphicsItem):
 		tokensCount = len(self._dataComponent.getSuperToken().tokens)
 
 		return tokensCount
+
+	def adjustPositioningInit(self) -> None:
+		"""
+		Places windows in a vertical list
+
+		:return: None
+		:rtype: NoneType
+		"""
+
+		if self._dataComponent.getParent() is None:
+			# We're dealing with the root that should never be drawn.
+			return
+		elif self._dataComponent.getParent().getParent() is None:
+			# We're dealing with a top-level component
+			parent = self.scene()
+			parentIsScene = True
+		else:
+			# All other components
+			parent = self.scene().getGraphics(self._dataComponent.getParent())
+			parentIsScene = False
+
+		siblings = self.getSiblings()
+
+		if parentIsScene:
+			newYPos = 0
+			sib = None
+			for sibling in siblings:
+				tmpPos = sibling.y() + sibling.boundingRect().height()
+				if tmpPos >= newYPos:
+					newYPos = tmpPos
+					sib = sibling
+
+			if sib:
+				newYPos += ComponentGraphics.WINDOW_SPACING
+			else:
+				newYPos = 0
+
+			self.setPos(0, newYPos)
+		else:
+			# self.resolveCollisionsV2()
+
+			# allContained = True
+			# for sib in siblings:
+			# 	if not parent.contains(sib):
+			# 		allContained = False
+			# 		break
+			#
+			# allContained = parent.contains(self) and allContained
+			#
+			# if not allContained:
+			# 	self.expandParent(parent, siblings)
+			pass
+
+	def getSiblings(self) -> list:
+		"""
+		Returns a list of all of the component's siblings.
+
+		:return: self's siblings
+		:rtype: list
+		"""
+
+		siblings = [self.scene().getGraphics(sibling) for sibling in self._dataComponent.getSiblings() if
+					sibling is not self._dataComponent]
+		siblings = list(filter(None, siblings))
+
+		# Should never run, but failsafe
+		if self._dataComponent in siblings:
+			siblings.remove(self._dataComponent)
+
+		return siblings
 
 	def adjustPositioning(self) -> None:
 		"""
@@ -412,23 +492,6 @@ class ComponentGraphics(QGraphicsItem):
 
 		return QGraphicsItem.itemChange(self, change, value)
 
-	# def rectsCollide(self, a: QRectF, b: QRectF):
-	# 	ax1 = 0
-	# 	ay1 = 0
-	# 	ax2 = 0
-	# 	ay2 = 0
-	# 	ax1, ay1, ax2, ay2 = a.getCoords()
-	# 	print(ax1 + ' ' + ay1)
-	#
-	# 	bx1 = 0
-	# 	by1 = 0
-	# 	bx2 = 0
-	# 	by2 = 0
-	# 	bx1, by1, bx2, by2 = b.getCoords()
-	# 	print(bx1 + ' ' + by1)
-	#
-	# 	return ax1 < bx2 and ax2 > bx1 and ay1 < by2 and ay2 > by1
-
 	def getCollidingComponents(self, components: list) -> list:
 		"""
 		Gets all of the components from a list that collide with this component.
@@ -474,7 +537,7 @@ class ComponentGraphics(QGraphicsItem):
 		:return: True if components overlap, False otherwise.
 		:rtype: bool
 		"""
-		m = max(self.getMargin(), sibling.getMargin())
+		m = max(self.getMargin(), sibling.getMargin())  # TODO: This isn't correct, depends which one was loaded 2nd.
 		
 		selfBound = self.boundingRect(False)
 		selfx = self.scenePos().x() + selfBound.x() - m

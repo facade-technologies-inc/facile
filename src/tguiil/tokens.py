@@ -47,11 +47,11 @@ class Token:
 		NO = 3
 	
 	Weight = {
-		"TITLE": 10,
-		"CHILDREN_TEXTS": 10,
-		"CONTROL_ID": 10,
-		"AUTO_ID": 10,
-		"RECTANGLE": 10,
+		"TITLE": 13,
+		"CHILDREN_TEXTS": 9,
+		"CONTROL_ID": 8,
+		"AUTO_ID": 9,
+		"RECTANGLE": 5,
 		"NUM_CONTROLS": 3,
 		"EXPAND_STATE": 1,
 		"SHOWN_STATE": 1,
@@ -325,7 +325,7 @@ class Token:
 		#   - Shown State
 		#   - rectangle size
 		#
-		# If the component is a dialog, we heavily much more heavily on these
+		# If the component is a dialog, we rely much more heavily on these
 		# fields:
 		#   - Number Of Children
 		#   - Children Text
