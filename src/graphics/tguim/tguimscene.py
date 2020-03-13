@@ -66,9 +66,6 @@ class TGUIMScene(QGraphicsScene):
 			self.addItem(graphics)
 
 		def onNewComponent(newComponent):
-			from pprint import pprint
-			pprint(newComponent.getSuperToken())
-
 			parentGraphics = self.getGraphics(newComponent.getParent())
 			graphics = self.createComponentGraphics(newComponent, parentGraphics)
 			if parentGraphics is None:

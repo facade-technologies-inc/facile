@@ -125,8 +125,6 @@ class TargetGuiModel(QObject):
 		:return: The component that was created
 		:rtype: 'Component'
 		"""
-		# from pprint import pprint
-		# pprint(newSuperToken.asDict())
 
 		if parentToken is None:
 			parentComponent = self._root
