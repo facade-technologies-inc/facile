@@ -135,6 +135,7 @@ class TargetGuiModel(QObject):
 		:return: The component that was created
 		:rtype: 'Component'
 		"""
+
 		if parentToken is None:
 			parentComponent = self._root
 		else:
