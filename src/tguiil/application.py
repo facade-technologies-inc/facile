@@ -42,8 +42,8 @@ class Application(pywinauto.Desktop):
 	"""
 	
 	# TODO: If the original process was just used to create other processes and then it disappears, the child processes
-	# are called zombies. currently, this class does not work with applications that fit this description. This class
-	# could be made more robust.
+	#  are called zombies. currently, this class does not work with applications that fit this description. This class
+	#  could be made more robust.
 	
 	def __init__(self, backend: str = "uia") -> None:
 		"""
@@ -115,7 +115,7 @@ class Application(pywinauto.Desktop):
 		
 		while True:
 			try:
-				wins = pywinauto.Desktop.windows(self)
+				wins = pywinauto.Desktop.windows(self, top_level_only=True)
 			except pywinauto.controls.hwndwrapper.InvalidWindowHandle:
 				continue
 			else:
@@ -127,7 +127,33 @@ class Application(pywinauto.Desktop):
 			if win.process_id() in pids:
 				appWins.append(win)
 		return appWins
-	
+
+	def windows1(self) -> list:
+		"""
+		Gets all windows which belong to the target application and child processes.
+
+		:return: list of windows that belong to the target application and it's children processes
+		:type: list[pywinauto.application.WindowSpecification]
+		"""
+
+		windows = []
+		# pid = self._process.pid
+		pids = self.getPIDs()
+		for pid in pids:
+			while True:
+				try:
+					wins = pywinauto.Application().connect(process=pid).windows(top_level_only=True)
+				except:
+					wins = pywinauto.Desktop().connect(process=pid).windows(top_level_only=True)
+				else:
+					break
+
+			for win in wins:
+				if win.process_id() in pids and win.is_dialog():
+					windows.append(win)
+
+		return windows
+
 	def getStartTime(self) -> int:
 		"""
 		Gets the time that the Application instance was created as an int.
@@ -144,9 +170,27 @@ if __name__ == "__main__":
 	
 	# Notepad++ doesn't use multiple processes, so I'm not completely testing this correctly. I should run with the
 	# calculator app.
-	process = psutil.Popen(["C:\\Program Files\\Notepad++\\notepad++.exe"])
+	process = psutil.Popen(['Notepad.exe'])
 	app = Application(backend="uia")
 	app.setProcess(process)
-	time.sleep(2)
+	time.sleep(10)
 	print(app.getPIDs())
 	print(app.windows())
+
+	childrenTexts = []
+	for child in app.windows()[0].children():
+		if type(child) != pywinauto.controls.win32_controls.EditWrapper:
+			try:
+				text = child.texts()
+				if text is None:
+					text = child.window_text()
+				if text is None:
+					text = "-"
+				childrenTexts.append(text)
+			except:
+				childrenTexts.append("*")
+	print(childrenTexts)
+
+
+
+	# TODO: Change to allow for the

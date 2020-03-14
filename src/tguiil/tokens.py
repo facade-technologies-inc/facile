@@ -30,47 +30,57 @@ from pywinauto.win32structures import RECT
 import pywinauto
 from skimage.metrics import structural_similarity as ssim
 
+import string
+from sklearn.metrics.pairwise import cosine_similarity
+from sklearn.feature_extraction.text import CountVectorizer
+from nltk.corpus import stopwords
+stopwords = stopwords.words('english')
+# Can support more languages in future
+
 
 class Token:
-	"""
+    """
 	Token class sets parameters of a token for each state that changes.
 	"""
-	
-	class CreationException(Exception):
-		def __init__(self, msg):
-			Exception.__init__(self, msg)
-	
-	@unique
-	class Match(Enum):
-		EXACT = 1
-		CLOSE = 2
-		NO = 3
-	
-	Weight = {
-		"TITLE": 13,
-		"CHILDREN_TEXTS": 9,
-		"CONTROL_ID": 8,
-		"AUTO_ID": 9,
-		"RECTANGLE": 5,
-		"NUM_CONTROLS": 3,
-		"EXPAND_STATE": 1,
-		"SHOWN_STATE": 1,
-		"IS_ENABLED": 1,
-		"IS_VISIBLE": 1,
-		"TEXTS": 3,
-		"PIC": 1,
-	}
-	
-	MAX_WEIGHTS = sum(Weight.values())
-	THRESH_PERCENT = 50
-	
-	def __init__(self, appTimeStamp: int, identifier: int, isDialog: bool, isEnabled: bool,
-	             isVisible: bool, processID: int, typeOf: str, rectangle: RECT, texts: list,
-	             title: str, numControls: int, controlIDs: list, parentTitle: str,
-	             parentType: str, topLevelParentTitle: str, topLevelParentType: str,
-	             childrenTexts: list, picture: Image = None, autoID: int = None,
-	             expandState: int = None, shownState: int = None):
-		"""
+
+    class CreationException(Exception):
+        def __init__(self, msg):
+            Exception.__init__(self, msg)
+
+    @unique
+    class Match(Enum):
+        EXACT = 1
+        CLOSE = 2
+        NO = 3
+
+    # These are the MAXIMUM weights, only if the info is identical between 2 tokens. Otherwise it's often scaled.
+    Weight = {
+        "TITLE": 13,
+        "CHILDREN_TEXTS": 15,
+        "CONTROL_ID": 8,
+        "AUTO_ID": 9,
+        "RECTANGLE": 5,
+        "NUM_CONTROLS": 3,
+        "EXPAND_STATE": 1,
+        "SHOWN_STATE": 1,
+        "IS_ENABLED": 1,
+        "IS_VISIBLE": 1,
+        "TEXTS": 3,
+        "PIC": 1,
+    }
+
+    MAX_WEIGHTS = sum(Weight.values())
+    THRESH_PERCENT = 50
+    WCTEXTS_THRESH_L = 0.6  # if only WCTEXTS_THRESH_L of children texts are the same btwn toks for wins, diff wins.
+    TLWINDOW_THRESH = 0.6
+
+    def __init__(self, appTimeStamp: int, identifier: int, isDialog: bool, isEnabled: bool,
+                 isVisible: bool, processID: int, typeOf: str, rectangle: RECT, texts: list,
+                 title: str, numControls: int, controlIDs: list, parentTitle: str,
+                 parentType: str, topLevelParentTitle: str, topLevelParentType: str,
+                 childrenTexts: list, picture: Image = None, autoID: int = None,
+                 expandState: int = None, shownState: int = None):
+        """
 		Checks if the tokens component state changed based on a random variable.
 		
 		:param appTimeStamp: The time that the application was started at.
@@ -119,43 +129,43 @@ class Token:
 		:return: None
 		:rtype: NoneType
 		"""
-		self.appTimeStamp = appTimeStamp
-		self.identifier = identifier
-		self.isDialog = isDialog
-		self.isEnabled = isEnabled
-		self.isVisible = isVisible
-		self.parentTitle = parentTitle
-		self.parentType = parentType
-		self.topLevelParentTitle = topLevelParentTitle
-		self.topLevelParentType = topLevelParentType
-		self.processID = processID
-		self.rectangle = rectangle
-		self.texts = texts
-		self.title = title
-		self.numControls = numControls
-		self.pic = picture
-		self.type = typeOf
-		self.controlIDs = controlIDs
-		self.autoid = autoID
-		self.childrenTexts = childrenTexts
-		self.expandState = expandState
-		self.shownState = shownState
-		
-		if self.parentTitle is None:
-			self.parentTitle = ""
-		if self.topLevelParentTitle is None:
-			self.topLevelParentTitle = ""
-		if self.texts is None:
-			self.texts = []
-		if self.childrenTexts is None:
-			self.childrenTexts = []
-		
-		self.childrenTexts.sort()
-		self.controlIDs.sort()
-	
-	@staticmethod
-	def createToken(timeStamp: datetime, component: pywinauto.base_wrapper.BaseWrapper) -> 'Token':
-		"""
+        self.appTimeStamp = appTimeStamp
+        self.identifier = identifier
+        self.isDialog = isDialog
+        self.isEnabled = isEnabled
+        self.isVisible = isVisible
+        self.parentTitle = parentTitle
+        self.parentType = parentType
+        self.topLevelParentTitle = topLevelParentTitle
+        self.topLevelParentType = topLevelParentType
+        self.processID = processID
+        self.rectangle = rectangle
+        self.texts = texts
+        self.title = title
+        self.numControls = numControls
+        self.pic = picture
+        self.type = typeOf
+        self.controlIDs = controlIDs
+        self.autoid = autoID
+        self.childrenTexts = childrenTexts
+        self.expandState = expandState
+        self.shownState = shownState
+
+        if self.parentTitle is None:
+            self.parentTitle = ""
+        if self.topLevelParentTitle is None:
+            self.topLevelParentTitle = ""
+        if self.texts is None:
+            self.texts = []
+        if self.childrenTexts is None:
+            self.childrenTexts = []
+
+        # self.childrenTexts.sort()  # ChildrenTexts is now a list of lists so this doesn't work
+        self.controlIDs.sort()
+
+    @staticmethod
+    def createToken(timeStamp: datetime, component: pywinauto.base_wrapper.BaseWrapper) -> 'Token':
+        """
 		Create a token from a pywinauto control.
 
 		:raises: Token.CreationException
@@ -167,81 +177,79 @@ class Token:
 		:return: The token that was created from the pywinauto control.
 		:rtype: Token
 		"""
-		
-		try:
-			parent = component.parent()
-			if parent:
-				parentTitle = parent.window_text()
-				parentType = parent.friendly_class_name()
-			else:
-				parentTitle = ""
-				parentType = ""
-			
-			topLevelParent = component.top_level_parent()
-			topLevelParentTitle = topLevelParent.window_text()
-			topLevelParentType = topLevelParent.friendly_class_name()
-			
-			# Information we can get about any element
-			id = component.control_id()
-			isDialog = component.is_dialog()
-			isEnabled = component.is_enabled()
-			isVisible = component.is_visible()
-			processID = component.process_id()
-			rectangle = component.rectangle()
-			texts = component.texts()[1:]
-			title = component.window_text()
-			numControls = component.control_count()
-			image = None  # component.capture_as_image()
-			typeOf = component.friendly_class_name()
-			
-			# get text of all children that are not editable.
-			childrenTexts = []
-			for child in component.children():
-				if type(child) != pywinauto.controls.win32_controls.EditWrapper:
-					try:
-						text = child.text()
-						if text is None:
-							text = child.window_text()
-						if text is None:
-							text = ""
-						childrenTexts.append(text)
-					except:
-						childrenTexts.append("")
-			
-			# additional information we can get about uia elements
-			try:
-				autoID = component.automation_id()
-				shownState = component.get_show_state()
-				expandState = component.get_expand_state()
-			except:
-				autoID = None
-				expandState = None
-				shownState = None
-			
-			# construct control identifiers
-			# There are 4 possible control identifiers:
-			#   - title
-			#   - friendly class
-			#   - title + friendly class
-			#   - closest text + friendly class (only if the title is empty)
-			
-			if title is None:
-				title = ""
-			
-			controlIdentifiers = [title, typeOf, title + typeOf]
-		except Exception as e:
-			raise Token.CreationException("Could not build token: {}".format(str(e)))
-		
-		# create a new token
-		token = Token(timeStamp, id, isDialog, isEnabled, isVisible, processID, typeOf,
-		              rectangle, texts, title, numControls, controlIdentifiers, parentTitle,
-		              parentType, topLevelParentTitle, topLevelParentType, childrenTexts, image,
-		              autoID, expandState, shownState)
-		
-		return token
-	
-	def isEqualTo(self, token2: 'Token'):
-		"""
+
+        try:
+            parent = component.parent()
+            if parent:
+                parentTitle = parent.window_text()
+                parentType = parent.friendly_class_name()
+            else:
+                parentTitle = ""
+                parentType = ""
+
+            topLevelParent = component.top_level_parent()
+            topLevelParentTitle = topLevelParent.window_text()
+            topLevelParentType = topLevelParent.friendly_class_name()
+
+            # Information we can get about any element
+            id = component.control_id()
+            isDialog = component.is_dialog()
+            isEnabled = component.is_enabled()
+            isVisible = component.is_visible()
+            processID = component.process_id()
+            rectangle = component.rectangle()
+            texts = component.texts()[1:]
+            title = component.window_text()
+            numControls = component.control_count()
+            image = None  # component.capture_as_image()
+            typeOf = component.friendly_class_name()
+
+            # get text of all children that are not editable.
+            childrenTexts = []
+            for child in component.children():
+                if type(child) != pywinauto.controls.win32_controls.EditWrapper or type(child) != \
+                        pywinauto.controls.uia_controls.EditWrapper:
+                    text = child.texts()
+                    if text is None:
+                        text = child.window_text()
+                    if text is None:
+                        text = ""
+                    childrenTexts.append(text)
+
+            # additional information we can get about uia elements
+            try:
+                autoID = component.automation_id()
+                shownState = component.get_show_state()
+                expandState = component.get_expand_state()
+            except:
+                autoID = None
+                expandState = None
+                shownState = None
+
+            # construct control identifiers
+            # There are 4 possible control identifiers:
+            #   - title
+            #   - friendly class
+            #   - title + friendly class
+            #   - closest text + friendly class (only if the title is empty)
+
+            if title is None:
+                title = ""
+
+            controlIdentifiers = [title, typeOf, title + typeOf]
+        except Exception as e:
+            raise Token.CreationException("Could not build token: {}".format(str(e)))
+
+        # create a new token
+        token = Token(timeStamp, id, isDialog, isEnabled, isVisible, processID, typeOf,
+                      rectangle, texts, title, numControls, controlIdentifiers, parentTitle,
+                      parentType, topLevelParentTitle, topLevelParentType, childrenTexts, image,
+                      autoID, expandState, shownState)
+
+        return token
+
+    def isEqualTo(self, token2: 'Token'):
+        """
 		The isEqualTo function gives a weight of importance to each attribute.
 		This is based on the tokens when its state is changed.
 
@@ -250,206 +258,291 @@ class Token:
 		:return: None
 		:rtype: NoneType
 		"""
-		
-		#####################################################################
-		# DECISION 1 - QUICK CHECK FOR NO MATCH
-		#
-		# If the following don't match, the tokens will automatically be
-		# considered not matching.
-		#   - Friendly Class Name
-		#   - Control ID
-		#   - Automation ID
-		#   - Parent's Friendly Class Name
-		#   - Top Level Parent's Friendly Class Name
-		#   - Process ID
-		#####################################################################
-		
-		if self.appTimeStamp == token2.appTimeStamp:
-			if self.identifier != token2.identifier:
-				return Token.Match.NO, 0
-			
-			elif self.processID != token2.processID:
-				return Token.Match.NO, 0
-		
-		if self.type != token2.type:
-			return Token.Match.NO, 0
-		
-		elif self.autoid != token2.autoid:
-			return Token.Match.NO, 0
-		
-		elif self.parentType != token2.parentType:
-			return Token.Match.NO, 0
-		
-		elif self.topLevelParentType != token2.topLevelParentType:
-			return Token.Match.NO, 0
-		
-		#####################################################################
-		# DECISION 2 - QUICK CHECK FOR EXACT MATCH
-		#
-		# If the following fields match exactly, we can determine that the
-		# they are a perfect match.
-		#   - Top Level Parent's Title
-		#   - Parent's Title
-		#   - Title
-		#   - Rectangle
-		#   - Number of Children
-		#   - Text of Children
-		#
-		# NOTE: If execution reaches this point, all of the fields mentioned
-		#       in DECISION 1 must have been the same
-		#####################################################################
-		elif self.topLevelParentTitle == token2.topLevelParentTitle and \
-			self.parentTitle == token2.parentTitle and \
-			self.title == token2.title and \
-			self.rectangle == token2.rectangle and \
-			self.numControls == token2.numControls and \
-			self.childrenTexts == self.childrenTexts:
-			return Token.Match.EXACT, 1
-		
-		#####################################################################
-		# DECISION 3 - MORE IN DEPTH CHECK FOR CLOSE MATCH (WEIGHTING)
-		#
-		# If there has been no decision made about the tokens, we perform a
-		# probabilistic match. The similarity of each of the following fields
-		# are taken into consideration:
-		#   - Control IDs
-		#   - Picture (If Given)
-		#   - Rectangle Dimensions and Position
-		#   - Title
-		#   - Parent Title
-		#   - Top Level Parent Title
-		#   - Children Texts
-		#   - Enabled State
-		#   - Visible State
-		#   - Expand State
-		#   - Shown State
-		#   - rectangle size
-		#
-		# If the component is a dialog, we rely much more heavily on these
-		# fields:
-		#   - Number Of Children
-		#   - Children Text
-		#   - Rectangle Size
-		#####################################################################
-		else:
-			
-			max = Token.MAX_WEIGHTS
-			total = 0
-			
-			# compare control identifiers
-			idSequence1 = ''.join(self.controlIDs)
-			idSequence2 = ''.join(token2.controlIDs)
-			controlSimilarity = SequenceMatcher(None, idSequence1, idSequence2).ratio()
-			total += Token.Weight["CONTROL_ID"] * controlSimilarity
-			
-			# compare pictures
-			if self.pic != None and token2.pic != None:
-				if self.pic.size == token2.pic.size:
-					try:
-						picSimilarity = (ssim(np.array(self.pic), np.array(token2.pic)) + 1) / 2
-						total += picSimilarity * Token.Weight["PIC"]
-					except:
-						total += 0
-			else:
-				max -= Token.Weight["PIC"]
-			
-			if self.autoid is not None and token2.autoid is not None and (
-				self.autoid != "" or token2.autoid != ""):
-				total += SequenceMatcher(None, self.autoid, token2.autoid).ratio() * Token.Weight[
-					"AUTO_ID"]
-			else:
-				max -= Token.Weight["AUTO_ID"]
-			
-			# compare title, parent title, and top level parent title
-			titleSequence1 = ' > '.join([self.title, self.parentTitle, self.topLevelParentTitle])
-			titleSequence2 = ' > '.join(
-				[token2.title, token2.parentTitle, token2.topLevelParentTitle])
-			titleSimilarity = SequenceMatcher(None, titleSequence1, titleSequence2).ratio()
-			total += titleSimilarity * Token.Weight["TITLE"]
-			
-			# compare texts
-			texts1 = " ".join(self.texts)
-			texts2 = " ".join(token2.texts)
-			textsSimilarity = SequenceMatcher(None, texts1, texts2).ratio()
-			total += textsSimilarity * Token.Weight["TEXTS"]
-			
-			# compare children texts
-			childTexts1 = " ".join(self.childrenTexts)
-			childTexts2 = " ".join(token2.childrenTexts)
-			childTextsSimilarity = SequenceMatcher(None, childTexts1, childTexts2).ratio()
-			if self.isDialog:
-				max += 25
-				total += childTextsSimilarity * (Token.Weight["CHILDREN_TEXTS"] + 25)
-			else:
-				total += childTextsSimilarity * Token.Weight["CHILDREN_TEXTS"]
-			
-			# compare number of children
-			if self.numControls == token2.numControls:
-				numChildrenDiff = 1
-			elif self.numControls != 0 and token2.numControls != 0:
-				numChildrenDiff = min(self.numControls / token2.numControls,
-				                      token2.numControls / self.numControls)
-			else:
-				numChildrenDiff = 0
-				# if self.isDialog:
-				#     max += 15
-				#     total += numChildrenDiff * (Token.Weight["NUM_CONTROLS"] + 15)
-				# else:
-				total += numChildrenDiff * Token.Weight["NUM_CONTROLS"]
-			
-			# compare rectangles
-			# diffWidth = abs(self.rectangle.width() - token2.rectangle.width())
-			# diffHeight = abs(self.rectangle.height() - token2.rectangle.height())
-			# widthScore = diffWidth / token2.rectangle.width()
-			# heightScore = diffHeight / token2.rectangle.height()
-			# shapeScore = widthScore * heightScore
-			# if self.isDialog:
-			#     max += 5
-			#     total += shapeScore * (Token.Weight["RECTANGLE"] + 5)
-			# else:
-			#     total += shapeScore * Token.Weight["RECTANGLE"]
-			
-			if token2.isEnabled == self.isEnabled:
-				total += Token.Weight["IS_ENABLED"]
-			
-			if token2.isVisible == self.isVisible:
-				total += Token.Weight["IS_VISIBLE"]
-			
-			if self.expandState is not None and token2.expandState is not None:
-				if token2.expandState == self.expandState:
-					total += Token.Weight["EXPAND_STATE"]
-			else:
-				max -= Token.Weight["EXPAND_STATE"]
-			
-			if self.shownState is not None and token2.shownState is not None:
-				if token2.shownState == self.shownState:
-					total += Token.Weight["SHOWN_STATE"]
-			else:
-				max -= Token.Weight["SHOWN_STATE"]
-			
-			score = total / max
-			threshold = ((Token.THRESH_PERCENT * max) / 100) / max
-			
-			if score == 1:
-				return Token.Match.EXACT, score
-			
-			elif score >= threshold:
-				return Token.Match.CLOSE, score
-			
-			else:
-				return Token.Match.NO, score
-	
-	def __str__(self):
-		ret = "TOKEN:"
-		for key, val in vars(self).items():
-			ret += "\n\t{:20}:{}".format(key, val)
-		return ret
-	
-	def __repr__(self):
-		return self.__str__()
-	
-	def asDict(self) -> dict:
-		"""
+
+        #####################################################################
+        # DECISION 1 - QUICK CHECK FOR NO MATCH
+        #
+        # If the following don't match, the tokens will automatically be
+        # considered not matching.
+        #   - Friendly Class Name
+        #   - Control ID
+        #   - Automation ID
+        #   - Parent's Friendly Class Name
+        #   - Top Level Parent's Friendly Class Name
+        #   - Process ID
+        #####################################################################
+
+        if self.appTimeStamp == token2.appTimeStamp:
+            if self.identifier != token2.identifier:
+                return Token.Match.NO, 0
+
+            elif self.processID != token2.processID:
+                return Token.Match.NO, 0
+
+        if self.type != token2.type:
+            return Token.Match.NO, 0
+
+        elif self.autoid != token2.autoid:
+            return Token.Match.NO, 0
+
+        elif self.parentType != token2.parentType:
+            return Token.Match.NO, 0
+
+        elif self.topLevelParentType != token2.topLevelParentType:
+            return Token.Match.NO, 0
+
+        #####################################################################
+        # DECISION 2 - QUICK CHECK FOR EXACT MATCH
+        #
+        # If the following fields match exactly, we can determine that the
+        # they are a perfect match.
+        #   - Top Level Parent's Title
+        #   - Parent's Title
+        #   - Title
+        #   - Rectangle
+        #   - Number of Children
+        #   - Text of Children
+        #
+        # NOTE: If execution reaches this point, all of the fields mentioned
+        #       in DECISION 1 must have been the same
+        #####################################################################
+
+        elif self.topLevelParentTitle == token2.topLevelParentTitle and \
+                self.parentTitle == token2.parentTitle and \
+                self.title == token2.title and \
+                self.rectangle == token2.rectangle and \
+                self.numControls == token2.numControls and \
+                self.childrenTexts == self.childrenTexts:
+            return Token.Match.EXACT, 1
+
+        #####################################################################
+        # DECISION 3 - COMPONENT-TYPE-EXCLUSIVE DECISIONS
+        #
+        # Some conditions may still qualify tokens for an exact match, close
+        # match, or no match, but are only valid for certain component types.
+        # This section handles these cases, and they are often probabilistic
+        # in nature.
+        #
+        # TODO: Fill these out. Try to stick only to no or exact matches,
+        #  and leave close matching for the in-depth check.
+        #####################################################################
+
+        #
+        #                    -------------------------
+        #                        Top-level Windows
+        #                    -------------------------
+        #
+        #    *Only checks for NO MATCH, otherwise does probabilistic approach*
+        #
+        elif self.isDialog:
+            total = 0
+
+            # --- Title --- #
+            titleSim = stringSimilarity(self.title, token2.title)
+
+            if titleSim >= 0:
+                total += titleSim * Token.Weight['TITLE']
+
+            # TODO: idk if python has this with floats but c/c++ have float inaccuracy. so 3.0 != 3 != 3.0, so im doing
+            #  < -2.5 instead of == -3.0. Might be better to do == -3.0 though, leaving as a to-do atm.
+            elif titleSim < -2.5:
+                if self.title == token2.title:
+                    total += Token.Weight['TITLE']
+
+            # --- Children Texts --- #
+            if self.childrenTexts and token2.childrenTexts:
+                try:
+                    t1 = [text for sublist in self.childrenTexts for text in sublist]
+                    t2 = [text for sublist in token2.childrenTexts for text in sublist]
+                except Exception as e:
+                    print('childrenTexts is deeper than 2, find another way to do this.')
+                    raise e
+
+                t1Str = ' '.join(t1)
+                t2Str = ' '.join(t2)
+
+                textsSim = stringSimilarity(t1Str, t2Str)
+
+                if textsSim < Token.WCTEXTS_THRESH_L:  # This is the line that fixes multiple windows in one in tguim.
+                    return Token.Match.NO, 0
+                else:
+                    total += textsSim * Token.Weight['CHILDREN_TEXTS']
+
+            if total < Token.TLWINDOW_THRESH * (Token.Weight['TITLE'] + Token.Weight['CHILDREN_TEXTS']):
+                return Token.Match.NO, 0
+
+            return self.inDepthMatchCheck(token2)
+
+        ###------------------- EXAMPLE ---------------------###
+        # Just an example one that would need to be filled out
+
+        elif self.type == 'Button':
+            # Some cool stuff, after which
+            return self.inDepthMatchCheck(token2)
+            # executes if none of it is satisfied
+
+        ###-------------------------------------------------###
+
+        #####################################################################
+        # DECISION 4 - MORE IN DEPTH CHECK FOR CLOSE MATCH (WEIGHTING)
+        #
+        # (Description of approach in inDepthMatchCheck's DocString)
+        #####################################################################
+        else:
+            return self.inDepthMatchCheck(token2)
+
+    def inDepthMatchCheck(self, token2: 'Token'):
+        """
+        If there has been no decision made about the tokens, we perform a
+        probabilistic match. The similarity of each of the following fields
+        are taken into consideration:
+          - Control IDs
+          - Picture (If Given)
+          - Rectangle Dimensions and Position
+          - Title
+          - Parent Title
+          - Top Level Parent Title
+          - Children Texts
+          - Enabled State
+          - Visible State
+          - Expand State
+          - Shown State
+          - rectangle size
+
+        If the component is a dialog, we rely much more heavily on these
+        fields:
+          - Number Of Children
+          - Children Text
+          - Rectangle Size
+
+        :param token2:
+        :return:
+        """
+
+        max = Token.MAX_WEIGHTS
+        total = 0
+
+        # compare control identifiers
+        idSequence1 = ''.join(self.controlIDs)
+        idSequence2 = ''.join(token2.controlIDs)
+        controlSimilarity = SequenceMatcher(None, idSequence1, idSequence2).ratio()
+        total += Token.Weight["CONTROL_ID"] * controlSimilarity
+
+        # compare pictures
+        if self.pic != None and token2.pic != None:
+            if self.pic.size == token2.pic.size:
+                try:
+                    picSimilarity = (ssim(np.array(self.pic), np.array(token2.pic)) + 1) / 2
+                    total += picSimilarity * Token.Weight["PIC"]
+                except:
+                    total += 0
+        else:
+            max -= Token.Weight["PIC"]
+
+        if self.autoid is not None and token2.autoid is not None and (
+                self.autoid != "" or token2.autoid != ""):
+            total += SequenceMatcher(None, self.autoid, token2.autoid).ratio() * Token.Weight[
+                "AUTO_ID"]
+        else:
+            max -= Token.Weight["AUTO_ID"]
+
+        # compare title, parent title, and top level parent title
+        titleSequence1 = ' > '.join([self.title, self.parentTitle, self.topLevelParentTitle])
+        titleSequence2 = ' > '.join(
+            [token2.title, token2.parentTitle, token2.topLevelParentTitle])
+        titleSimilarity = SequenceMatcher(None, titleSequence1, titleSequence2).ratio()
+        total += titleSimilarity * Token.Weight["TITLE"]
+
+        # compare texts
+        texts1 = " ".join(self.texts)
+        texts2 = " ".join(token2.texts)
+        textsSimilarity = SequenceMatcher(None, texts1, texts2).ratio()
+        total += textsSimilarity * Token.Weight["TEXTS"]
+
+        # compare children texts
+        try:
+            t1 = [text for sublist in self.childrenTexts for text in sublist]
+            t2 = [text for sublist in token2.childrenTexts for text in sublist]
+        except Exception as e:
+            print('childrenTexts is deeper than 2, find another way to do this.')
+            raise e
+
+        childTexts1 = ' '.join(t1)
+        childTexts2 = ' '.join(t2)
+        childTextsSimilarity = SequenceMatcher(None, childTexts1, childTexts2).ratio()
+        # if self.isDialog:
+        #     max += 25
+        #     total += childTextsSimilarity * (Token.Weight["CHILDREN_TEXTS"] + 25)
+        # else:
+        total += childTextsSimilarity * Token.Weight["CHILDREN_TEXTS"]
+
+        # compare number of children
+        if self.numControls == token2.numControls:
+            numChildrenDiff = 1
+        elif self.numControls != 0 and token2.numControls != 0:
+            numChildrenDiff = min(self.numControls / token2.numControls,
+                                  token2.numControls / self.numControls)
+        else:
+            numChildrenDiff = 0
+            # if self.isDialog:
+            #     max += 15
+            #     total += numChildrenDiff * (Token.Weight["NUM_CONTROLS"] + 15)
+            # else:
+            total += numChildrenDiff * Token.Weight["NUM_CONTROLS"]
+
+        # compare rectangles
+        # diffWidth = abs(self.rectangle.width() - token2.rectangle.width())
+        # diffHeight = abs(self.rectangle.height() - token2.rectangle.height())
+        # widthScore = diffWidth / token2.rectangle.width()
+        # heightScore = diffHeight / token2.rectangle.height()
+        # shapeScore = widthScore * heightScore
+        # if self.isDialog:
+        #     max += 5
+        #     total += shapeScore * (Token.Weight["RECTANGLE"] + 5)
+        # else:
+        #     total += shapeScore * Token.Weight["RECTANGLE"]
+
+        if token2.isEnabled == self.isEnabled:
+            total += Token.Weight["IS_ENABLED"]
+
+        if token2.isVisible == self.isVisible:
+            total += Token.Weight["IS_VISIBLE"]
+
+        if self.expandState is not None and token2.expandState is not None:
+            if token2.expandState == self.expandState:
+                total += Token.Weight["EXPAND_STATE"]
+        else:
+            max -= Token.Weight["EXPAND_STATE"]
+
+        if self.shownState is not None and token2.shownState is not None:
+            if token2.shownState == self.shownState:
+                total += Token.Weight["SHOWN_STATE"]
+        else:
+            max -= Token.Weight["SHOWN_STATE"]
+
+        score = total / max
+        threshold = ((Token.THRESH_PERCENT * max) / 100) / max
+
+        if score == 1:
+            return Token.Match.EXACT, score
+
+        elif score >= threshold:
+            return Token.Match.CLOSE, score
+
+        else:
+            return Token.Match.NO, score
+
+    def __str__(self):
+        ret = "TOKEN:"
+        for key, val in vars(self).items():
+            ret += "\n\t{:20}:{}".format(key, val)
+        return ret
+
+    def __repr__(self):
+        return self.__str__()
+
+    def asDict(self) -> dict:
+        """
 		Get a dictionary representation of the visibility behavior.
 
 		.. note::
@@ -458,17 +551,17 @@ class Token:
 		:return: The dictionary representation of the object.
 		:rtype: dict
 		"""
-		d = self.__dict__.copy()
-		d['rectangle'] = [self.rectangle.left, self.rectangle.top, self.rectangle.width(),
-		                  self.rectangle.height()]
-		if 'pic' in d and d['pic'] is not None:
-			d['pic'] = np.array(self.picture).tolist()
-		
-		return d
-	
-	@staticmethod
-	def fromDict(d: dict) -> 'Token':
-		"""
+        d = self.__dict__.copy()
+        d['rectangle'] = [self.rectangle.left, self.rectangle.top, self.rectangle.width(),
+                          self.rectangle.height()]
+        if 'pic' in d and d['pic'] is not None:
+            d['pic'] = np.array(self.picture).tolist()
+
+        return d
+
+    @staticmethod
+    def fromDict(d: dict) -> 'Token':
+        """
 		Creates a token from a dictionary.
 
 		:param d: The dictionary that represents the Component.
@@ -476,22 +569,74 @@ class Token:
 		:return: The Token object that was constructed from the dictionary
 		:rtype: Token
 		"""
-		
-		if d is None:
-			return None
-		
-		t = Token.__new__(Token)
-		
-		if d['pic']:
-			d["pic"] = Image.fromarray(np.uint8(np.asarray(d["picture"])))
-		
-		if d['rectangle']:
-			r = RECT()
-			r.left = d['rectangle'][0]
-			r.top = d['rectangle'][1]
-			r.right = d['rectangle'][0] + d['rectangle'][2]
-			r.bottom = d['rectangle'][1] + d['rectangle'][3]
-			d['rectangle'] = r
-		
-		t.__dict__ = d
-		return t
+
+        if d is None:
+            return None
+
+        t = Token.__new__(Token)
+
+        if d['pic']:
+            d["pic"] = Image.fromarray(np.uint8(np.asarray(d["picture"])))
+
+        if d['rectangle']:
+            r = RECT()
+            r.left = d['rectangle'][0]
+            r.top = d['rectangle'][1]
+            r.right = d['rectangle'][0] + d['rectangle'][2]
+            r.bottom = d['rectangle'][1] + d['rectangle'][3]
+            d['rectangle'] = r
+
+        t.__dict__ = d
+        return t
+
+def cleanString(myStr: str, sws: bool = True):
+    """
+    Removes punctuation, puts myStr in lowercase, and removes stopwords
+    Stopwords are meaningless: I, you, your, this, a, the, etc.
+
+    :param myStr: String to clean
+    :type myStr: str
+    :param sws: Whether or not to remove stopwords. Defaults to True.
+    :return: Cleaned string
+    :rtype: str
+    """
+
+    myStr = ''.join([word for word in myStr if word not in string.punctuation])
+    myStr = myStr.lower()
+    if sws:
+        myStr = ' '.join([word for word in myStr.split() if word not in stopwords])
+    return myStr
+
+def stringSimilarity(str1: str, str2: str) -> float:
+    """
+    Returns the similarity of two strings using cosine similarity.
+
+    :param str1: First string
+    :param str2: Second string
+    :return: Similarity strength between 0 (none) and 1 (exact). *Not* a probability.
+    :rtype: float
+    """
+
+    cleaned = list(map(cleanString, [str1, str2]))
+
+    if not cleaned[0]:
+        cleaned[0] = cleanString(str1, False)
+    if not cleaned[1]:
+        cleaned[1] = cleanString(str2, False)
+
+    # These mean the strings were plain spaces, punctuation, or just empty.
+    # In those cases, we return a negative value to let Facile know what happened.
+    ### -1: str1 is meaningless, -2: str2 is meaningless, -3: both are meaningless ###
+    if not cleaned[0] and not cleaned[1]:
+        return -3.0
+    elif not cleaned[0]:
+        return -1.0
+    elif not cleaned[1]:
+        return -2.0
+
+    vectors = CountVectorizer().fit_transform(cleaned).toarray()
+
+    v1 = vectors[0].reshape(1, -1)
+    v2 = vectors[1].reshape(1, -1)
+
+    return cosine_similarity(v1, v2)[0][0]
