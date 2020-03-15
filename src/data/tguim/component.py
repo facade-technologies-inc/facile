@@ -21,10 +21,10 @@
 This module contains the Component class.
 """
 
+import time
 from data.entity import Entity
 from data.properties import Properties
 from data.tguim.visibilitybehavior import VisibilityBehavior
-from graphics.tguim.componentgraphics import ComponentGraphics
 from tguiil.supertokens import SuperToken
 
 
@@ -53,6 +53,7 @@ class Component(Entity):
 		self._srcVisibilityBehaviors = []
 		self._destVisibilityBehaviors = []
 		self._model = tguim
+		self.timestamp = time.time()
 		
 		if parent is not None:
 			parent.addChild(self)

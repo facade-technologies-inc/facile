@@ -22,7 +22,7 @@ This module contains the ComponentGraphics class.
 """
 import sys
 import copy
-import time
+from datetime import datetime
 from PySide2.QtCore import QRectF
 from PySide2.QtGui import QPainterPath, QColor, QPen, Qt, QFont, QFontMetricsF
 from PySide2.QtWidgets import QGraphicsScene, QGraphicsItem, QGraphicsSceneContextMenuEvent, QMenu
@@ -37,16 +37,30 @@ class ComponentGraphics(QGraphicsItem):
 	based on the component class.
 	"""
 
-	MIN_WIDTH = 0       	# Minimum component width
-	MIN_HEIGHT = 0			# Minimum component height
-	MAX_MARGIN = 10			# Maximum margin length
-	MIN_MARGIN = 2			# Minimum margin length
-	MARGIN_PROP = 0.01		# Proportion of component width to use as margin
-	PEN_WIDTH = 1.5			# Width of component borders
-	TITLEBAR_H = 0			# Titlebar height
-	WINDOW_SPACING = 100		# Vertical spacing between windows in TGUIM
-
+	# Individual Components
+	MAX_MARGIN = 10				# Maximum margin length
+	MIN_MARGIN = 2				# Minimum margin length
+	MARGIN_PROP = 0.01			# Proportion of component width to use as margin
+	PEN_WIDTH = 1.5				# Width of component borders
+	TITLEBAR_H = 0				# Titlebar height
 	TRIM = 1
+
+	# Variable Settings
+	# TODO: Should let user change these ones, and also warn them of extra processing power for smaller increment size.
+	SCALE_INCR = 0.05			# Increment to use when trying to scale components. Smaller increments lead to
+								#   more realistic model, but require more processing power/time.
+	MIN_SIDE_LENGTH = 3			# Prevents components from getting any smaller when a side reaches this size.
+
+	# Top-Level Windows
+	WINDOW_SPACING = 100		# Vertical spacing between windows in TGUIM
+	MIN_AREA_THRESH_P = 0.25	# Qualifies a component to go to extra components section. Percent as proportion.
+
+	# Extra Components Sections
+	EC_X_PADDING = 25			# Padding between window end and extra components section on the right
+	EC_Y_PADDING = 5			# Y offset from top of top-level component to start showing extra components
+	EC_MARGINS = 5				# Spacing between components in the extra components section
+	MIN_TIME_DIFF = .05			# Time difference from the overlapping component
+								#   to qualify moving self to extra components section
 
 	def __init__(self, dataComponent: 'Component', rect: tuple = (), parent=None):
 		"""
@@ -60,7 +74,7 @@ class ComponentGraphics(QGraphicsItem):
 
 		QGraphicsItem.__init__(self, parent)
 		self.setFlag(QGraphicsItem.ItemIsSelectable)
-		self.timestamp = time.time()
+		self.timestamp = datetime.now().timestamp()
 
 		if parent is None:
 			self.isRoot = True  # TODO: Have to resize scene to smallest possible
@@ -73,30 +87,42 @@ class ComponentGraphics(QGraphicsItem):
 		self._x = rect[0]
 		self._y = rect[1]
 		self._numMoves = 0
+		self._extraComponents = []
 
 		# --- This is where the components get resized to avoid collisions. ---
 
+		# Root
 		if self._dataComponent.getParent() is None:
 			self._margin = 0
-			self._width = max(ComponentGraphics.MIN_WIDTH, rect[2])
-			self._height = max(ComponentGraphics.MIN_HEIGHT, rect[3])
+			self._width = max(ComponentGraphics.MIN_SIDE_LENGTH, rect[2])
+			self._height = max(ComponentGraphics.MIN_SIDE_LENGTH, rect[3])
 			self.setPos(max(0, rect[0]), max(0, rect[1]))
+			self._parent = None
+			self._parentIsScene = False
+
+		# Top-Level Window
 		elif self._dataComponent.getParent().getParent() is None:
-			# scene or top-level window
 			self._margin = 0
-			self._width = max(ComponentGraphics.MIN_WIDTH, rect[2])
-			self._height = max(ComponentGraphics.MIN_HEIGHT, rect[3])
+			self._width = max(ComponentGraphics.MIN_SIDE_LENGTH, rect[2])
+			self._height = max(ComponentGraphics.MIN_SIDE_LENGTH, rect[3])
 			self.setPos(100, 0)  # Forces windows to snap to top-left, aligned vertically.
+			self._parent = self.scene()
+			self._parentIsScene = True
+
+		# All other components
 		else:
 			# Margin is dynamically assigned, with a max/min value to use
 			self._margin = max(ComponentGraphics.MIN_MARGIN, min(ComponentGraphics.MAX_MARGIN,
 			                                                     ComponentGraphics.MARGIN_PROP * min(rect[2], rect[3])))
 
-			self._width = max(ComponentGraphics.MIN_WIDTH, rect[2] - 2*self._margin)
-			self._height = max(ComponentGraphics.MIN_HEIGHT,
+			self._width = max(ComponentGraphics.MIN_SIDE_LENGTH, rect[2] - 2*self._margin)
+			self._height = max(ComponentGraphics.MIN_SIDE_LENGTH,
 			                   rect[3] - 2*self._margin + ComponentGraphics.TITLEBAR_H)
 			self.setPos(max(0, rect[0] + self._margin),
 			            max(0, rect[1] + self._margin + ComponentGraphics.TITLEBAR_H))
+
+			self._parent = self.scene().getGraphics(self._dataComponent.getParent())
+			self._parentIsScene = False
 
 		self.adjustPositioningInit()
 		self.menu = ComponentMenu()
@@ -145,25 +171,17 @@ class ComponentGraphics(QGraphicsItem):
 		:rtype: NoneType
 		"""
 
-		if self._dataComponent.getParent() is None:
+		if self._parent is None:
 			# We're dealing with the root that should never be drawn.
 			return
-		elif self._dataComponent.getParent().getParent() is None:
-			# We're dealing with a top-level component
-			parent = self.scene()
-			parentIsScene = True
-		else:
-			# All other components
-			parent = self.scene().getGraphics(self._dataComponent.getParent())
-			parentIsScene = False
 
 		siblings = self.getSiblings()
 
-		if parentIsScene:
+		if self._parentIsScene:
 			newYPos = 0
 			sib = None
 			for sibling in siblings:
-				tmpPos = sibling.y() + sibling.boundingRect().height()
+				tmpPos = sibling.y() + sibling.height()
 				if tmpPos >= newYPos:
 					newYPos = tmpPos
 					sib = sibling
@@ -174,20 +192,153 @@ class ComponentGraphics(QGraphicsItem):
 				newYPos = 0
 
 			self.setPos(0, newYPos)
-		else:
-			# self.resolveCollisionsV2()
 
-			# allContained = True
-			# for sib in siblings:
-			# 	if not parent.contains(sib):
-			# 		allContained = False
-			# 		break
-			#
-			# allContained = parent.contains(self) and allContained
-			#
-			# if not allContained:
-			# 	self.expandParent(parent, siblings)
+		# A window's 1st level of components
+		elif self._dataComponent.getParent().getParent().getParent() is None:
+			self.chkExtraComponent()
+			self.resolveCollisions()
+
+		# All other components
+		else:
+			self.resolveCollisions()
 			pass
+
+	def chkExtraComponents(self) -> None:
+		"""
+		Moves any 1st-level/depth components of parent (a window) that overlap existing siblings, to the
+		extra components section on the right of parent.
+
+		:return: None
+		:rtype: NoneType
+		"""
+
+		collidingSibs = self.getCollidingSiblings()
+		for sib in collidingSibs:
+			if self.wasFoundMuchLaterThan(sib) and self.overlapsALotWith(sib):
+				if self.getDataComponent().timestamp < sib.getDataComponent().timestamp:
+					self._parent.addToExtraComponents(sib)
+				else: # timestamps are never going to be equal
+					self._parent.addToExtraComponents(self)
+			else:
+				continue
+
+	def addToExtraComponents(self, component: 'ComponentGraphics') -> None:
+		"""
+		Adds a component to the Extra Components section, finding valid placement.
+		*Only for top-level components*, doesn't do anything otherwise.
+		TODO: This could probably be greatly improved in terms of runtime, by finding the best
+		  area to place a new component in.
+
+		:param component: Component to be added to extra components section
+		:type component: ComponentGraphics
+		:return: None
+		:rtype: NoneType
+		"""
+
+		if self._dataComponent.getParent().getParent() is None:
+
+			spaceTaken = []
+			for ec in self._extraComponents:
+				# TODO: add extra space to right, about size of self, and do anything to avoid expanding
+				#  again unless necessary
+				spaceTaken.append((ec.x(), ec.y(), ec.width(), ec.height()))
+
+				##### Stopped Here ######
+
+				pass
+
+			component.setPos(self._width + ComponentGraphics.EC_X_PADDING,
+					   ComponentGraphics.EC_Y_PADDING)
+
+			self._extraComponents.append(component)
+
+	def getCollidingSiblings(self) -> list:
+		"""
+		Returns all siblings that collide with self.
+
+		:return: list of colliding siblings
+		:rtype: list
+		"""
+
+		collidingSiblings = []
+		for sibling in self.getSiblings():
+			if sibling is None:
+				continue
+
+			if self.overlapsWith(sibling):
+				collidingSiblings.append(sibling)
+		return collidingSiblings
+
+	def setScale(self, scale: float) -> None:
+		"""
+		Scales self to percentage of original size, by scaling its height and width. Scales towards top left corner.
+		Always relative to current size, not to original size.
+
+		:param scale: scale to scale component by
+		:return: None
+		:rtype: NoneType
+		"""
+
+		self.prepareGeometryChange()
+
+		self._width = scale * self._width
+		self._height = scale * self._height
+
+	def scaleChildren(self, scale: float) -> None:
+		"""
+		Scales all of self's children to percentage of original size, also scaling their position relative to self.
+		Scales towards top left corner of self. Always relative to current size, not to original size.
+
+		:param scale: scale to scale component by
+		:return: None
+		:rtype: NoneType
+		"""
+
+		for childData in self._dataComponent.getChildren():
+			self.scene().getGraphics(childData).hardScale(scale)
+
+	def scaleSiblings(self, scale: float) -> None:
+		"""
+		Scales all of self's siblings to percentage of original size, also scaling their position relative to parent.
+		Scales towards top left corner of self. Always relative to current size, not to original size.
+
+		:param scale: scale to scale component by
+		:return: None
+		:rtype: NoneType
+		"""
+
+		for sib in self.getSiblings():
+			sib.hardScale(scale)
+
+	def hardScale(self, scale: float) -> None:
+		"""
+		Scales self and all children to percentage of original size, and also scales all components' positions
+		relative to their parents as well. Always relative to current size, not to original size.
+
+		:param scale: scale to scale component by
+		:return: None
+		:rtype: NoneType
+		"""
+
+		self.setPos(self.x() * scale, self.y() * scale)
+		self.scaleChildren(scale)
+		self.setScale(scale)
+
+	def wasFoundMuchLaterThan(self, sib: 'Component') -> bool:
+		"""
+		Contrary to name, determines if *either self or sib* were found much later than the other,
+		with "much later" being defined by ComponentGraphics.MIN_TIME_DIFF.
+
+		:param sib: sibling of this ComponentGraphic's _dataComponent
+		:type sib: Component
+		:return: whether or not self was found much later than sib
+		:rtype: bool
+		"""
+
+		if abs(self._dataComponent.timestamp - sib.getDataComponent().timestamp) > ComponentGraphics.MIN_TIME_DIFF:
+			return True
+		else:
+			return False
 
 	def getSiblings(self) -> list:
 		"""
@@ -201,106 +352,35 @@ class ComponentGraphics(QGraphicsItem):
 					sibling is not self._dataComponent]
 		siblings = list(filter(None, siblings))
 
-		# Should never run, but failsafe
+		# Should never run, but here as failsafe
 		if self._dataComponent in siblings:
 			siblings.remove(self._dataComponent)
 
 		return siblings
 
-	def adjustPositioning(self) -> None:
+	def width(self, withMargins: bool = False) -> float:
 		"""
-		Places component using the following criteria:
-			1. Place the component where it actually is in the GUI.
-			2. If there is a collision with a sibling, the one that is on the bottom and/or right has to move.
-			3. Once all sibling collisions are resolved, the parent may need to expand to fit all children inside.
-			4. Once the parent is expanded, start at step 2 again, but his time with the parent.
+		Shortcut to get the boundingRect's width.
 
-		..note::
-			This is a recursive algorithm.
-
-		:return: None
-		:rtype: NoneType
+		:param withMargins: with or without margins
+		:type withMargins: bool
+		:return: componentGraphic's width
+		:rtype: float
 		"""
 
-		# We're dealing with the root that should never be drawn.
-		if self._dataComponent.getParent() is None:
-			return
+		return self.boundingRect(withMargins).width()
 
-		# We're dealing with a top-level component
-		elif self._dataComponent.getParent().getParent() is None:
-			parent = self.scene()
-			parentIsScene = True
-			self.setFlag(QGraphicsItem.ItemIsMovable)
-		else:
-			parent = self.scene().getGraphics(self._dataComponent.getParent())
-			parentIsScene = False
-
-		siblings = [self.scene().getGraphics(sibling) for sibling in self._dataComponent.getSiblings() if
-		            sibling is not self._dataComponent]
-		siblings = list(filter(None, siblings))
-		if self in siblings:
-			siblings.remove(self)
-
-		# Resolve collisions with siblings
-		self.checkForCollisions(siblings)
-
-		if not parentIsScene:
-			allContained = True
-			for sib in siblings:
-				if not parent.contains(sib):
-					allContained = False
-					break
-			
-			allContained = parent.contains(self) and allContained
-			
-			if not allContained:
-				self.expandParent(parent, siblings)
-
-	def checkForCollisions(self, siblings: list) -> None:
+	def height(self, withMargins: bool = False) -> float:
 		"""
-		Function that checks for collisions with self
+		Shortcut to get the boundingRect's height.
 
-		:param siblings: list of all components that are at the same level as self
-		:type siblings: list[ComponentGraphics]
-		:return: None
+		:param withMargins: with or without margins
+		:type withMargins: bool
+		:return: componentGraphic's height
+		:rtype: float
 		"""
-		while True:
-			collidingSiblings = self.getCollidingComponents(siblings)
-			if collidingSiblings:
-				self.resolveCollisions(collidingSiblings)
-			else:
-				return
 
-	def expandParent(self, parent: 'ComponentGraphics', siblings: list) -> None:
-		"""
-		This function expands the parent and is somewhat recursive, just for adaptability.
-		
-		:param siblings: list of all of self's siblings
-		:type siblings: list[ComponentGraphics]
-		:param parent: the parent component of self
-		:type parent: ComponentGraphics or scene
-		:return: None
-		:rtype: NoneType
-		"""
-		
-		parent.prepareGeometryChange()
-		
-		maxX = 0
-		maxY = 0
-		for sib in siblings:
-			maxX = max(maxX, sib.x() + sib.boundingRect(True).width())
-			maxY = max(maxY, sib.y() + sib.boundingRect(True).height())
-			
-		maxX = max(maxX, self.x() + self.boundingRect(True).width())
-		maxY = max(maxY, self.y() + self.boundingRect(True).height())
-			
-		parent._width = maxX
-		parent._height = maxY
-		
-		#print(parent.getLabel() + ' was expanded.-------------')
-		
-		if isinstance(parent, ComponentGraphics):
-			parent.adjustPositioning()
+		return self.boundingRect(withMargins).height()
 
 	def getX(self) -> int:
 		"""
@@ -319,7 +399,7 @@ class ComponentGraphics(QGraphicsItem):
 		"""
 		return self._y
 
-	def resolveCollisions(self, collidingSiblings: list) -> None:
+	def resolveCollisions1(self, collidingSiblings: list) -> None:
 		"""
 		This function will resolve collisions of a component with its siblings.
 
@@ -429,7 +509,6 @@ class ComponentGraphics(QGraphicsItem):
 				
 				if sibsibCollisions:
 					work.insert(0, (sib, sibsibCollisions))
-					
 
 	def getMargin(self) -> float:
 		"""
@@ -439,76 +518,6 @@ class ComponentGraphics(QGraphicsItem):
 		:rtype: float
 		"""
 		return self._margin
-
-	def itemChange(self, change: 'GraphicsItemChange', value):
-		"""
-		Overrides the default itemChange function by adding one extra conditional, otherwise normal behavior of the
-		function is returned. This function is what prevents top-level components from colliding
-
-		:param change: the type of state change
-		:type change: GraphicsItemChange
-		:param value: information about the change
-		:return: None or Unknown (typeof(value))
-		:rtype: NoneType
-		"""
-		if change == QGraphicsItem.ItemPositionChange and self.scene():
-			delX = value.x() - self.x()
-			delY = value.y() - self.y()
-
-			if delX == 0 and delY == 0:
-				return value
-
-			translateX = copy.deepcopy(self.boundingRect())
-			translateX.translate(dx=delX, dy=0)
-			translateY = copy.deepcopy(self.boundingRect())
-			translateY.translate(dx=0, dy=delY)
-
-			xOkay = True
-			yOkay = True
-
-			# Checking if there's a collision in x or y direction
-			for sibling in self._dataComponent.getSiblings():
-				sib = self.scene().getGraphics(sibling)
-				if sib == self:
-					continue
-
-				if translateX.intersects(sib.boundingRect()):
-					xOkay = False
-				if translateY.intersects(sib.boundingRect()):
-					yOkay = False
-
-			# Decides where to place component based on collision detection
-			if xOkay and yOkay:
-				return
-			elif xOkay:
-				self.pos().setX(value.x())
-			elif yOkay:
-				self.pos().setY(value.y())
-
-		# try:
-		# 	self.triggerSceneUpdate()
-		# except:
-		# 	pass
-
-		return QGraphicsItem.itemChange(self, change, value)
-
-	def getCollidingComponents(self, components: list) -> list:
-		"""
-		Gets all of the components from a list that collide with this component.
-
-		:param components: The components to detect collisions with
-		:type components: list[ComponentGraphics]
-		:return: All of the components that actually collide with this component
-		:rtype: list[ComponentGraphics]
-		"""
-		collidingSiblings = []
-		for sibling in components:
-			if sibling is None:
-				continue
-
-			if self.overlapsWith(sibling):
-				collidingSiblings.append(sibling)
-		return collidingSiblings
 
 	def getLabel(self) -> str:
 		"""
