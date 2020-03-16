@@ -21,7 +21,7 @@
 This module contains the Component class.
 """
 
-import time
+from datetime import datetime
 from data.entity import Entity
 from data.properties import Properties
 from data.tguim.visibilitybehavior import VisibilityBehavior
@@ -53,7 +53,7 @@ class Component(Entity):
 		self._srcVisibilityBehaviors = []
 		self._destVisibilityBehaviors = []
 		self._model = tguim
-		self.timestamp = time.time()
+		self.timestamp = datetime.now().timestamp()
 		
 		if parent is not None:
 			parent.addChild(self)

@@ -20,9 +20,7 @@
 
 This module contains the ComponentGraphics class.
 """
-import sys
-import copy
-from datetime import datetime
+
 from PySide2.QtCore import QRectF
 from PySide2.QtGui import QPainterPath, QColor, QPen, Qt, QFont, QFontMetricsF
 from PySide2.QtWidgets import QGraphicsScene, QGraphicsItem, QGraphicsSceneContextMenuEvent, QMenu
@@ -57,8 +55,8 @@ class ComponentGraphics(QGraphicsItem):
 
 	# Extra Components Sections
 	EC_X_PADDING = 25			# Padding between window end and extra components section on the right
-	EC_Y_PADDING = 5			# Y offset from top of top-level component to start showing extra components
-	EC_MARGINS = 5				# Spacing between components in the extra components section
+	EC_Y_PADDING = 5			# Y offset from top and bottom of top-level component to show extra components
+	EC_MARGINS: int = 3				# *Half* of the spacing between components in the extra components section
 	MIN_TIME_DIFF = .05			# Time difference from the overlapping component
 								#   to qualify moving self to extra components section
 
@@ -74,7 +72,6 @@ class ComponentGraphics(QGraphicsItem):
 
 		QGraphicsItem.__init__(self, parent)
 		self.setFlag(QGraphicsItem.ItemIsSelectable)
-		self.timestamp = datetime.now().timestamp()
 
 		if parent is None:
 			self.isRoot = True  # TODO: Have to resize scene to smallest possible
@@ -215,7 +212,7 @@ class ComponentGraphics(QGraphicsItem):
 		collidingSibs = self.getCollidingSiblings()
 		for sib in collidingSibs:
 			if self.wasFoundMuchLaterThan(sib) and self.overlapsALotWith(sib):
-				if self.getDataComponent().timestamp < sib.getDataComponent().timestamp:
+				if self._dataComponent.timestamp < sib.getDataComponent().timestamp:
 					self._parent.addToExtraComponents(sib)
 				else: # timestamps are never going to be equal
 					self._parent.addToExtraComponents(self)
@@ -226,8 +223,7 @@ class ComponentGraphics(QGraphicsItem):
 		"""
 		Adds a component to the Extra Components section, finding valid placement.
 		*Only for top-level components*, doesn't do anything otherwise.
-		TODO: This could probably be greatly improved in terms of runtime, by finding the best
-		  area to place a new component in.
+		TODO: This could probably be greatly improved in terms of runtime.
 
 		:param component: Component to be added to extra components section
 		:type component: ComponentGraphics
@@ -236,21 +232,102 @@ class ComponentGraphics(QGraphicsItem):
 		"""
 
 		if self._dataComponent.getParent().getParent() is None:
+			if self._extraComponents:
+				usedSpace = []
+				for ec in self._extraComponents:
+					usedSpace.append((ec.x() - ComponentGraphics.EC_MARGINS, ec.y() - ComponentGraphics.EC_MARGINS,
+									  ec.width(True), ec.height(True)))
 
-			spaceTaken = []
-			for ec in self._extraComponents:
-				# TODO: add extra space to right, about size of self, and do anything to avoid expanding
-				#  again unless necessary
-				spaceTaken.append((ec.x(), ec.y(), ec.width(), ec.height()))
+				# This section gets the blocks of free space available
+				maxX = self.width() - ComponentGraphics.EC_Y_PADDING  # Seems like a typo, its not. just putting small padding on right
+				maxY = self.height() - ComponentGraphics.EC_Y_PADDING
+				freeSpace = [(0, 0, maxX, maxY)]  # Initialize free space to the entire available block
+				for us in usedSpace:
+					for fs in freeSpace:  # This nested for loop is why i think this can be improved
+						spacesOverlap = us[0] < fs[0] + fs[2] and \
+										fs[0] < us[0] + us[2] and \
+										us[1] < fs[1] + fs[3] and \
+										fs[1] < us[1] + us[3]
+						if spacesOverlap: # split fs into parts, excluding the overlapped space, and add back to freespace
+							tmp = freeSpace.pop(freeSpace.index(fs))  # using tmp instead of fs from hereon as precaution
+							betterSpaces = []
 
-				##### Stopped Here ######
+							if us[0] <= tmp[0] and us[1] <= tmp[1] and us[2] >= tmp[2] and us[3] >= tmp[3]:
+								continue
 
-				pass
+							# Left Space
+							if tmp[0] < us[0]:
+								betterSpaces.append((tmp[0], tmp[1], us[2] - tmp[2], tmp[3]))
 
-			component.setPos(self._width + ComponentGraphics.EC_X_PADDING,
-					   ComponentGraphics.EC_Y_PADDING)
+							# Right Space
+							if us[0] + us[2] < tmp[0] + tmp[2]:
+								betterSpaces.append((us[0] + us[2], tmp[1], (tmp[0] + tmp[2]) - (us[0] + us[2]), tmp[3]))
 
+							# Upper Space
+							if us[1] > tmp[1]:
+								# if used space goes over free space on the right
+								if us[0] + us[2] > tmp[0] + tmp[2] and us[0] > tmp[0]:
+									betterSpaces.append((us[0], tmp[1], (tmp[0] + tmp[2]) - us[0], us[1] - tmp[1]))
+
+								# if used space goes over free space on the left
+								elif us[0] < tmp[0] and us[0] + us[2] < tmp[0] + tmp[2]:
+									betterSpaces.append((tmp[0], tmp[1], (us[0] + us[2]) - tmp[0], us[1] - tmp[1]))
+
+								# if it doesnt go over edges of free space in x dir
+								elif us[0] + us[2] < tmp[0] + tmp[2] and us[0] > tmp[0]:
+									betterSpaces.append((us[0], tmp[1], us[2], us[1] - tmp[1]))
+
+								else:  # goes over both edges
+									betterSpaces.append((tmp[0], tmp[1], tmp[2], us[1] - tmp[1]))
+
+							# Lower Space
+							if us[1] + us[3] < tmp[1] + tmp[3]:
+								# if used space goes over free space on the right
+								if us[0] + us[2] > tmp[0] + tmp[2] and us[0] > tmp[0]:
+									betterSpaces.append((us[0], us[1] + us[3], (tmp[0] + tmp[2]) - us[0],
+													   (tmp[1] + tmp[3]) - (us[1] + us[3])))
+
+								# if used space goes over free space on the left
+								elif us[0] < tmp[0] and us[0] + us[2] < tmp[0] + tmp[2]:
+									betterSpaces.append((tmp[0], us[1] + us[3], (us[0] + us[2]) - tmp[0],
+													   (tmp[1] + tmp[3]) - (us[1] + us[3])))
+
+								# if it doesnt go over edges of free space in x dir
+								elif us[0] + us[2] < tmp[0] + tmp[2] and us[0] > tmp[0]:
+									betterSpaces.append((us[0], us[1] + us[3], us[2],
+													   (tmp[1] + tmp[3]) - (us[1] + us[3])))
+
+								else:  # goes over both edges
+									betterSpaces.append((tmp[0], us[1] + us[3], tmp[2],
+													   (tmp[1] + tmp[3]) - (us[1] + us[3])))
+
+							for sp in betterSpaces:
+								freeSpace.append(sp)
+
+				# Now we merge blocks from left to right to make a block with at most
+				# component's size, and set its coordinates as the best place to put component
+				# TODO: Do this part. Will require a lot of brainstorming
+
+				bestCoords = [0,0]
+
+			else:
+				component.setPos(self._width + ComponentGraphics.EC_X_PADDING, ComponentGraphics.EC_Y_PADDING)
+
+			component.setMargin(ComponentGraphics.EC_MARGINS)
+			self.expandECSection()
 			self._extraComponents.append(component)
+
+	def setMargin(self, margin: int) -> object:
+		"""
+		Sets a component's margin. Should never be used other than by addToExtraComponents method.
+
+		:param margin: margin value to set
+		:type margin: int
+		:return: None
+		:rtype: NoneType
+		"""
+
+		self._margin = margin
 
 	def getCollidingSiblings(self) -> list:
 		"""
