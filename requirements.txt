@@ -38,7 +38,7 @@ openpyxl==3.0.2
 packaging==19.1
 pandas==0.25.3
 Pillow==6.2.1
-psutil==5.6.5
+psutil==5.6.6
 PyAutoGUI==0.9.48
 PyGetWindow==0.0.7
 Pygments==2.4.2
