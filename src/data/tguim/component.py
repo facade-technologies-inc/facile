@@ -24,7 +24,6 @@ This module contains the Component class.
 from data.entity import Entity
 from data.properties import Properties
 from data.tguim.visibilitybehavior import VisibilityBehavior
-from graphics.tguim.componentgraphics import ComponentGraphics
 from tguiil.supertokens import SuperToken
 
 

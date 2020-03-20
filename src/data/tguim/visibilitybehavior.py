@@ -26,7 +26,6 @@ from enum import Enum, auto
 from data.entity import Entity
 from data.properties import Properties
 from data.tguim.condition import Condition
-from graphics.tguim.visibilitybehaviorgraphics import VBGraphics
 
 
 class VisibilityBehavior(Entity):
