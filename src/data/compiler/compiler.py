@@ -116,7 +116,8 @@ class Application(BaseApplication):
         dir, filename = os.path.split(curPath)
         for path in self._necessaryFiles:
             # Make sure to copy necessary files into baseFiles dir, and remove unnecessary fns and dependencies.
-            copyfile(os.path.join(dir, path), os.path.join(self._saveFolder, path[12:]))
+            print(self._saveFolder)
+            copyfile(os.path.join(dir, path), os.path.join(self._saveFolder, path[6:]))
 
     def saveTGUIM(self):
         """
@@ -129,7 +130,7 @@ class Application(BaseApplication):
         path = self.statem._project.getTargetGUIModelFile()
         name = self.statem._project.getName()
 
-        copyfile(path, self._saveFolder + name + '.tguim')  # tguim saved to root, alongside baseapp and customapp
+        copyfile(path, os.path.join(self._saveFolder, name + '.tguim')) # tguim saved to root, alongside baseapp and customapp
 
     def compileAPI(self) -> None:
         """

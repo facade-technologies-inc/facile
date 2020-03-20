@@ -33,12 +33,6 @@ class Application(pywinauto.Desktop):
 	"""
 	This class is an alternative to pywinauto's Application class that will detect windows in all of an application's
 	processes.
-	
-	To use:
-		process = psutil.Popen(["path/to/target/application.exe", ...], stdout=PIPE)
-		app = Application(backend="uia")
-		app.setProcess(process)
-		appWindows = app.windows()
 	"""
 	
 	# TODO: If the original process was just used to create other processes and then it disappears, the child processes
@@ -136,6 +130,27 @@ class Application(pywinauto.Desktop):
 		:rtype: int
 		"""
 		return self._startTime
+	
+	def start(self, path: str):
+		"""
+		Starts the application with filepath path
+		
+		:param path: filepath to exe
+		:type path: str
+		:return: None
+		"""
+		
+		process = psutil.Popen([path])
+		self.setProcess(process)
+		
+	def kill(self):
+		"""
+		Stops the target application
+		
+		:return: None
+		"""
+		
+		self._process.kill()
 
 
 if __name__ == "__main__":
