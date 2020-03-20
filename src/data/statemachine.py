@@ -453,7 +453,7 @@ class StateMachine:
 			index = ui.projectExplorerView.selectionModel().currentIndex()
 			ui.projectExplorerView.collapse(index)
 			ui.projectExplorerView.expand(index)
-			p.getTargetGUIModel().getScene().update()
+			ui.targetGUIModelView.scene().update()
 		
 		if event == StateMachine.Event.PROJECT_OPENED:
 			v.setWindowTitle("Facile - " + self._project.getMainProjectFile())

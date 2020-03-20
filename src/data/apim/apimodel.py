@@ -29,7 +29,6 @@ from PySide2.QtCore import QObject, Signal
 from data.apim.actionpipeline import ActionPipeline
 from data.apim.componentaction import ComponentAction
 from data.apim.actionwrapper import ActionWrapper
-from gui.blackboxeditordialog import BlackBoxEditorDialog
 from data.apim.actionspecification import ActionSpecification
 
 class ApiModel(QObject):
