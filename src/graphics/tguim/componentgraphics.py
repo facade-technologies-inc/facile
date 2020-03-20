@@ -25,6 +25,7 @@ from PySide2.QtCore import QRectF
 from PySide2.QtGui import QPainterPath, QColor, QPen, Qt, QFont, QFontMetricsF
 from PySide2.QtWidgets import QGraphicsScene, QGraphicsItem, QGraphicsSceneContextMenuEvent, QMenu, QGraphicsWidget
 import data.statemachine as sm
+from graphics.tguim.scrollablegraphicsitem import ScrollableGraphicsItem
 
 from qt_models.componentmenu import ComponentMenu
 
@@ -87,6 +88,7 @@ class ComponentGraphics(QGraphicsItem):
         # variables related to extra components algorithm
         self._extraComponents = []
         self.isExtraComponent = False
+        self._ecSection = None  # reassigned later if top-level window
         
         # --- This is where components get their initial positions set. ---
         
@@ -98,17 +100,15 @@ class ComponentGraphics(QGraphicsItem):
             self.setPos(max(0, rect[0]), max(0, rect[1]))
             self._parent = None
             self._parentIsScene = False
-            self._ecSection = None
         
         # Top-Level Window
         elif self._dataComponent.getParent().getParent() is None:
             self._margin = 0
             self._width = max(ComponentGraphics.MIN_SIDE_LENGTH, rect[2])
             self._height = max(ComponentGraphics.MIN_SIDE_LENGTH, rect[3])
-            self.setPos(100, 0)  # Forces windows to snap to top-left, aligned vertically.
+            self.setPos(ComponentGraphics.WINDOW_LEFT_OFFSET, 0)  # Forces windows to snap to top-left, aligned vertically.
             self._parent = self.scene()
             self._parentIsScene = True
-            self._ecSection =
         
         # All other components
         else:
@@ -124,9 +124,14 @@ class ComponentGraphics(QGraphicsItem):
             
             self._parent = self.scene().getGraphics(self._dataComponent.getParent())
             self._parentIsScene = False
-            self._ecSection = None
         
         self.adjustPositioningInit()
+        
+        # This needs to be after adjustPositioning, even though same conditional is technically above
+        # TODO: Only show when extra components are needed
+        if self._parentIsScene:
+            self._ecSection = ScrollableGraphicsItem(self)
+        
         self.menu = ComponentMenu()
         self.menu.onBlink(lambda: self.scene().blinkComponent(self._dataComponent.getId()))
         
@@ -195,7 +200,7 @@ class ComponentGraphics(QGraphicsItem):
             else:
                 newYPos = 0
             
-            self.setPos(0, newYPos)
+            self.setPos(ComponentGraphics.WINDOW_LEFT_OFFSET, newYPos)
         
         # A window's 1st level of components
         elif self._dataComponent.getParent().getParent().getParent() is None:
