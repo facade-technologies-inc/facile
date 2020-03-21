@@ -28,6 +28,9 @@ from datetime import datetime
 import psutil
 import pywinauto
 
+class WaitException(Exception):
+	def __init__(self, msg: str):
+		Exception.__init__(self, msg)
 
 class Application(pywinauto.Desktop):
 	"""
@@ -122,6 +125,18 @@ class Application(pywinauto.Desktop):
 				appWins.append(win)
 		return appWins
 	
+	def getActiveWindow(self) -> pywinauto.application.WindowSpecification:
+		"""
+		Returns the current active window
+		:return:
+		"""
+		
+		while True:
+			try:
+				return pywinauto.Desktop.windows(self, active_only = True)[0]
+			except pywinauto.controls.hwndwrapper.InvalidWindowHandle:
+				continue
+	
 	def getStartTime(self) -> int:
 		"""
 		Gets the time that the Application instance was created as an int.
@@ -142,6 +157,14 @@ class Application(pywinauto.Desktop):
 		
 		process = psutil.Popen([path])
 		self.setProcess(process)
+		try:
+			try:
+				for win in self.windows():
+					win.wait('ready')
+			except:
+				pywinauto.Application().connect(process=process.pid).top_window().wait('ready')
+		except:
+			raise WaitException('Could not connect to process. Please try ')
 		
 	def kill(self):
 		"""

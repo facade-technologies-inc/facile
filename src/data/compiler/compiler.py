@@ -63,7 +63,35 @@ class Compiler():
 
         with open(self._saveFolder + "application.py", "w+") as f:
             
+            # TODO: The Facade Tech watermark thing is a little intense when the user needs
+            #  to use it for their own purposes and may want to share their generated API online.
+            #  Could make a custom tag. I put the original in for the moment though.
+            
             f.write('''\
+"""
+..
+    /------------------------------------------------------------------------------\
+    |                 -- FACADE TECHNOLOGIES INC.  CONFIDENTIAL --                 |
+    |------------------------------------------------------------------------------|
+    |                                                                              |
+    |    Copyright [2019] Facade Technologies Inc.                                 |
+    |    All Rights Reserved.                                                      |
+    |                                                                              |
+    | NOTICE:  All information contained herein is, and remains the property of    |
+    | Facade Technologies Inc. and its suppliers if any.  The intellectual and     |
+    | and technical concepts contained herein are proprietary to Facade            |
+    | Technologies Inc. and its suppliers and may be covered by U.S. and Foreign   |
+    | Patents, patents in process, and are protected by trade secret or copyright  |
+    | law.  Dissemination of this information or reproduction of this material is  |
+    | strictly forbidden unless prior written permission is obtained from Facade   |
+    | Technologies Inc.                                                            |
+    |                                                                              |
+    \------------------------------------------------------------------------------/
+    
+    This document contains the custom generated Application class
+"""
+
+
 import sys, os
 pathToThisFile, thisFile = os.path.split(os.path.abspath(__file__))
 sys.path.insert(0, pathToThisFile)
@@ -72,12 +100,22 @@ from typing import Set
 from tguiil.matchoption import MatchOption
 from baseapplication import BaseApplication
 
+
 class ActionException(Exception):
-	def __init__(self, msg: str):
-		Exception.__init__(self, msg)
+\tdef __init__(self, msg: str):
+\t\tException.__init__(self, msg)
 
 class Application(BaseApplication):
+\t"""
+\tThis class allows a user to automate a predefined target GUI using functions (action pipelines) defined
+\tin Facile itself.
+\t"""
+\t
 \tdef __init__(self):
+\t\t"""
+\t\tInitializes the Application class, then initializes its superclass with the necessary information.
+\t\t"""
+\t\t
 \t\tBaseApplication.__init__(self, "''' + self._exeLoc + '", {')
 
             tmp = ''
