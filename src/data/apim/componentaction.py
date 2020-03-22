@@ -113,8 +113,8 @@ class ComponentAction(Action):
 		"""
 
 		if self._target is None:
-			return '_' + self.getName()  # TODO: We have to make sure that these actions have unique names
-		return '_' + str(self._target.getId()) + '_' + self.getName()
+			return '_' + self.getName().replace(' ', '_')  # TODO: We have to make sure that these actions have unique names
+		return '_' + str(self._target.getId()) + '_' + self.getName().replace(' ', '_')
 
 	def getMethodCode(self) -> str:
 		"""

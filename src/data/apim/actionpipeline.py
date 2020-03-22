@@ -304,7 +304,7 @@ class ActionPipeline(Action):
 		:rtype: str
 		"""
 
-		return self.getName()
+		return self.getName().replace(' ', '_')
 	
 	def getDocStr(self) -> str:
 		"""
