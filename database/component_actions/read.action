@@ -1,4 +1,4 @@
-name = "Read_Text"
+name = "Read Text"
 description = "Reads text from component {id}."
 targets = {'Edit', 'Static'}
 inputs = []
