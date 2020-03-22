@@ -20,12 +20,10 @@
 	
 This module contains the FacileGraphicsView class which is just like a normal graphics
 view, but can be zoomed.
-
-TODO: make this view draggable
 """
 
 from PySide2.QtCore import QPoint
-from PySide2.QtGui import QWheelEvent, Qt, QColor
+from PySide2.QtGui import QWheelEvent, Qt, QColor, QKeyEvent
 from PySide2.QtWidgets import QGraphicsView, QGraphicsScene, QGraphicsRectItem, QGraphicsTextItem
 from PySide2.QtWidgets import QWidget
 
@@ -37,7 +35,7 @@ class FacileGraphicsView(QGraphicsView):
 	This is primarily used as the view that shows the target GUI model and API model
 	"""
 	
-	ZOOM_FACTOR = 1.25
+	ZOOM_FACTOR = 1.05
 	
 	def __init__(self, parent: QWidget = None) -> None:
 		"""
@@ -48,7 +46,7 @@ class FacileGraphicsView(QGraphicsView):
 		:rtype: NoneType
 		"""
 		super(FacileGraphicsView, self).__init__(parent)
-		
+
 		# set flags
 		self.setDragMode(QGraphicsView.ScrollHandDrag)
 		self.setViewportUpdateMode(QGraphicsView.FullViewportUpdate)
@@ -62,16 +60,19 @@ class FacileGraphicsView(QGraphicsView):
 		scene.addItem(box)
 		
 		self.setScene(scene)
-	
+
 	def wheelEvent(self, event: QWheelEvent) -> None:
 		"""
-		Handle wheel scroll events. This will zoom in or out depending on the
+		Handle wheel scroll events. This will zoom in or out if the Ctrl key is pressed.
 		
 		:param event: the wheel scroll event
 		:type event: QWheelEvent
 		:return: None
 		:rtype: NoneType
 		"""
+		if event.modifiers() != Qt.ControlModifier:
+			return
+
 		# Zoom
 		if event.delta() > 0:
 			self.zoomIn(event.pos())
