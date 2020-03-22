@@ -38,12 +38,24 @@ class Compiler():
         self.statem = sm.StateMachine.instance
         self._compProf = compProf
         self._name = self.statem._project.getName()
-        self._saveFolder = compProf.apiFolderDir + '/' # just save it directly where the user wants it.
         self._backend = self.statem._project.getBackend()
         self._exeLoc = self.statem._project.getExecutableFile()
         self._opts = compProf.compResOpts
         self._apim = self.statem._project.getAPIModel()
         self._tguim = self.statem._project.getTargetGUIModel()
+        
+        # Save Folders
+        self._saveFolder = compProf.apiFolderDir + '/'
+        self._srcFolder = os.path.join(self._saveFolder, 'API/')
+        self._docFolder = os.path.join(self._saveFolder, 'Documentation/')
+
+        # Make all save folders if they don't exist
+        if not os.path.exists(self._saveFolder):  # If the user enters a path that doesn't exist, it is created
+            os.mkdir(self._saveFolder)            # TODO: Should notify them of this in compiler dialog
+        if not os.path.exists(self._srcFolder):
+            os.mkdir(self._srcFolder)
+        if not os.path.exists(self._docFolder):
+            os.mkdir(self._docFolder)
 
         # List was reduced in size by making custom, "stripped" versions of files that only
         #  have the required functions & dependencies. That way no need to import graphics files and all that.
@@ -61,7 +73,7 @@ class Compiler():
         :return: None
         """
 
-        with open(self._saveFolder + "application.py", "w+") as f:
+        with open(self._srcFolder + "application.py", "w+") as f:
             
             # TODO: The Facade Tech watermark thing is a little intense when the user needs
             #  to use it for their own purposes and may want to share their generated API online.
@@ -126,8 +138,16 @@ class Application(BaseApplication):
 
             f.write('}, "' + self._name + '", "' + self._backend + '''")
 
-''')
+\tdef start(self) -> 'Application':
+\t\t"""
+\t\tStarts the target application, then waits for all processes' active window to be ready.
+\t\tReturns self, that way the user can just call Application().start() when initializing their app.
+\t\t"""
 
+\t\tself.startApp()
+\t\treturn self
+
+''')
             aps, cas = self._apim.getActionsByType()
 
             for action in cas:
@@ -142,11 +162,11 @@ class Application(BaseApplication):
 
         :return: None
         """
-
+        
         # make necessary directories before copying files
         targetDirs = ['data', 'data/tguim', 'tguiil']
         for dir in targetDirs:
-            dir = os.path.join(self._saveFolder, dir)
+            dir = os.path.join(self._srcFolder, dir)
             if not os.path.exists(dir):
                 os.mkdir(dir)
 
@@ -154,8 +174,8 @@ class Application(BaseApplication):
         dir, filename = os.path.split(curPath)
         for path in self._necessaryFiles:
             # Make sure to copy necessary files into baseFiles dir, and remove unnecessary fns and dependencies.
-            print(self._saveFolder)
-            copyfile(os.path.join(dir, path), os.path.join(self._saveFolder, path[6:]))
+            print(self._srcFolder)
+            copyfile(os.path.join(dir, path), os.path.join(self._srcFolder, path[6:]))
 
     def saveTGUIM(self):
         """
@@ -168,7 +188,7 @@ class Application(BaseApplication):
         path = self.statem._project.getTargetGUIModelFile()
         name = self.statem._project.getName()
 
-        copyfile(path, os.path.join(self._saveFolder, name + '.tguim')) # tguim saved to root, alongside baseapp and customapp
+        copyfile(path, os.path.join(self._srcFolder, name + '.tguim')) # tguim saved to root, alongside baseapp and customapp
 
     def compileAPI(self) -> None:
         """
@@ -182,6 +202,6 @@ class Application(BaseApplication):
 
         curPath = os.path.abspath(__file__)
         dir, filename = os.path.split(curPath)
-        copyfile(os.path.join(dir, 'baseapplication.py'), os.path.join(self._saveFolder, 'baseapplication.py'))
+        copyfile(os.path.join(dir, 'baseapplication.py'), os.path.join(self._srcFolder, 'baseapplication.py'))
 
         self.generateCustomApp()

@@ -35,6 +35,10 @@ from tguiil.matchoption import MatchOption
 from tguiil.componentfinder import ComponentFinder
 from data.tguim.targetguimodel import TargetGuiModel
 
+class WaitException(Exception):
+    def __init__(self, msg: str):
+        Exception.__init__(self, msg)
+
 class BaseApplication():
     """
     The core of all Facile APIs: contains functions that are necessary for any API. The
@@ -60,7 +64,6 @@ class BaseApplication():
         self._options = options
         self._exeLoc= exeLoc
         self._name = name
-        self._states = {'visible', 'ready', 'exists', 'enabled', 'active'}
 
         try:
             with open(os.path.join(pathToThisFile, self._name + ".tguim"), 'r') as tguimFile:
@@ -71,9 +74,9 @@ class BaseApplication():
             self._tgm = None
             traceback.print_exc()
 
-    def start(self):
+    def startApp(self):
         """
-        Starts the target application
+        Starts the target application, then waits for all processes' active window to be ready.
         """
         
         self.app.start(self._exeLoc)
@@ -85,25 +88,28 @@ class BaseApplication():
         
         self.app.kill()
 
-    def wait(self, time: float = 1, state: str = None):
+    def wait(self, state: str, timeout: int = 60):
         """
-        Pauses until state is reached for the active window, otherwise until time (in seconds). Useful when waiting
+        Pauses until state is reached for all windows, timing out in timeout seconds. Useful when waiting
         for target app to complete execution of a task, or when starting up.
         Wraps around pywinauto's wait function.
         
-        :param time: number of seconds to wait. defaults to 1 second, and acts as failsafe if active window couldn't be found
-        :type time: float
-        :param state: state to wait for ('visible', 'ready', 'exists', 'enabled', 'active')
+        :param state: state to wait for ('visible', 'ready', 'exists', 'enabled', 'active'), or time to wait in s or m
         :type state: str
+        :param timeout: Maximum number of seconds to wait for state to be reached. Defaults to a minute, should be longer for apps with more windows.
+        :type timeout: float
         """
         
-        if state in self._states:
-            try:
-                self.app.getActiveWindow().wait(state)
-            except:
-                t.sleep(time)
-        else:
-            t.sleep(time)
+        try:
+            if ' s' in state:
+                t.sleep(float(state[:-2]))
+            elif ' m' in state:
+                t.sleep(60*float(state[:-2]))
+            else:
+                self.app.wait(state, timeout)
+        except:
+            raise WaitException('Not a valid wait time or state. Please use "x s" or "x m" for x seconds/minutes \
+            respectively, or use one of "visible", "ready", "exists", "enabled", "active" as state to wait for.')
 
     def findComponent(self, compID: int):
         """
@@ -125,8 +131,9 @@ class BaseApplication():
     def forceShow(self, comp: 'Component'):
         """
         Attempts to force the component to be visible using visibility behaviors.
-
-        :return: None
+        
+        :param comp: Component to show
+        :type comp: Component
         """
 
         # comp.wait('exists')
