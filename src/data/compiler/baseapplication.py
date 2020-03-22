@@ -90,8 +90,8 @@ class BaseApplication():
 
     def wait(self, state: str, timeout: int = 60):
         """
-        Pauses until state is reached for all windows, timing out in timeout seconds. Useful when waiting
-        for target app to complete execution of a task, or when starting up.
+        Pauses until state is reached for each process's active window, timing out in timeout seconds.
+        Useful when waiting for target app to complete execution of a task, or when starting up.
         Wraps around pywinauto's wait function.
         
         :param state: state to wait for ('visible', 'ready', 'exists', 'enabled', 'active'), or time to wait in s or m
