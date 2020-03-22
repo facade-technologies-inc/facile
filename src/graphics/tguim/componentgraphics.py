@@ -98,7 +98,7 @@ class ComponentGraphics(QGraphicsItem):
             self._width = max(ComponentGraphics.MIN_SIDE_LENGTH, rect[2])
             self._height = max(ComponentGraphics.MIN_SIDE_LENGTH, rect[3])
             self.setPos(max(0, rect[0]), max(0, rect[1]))
-            self._parent = None
+            self._parentGraphics = None
             self._parentIsScene = False
         
         # Top-Level Window
@@ -107,7 +107,7 @@ class ComponentGraphics(QGraphicsItem):
             self._width = max(ComponentGraphics.MIN_SIDE_LENGTH, rect[2])
             self._height = max(ComponentGraphics.MIN_SIDE_LENGTH, rect[3])
             self.setPos(ComponentGraphics.WINDOW_LEFT_OFFSET, 0)  # Forces windows to snap to top-left, aligned vertically.
-            self._parent = self.scene()
+            self._parentGraphics = self.scene()
             self._parentIsScene = True
         
         # All other components
@@ -122,7 +122,7 @@ class ComponentGraphics(QGraphicsItem):
             self.setPos(max(0, rect[0] + self._margin),
                         max(0, rect[1] + self._margin + ComponentGraphics.TITLEBAR_H))
             
-            self._parent = self.scene().getGraphics(self._dataComponent.getParent())
+            self._parentGraphics = self.scene().getGraphics(self._dataComponent.getParent())
             self._parentIsScene = False
         
         self.adjustPositioningInit()

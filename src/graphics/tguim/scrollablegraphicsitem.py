@@ -21,28 +21,99 @@
 This module contains the ScrollableGraphicsItem class.
 """
 
-from PySide2.QtWidgets import QGraphicsItem
+from PySide2.QtWidgets import QGraphicsItem, QApplication, QGraphicsView, QGraphicsScene, QGraphicsRectItem
+from PySide2.QtGui import QColor, QWheelEvent
 
-class ScrollableGraphicsItem(QGraphicsItem):
-    """
-    This class behaves in a similar way to usual components in the TGUIM, except that it is invisible and is scrollable.
-    """
-    
-    LEFT_OFFSET = 25  # Horizontal distance between self and the window it is associated with
-    
-    def __init__(self, window: 'ComponentGraphics'):
-        """
-        Initializes a ScrollableGraphicsItem, tying it to the top-level window it will be next to
-        
-        :param window: top-level window self will be next to
-        :type window: ComponentGraphics
-        :param parent: parent component
-        :
-        """
-        
-        root = None  # TODO: Find how to get root
-        QGraphicsItem.__init__(self, root)
-        self._associatedComponent = window
-        
+class ScrollableGraphicsItem(QGraphicsRectItem):
+
+    MARGIN = 10 # left and right margin for scrolling
+
+    def __init__(self, parent=None):
+        QGraphicsRectItem.__init__(self, parent)
+        self.setFlag(QGraphicsItem.ItemClipsChildrenToShape)
+
+        # create empty invisible child
+        self._ghostContainer = QGraphicsRectItem(self)
+        self._ghostContainer.setFlag(QGraphicsItem.ItemHasNoContents)
+
+        self.contents = [] # all items that we can scroll between
+
+    def addItemToContents(self, item):
+        assert(item not in self.contents)
+
+        # add the item
+        self.contents.append(item)
+        item.setParentItem(self._ghostContainer)
+        print(item._parent)
+
+        # set the position of the item
+        cumulativeX = 0
+        for i, item in enumerate(self.contents):
+            item.setPos(ScrollableGraphicsItem.MARGIN * (i+1) + cumulativeX - self.boundingRect().width()/2,
+                        -item.boundingRect().height()/2)
+            cumulativeX += item.boundingRect().width()
+
+    def removeItemFromContents(self, item):
+        assert(item in self.contents)
+
+        # permanently remove the item
+        self.contents.remove(item)
+        self.scene().removeItem(item)
+
+        # remove all other items temporarily
+        items = self.contents[:]
+        self.contents = []
+        for item in items:
+            self.scene().removeItem(item)
+
+        # Add items again to put them in the correct positions
+        for item in items:
+            self.addItemToContents(item)
+
+    def getGhost(self):
+        return self._ghostContainer
+
+    def wheelEvent(self, event: QWheelEvent) -> None:
+        br = self.boundingRect()
+        cbr = self.childrenBoundingRect() # because of clipping, this doesn't go beyond the bounding rect
+
+        canGoLeft = cbr.x() + cbr.width() > br.x() + br.width() - ScrollableGraphicsItem.MARGIN
+        canGoRight = cbr.x() < br.x() + ScrollableGraphicsItem.MARGIN
+
+        oldPos = self._ghostContainer.pos()
+        if event.delta() > 0:
+            if canGoRight:
+                self._ghostContainer.setPos(oldPos.x() + 7, oldPos.y())
+        else:
+            if canGoLeft:
+                self._ghostContainer.setPos(oldPos.x() - 7, oldPos.y())
+
+if __name__ == "__main__":
+    app = QApplication()
+
+    # create view and scene
+    view = QGraphicsView()
+    scene = QGraphicsScene()
+    view.setScene(scene)
+
+    # create scrollable item
+    scrollableItem = ScrollableGraphicsItem()
+    scene.addItem(scrollableItem)
+    scrollableItem.setRect(-250, -50, 500, 100)
+    scrollableItem.setBrush(QColor(0, 255, 0))
+
+    # create nested items
+    width = 50
+    height = 50
+    buffer = 10
+    for i in range(15):
+        item = QGraphicsRectItem(0, 0, width, height)
+        scrollableItem.addItemToContents(item)
+        item.setBrush(QColor(255, 0, 0))
+
+    view.show()
+
+    app.exec_()
+
         
 
