@@ -41,6 +41,8 @@ class ActionPipeline(Action):
 		Action.__init__(self)
 		self._actions = []
 		self._wireSet = WireSet()
+		self._varName = 'a'
+		self._varMap = []  # This stores (varName, port) tuples
 	
 	def addAction(self, action: 'ActionWrapper') -> None:
 		"""
@@ -326,7 +328,6 @@ class ActionPipeline(Action):
 					for o in a.getOutputPorts()[1:]:
 						code += ", " + self.getVarName(o)
 				code += ' = '
-			
 			code += a.getMethodName() + '('
 
 			if a.getInputPorts():
@@ -335,7 +336,6 @@ class ActionPipeline(Action):
 				if len(a.getInputPorts()) > 1:  # if multiple inputs
 					for i in a.getInputPorts()[1:]:
 						code += ", " + self.getVarName(i)
-			
 			code += ')'
 		
 		if self.getOutputPorts():
@@ -347,7 +347,6 @@ class ActionPipeline(Action):
 					code += ", " + self.getVarName(o)
 
 		code += '\n\n'
-
 		return code
 
 	def getVarName(self, p: 'Port') -> str:
@@ -417,4 +416,3 @@ class ActionPipeline(Action):
 		"""
 
 		return chr(ord(var) + 1) if var != 'z' else 'a'
-

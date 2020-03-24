@@ -28,6 +28,7 @@ from PySide2.QtCore import Signal, Slot
 from PySide2.QtWidgets import QDialog, QWidget, QFileDialog
 from data.compilationprofile import CompilationProfile
 from gui.ui.ui_apicompilerdialog import Ui_Dialog as Ui_ApiCompilerDialog
+from tguiil.matchoption import MatchOption
 from libs.bitness import getPythonBitness, isExecutable, appBitnessMatches, getExeBitness
 
 
@@ -171,11 +172,11 @@ class ApiCompilerDialog(QDialog):
 		setcompResOpts = set()
 		# TODO: change option1 and option2 here, CompilationProfile, ui
 		if self.ui.checkBox1.isChecked():
-			setcompResOpts.add(CompilationProfile.CompResOpt.Option1)
+			setcompResOpts.add(MatchOption.ExactToken)
 		if self.ui.checkBox2.isChecked():
-			setcompResOpts.add(CompilationProfile.CompResOpt.Option2)
+			setcompResOpts.add(MatchOption.CloseToken)
 		if self.ui.checkBoxPyw.isChecked():
-			setcompResOpts.add(CompilationProfile.CompResOpt.Pywinauto)
+			setcompResOpts.add(MatchOption.PWABestMatch)
 			
 		if len(setcompResOpts) == 0:
 			errors.append("You must select at least one component resolution type.")

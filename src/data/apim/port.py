@@ -310,7 +310,7 @@ class Port(Entity):
         self._dataType = port.getDataType()
         self._default = port._default
         self.setName(port.getName())
-        
+
     def isValidSource(self) -> bool:
         """
         Determine whether the port is a valid source or not.

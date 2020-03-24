@@ -36,9 +36,9 @@ import os
 rchars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
 # ATP file path relative to "facile/docs"
-atp_file_path = os.path.abspath("../ATP/source/contents.rst")
-data_sheets_file_path = os.path.abspath("../DataSheets/source/contents.rst")
-procedures_file = os.path.abspath("../ATP/source/procedures.xlsx")
+atp_file_path = os.path.abspath("../VD/source/contents/ATP.rst")
+data_sheets_file_path = os.path.abspath("../VD/source/contents/DataSheets.rst")
+procedures_file = os.path.abspath("../VD/source/procedures.xlsx")
 
 warning = """
 ..
@@ -48,42 +48,30 @@ warning = """
 """
 
 atp_header = warning + """
-------------
-Introduction
-------------
+**************************
+Acceptance Test Procedures
+**************************
 
-This document contains the test procedures to verify every requirement that is at least
-partially verifiable at the current moment. Every test procedure has a corresponding data sheet
-that must be filled out and signed/delivered to the sponsor for every deliverable.
-:num:`Fig. #roadmap` shows the schedule of when each system requirement will be verified by.
-:num:`Fig. #reqschedule` shows a schedule of all system, subsystem, and subassembly requirement
-progress.
+This section contains detailed testing procedures that dictate whether Facile meets requirements or not. It currently
+contains only test procedures for requirements that can be fully verified at ISR. According to the test plan, 12 out of
+26 requirements can be verified at the time of ISR.
 
-.. _RoadMap:
-
-.. figure:: ../images/road_map.png
-	:alt: road map
-	
-	Visual schedule of system requirement verification
-
-.. _ReqSchedule:
-
-.. figure:: ../images/requirements_schedule.png
-	:alt: requirements schedule
-	
-	A detailed schedule for all requirements planned to date.
-
+To pass a verification procedure, each step must pass. If any step of the verification procedure fails, the entire 
+verification procedure fails. Unless explicitly stated in the test description, it is assumed that completing a test 
+without issues constitutes passing the test.
 """
 
 data_sheets_header = warning + """
-------------
-Introduction
-------------
+***********
+Data Sheets
+***********
 
-This document contains a data sheet for each test case in the acceptance test procedure document.
+This document contains a data sheet for each test case in the Acceptance Test Procedures section.
 The data sheets in this document are meant to be left unfilled. When the tests are carried out,
 a new copy of this document will be created and the data sheets will be filled out.
 
+Each data sheet must have each row filled with pass/fail to be accepted. If any step of a verification procedure fails,
+the entire verification procedure fails and notes should be written down about the obtained results.
 """
 
 procedure_template = """
@@ -164,11 +152,11 @@ Pre-Test Conditions
 
 {}
 
-+--------------------------------+------+
-| Responsible Engineer (Printed) | Date |
-+================================+======+
-|                                |      |
-+--------------------------------+------+
++--------------------------------+-------------------+
+| Responsible Engineer (Printed) | Date              |
++================================+===================+
+|                                |                   |
++--------------------------------+-------------------+
 
 {}
 
@@ -190,12 +178,17 @@ figure_template = """
 
 .. _{}:
 
-.. figure:: ../images/{}
+.. figure:: ../../images/{}
     :alt: {}
     
     {}
     
 """
+
+exclude_titles = [
+	'Operating System Acceptance Test', # test for FAR and just say all other requirements must pass on a windows 10 computer
+	'Programming Language Acceptance Test', # test for FAR and just say all other requirements must pass with Python 3.7.4 interpreter.
+]
 
 
 def random_string_generator(str_size, allowed_chars):
@@ -207,9 +200,13 @@ def read_procedure_data(filename):
 	test_procedures = []
 	for name in sheetnames:
 		df = pd.read_excel(wb, name)
+
+		if df['Title'][0] in exclude_titles:
+			continue
+
 		proc = {}
 		proc['reqno'] = name
-		proc['title'] = df['Title'][0]
+		proc['title'] = "({}) {}".format(proc['reqno'], df['Title'][0])
 		proc['intro'] = df['Introduction'][0]
 		proc['refer'] = [a for a in df['Referenced Documents'] if type(a) == str]
 		proc['equip'] = [b for b in df['Required Equipment'] if type(b) == str]
@@ -403,11 +400,3 @@ def setup(app):
 		'parallel_read_safe': True,
 		'parallel_write_safe': True,
 	}
-
-# For debugging only
-if __name__ == "__main__":
-	procedures_file = "../docs/ATP/procedures.xlsx"
-	atp_file_path = "../docs/ATP/ATP.rst"
-	data_sheets_file_path = "../docs/ATP/DataSheets.rst"
-	
-	setup(None)

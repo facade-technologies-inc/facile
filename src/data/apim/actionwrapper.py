@@ -24,6 +24,8 @@ This module contains the ActionWrapper class.
 from typing import List, Dict
 
 from data.apim.action import Action
+import data.apim.actionpipeline as ap
+from data.apim.componentaction import ComponentAction
 
 
 class ActionWrapper(Action):
@@ -38,7 +40,7 @@ class ActionWrapper(Action):
 	The ActionWrapper can be thought of as a black-box for any other action.
 	"""
 	
-	def __init__(self, actionRef: 'Action', parent: 'ActionPipeline') -> 'ActionWrapper':
+	def __init__(self, actionRef: 'Action', parent: 'ap.ActionPipeline') -> 'ActionWrapper':
 		"""
 		Constructs a WrapperAction that stores a reference to an action.
 		
@@ -86,7 +88,7 @@ class ActionWrapper(Action):
 		"""
 		self._actionRef = None
 	
-	def getParent(self) -> 'ActionPipeline':
+	def getParent(self) -> 'ap.ActionPipeline':
 		"""
 		Get the parent ActionPipeline to this action wrapper.
 		
@@ -97,7 +99,7 @@ class ActionWrapper(Action):
 	
 	def forgetParent(self) -> None:
 		"""
-		Sets teh action reference to None
+		Sets the action reference to None
 		
 		:return: None
 		:rtype: NoneType
@@ -165,3 +167,32 @@ class ActionWrapper(Action):
 		myPortList.clear()
 		for port in newOrdering:
 			myPortList.append(port)
+
+	def getMethodName(self) -> str:
+		"""
+		Returns method name based on actionRef type.
+
+		:return: method name
+		:rtype: str
+		"""
+
+		if isinstance(self._actionRef, ap.ActionPipeline):
+			return self._actionRef.getMethodName()
+		elif isinstance(self._actionRef, ComponentAction):
+			if self._actionRef.getTargetComponent() is None:
+				return '_' + self._actionRef.getActionName()  # TODO: We have to make sure that these actions have unique names
+			return '_' + self._actionRef.getTargetComponent().getId() + '_' + self._actionRef.getActionName()
+
+	def getMethodCode(self) -> str:
+		"""
+		Returns the code "guts" of the actionRef
+
+		:return: Code to perform referenced action
+		:rtype: str
+		"""
+		
+		return self._actionRef.getMethodCode()
+
+
+
+
