@@ -2,6 +2,8 @@ import os
 
 DOC_DIR = os.path.abspath("./")
 
+Exclude = ['ATP', 'CCL', 'ConOps', 'DataSheets', 'Drawings', 'Proposal', 'Risk', 'SCG', '']
+
 def do_all_docs(cmd="latex"):
 	# build all sub-docs
 	for root, dirs, files in os.walk(DOC_DIR):

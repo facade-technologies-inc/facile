@@ -19,8 +19,9 @@
 	\------------------------------------------------------------------------------/
 """
 from typing import Set
-
 from enum import Enum
+
+from tguiil.matchoption import MatchOption
 
 
 class CompilationProfile:
@@ -34,16 +35,7 @@ class CompilationProfile:
 		Html = 2
 		Pdf = 1
 	
-	class CompResOpt(Enum):
-		"""
-		Create a Enum class for Component Resolution Option(s).
-		"""
-		
-		Option1 = 3
-		Option2 = 2
-		Pywinauto = 1
-	
-	def __init__(self, docTypes: Set['CompilationProfile.DocType'], compResOpts: Set['CompilationProfile.CompResOpt'],
+	def __init__(self, docTypes: Set['CompilationProfile.DocType'], compResOpts: Set['MatchOption'],
 	             apiFolderDir, interpExeDir):
 		"""
 		Construct the CompilationProfile containing the information from ApiCompilerDialog.

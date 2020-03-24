@@ -50,3 +50,36 @@ class ComponentAction(Action):
 			self.addOutputPort(p)
 			
 		self.setName(actionSpec.name)
+
+	def getTargetComponent(self) -> 'Component':
+		"""
+		Returns the target componemt of the action.
+
+		:return: Target component
+		:rtype: Component
+		"""
+
+		return self._target
+
+	def getActionName(self) -> str:
+		"""
+		Gets the name of the action. Only for use with creating method name in action wrapper. *NOT UNIQUE*
+
+		:return: Action name
+		:rtype: str
+		"""
+
+		return self.getName()
+
+	def getMethodCode(self) -> str:
+		"""
+		Returns the code spec
+
+		:return: code necessary to perform action
+		:rtype: str
+		"""
+
+		return self._spec.code
+	
+	# TODO: Add more methods once we've clearly defined what we're doing with this class.
+		

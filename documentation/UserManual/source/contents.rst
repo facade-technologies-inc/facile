@@ -280,6 +280,18 @@ Here we use the menu bar as an example.
 
 The box will blink for about 10 seconds before disappearing from the screen.
 
+======================
+Building the API Model
+======================
+
+=============================================
+Validating the API Model and Target GUI Model
+=============================================
+
+======================
+Compiling a Facile API
+======================
+
 
 
 

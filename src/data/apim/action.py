@@ -22,12 +22,11 @@ This module contains the **Action** class which serves as the base class to the 
 and *ActionPipeline* classes.
 """
 
-from abc import ABC as AbstractBaseClass
 from typing import List
 
 from PySide2.QtCore import QObject, Signal
 
-import data.apim.port as port
+import data.apim.port as pt
 from data.entity import Entity
 from data.properties import Properties
 
@@ -80,7 +79,7 @@ class Action(QObject, Entity):
 		for wrapper in self._wrappers:
 			Entity.setName(wrapper, name)
 		
-	def addInputPort(self, port: 'Port') -> None:
+	def addInputPort(self, port: 'pt.Port') -> None:
 		"""
 		Adds a port to the list of inputs for this action.
 		
@@ -95,7 +94,7 @@ class Action(QObject, Entity):
 		:rtype: NoneType
 		"""
 		if port in Action.allPorts:
-			raise port.PortException("Port is already used. Can't add port to action.")
+			raise pt.PortException("Port is already used. Can't add port to action.")
 		
 		port.setAction(self)
 		
@@ -104,7 +103,7 @@ class Action(QObject, Entity):
 		self.synchronizeWrappers()
 		self.updated.emit()
 	
-	def addOutputPort(self, port: 'port.Port') -> None:
+	def addOutputPort(self, port: 'pt.Port') -> None:
 		"""
 		Adds a port to the list of outputs for this action.
 		
@@ -119,7 +118,7 @@ class Action(QObject, Entity):
 		:rtype: NoneType
 		"""
 		if port in Action.allPorts:
-			raise port.PortException("Port is already used. Can't add port to action.")
+			raise pt.PortException("Port is already used. Can't add port to action.")
 		
 		port.setAction(self)
 		
@@ -128,7 +127,7 @@ class Action(QObject, Entity):
 		self.synchronizeWrappers()
 		self.updated.emit()
 		
-	def getInputPorts(self) -> List['port.Port']:
+	def getInputPorts(self) -> List['pt.Port']:
 		"""
 		Get the list of input ports for this action.
 		
@@ -137,7 +136,7 @@ class Action(QObject, Entity):
 		"""
 		return self._inputs[:]
 		
-	def getOutputPorts(self) -> List['port.Port']:
+	def getOutputPorts(self) -> List['pt.Port']:
 		"""
 		Get the list of output ports for this action.
 
@@ -146,7 +145,7 @@ class Action(QObject, Entity):
 		"""
 		return self._outputs[:]
 	
-	def removePort(self, port: 'Port') -> bool:
+	def removePort(self, port: 'pt.Port') -> bool:
 		"""
 		Removes a port from this action - no need to specify input or output.
 
@@ -162,7 +161,7 @@ class Action(QObject, Entity):
 		"""
 		
 		if port not in Action.allPorts:
-			raise port.PortException("Port not found in any actions.")
+			raise pt.PortException("Port not found in any actions.")
 		
 		found = False
 		if port in self._inputs:
@@ -172,7 +171,7 @@ class Action(QObject, Entity):
 			found = True
 			self._outputs.remove(port)
 		else:
-			raise port.PortException("Port not found in this action.")
+			raise pt.PortException("Port not found in this action.")
 			
 		if found:
 			Action.allPorts.remove(port)
@@ -231,3 +230,122 @@ class Action(QObject, Entity):
 		
 		for wrapper in self._wrappers:
 			wrapper.synchronizePorts()
+
+	def getMethodSignature(self) -> str:
+		"""
+		Gives the signature for a method using its name and parameter list. Newline at end.
+
+		:return: Method Signature
+		:rtype: str
+		"""
+
+		name = self.getMethodName()
+		params = self.getParamStr()
+		output = "\tdef " + name + "(self" + params + ") -> " + self.getRType() + ":\n"
+		return output
+
+	def getRType(self) -> str:
+		"""
+		Gives str with return type(s), explicitly made for making the method signature.
+
+		:return: return type(s) of the action
+		:rtype: str
+		"""
+
+		if len(self._outputs) > 1:
+			out = '('
+			work = []
+			for o in self._outputs:
+				work.insert(0, o.getDataType().__name__)
+			out += work.pop()
+			for w in work:
+				out += ', ' + work.pop()
+			out += ')'
+			return out
+		elif len(self._outputs) == 1:
+			return self._outputs[0].getDataType().__name__
+		else:
+			return 'None'
+
+	def getMethodName(self) -> None:
+		"""
+		Must be overwritten in children classes; raises exception here if not.
+		"""
+
+		raise ActionException("getMethodName() must be defined in the action type's class.")
+
+	def getParamStr(self) -> str:
+		"""
+		Generates the string of inputs needed for the action's method definition
+
+		:return: list of parameters needed for the action, starting with a ", ".
+		:rtype: str
+		"""
+
+		out = ""
+		for p in self._inputs:
+			out += ", " + p.getName() + ": " + p.getDataType().__name__
+			# If we eventually provide functionality for defaulting values, use this:
+			# if p.hasDefault():
+			# 	out += " = " + p.getDefaultVal()
+
+		return out
+
+	def getDocStr(self) -> str:
+		"""
+		Generates the docstring for the action. Adds the necessary spacing after docstring.
+		If the function has no inputs or outputs, the docstring states this.
+
+		:return: doc string describing action, inputs, and outputs
+		:rtype: str
+		"""
+		out = '\t\t"""\n'
+		noDoc = True
+
+		if self.getAnnotation():
+			noDoc = False
+			out += '\t\t' + self.getAnnotation() + '\n\n'
+
+		if self._inputs or self._outputs:
+			noDoc = False
+
+			for p in self._inputs:
+				out += '\t\t:param ' + p.getName() + ': ' + p.getAnnotation() + '\n'
+				out += '\t\t:type ' + p.getName() + ': ' + p.getDataType().__name__ + '\n'
+			
+			# we can only have one return tag, so we just combine everything.
+			if self._outputs:
+				annotations = [p.getAnnotation() for p in self._outputs]
+				types = [p.getDataType().__name__ for p in self._outputs]
+				out += '\t\t:return: ({})\n'.format(", ".join(annotations))
+				out += '\t\t:rtype: ({})\n'.format(", ".join(types))
+			else:
+				out += '\t\t:return: None\n'
+				out += '\t\t:rtype: NoneType\n'
+		
+		if noDoc:
+			return '\t\t"""\n\t\tThis action has no annotations, inputs, or outputs.\n\t\t"""\n'
+		else:
+			out += '\t\t"""\n\n'
+			return out
+
+	def getMethodCode(self):
+		"""
+		Must be overwritten in children classes; raises exception here if not.
+		"""
+
+		raise ActionException("getMethodCode() must be defined in the action type's class.")
+
+	def getMethod(self) -> str:
+		"""
+		Generates the entirety of the code needed for the action, including spacing afterwards.
+
+		:return: callable definition (method) that performs the action if executed
+		:rtype: str
+		"""
+
+		code = self.getMethodSignature()
+		code += self.getMethodCode()
+		code += '\n'
+
+		return code
