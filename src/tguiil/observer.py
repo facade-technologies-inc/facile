@@ -215,7 +215,10 @@ class Observer(QThread):
 				if matchVal > bestMatch:
 					bestMatch = matchVal
 					selectedSuperToken = superToken
-		
+
+		# At this point, we know the token will be used in the TGUIM.
+		token.registerAsAccepted()
+
 		# No match was found
 		if selectedSuperToken == None:
 			newSuperToken = SuperToken(token, parentSuperToken)

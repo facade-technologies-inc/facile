@@ -131,6 +131,19 @@ class Application(pywinauto.Desktop):
 			if win.process_id() in pids:
 				appWins.append(win)
 		return appWins
+
+	# def window(self, **kwargs):
+	# 	"""
+	# 	This is taken from base_application
+    #     """
+	# 	kwargs['backend'] = self.backend.name
+	# 	kwargs['top_level_only'] = True
+	#
+	# 	# add the restriction for this particular application
+	# 	kwargs['app'] = self
+	# 	win_spec = pywinauto.application.WindowSpecification(kwargs)
+	#
+	# 	return win_spec
 	
 	def getActiveWindow(self) -> pywinauto.application.WindowSpecification:
 		"""

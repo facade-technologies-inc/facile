@@ -23,6 +23,7 @@ This file contains the token class that weighs the importance of each attribute 
 from difflib import SequenceMatcher
 from enum import Enum, unique
 from datetime import datetime
+from functools import cmp_to_key
 
 import numpy as np
 from PIL import Image
@@ -35,6 +36,11 @@ class Token:
 	"""
 	Token class sets parameters of a token for each state that changes.
 	"""
+
+	# TODO: Store the control identifiers of the top level parent for more accurate lookup.
+	# TODO: Store mapping of control IDs to their count
+
+	control_ID_count = {}
 	
 	class CreationException(Exception):
 		def __init__(self, msg):
@@ -67,7 +73,7 @@ class Token:
 	def __init__(self, appTimeStamp: int, identifier: int, isDialog: bool, isEnabled: bool,
 	             isVisible: bool, processID: int, typeOf: str, rectangle: RECT, texts: list,
 	             title: str, numControls: int, controlIDs: list, parentTitle: str,
-	             parentType: str, topLevelParentTitle: str, topLevelParentType: str,
+	             parentType: str, topLevelParentControlIDs: list, topLevelParentTitle: str, topLevelParentType: str,
 	             childrenTexts: list, picture: Image = None, autoID: int = None,
 	             expandState: int = None, shownState: int = None):
 		"""
@@ -87,6 +93,8 @@ class Token:
 		:type parentTitle: str
 		:param parentType: stores the components parents type
 		:type parentType: str
+		:param topLevelParentControlIDs: A list of control identifiers for the dialog that contains (or is) this component.
+		:type topLevelParentControlIDs: List[str]
 		:param topLevelParentTitle: stores the components top level parents title
 		:type topLevelParentTitle: str
 		:param topLevelParentType: stores the components top level parents type
@@ -126,6 +134,7 @@ class Token:
 		self.isVisible = isVisible
 		self.parentTitle = parentTitle
 		self.parentType = parentType
+		self.topLevelParentControlIDs = topLevelParentControlIDs
 		self.topLevelParentTitle = topLevelParentTitle
 		self.topLevelParentType = topLevelParentType
 		self.processID = processID
@@ -228,14 +237,16 @@ class Token:
 			if title is None:
 				title = ""
 			
-			controlIdentifiers = [title, typeOf, title + typeOf]
+			controlIDs = [title, typeOf, title + typeOf]
+			topLevelControlIDs = [topLevelParentTitle, topLevelParentType, topLevelParentTitle + topLevelParentType]
+
 		except Exception as e:
 			raise Token.CreationException("Could not build token: {}".format(str(e)))
 		
 		# create a new token
 		token = Token(timeStamp, id, isDialog, isEnabled, isVisible, processID, typeOf,
-		              rectangle, texts, title, numControls, controlIdentifiers, parentTitle,
-		              parentType, topLevelParentTitle, topLevelParentType, childrenTexts, image,
+		              rectangle, texts, title, numControls, controlIDs, parentTitle,
+		              parentType, topLevelControlIDs, topLevelParentTitle, topLevelParentType, childrenTexts, image,
 		              autoID, expandState, shownState)
 		
 		return token
@@ -438,7 +449,53 @@ class Token:
 			
 			else:
 				return Token.Match.NO, score
-	
+
+	def registerAsAccepted(self):
+		"""
+		This method should only be called on components that are stored in the TGUIM.
+
+		.. warning:: This method should only be called once on each token that is stored permanently.
+
+		:return: None
+		:rtype: NoneType
+		"""
+		for controlID in self.controlIDs:
+			if self.type == controlID or controlID.strip() == "":
+				newVal = 10000000
+			else:
+				newVal = Token.control_ID_count.get(controlID, 0) + 1
+			Token.control_ID_count[controlID] = newVal
+
+	def getControlIDs(self):
+		"""
+		Get the control IDs in order of uniqueness.
+
+		:return: The list of control identifiers in order of uniqueness. In case of a tie, the longer control ID will come first.
+		:rtype: List[str]
+		"""
+		return list(filter(len, sorted(self.controlIDs, key=cmp_to_key(Token.control_ID_comparator))))
+
+	def getTopLevelParentControlIDs(self):
+		"""
+		Get the top-level parent control IDs in order of uniqueness.
+
+		:return: The list of control identifiers in order of uniqueness. In case of a tie, the longer control ID will come first.
+		:rtype: List[str]
+		"""
+		return list(filter(len, sorted(self.topLevelParentControlIDs, key=cmp_to_key(Token.control_ID_comparator))))
+
+	@staticmethod
+	def control_ID_comparator(controlID1: str, controlID2: str):
+		count1 = Token.control_ID_count.get(controlID1, 100000000)
+		count2 = Token.control_ID_count.get(controlID2, 100000000)
+
+		if count1 < count2:
+			return -1
+		elif count1 > count2:
+			return 1
+		else:
+			return len(controlID2) - len(controlID1)
+
 	def __str__(self):
 		ret = "TOKEN:"
 		for key, val in vars(self).items():
