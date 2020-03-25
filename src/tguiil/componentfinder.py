@@ -68,9 +68,15 @@ class ComponentFinder:
         :return: The component that matches the super token.
         :rtype: pywinauto.base_wrapper
         """
-        self.checkAppIsRunning()
 
-        # TOKEN COMPARISON
+        def checkAppIsRunning():
+            if not self._app.is_process_running():
+                msg = "The application stopped before we could locate the component"
+                raise ComponentNotFoundException(msg)
+
+        checkAppIsRunning()
+
+        # TOKEN COMPARISON:
         # |  traverse the GUI, build tokens for each component and compare to the tokens within the super token given to
         # |  determine if there is a match. Depending on the match options, we may return if we find an exact match
         # |  or we may return a match that's close enough.
@@ -81,7 +87,7 @@ class ComponentFinder:
 
             work = [win for win in self._app.windows()]
             while len(work) > 0:
-                self.checkAppIsRunning()
+                checkAppIsRunning()
                 curComponent = work.pop()
 
                 try:
@@ -136,13 +142,12 @@ class ComponentFinder:
                                            Token.control_ID_count[controlID]))
 
             controlIDs = sorted(list(set(controlIDs)), key=lambda tup: tup[1 if isDialog else 3])
-            print(controlIDs)
 
+            # in the case that the target app uses multiple processes, we have to search all of them.
             apps = [pywinauto.application.Application().connect(process=pid) for pid in self._app.getPIDs()]
             for app in apps:
                 dlgs = {}  # maps dialog identifier to dialog component
                 for dlgCtrlId, temp1, ctrlId, temp2 in controlIDs:
-                    print("'{}' -> '{}'".format(dlgCtrlId, ctrlId))
 
                     # If we've already used this dialog control ID to identify a dialog, don't look for it again
                     if dlgCtrlId in dlgs:
@@ -156,24 +161,18 @@ class ComponentFinder:
                         try:
                             dlg = app[dlgCtrlId]
                             dlgWrapper = dlg.wrapper_object()
-                            dlgs[dlgCtrlId] = (dlg, dlgWrapper)
                         except pywinauto.findbestmatch.MatchError as e:
-                            print(e)
                             dlgs[dlgCtrlId] = None
                             continue
-
-                    if isDialog:
-                        return dlgWrapper
+                        else:
+                            if isDialog:
+                                return dlgWrapper
+                            dlgs[dlgCtrlId] = (dlg, dlgWrapper)
 
                     try:
                         return dlg[ctrlId].wrapper_object()
                     except pywinauto.findbestmatch.MatchError as e:
-                        print(e)
                         continue
 
         raise ComponentNotFoundException("The selected component could not be\nfound in the target GUI.")
 
-    def checkAppIsRunning(self):
-        if not self._app.is_process_running():
-            msg = "The application stopped before we could locate the component"
-            raise ComponentNotFoundException(msg)
