@@ -23,12 +23,10 @@ This module contains the ActionWrapper class.
 
 from typing import List, Dict
 
-from data.apim.action import Action
 import data.apim.actionpipeline as ap
-from data.apim.componentaction import ComponentAction
+import data.apim.action as act
 
-
-class ActionWrapper(Action):
+class ActionWrapper(act.Action):
 	"""
 	The purpose of the ActionWrapper class is to prevent copying of action pipelines and other
 	actions unnecessarily. The action wrapper allows us to update uses of an action very easily
@@ -39,8 +37,8 @@ class ActionWrapper(Action):
 	
 	The ActionWrapper can be thought of as a black-box for any other action.
 	"""
-	
-	def __init__(self, actionRef: 'Action', parent: 'ap.ActionPipeline') -> 'ActionWrapper':
+
+	def __init__(self, actionRef: 'act.Action', parent: 'ap.ActionPipeline') -> 'ActionWrapper':
 		"""
 		Constructs a WrapperAction that stores a reference to an action.
 		
@@ -170,18 +168,13 @@ class ActionWrapper(Action):
 
 	def getMethodName(self) -> str:
 		"""
-		Returns method name based on actionRef type.
+		Returns method name using actionRef's getMethodName definition.
 
 		:return: method name
 		:rtype: str
 		"""
 
-		if isinstance(self._actionRef, ap.ActionPipeline):
-			return self._actionRef.getMethodName()
-		elif isinstance(self._actionRef, ComponentAction):
-			if self._actionRef.getTargetComponent() is None:
-				return '_' + self._actionRef.getActionName()  # TODO: We have to make sure that these actions have unique names
-			return '_' + self._actionRef.getTargetComponent().getId() + '_' + self._actionRef.getActionName()
+		return self._actionRef.getMethodName()
 
 	def getMethodCode(self) -> str:
 		"""
