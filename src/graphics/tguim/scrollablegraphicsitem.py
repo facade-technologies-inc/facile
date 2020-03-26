@@ -26,7 +26,7 @@ from PySide2.QtGui import QColor, QWheelEvent
 
 class ScrollableGraphicsItem(QGraphicsRectItem):
 
-    MARGIN = 10 # left and right margin for scrolling
+    MARGIN = 60  # left and right margin for scrolling
 
     def __init__(self, parent=None):
         QGraphicsRectItem.__init__(self, parent)
@@ -36,7 +36,7 @@ class ScrollableGraphicsItem(QGraphicsRectItem):
         self._ghostContainer = QGraphicsRectItem(self)
         self._ghostContainer.setFlag(QGraphicsItem.ItemHasNoContents)
 
-        self.contents = [] # all items that we can scroll between
+        self.contents = []  # all items that we can scroll between
 
     def addItemToContents(self, item):
         assert(item not in self.contents)
@@ -44,7 +44,6 @@ class ScrollableGraphicsItem(QGraphicsRectItem):
         # add the item
         self.contents.append(item)
         item.setParentItem(self._ghostContainer)
-        print(item._parent)
 
         # set the position of the item
         cumulativeX = 0
@@ -83,10 +82,31 @@ class ScrollableGraphicsItem(QGraphicsRectItem):
         oldPos = self._ghostContainer.pos()
         if event.delta() > 0:
             if canGoRight:
-                self._ghostContainer.setPos(oldPos.x() + 7, oldPos.y())
+                self._ghostContainer.setPos(oldPos.x() + 6, oldPos.y())
         else:
             if canGoLeft:
-                self._ghostContainer.setPos(oldPos.x() - 7, oldPos.y())
+                self._ghostContainer.setPos(oldPos.x() - 6, oldPos.y())
+
+    def paint(self, painter, option, widget):
+        """
+        Paints the contents of the component. Override the parent paint function
+
+        :param painter: Use a Qpainter object.
+        :type painter: QPainter
+        :param option: It provides style options for the item.
+        :type option: QStyleOptionGraphicsItem
+        :param widget: QWidget
+        :type widget: It points to the widget that is being painted on; or make it = None.
+        :return: None
+        :rtype: NoneType
+        """
+        
+        boundingRect = self.boundingRect()
+        
+        painter.setBrush(QColor(10,10,10, 50))
+    
+        painter.drawRoundedRect(boundingRect, 5, 5)
+        
 
 if __name__ == "__main__":
     app = QApplication()
@@ -100,7 +120,7 @@ if __name__ == "__main__":
     scrollableItem = ScrollableGraphicsItem()
     scene.addItem(scrollableItem)
     scrollableItem.setRect(-250, -50, 500, 100)
-    scrollableItem.setBrush(QColor(0, 255, 0))
+    # scrollableItem.setBrush(QColor(0, 255, 0))
 
     # create nested items
     width = 50

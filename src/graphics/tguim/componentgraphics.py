@@ -26,6 +26,7 @@ from PySide2.QtGui import QPainterPath, QColor, QPen, Qt, QFont, QFontMetricsF
 from PySide2.QtWidgets import QGraphicsScene, QGraphicsItem, QGraphicsSceneContextMenuEvent, QMenu, QGraphicsWidget
 import data.statemachine as sm
 from graphics.tguim.scrollablegraphicsitem import ScrollableGraphicsItem
+from graphics.tguim.toplevelwrappergraphics import TopLevelWrapperGraphics
 
 from qt_models.componentmenu import ComponentMenu
 
@@ -37,9 +38,6 @@ class ComponentGraphics(QGraphicsItem):
     """
     
     # Individual Components
-    MAX_MARGIN = 10  # Maximum margin length
-    MIN_MARGIN = 2  # Minimum margin length
-    MARGIN_PROP = 0.01  # Proportion of component width to use as margin
     PEN_WIDTH = 1.5  # Width of component borders
     TITLEBAR_H = 0  # Titlebar height
     TRIM = 1
@@ -54,10 +52,12 @@ class ComponentGraphics(QGraphicsItem):
     WINDOW_SPACING = 100  # Vertical spacing between windows in TGUIM
     MIN_AREA_THRESH_P = 0.25  # Qualifies a component to go to extra components section. Percent as proportion.
     WINDOW_LEFT_OFFSET = 30  # Offset from left side of scene to show all windows.
+    WINDOW_HEIGHT = 600  # The fixed height for all top-level windows
     
     # Extra Components Sections
-    EC_X_PADDING = 25  # Padding between each extra component
+    EC_X_PADDING = 0  # Padding between top level windows and the EC section
     EC_MARGINS = 3  # *Half* of the spacing between components in the extra components section
+    EC_ABS_WIDTH = 1000  # Locks the right edge placement of the EC section relative to x=0 in the scene
     MIN_TIME_DIFF = .05  # Time difference from the overlapping component
                          #   to qualify moving self to extra components section
     
@@ -88,49 +88,57 @@ class ComponentGraphics(QGraphicsItem):
         # variables related to extra components algorithm
         self._extraComponents = []
         self.isExtraComponent = False
-        self._ecSection = None  # reassigned later if top-level window
+        self._ecSection = None  # reassigned later only if top-level window
         
         # --- This is where components get their initial positions set. ---
         
         # Root
         if self._dataComponent.getParent() is None:
-            self._margin = 0
             self._width = max(ComponentGraphics.MIN_SIDE_LENGTH, rect[2])
             self._height = max(ComponentGraphics.MIN_SIDE_LENGTH, rect[3])
             self.setPos(max(0, rect[0]), max(0, rect[1]))
             self._parentGraphics = None
             self._parentIsScene = False
+            self._absScale = 1
         
         # Top-Level Window
         elif self._dataComponent.getParent().getParent() is None:
-            self._margin = 0
+            # Set initial width, height, and scale
             self._width = max(ComponentGraphics.MIN_SIDE_LENGTH, rect[2])
             self._height = max(ComponentGraphics.MIN_SIDE_LENGTH, rect[3])
-            self.setPos(ComponentGraphics.WINDOW_LEFT_OFFSET, 0)  # Forces windows to snap to top-left, aligned vertically.
+            self._absScale = 1
+            
+            # Scale to uniform height
+            scale = ComponentGraphics.WINDOW_HEIGHT/self._height
+            self.setScale(scale)
+
+            # Forces windows to snap to top-left, aligned vertically.
+            self.setPos(ComponentGraphics.WINDOW_LEFT_OFFSET, 0)
             self._parentGraphics = self.scene()
             self._parentIsScene = True
         
         # All other components
         else:
-            # Margin is dynamically assigned, with a max/min value to use
-            self._margin = max(ComponentGraphics.MIN_MARGIN, min(ComponentGraphics.MAX_MARGIN,
-                                                                 ComponentGraphics.MARGIN_PROP * min(rect[2], rect[3])))
-            
-            self._width = max(ComponentGraphics.MIN_SIDE_LENGTH, rect[2] - 2 * self._margin)
+            self._width = max(ComponentGraphics.MIN_SIDE_LENGTH, rect[2])
             self._height = max(ComponentGraphics.MIN_SIDE_LENGTH,
-                               rect[3] - 2 * self._margin + ComponentGraphics.TITLEBAR_H)
-            self.setPos(max(0, rect[0] + self._margin),
-                        max(0, rect[1] + self._margin + ComponentGraphics.TITLEBAR_H))
+                               rect[3] + ComponentGraphics.TITLEBAR_H)
+            self.setPos(max(0, rect[0]),
+                        max(0, rect[1] + ComponentGraphics.TITLEBAR_H))
             
             self._parentGraphics = self.scene().getGraphics(self._dataComponent.getParent())
+            
+            # Gets the absolute scale of the data parent and scales self accordingly
+            self._absScale = self._parentGraphics.getAbsScale()
+            self.setScale(self._absScale)
+            
             self._parentIsScene = False
         
-        self.adjustPositioningInit()
-        
-        # This needs to be after adjustPositioning, even though same conditional is technically above
-        # TODO: Only show when extra components are needed
+        self.adjustPositioning()
+
+        # Creates the top-level wrapper, places self in it.
+        # Important that this is after adjustPositioning
         if self._parentIsScene:
-            self._ecSection = ScrollableGraphicsItem(self)
+            self.scene().addItem(TopLevelWrapperGraphics(self))
         
         self.menu = ComponentMenu()
         self.menu.onBlink(lambda: self.scene().blinkComponent(self._dataComponent.getId()))
@@ -153,13 +161,23 @@ class ComponentGraphics(QGraphicsItem):
     def getGraphicalParent(self) -> 'ComponentGraphics':
         """
         Returns graphics for the parent of this componentgraphics item. Not always the same as the component's parent,
-        specifically because of extra components section.
+        specifically because of extra components section and the toplevel wrapper.
         
         :return: graphics for the parent of this componentgraphics item
         :rtype: ComponentGraphics
         """
         
-        return self._parent
+        return self.parentItem()
+
+    def getDataParentGraphics(self) -> 'ComponentGraphics':
+        """
+        Returns graphics for the parent of this componentgraphics's data item.
+
+        :return: graphics for the parent of this componentgraphics's data item
+        :rtype: ComponentGraphics
+        """
+    
+        return self._parentGraphics
     
     def getNumberOfTokens(self) -> int:
         """
@@ -172,7 +190,7 @@ class ComponentGraphics(QGraphicsItem):
         
         return tokensCount
     
-    def adjustPositioningInit(self) -> None:
+    def adjustPositioning(self) -> None:
         """
         Places windows in a vertical list
 
@@ -205,11 +223,11 @@ class ComponentGraphics(QGraphicsItem):
         # A window's 1st level of components
         elif self._dataComponent.getParent().getParent().getParent() is None:
             self.chkExtraComponent()
-            self.resolveCollisions()
+            # self.resolveCollisions()
         
         # All other components
         else:
-            self.resolveCollisions()
+            # self.resolveCollisions()
             pass
     
     def chkExtraComponents(self) -> None:
@@ -236,28 +254,34 @@ class ComponentGraphics(QGraphicsItem):
         """
         Adds a component to the extra components section.
         
-        :param component:
-        :return:
-        """
-        if self._dataComponent.getParent().getParent() is None:
-            # TODO: stopped here. move this to the ec section.
-            component.setPos(self._width + ComponentGraphics.EC_X_PADDING, ComponentGraphics.EC_Y_PADDING)
-    
-            component.setMargin(ComponentGraphics.EC_MARGINS)
-            self.expandECSection()
-            self._extraComponents.append(component)
-    
-    def setMargin(self, margin: int) -> None:
-        """
-        Sets a component's margin. Should never be used other than by self's addToExtraComponents method.
-
-        :param margin: margin value to set
-        :type margin: int
+        :param component: component to add to extra components section
+        :type component: 'ComponentGraphics'
         :return: None
-        :rtype: NoneType
         """
         
-        self._margin = margin
+        if self._dataComponent.getParent().getParent() is None:
+            if not self._ecSection:
+                # TODO: Work on integrating with wrapper.
+                self._ecSection = ScrollableGraphicsItem()
+                self._ecSection.setParentItem(self.parentItem())
+                self._ecSection.setRect(self.x() + self.width() + ComponentGraphics.EC_X_PADDING,
+                                        self.y(), ComponentGraphics.EC_ABS_WIDTH - self.width(),
+                                        self.height())
+            
+            self._ecSection.addItemToContents(component)
+            self._extraComponents.append(component)
+            
+    def getScrollableItem(self) -> 'ScrollableGraphicsItem':
+        """
+        Returns the scrollable item, i.e. the extra components section, tied to this item.
+        Only works for top-level components.
+        
+        :return: The extra components section tied to this item
+        :rtype: ScrollableGraphicsItem
+        """
+
+        if self._dataComponent.getParent().getParent() is None:
+            return self._ecSection
     
     def getCollidingSiblings(self) -> list:
         """
@@ -288,6 +312,7 @@ class ComponentGraphics(QGraphicsItem):
         
         self.prepareGeometryChange()
         
+        self._absScale = scale * self._absScale
         self._width = scale * self._width
         self._height = scale * self._height
     
@@ -330,14 +355,24 @@ class ComponentGraphics(QGraphicsItem):
         self.setPos(self.x() * scale, self.y() * scale)
         self.scaleChildren(scale)
         self.setScale(scale)
+        
+    def getAbsScale(self) -> float:
+        """
+        Gets the absolute scale of this component.
+        
+        :return: absolute scale of this component
+        :rtype: float
+        """
+        
+        return self._absScale
     
-    def wasFoundMuchLaterThan(self, sib: 'Component') -> bool:
+    def wasFoundMuchLaterThan(self, sib: 'ComponentGraphics') -> bool:
         """
         Contrary to name, determines if *either self or sib* were found much later than the other,
         with "much later" being defined by ComponentGraphics.MIN_TIME_DIFF.
 
         :param sib: sibling of this ComponentGraphic's _dataComponent
-        :type sib: Component
+        :type sib: ComponentGraphics
         :return: whether or not self was found much later than sib
         :rtype: bool
         """
@@ -346,6 +381,22 @@ class ComponentGraphics(QGraphicsItem):
             return True
         else:
             return False
+        
+    def overlapsALotWith(self, sib: 'ComponentGraphics') -> bool:
+        """
+        Whether or not self overlaps a large area of sib
+        
+        :param sib: Sibling component that overlaps with self
+        :type sib: ComponentGraphics
+        :return: Whether or not self overlaps a large area of sib
+        :rtype: bool
+        """
+        
+        # TODO: Figure this out
+        if self.x() + self.width() > sib.x():
+            xoverlap = self.x() + self.width() - sib.x()
+        elif self.x() < sib.x() + sib.width():
+            pass
     
     def getSiblings(self) -> list:
         """
@@ -365,29 +416,25 @@ class ComponentGraphics(QGraphicsItem):
         
         return siblings
     
-    def width(self, withMargins: bool = False) -> float:
+    def width(self) -> float:
         """
         Shortcut to get the boundingRect's width.
-
-        :param withMargins: with or without margins
-        :type withMargins: bool
+        
         :return: componentGraphic's width
         :rtype: float
         """
         
-        return self.boundingRect(withMargins).width()
+        return self.boundingRect().width()
     
-    def height(self, withMargins: bool = False) -> float:
+    def height(self) -> float:
         """
         Shortcut to get the boundingRect's height.
-
-        :param withMargins: with or without margins
-        :type withMargins: bool
+        
         :return: componentGraphic's height
         :rtype: float
         """
         
-        return self.boundingRect(withMargins).height()
+        return self.boundingRect().height()
     
     def getX(self) -> int:
         """
@@ -405,16 +452,7 @@ class ComponentGraphics(QGraphicsItem):
         :rtype: int
         """
         return self._y
-    
-    def getMargin(self) -> float:
-        """
-        Returns the margin of this component
-
-        :return: The margin around the component
-        :rtype: float
-        """
-        return self._margin
-    
+        
     def getLabel(self) -> str:
         """
         Gets the label from this component.
@@ -442,20 +480,19 @@ class ComponentGraphics(QGraphicsItem):
         :return: True if components overlap, False otherwise.
         :rtype: bool
         """
-        m = max(self.getMargin(), sibling.getMargin())  # TODO: This isn't correct, depends which one was loaded 2nd.
         
         selfBound = self.boundingRect(False)
-        selfx = self.scenePos().x() + selfBound.x() - m
-        selfy = self.scenePos().y() + selfBound.y() - m
+        selfx = self.scenePos().x() + selfBound.x()
+        selfy = self.scenePos().y() + selfBound.y()
         
         sibBound = sibling.boundingRect(False)
-        sibx = sibling.scenePos().x() + sibBound.x() - m
-        siby = sibling.scenePos().y() + sibBound.y() - m
+        sibx = sibling.scenePos().x() + sibBound.x()
+        siby = sibling.scenePos().y() + sibBound.y()
         
-        if (sibx < selfx + selfBound.width() + m * 2 and
-                sibx + sibBound.width() + m * 2 > selfx and
-                siby < selfy + selfBound.height() + m * 2 and
-                siby + sibBound.height() + m * 2 > selfy):
+        if (sibx < selfx + selfBound.width() and
+                sibx + sibBound.width() > selfx and
+                siby < selfy + selfBound.height() and
+                siby + sibBound.height() > selfy):
             return True
         return False
     
@@ -487,25 +524,18 @@ class ComponentGraphics(QGraphicsItem):
             return True
         return False
     
-    def boundingRect(self, withMargins: bool = False):
+    def boundingRect(self):
         """
         This pure virtual function defines the outer bounds of the item as a rectangle.
         :return: create the bounding of the item
         :rtype: QRectF
         """
         halfWidth = ComponentGraphics.PEN_WIDTH / 2
-        if withMargins:
-            marginAdjustment = -ComponentGraphics.TRIM + self._margin + ComponentGraphics.PEN_WIDTH
-            return QRectF(-halfWidth - self._margin,
-                          -halfWidth - self._margin + ComponentGraphics.TITLEBAR_H,
-                          self._width + marginAdjustment + self._margin,
-                          self._height + marginAdjustment + ComponentGraphics.TITLEBAR_H)
-        else:
-            noMarginAdjustment = -ComponentGraphics.TRIM + ComponentGraphics.PEN_WIDTH
-            return QRectF(-halfWidth,
-                          -halfWidth,
-                          self._width + noMarginAdjustment,
-                          self._height + noMarginAdjustment)
+        adjustment = -ComponentGraphics.TRIM + ComponentGraphics.PEN_WIDTH
+        return QRectF(-halfWidth,
+                      -halfWidth,
+                      self._width + adjustment,
+                      self._height + adjustment)
     
     def shape(self):
         """
@@ -553,15 +583,15 @@ class ComponentGraphics(QGraphicsItem):
         id = self._dataComponent.getId()
         
         painter.drawRoundedRect(boundingRect, 5, 5)
-        br = self.boundingRect(withMargins=False)
+        br = self.boundingRect()
         
         # draw name label
         name = self.getLabel()
         # TODO: make a better algorithm on font size in the future
         # 44 width -> only cover 12 words with 5 -> 5Fonts one is 3.6 (added 5)
         # 48 width -> only cover 18 words with 4 -> 4Fonts one is 2.6 (added 5)
-        if len(name) * 3.5 > self.boundingRect(withMargins=False).width():
-            if len(name) * 2.5 > self.boundingRect(withMargins=False).width():
+        if len(name) * 3.5 > self.boundingRect().width():
+            if len(name) * 2.5 > self.boundingRect().width():
                 nameFont = QFont("Times", 2)
             else:
                 nameFont = QFont("Times", 4)
@@ -572,7 +602,7 @@ class ComponentGraphics(QGraphicsItem):
         name = fm.elidedText(name, Qt.ElideRight, br.width() - ComponentGraphics.TITLEBAR_H)
         
         painter.setBrush(QColor(100, 200, 255))
-        painter.drawText(self.boundingRect(withMargins=False).x() + 5, self._margin + 13, name)
+        painter.drawText(self.boundingRect().x() + 5, 13, name)
         
         if sm.StateMachine.instance.configVars.showTokenTags:
             self.drawTokenTag(br, painter)
