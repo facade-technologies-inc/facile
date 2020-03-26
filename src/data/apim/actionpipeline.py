@@ -370,7 +370,6 @@ class ActionPipeline(Action):
 					for o in a.getOutputPorts()[1:]:
 						code += ", " + self.getVarName(o)
 				code += ' = '
-			
 			code += 'self.' + a.getMethodName() + '('
 
 			if a.getInputPorts():
@@ -379,7 +378,6 @@ class ActionPipeline(Action):
 				if len(a.getInputPorts()) > 1:  # if multiple inputs
 					for i in a.getInputPorts()[1:]:
 						code += ", " + self.getVarName(i)
-
 			code += ')\n'
 
 		if self.getOutputPorts():

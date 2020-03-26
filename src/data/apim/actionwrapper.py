@@ -23,7 +23,6 @@ This module contains the ActionWrapper class.
 
 from typing import List, Dict
 
-
 import data.apim.actionpipeline as ap
 import data.apim.action as act
 
@@ -38,7 +37,7 @@ class ActionWrapper(act.Action):
 	
 	The ActionWrapper can be thought of as a black-box for any other action.
 	"""
-	
+
 	def __init__(self, actionRef: 'act.Action', parent: 'ap.ActionPipeline') -> 'ActionWrapper':
 		"""
 		Constructs a WrapperAction that stores a reference to an action.
@@ -176,7 +175,6 @@ class ActionWrapper(act.Action):
 		"""
 
 		return self._actionRef.getMethodName()
-
 
 	def getMethodCode(self) -> str:
 		"""

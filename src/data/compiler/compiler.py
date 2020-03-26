@@ -73,6 +73,7 @@ class Compiler():
         :return: None
         """
 
+
         with open(self._srcFolder + "application.py", "w+") as f:
             
             # TODO: The Facade Tech watermark thing is a little intense when the user needs
@@ -148,6 +149,7 @@ class Application(BaseApplication):
 \t\treturn self
 
 ''')
+
             aps, cas = self._apim.getActionsByType()
 
             for action in cas:

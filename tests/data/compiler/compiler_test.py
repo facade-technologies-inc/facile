@@ -142,6 +142,7 @@ class TestCompiler(unittest.TestCase):
 		:return: (A flag saying whether the login attempt was successful or not., The number of login attempts it took to succeed (-1 if no success).)
 		:rtype: (bool, int)
 		"""'''
+
 		self.assertTrue(ap.getDocStr().strip() == doc)
 
 	def test_ActionPipelineCodeGeneration(self):
@@ -304,3 +305,4 @@ class TestCompiler(unittest.TestCase):
 
 		self.assertTrue(a1.getMethod().replace(" "*4, "\t").strip() == method1.replace(" "*4, "\t").strip())
 		self.assertTrue(a2.getMethod().replace(" "*4, "\t").strip() == method2.replace(" "*4, "\t").strip())
+

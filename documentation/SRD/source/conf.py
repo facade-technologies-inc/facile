@@ -60,6 +60,7 @@ extensions = [
 	# 'autoapi.extension',
 	'ext_numfig'
 ]
+numfig = True
 
 todo_include_todos = True
 
@@ -133,7 +134,7 @@ latex_documents = [(
 	"False"
 )]
 
-latex_toplevel_sectioning = 'section'
+# latex_toplevel_sectioning = 'section'
 
 latex_elements = {
 	'extraclassoptions': 'openany,oneside'

@@ -175,4 +175,3 @@ class ComponentFinder:
                         continue
 
         raise ComponentNotFoundException("The selected component could not be\nfound in the target GUI.")
-

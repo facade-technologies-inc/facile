@@ -269,8 +269,7 @@ class Action(Entity):
 		"""
 		Must be overwritten in children classes; raises exception here if not.
 		"""
-
-		raise ActionException("getMethodName() must be called from the action type's class.")
+		raise ActionException("getMethodName() must be defined in the action type's class.")
 
 	def getParamStr(self) -> str:
 		"""
@@ -293,15 +292,13 @@ class Action(Entity):
 		"""
 		Must be overwritten in children classes; raises exception here if not.
 		"""
-		
 		raise ActionException("getDocStr() must be called from the action type's class.")
 
 	def getMethodCode(self):
 		"""
 		Must be overwritten in children classes; raises exception here if not.
 		"""
-
-		raise ActionException("getMethodCode() must be called from the action type's class.")
+		raise ActionException("getMethodCode() must be defined in the action type's class.")
 
 	def getMethod(self) -> str:
 		"""

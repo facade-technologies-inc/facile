@@ -137,3 +137,4 @@ class ComponentAction(Action):
 								'contact support for help.")\n'
 
 		return code
+

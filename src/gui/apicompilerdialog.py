@@ -182,6 +182,7 @@ class ApiCompilerDialog(QDialog):
 		if self.ui.checkBoxTokenCloseMatch.isChecked():
 			setcompResOpts.add(MatchOption.CloseToken)
 		if self.ui.checkBoxPywinautoBestMatch.isChecked():
+
 			setcompResOpts.add(MatchOption.PWABestMatch)
 			
 		if len(setcompResOpts) == 0:
