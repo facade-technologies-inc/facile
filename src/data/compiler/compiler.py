@@ -176,7 +176,6 @@ class Application(BaseApplication):
         dir, filename = os.path.split(curPath)
         for path in self._necessaryFiles:
             # Make sure to copy necessary files into baseFiles dir, and remove unnecessary fns and dependencies.
-            print(self._srcFolder)
             copyfile(os.path.join(dir, path), os.path.join(self._srcFolder, path[6:]))
 
     def saveTGUIM(self):
