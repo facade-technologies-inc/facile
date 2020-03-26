@@ -71,25 +71,6 @@ class ApiCompilerDialog(QDialog):
 		
 		self.ui.error_label.setText("")
 
-		def onTokenExactMatchClicked(checked):
-			if not checked:
-				self.ui.checkBoxTokenCloseMatch.setChecked(False)
-				self.ui.checkBoxPywinautoBestMatch.setChecked(False)
-
-		def onTokenCloseMatchClicked(checked):
-			if checked:
-				self.ui.checkBoxTokenExactMatch.setChecked(True)
-			else:
-				self.ui.checkBoxPywinautoBestMatch.setChecked(False)
-
-		def onPywinautoBestMatchClicked(checked):
-			if checked:
-				self.ui.checkBoxTokenCloseMatch.setChecked(True)
-				self.ui.checkBoxTokenExactMatch.setChecked(True)
-
-		self.ui.checkBoxTokenExactMatch.clicked.connect(onTokenExactMatchClicked)
-		self.ui.checkBoxTokenCloseMatch.clicked.connect(onTokenCloseMatchClicked)
-		self.ui.checkBoxPywinautoBestMatch.clicked.connect(onPywinautoBestMatchClicked)
 		self.ui.checkBoxTokenExactMatch.setChecked(True)
 		self.ui.checkBoxTokenCloseMatch.setChecked(True)
 		self.ui.checkBoxPywinautoBestMatch.setChecked(True)
