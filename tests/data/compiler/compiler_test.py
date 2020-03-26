@@ -4,11 +4,18 @@ import os
 
 # These lines allow us to import things as if we were running facile.py
 sys.path.insert(0, os.path.abspath("../../../src/"))
-# sys.path.insert(0, os.path.abspath("./src/gui/rc/"))
+sys.path.insert(0, os.path.abspath("../../../src/gui/rc/"))
 
 import unittest
+import difflib
+from data.apim.actionwrapper import ActionWrapper
 from data.apim.actionpipeline import ActionPipeline
+from data.apim.componentaction import ComponentAction
+from data.apim.actionspecification import ActionSpecification
+from data.project import Project
 import data.apim.port as pt
+from PySide2.QtWidgets import QApplication
+from data.tguim.component import Component
 
 class TestCompiler(unittest.TestCase):
 	
@@ -135,4 +142,167 @@ class TestCompiler(unittest.TestCase):
 		:return: (A flag saying whether the login attempt was successful or not., The number of login attempts it took to succeed (-1 if no success).)
 		:rtype: (bool, int)
 		"""'''
+
 		self.assertTrue(ap.getDocStr().strip() == doc)
+
+	def test_ActionPipelineCodeGeneration(self):
+		"""
+		This function makes sure that the code is generated
+		correctly for any action pipeline.
+		"""
+		app = QApplication([])
+
+		proj = Project('test', 'test project', '', 'uia')
+		tguim = proj.getTargetGUIModel()
+
+		ap = ActionPipeline()  # should have id 0
+		ap2 = ActionPipeline()  # should have id 1
+
+		ap.setName('custom1')
+		ap.setAnnotation('testing the first pipeline')
+
+		p = pt.Port()
+		p.setName("value")
+		p.setDataType(str)
+		p.setAnnotation("Value to be written.")
+		p.setOptional(False)
+		ap.addInputPort(p)
+
+		ap2.setName('custom2')
+		ap2.setAnnotation('testing the second pipeline')
+
+		p1 = pt.Port()
+		p1.setName("value")
+		p1.setDataType(str)
+		p1.setAnnotation("Value to be written.")
+		p1.setOptional(False)
+		ap2.addInputPort(p1)
+
+		comp1 = Component(tguim)  # should have id 2
+		comp2 = Component(tguim)  # should have id 3
+		comp3 = Component(tguim)  # should have id 4
+		comp4 = Component(tguim)  # should have id 5
+
+		spec1 = ActionSpecification.fromFile('../../../database/component_actions/click.action')
+		spec2 = ActionSpecification.fromFile('../../../database/component_actions/write.action')
+		spec3 = ActionSpecification.fromFile('../../../database/component_actions/read.action')
+
+		a1 = ComponentAction(comp1, spec1) #6 and so on
+		a2 = ComponentAction(comp2, spec1)
+		a3 = ComponentAction(comp3, spec2)
+		a4 = ComponentAction(comp4, spec3)
+
+		aw1 = ActionWrapper(a1, ap)
+		aw2 = ActionWrapper(a2, ap)
+		aw3 = ActionWrapper(a3, ap)
+		aw5 = ActionWrapper(ap, ap2)
+		aw4 = ActionWrapper(a4, ap2)
+
+		ap.connect(p, aw3.getInputPorts()[0])
+		ap2.connect(p1, aw5.getInputPorts()[0])
+
+		method1 = '''\
+	def custom1(self, value: str) -> None:
+		"""
+		testing the first pipeline
+
+		:param value: Value to be written.
+		:type value: str
+		:return: None
+		:rtype: NoneType
+		"""
+
+		self._6_click()
+		self._7_click()
+		self._8_write(value)
+
+'''
+
+		method2 = '''\
+	def custom2(self, value: str) -> None:
+		"""
+		testing the second pipeline
+
+		:param value: Value to be written.
+		:type value: str
+		:return: None
+		:rtype: NoneType
+		"""
+
+		self.custom1(value)
+		a = self._9_read()
+
+'''
+
+		print([li for li in difflib.ndiff(ap.getMethod(), method1) if li[0] != ' '])
+		print(ap.getMethod())
+		print([li for li in difflib.ndiff(ap2.getMethod(), method2) if li[0] != ' '])
+		print(ap2.getMethod())
+
+		self.assertTrue(ap.getMethod() == method1)
+		self.assertTrue(ap2.getMethod() == method2)
+
+	def test_ComponentActionCodeGeneration(self):
+		"""
+		This function makes sure that the method signatures are generated
+		correctly for any action with an arbitrary number of ports.
+		"""
+
+		app = QApplication([])
+
+		proj = Project('test', 'test project', '', 'uia')
+		tguim = proj.getTargetGUIModel()
+
+		comp1 = Component(tguim)  # should have id 0
+		comp2 = Component(tguim)  # should have id 1
+
+		spec1 = ActionSpecification.fromFile('../../../database/component_actions/click.action')
+		spec2 = ActionSpecification.fromFile('../../../database/component_actions/write.action')
+
+		a1 = ComponentAction(comp1, spec1)
+		a2 = ComponentAction(comp2, spec2)
+
+		method1 =  '''\
+	def _4_click(self) -> None:
+		"""
+		Left-click a component.
+
+		:return: None
+		:rtype: NoneType
+		"""
+
+		comp = self.findComponent(4)
+
+		try:
+			comp.set_focus()
+			comp.click()
+		except:
+			print("The action 'click' was not executed correctly on component with ID 4. Please contact support to fix this issue.")
+
+'''
+		method2 = '''\
+	def _5_write(self, value: str) -> None:
+		"""
+		Write to a component.
+
+		:param value: Value to be written.
+		:type value: str
+		:return: None
+		:rtype: NoneType
+		"""
+
+		comp = self.findComponent(5)
+
+		try:
+			comp.set_edit_text(value)
+		except:
+			print("The action 'write' was not executed correctly on component with ID 5. Please contact support to fix this issue.")
+
+'''
+		print([li for li in difflib.ndiff(a1.getMethod(), method1) if li[0] != ' '])
+
+		print([li for li in difflib.ndiff(a2.getMethod(), method2) if li[0] != ' '])
+
+		self.assertTrue(a1.getMethod().replace(" "*4, "\t").strip() == method1.replace(" "*4, "\t").strip())
+		self.assertTrue(a2.getMethod().replace(" "*4, "\t").strip() == method2.replace(" "*4, "\t").strip())
+

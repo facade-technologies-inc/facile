@@ -21,6 +21,7 @@
 This module contains the Project class.
 """
 
+import traceback
 import json
 import os
 from subprocess import PIPE
@@ -392,7 +393,7 @@ class Project:
 				tguim = TargetGuiModel.fromDict(d)
 		except:
 			print("Couldn't load from {}".format(loadedProject.getTargetGUIModelFile()))
-		# traceback.print_exc()
+			# traceback.print_exc()
 		else:
 			loadedProject._targetGUIModel = tguim
 		

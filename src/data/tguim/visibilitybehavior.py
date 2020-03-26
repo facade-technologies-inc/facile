@@ -26,7 +26,6 @@ from enum import Enum, auto
 from data.entity import Entity
 from data.properties import Properties
 from data.tguim.condition import Condition
-from graphics.tguim.visibilitybehaviorgraphics import VBGraphics
 
 
 class VisibilityBehavior(Entity):
@@ -67,7 +66,6 @@ class VisibilityBehavior(Entity):
 		# TODO: Add a "trigger action" data member?
 		
 		if srcComp and destComp:
-			self.createGraphics()
 			
 			predefined = ["Base", "Visibility Behavior"]
 			custom = {}
@@ -80,15 +78,8 @@ class VisibilityBehavior(Entity):
 			props.getProperty("Destination ID")[1].setValue(self._destComponent.getId())
 			
 			self.setProperties(props)
-	
-	def createGraphics(self) -> None:
-		"""
-		Creates the graphics for the visibility component.
-		
-		:return: None
-		:rtype: NoneType
-		"""
-		self._graphicsItem = VBGraphics(self, self._tguim.getScene())
+
+		self.triggerUpdate()
 	
 	def getDestComponent(self) -> 'Component':
 		"""
@@ -128,15 +119,6 @@ class VisibilityBehavior(Entity):
 		:rtype: ReactionType
 		"""
 		return self.getProperties().getProperty("Reaction Type")[1].getValue()
-	
-	def getGraphicsItem(self):  # TODO: type hint the return value. Update doc string.
-		"""
-		Gets the graphics item associated with the visibility behavior.
-
-		:return: return the visibilitybehavior graphics item
-		:rtype: VBGraphics
-		"""
-		return self._graphicsItem
 	
 	def setDestComponent(self, destComp: 'Component') -> None:
 		"""

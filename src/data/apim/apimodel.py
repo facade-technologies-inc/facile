@@ -29,7 +29,6 @@ from PySide2.QtCore import QObject, Signal
 from data.apim.actionpipeline import ActionPipeline
 from data.apim.componentaction import ComponentAction
 from data.apim.actionwrapper import ActionWrapper
-from gui.blackboxeditordialog import BlackBoxEditorDialog
 from data.apim.actionspecification import ActionSpecification
 
 class ApiModel(QObject):
@@ -67,7 +66,9 @@ class ApiModel(QObject):
 		:return: None
 		:rtype: NoneType
 		"""
-		specDir = os.path.abspath("../database/component_actions")
+		curPath = os.path.abspath(__file__)
+		path, filename = os.path.split(curPath)
+		specDir = os.path.abspath(os.path.join(path,"../../../database/component_actions"))
 		for file in os.listdir(specDir):
 			if file.endswith(".action"):
 				filepath = os.path.join(specDir, file)

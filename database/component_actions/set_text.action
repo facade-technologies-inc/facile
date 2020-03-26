@@ -1,5 +1,5 @@
-name = "Write"
-description = "Writes the contents of 'value' to component {id}. Will be added to any existing text."
+name = "Set Text"
+description = "Writes the contents of 'value' to component {id}, overwriting any existing text."
 targets = ['Edit']
 inputs = [
 	{
@@ -11,5 +11,5 @@ inputs = [
 ]
 outputs = []
 code = """
-comp.type_keys(value, with_spaces=True)
+comp.set_edit_text(value)
 """

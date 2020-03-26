@@ -28,7 +28,7 @@ from PySide2.QtCore import QElapsedTimer, QTimer, QThread, Signal
 from tguiil.componentfinder import ComponentFinder, ComponentNotFoundException
 from tguiil.application import Application
 from tguiil.matchoption import MatchOption
-from tguiil.tokens import Token
+import data.statemachine as sm
 
 
 class Blinker(QThread):
@@ -77,7 +77,7 @@ class Blinker(QThread):
 		self._process = psutil.Process(self._pid)
 		app = Application(backend=self._backend)
 		app.setProcess(self._process)
-		
+
 		options = {MatchOption.ExactToken, MatchOption.CloseToken, MatchOption.PWABestMatch}
 		finder = ComponentFinder(app, options)
 		

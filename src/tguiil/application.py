@@ -22,28 +22,32 @@ This file contains the Application class - an alternative to pywinauto's Applica
 pywinauto's Desktop class.
 """
 
-import time
+import time as t
 from datetime import datetime
 
 import psutil
 import pywinauto
 
+class WaitException(Exception):
+	def __init__(self, msg: str):
+		Exception.__init__(self, msg)
 
 class Application(pywinauto.Desktop):
 	"""
 	This class is an alternative to pywinauto's Application class that will detect windows in all of an application's
 	processes.
-	
-	To use:
-		process = psutil.Popen(["path/to/target/application.exe", ...], stdout=PIPE)
-		app = Application(backend="uia")
-		app.setProcess(process)
-		appWindows = app.windows()
 	"""
 	
 	# TODO: If the original process was just used to create other processes and then it disappears, the child processes
-	# are called zombies. currently, this class does not work with applications that fit this description. This class
-	# could be made more robust.
+	#  are called zombies. currently, this class does not work with applications that fit this description. This class
+	#  could be made more robust.
+	
+	ignoreTypes = set()
+	ignoreTypes.add("SysShadow")
+	ignoreTypes.add("ToolTips")
+	ignoreTypes.add("MSCTFIME UI")
+	ignoreTypes.add("IME")
+	ignoreTypes.add("Pane")
 	
 	def __init__(self, backend: str = "uia") -> None:
 		"""
@@ -115,7 +119,7 @@ class Application(pywinauto.Desktop):
 		
 		while True:
 			try:
-				wins = pywinauto.Desktop.windows(self)
+				wins = pywinauto.Desktop.windows(self, top_level_only=True)
 			except pywinauto.controls.hwndwrapper.InvalidWindowHandle:
 				continue
 			else:
@@ -128,6 +132,51 @@ class Application(pywinauto.Desktop):
 				appWins.append(win)
 		return appWins
 	
+	def getActiveWindow(self) -> pywinauto.application.WindowSpecification:
+		"""
+		Returns the current active window
+		:return:
+		"""
+		
+		while True:
+			try:
+				return pywinauto.Desktop.windows(self, active_only = True)[0]
+			except pywinauto.controls.hwndwrapper.InvalidWindowHandle:
+				continue
+	
+	def wait(self, state: str, timeout: float = 120):
+		"""
+        Pauses until state is reached for all visible windows, timing out in timeout seconds. Useful when waiting
+        for target app to complete execution of a task, or when starting up.
+        Wraps around pywinauto's wait function.
+
+        :param state: state to wait for ('visible', 'ready', 'exists', 'enabled', 'active')
+        :type state: str
+        :param timeout: Maximum number of seconds to wait for state to be reached. Defaults to a minute, should be longer for apps with more windows.
+        :type timeout: float
+        """
+		
+		# ---- NOTE: Letting pywinauto handle the errors if state isn't a valid state ----
+		
+		pids = self.getPIDs()
+		procSecs = timeout / len(pids)
+		success = False
+		
+		# TODO: Change this to use desktop stuff, for the moment this method is the only one I could find that works.
+		#  Info: the only types that '.wait()' works on is windowspecifications, and i couldnt find any desktop methods
+		#  that return them. Probably because theyre from pywinauto.application.windowspecification, and might only
+		#  be 'gettable' from the application class.
+		
+		for pid in pids:
+			try:
+				pywinauto.Application().connect(process=pid).top_window().wait(state, timeout=procSecs)
+				success = True  # TODO: Counts as success if one of them works. Reevaluate if this is good or not
+			except:
+				continue
+		
+		if not success:
+			raise WaitException('Could not connect to process. Please try again')
+	
 	def getStartTime(self) -> int:
 		"""
 		Gets the time that the Application instance was created as an int.
@@ -136,6 +185,28 @@ class Application(pywinauto.Desktop):
 		:rtype: int
 		"""
 		return self._startTime
+	
+	def start(self, path: str):
+		"""
+		Starts the application with filepath path, connects to it, then waits for it to be ready.
+		
+		:param path: filepath to exe
+		:type path: str
+		:return: None
+		"""
+		
+		process = psutil.Popen([path])
+		self.setProcess(process)
+		self.wait('ready')
+		
+	def kill(self):
+		"""
+		Stops the target application
+		
+		:return: None
+		"""
+		
+		self._process.kill()
 
 
 if __name__ == "__main__":
