@@ -24,11 +24,11 @@ that will be created in the generated API.
 
 from typing import List
 
-from data.apim.action import Action, ActionException
-from data.apim.actionwrapper import ActionWrapper
+import data.apim.actionwrapper as aw
 import data.apim.port as pt
 from data.apim.wireset import WireSet
 from data.apim.wire import WireException
+from data.apim.action import Action, ActionException
 
 class ActionPipeline(Action):
 	
@@ -61,7 +61,7 @@ class ActionPipeline(Action):
 		:rtype: NoneType
 		"""
 		
-		if type(action) != ActionWrapper:
+		if type(action) != aw.ActionWrapper:
 			raise ActionException("The Action being added to the ActionPipeline must be a ActionWrapper")
 		
 		if action.getParent() is not self:
@@ -304,7 +304,49 @@ class ActionPipeline(Action):
 		:rtype: str
 		"""
 
-		return self.getName()
+		return self.getName().replace(' ', '_')
+	
+	def getDocStr(self) -> str:
+		"""
+		Generates the docstring for the action. Adds the necessary spacing after docstring.
+		If the function has no inputs or outputs, the docstring states this.
+
+		:return: doc string describing action, inputs, and outputs
+		:rtype: str
+		"""
+		
+		out = '\t\t"""\n'
+		noDoc = True
+		
+		if self.getAnnotation():
+			noDoc = False
+			out += '\t\t' + self.getAnnotation() + '\n\n'
+		
+		if self._inputs or self._outputs:
+			noDoc = False
+			
+			for p in self._inputs:
+				out += '\t\t:param ' + p.getName() + ': ' + p.getAnnotation() + '\n'
+				out += '\t\t:type ' + p.getName() + ': ' + p.getDataType().__name__ + '\n'
+			
+			# we can only have one return tag, so we just combine everything.
+			if self._outputs:
+				annotations = [p.getAnnotation() for p in self._outputs]
+				types = [p.getDataType().__name__ for p in self._outputs]
+				out += '\t\t:return: ({})\n'.format(", ".join(annotations))
+				out += '\t\t:rtype: ({})\n'.format(", ".join(types))
+			else:
+				out += '\t\t:return: None\n'
+				out += '\t\t:rtype: NoneType\n'
+		else:
+			out += '\t\t:return: None\n'
+			out += '\t\t:rtype: NoneType\n'
+		
+		if noDoc:
+			return '\t\t"""\n\t\tThis action has no annotations, inputs, or outputs.\n\t\t"""\n'
+		else:
+			out += '\t\t"""\n\n'
+			return out
 
 	def getMethodCode(self) -> str:
 		"""
@@ -328,7 +370,7 @@ class ActionPipeline(Action):
 					for o in a.getOutputPorts()[1:]:
 						code += ", " + self.getVarName(o)
 				code += ' = '
-			code += a.getMethodName() + '('
+			code += 'self.' + a.getMethodName() + '('
 
 			if a.getInputPorts():
 				i = a.getInputPorts()[0]
@@ -336,17 +378,17 @@ class ActionPipeline(Action):
 				if len(a.getInputPorts()) > 1:  # if multiple inputs
 					for i in a.getInputPorts()[1:]:
 						code += ", " + self.getVarName(i)
-			code += ')'
-		
+			code += ')\n'
+
 		if self.getOutputPorts():
-			code += '\n\n\t\treturn '
+			code += '\n\t\treturn '
 			o = self.getOutputPorts()[0]
 			code += self.getVarName(o)  # only one output
 			if len(self.getOutputPorts()) > 1:  # if several outputs
 				for o in self.getOutputPorts()[1:]:
 					code += ", " + self.getVarName(o)
+			code += '\n'
 
-		code += '\n\n'
 		return code
 
 	def getVarName(self, p: 'Port') -> str:
@@ -414,5 +456,4 @@ class ActionPipeline(Action):
 		:return: incremented char
 		:rtype: str
 		"""
-
 		return chr(ord(var) + 1) if var != 'z' else 'a'

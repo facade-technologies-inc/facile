@@ -290,6 +290,7 @@ class Port(Entity):
         
         newPort = Port(self._dataType, self._optional)
         newPort.setName(self.getName())
+        newPort.setAnnotation(self.getAnnotation())
         if self.isOptional():
             newPort.setDefaultValue(self._default)
         return newPort

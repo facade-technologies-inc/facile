@@ -24,7 +24,6 @@ This module contains the Component class.
 from data.entity import Entity
 from data.properties import Properties
 from data.tguim.visibilitybehavior import VisibilityBehavior
-from graphics.tguim.componentgraphics import ComponentGraphics
 from tguiil.supertokens import SuperToken
 
 
@@ -34,8 +33,7 @@ class Component(Entity):
 	Components are organized in a tree in the TargetGuiModel class.
 	"""
 	
-	def __init__(self, tguim: 'TargetGuiModel', parent: 'Component' = None,
-	             superToken: 'SuperToken' = None, createGraphics: 'ComponentGraphics' = True):
+	def __init__(self, tguim: 'TargetGuiModel', parent: 'Component' = None, superToken: 'SuperToken' = None):
 		"""
 		Constructs a Component object.
 
@@ -45,8 +43,6 @@ class Component(Entity):
 		:type parent: Component
 		:param superToken: The SuperToken associated with the new Component
 		:type superToken: SuperToken
-		:param createGraphics: if True, graphics will be created. If not, they won't
-		:type createGraphics: bool
 		"""
 		
 		super().__init__()
@@ -56,9 +52,6 @@ class Component(Entity):
 		self._srcVisibilityBehaviors = []
 		self._destVisibilityBehaviors = []
 		self._model = tguim
-		
-		if createGraphics:
-			self.createGraphics()
 		
 		if parent is not None:
 			parent.addChild(self)
@@ -88,19 +81,8 @@ class Component(Entity):
 			#props.getProperty("Has Moved")[1].setValue(self._graphicsItem.getNumMoves() != 0)
 			
 			self.setProperties(props)
-	
-	def createGraphics(self) -> None:
-		"""
-		Create the graphics for the component
-		
-		:return: None
-		:rtype: NoneType
-		"""
-		if self._superToken is None:
-			self._graphicsItem = ComponentGraphics(self, (0, 0, 0, 0), self.getParentGraphicsItem())
-		else:
-			self._graphicsItem = ComponentGraphics(self, self._superToken.posRelativeToParent,
-			                                       self.getParentGraphicsItem())
+
+		self.triggerUpdate()
 	
 	def getSuperToken(self) -> 'SuperToken':
 		"""
@@ -179,18 +161,6 @@ class Component(Entity):
 		"""
 		return self._parent
 	
-	def getParentGraphicsItem(self):
-		"""
-		Gets the parent component's graphics item if it exists.
-		
-		:return: The parent component's graphics item or None
-		:rtype: ComponentGraphics or None
-		"""
-		if self._parent is None:
-			return None
-		else:
-			return self._parent.getGraphicsItem()
-	
 	def getPathFromRoot(self) -> list:
 		"""
 		Gets the path in the tree to the component from the root.
@@ -206,15 +176,6 @@ class Component(Entity):
 			path.append((possibleRoot, possibleRoot.getPositionInSiblings()))
 			possibleRoot = possibleRoot.getParent()
 		return path
-	
-	def getGraphicsItem(self):
-		"""
-		Gets the associated graphics item used to display the component.
-
-		:return: The graphics item used to display the component.
-		:rtype: ComponentGraphics
-		"""
-		return self._graphicsItem
 	
 	def getNthChild(self, n: int) -> 'Component':
 		"""
@@ -289,21 +250,6 @@ class Component(Entity):
 		"""
 		
 		self._children.insert(pos, child)
-	
-	# TODO: Finish redefining this function. Need graphics classes.
-	def remove(self):
-		# Check to see if the component is the root. Don't delete the root.
-		if self._parent is not None:
-			scene = self._graphicsItem.scene()
-			siblings = self.getSiblings()
-			oldParent = self._parent
-			self._parent = None
-			siblings.remove(self)  # Removing self from parent's children list.
-			
-			scene.removeItem(self._graphicsItem)
-			
-			if oldParent:
-				oldParent.getGraphicsItem().triggerSceneUpdate()
 	
 	def addDestVisibilityBehavior(self, newVisBehavior: VisibilityBehavior) -> None:
 		"""
@@ -424,7 +370,7 @@ class Component(Entity):
 			return None
 		
 		superToken = SuperToken.fromDict(d['superToken'])
-		comp = Component(tguim, superToken=superToken, createGraphics=False)
+		comp = Component(tguim, superToken=superToken)
 		# comp._children = d['children'] # need to add children one at a time since graphics are
 		# created later
 		comp._id = d["id"]

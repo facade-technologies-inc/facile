@@ -23,8 +23,8 @@ component from the TGUIM.
 """
 
 from data.apim.action import Action
-from data.apim.port import Port
 from data.apim.actionspecification import ActionSpecification
+import data.apim.port as pt
 
 class ComponentAction(Action):
 	
@@ -42,34 +42,79 @@ class ComponentAction(Action):
 		self._spec = actionSpec
 		
 		for input in actionSpec.inputs:
-			p = Port.copy(input)
+			p = pt.Port.copy(input)
 			self.addInputPort(p)
 			
 		for output in actionSpec.outputs:
-			p = Port.copy(output)
+			p = pt.Port.copy(output)
 			self.addOutputPort(p)
 			
 		self.setName(actionSpec.name)
+		self.setAnnotation(self._spec.description)
 
 	def getTargetComponent(self) -> 'Component':
 		"""
-		Returns the target componemt of the action.
+		Returns the target component of the action.
 
 		:return: Target component
 		:rtype: Component
 		"""
 
 		return self._target
-
-	def getActionName(self) -> str:
+	
+	def getDocStr(self) -> str:
 		"""
-		Gets the name of the action. Only for use with creating method name in action wrapper. *NOT UNIQUE*
+		Generates the docstring for the action. Adds the necessary spacing after docstring.
+		If the function has no inputs or outputs, the docstring states this.
 
-		:return: Action name
+		:return: doc string describing action, inputs, and outputs
+		:rtype: str
+		"""
+		
+		out = '\t\t"""\n'
+		noDoc = True
+		
+		if self.getAnnotation():
+			noDoc = False
+			out += '\t\t' + self.getAnnotation().replace('{id}', str(self._target.getId())) + '\n\n'
+		
+		if self._inputs or self._outputs:
+			noDoc = False
+			
+			for p in self._inputs:
+				out += '\t\t:param ' + p.getName() + ': ' + p.getAnnotation() + '\n'
+				out += '\t\t:type ' + p.getName() + ': ' + p.getDataType().__name__ + '\n'
+			
+			# we can only have one return tag, so we just combine everything.
+			if self._outputs:
+				annotations = [p.getAnnotation() for p in self._outputs]
+				types = [p.getDataType().__name__ for p in self._outputs]
+				out += '\t\t:return: ({})\n'.format(", ".join(annotations))
+				out += '\t\t:rtype: ({})\n'.format(", ".join(types))
+			else:
+				out += '\t\t:return: None\n'
+				out += '\t\t:rtype: NoneType\n'
+		else:
+			out += '\t\t:return: None\n'
+			out += '\t\t:rtype: NoneType\n'
+		
+		if noDoc:
+			return '\t\t"""\n\t\tThis action has no annotations, inputs, or outputs.\n\t\t"""\n'
+		else:
+			out += '\t\t"""\n\n'
+			return out
+
+	def getMethodName(self) -> str:
+		"""
+		Gets the name of the action. *UNIQUE TO COMPONENT STORED*
+
+		:return: Method name
 		:rtype: str
 		"""
 
-		return self.getName()
+		if self._target is None:
+			return '_' + self.getName().replace(' ', '_')  # TODO: We have to make sure that these actions have unique names
+		return '_' + str(self._target.getId()) + '_' + self.getName().replace(' ', '_')
 
 	def getMethodCode(self) -> str:
 		"""
@@ -79,7 +124,17 @@ class ComponentAction(Action):
 		:rtype: str
 		"""
 
-		return self._spec.code
-	
-	# TODO: Add more methods once we've clearly defined what we're doing with this class.
-		
+		code = '\t\tcomp = self.findComponent(' + str(self._target.getId()) + ')\n'
+		code += '\n\t\ttry:'
+		code += self._spec.code.replace('\n', '\n\t\t\t')
+
+		if self._target is None:
+			code = code[:-1] + 'except Exception as e:\n\t\t\tprint(e)\n\t\t\traise ActionException("The action \'' + self.getName() + '\' was not executed ' \
+								'correctly. Please contact support for help.")\n'
+		else:
+			code = code[:-1] + 'except Exception as e:\n\t\t\tprint(e)\n\t\t\traise ActionException("The action \'' + self.getName() + '\' was not executed ' \
+							   'correctly on component with ID ' + str(self._target.getId()) + '. Please ' \
+								'contact support for help.")\n'
+
+		return code
+

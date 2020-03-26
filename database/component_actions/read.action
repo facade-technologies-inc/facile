@@ -1,13 +1,14 @@
-name = "read"
-description = "Read from a component."
-targets = {'Button', 'Edit', 'Static'}
+name = "Read Text"
+description = "Reads text from component {id}."
+targets = {'Edit', 'Static'}
 inputs = []
 outputs = [
 	{
 		"name": "value",
+		"description": "Value obtained from reading component text.",
 		"type": str,
 	}
 ]
 code = """
-return cw.read()
+return comp.get_value()
 """
