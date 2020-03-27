@@ -23,7 +23,7 @@ This module contains the VisibilityBehaviorMenu class
 
 from PySide2.QtWidgets import QMenu
 
-class VisibilityBehaviorMenu:
+class VisibilityBehaviorMenu(QMenu):
     def __init__(self):
         """
         This class is the menu that shows when a visibility behavior is right clicked in the TGUIM

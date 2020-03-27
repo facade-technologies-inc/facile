@@ -22,10 +22,12 @@ This module contains the VBGraphics class.
 """
 
 from PySide2.QtCore import QRectF
-from PySide2.QtGui import QPainterPath, QPainter, QPen, Qt, QColor, QBrush, QPainterPathStroker
+from PySide2.QtGui import QPainterPath, QPainter, QPen, Qt, QColor, QBrush, QPainterPathStroker, QContextMenuEvent, QMouseEvent
 from PySide2.QtWidgets import QGraphicsItem, QAbstractGraphicsShapeItem
 
 import data.statemachine as sm
+from qt_models.visibilitybehaviormenu import VisibilityBehaviorMenu
+from gui.settriggeractiondialog import SetTriggerActionDialog
 
 
 class VBGraphics(QAbstractGraphicsShapeItem):
@@ -51,7 +53,18 @@ class VBGraphics(QAbstractGraphicsShapeItem):
 		self._destComponentCenterPoint = self.scene().getGraphics(self._dataVB.getDestComponent()).boundingRect().center()
 		self._boundingRect = None
 		self._x1, self._x2, self._y1, self._y2 = 0, 0, 0, 0
-		
+
+		def onRemove():
+			sm.StateMachine.instance._project.getTargetGUIModel().removeVisibilityBehavior(self._dataVB)
+
+		def onSetTrigger():
+			dlg = SetTriggerActionDialog(self._dataVB)
+			dlg.exec_()
+
+		self.menu = VisibilityBehaviorMenu()
+		self.menu.onRemove(onRemove)
+		self.menu.onSetTrigger(onSetTrigger)
+
 	
 	def boundingRect(self):
 		"""
@@ -293,7 +306,7 @@ class VBGraphics(QAbstractGraphicsShapeItem):
 
 		return stroker.createStroke(path).simplified()
 	
-	def mousePressEvent(self, event):
+	def mousePressEvent(self, event: QMouseEvent):
 		"""
 		This event handler is implemented to receive mouse press events for this item.
 
@@ -304,3 +317,15 @@ class VBGraphics(QAbstractGraphicsShapeItem):
 		"""
 		self.setSelected(True)
 		self.scene().emitItemSelected(self._dataVB.getId())
+
+	def contextMenuEvent(self, event: QContextMenuEvent) -> None:
+		"""
+		Opens a context menu (right click menu) for the component.
+
+		:param event: The event that was generated when the user right-clicked on this item.
+		:type event: QGraphicsSceneContextMenuEvent
+		:return: None
+		:rtype: NoneType
+		"""
+
+		self.menu.exec_(event.screenPos())

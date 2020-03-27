@@ -477,7 +477,9 @@ class ProjectExplorerModel(QAbstractItemModel):
 			if col == 0:
 				return data.getProperties().getProperty("Name")[1].getValue()
 			elif col == 1:
-				return data.getProperties().getProperty("Reaction Type")[1].getValue().name
+				description = "{} on {}".format(data.getProperties().getProperty("Reaction Type")[1].getValue().name,
+												data.getProperties().getProperty("Trigger Action")[1].getValue())
+				return description
 			else:
 				return None
 		
