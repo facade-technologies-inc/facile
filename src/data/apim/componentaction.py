@@ -54,13 +54,55 @@ class ComponentAction(Action):
 
 	def getTargetComponent(self) -> 'Component':
 		"""
-		Returns the target componemt of the action.
+		Returns the target component of the action.
 
 		:return: Target component
 		:rtype: Component
 		"""
 
 		return self._target
+	
+	def getDocStr(self) -> str:
+		"""
+		Generates the docstring for the action. Adds the necessary spacing after docstring.
+		If the function has no inputs or outputs, the docstring states this.
+
+		:return: doc string describing action, inputs, and outputs
+		:rtype: str
+		"""
+		
+		out = '\t\t"""\n'
+		noDoc = True
+		
+		if self.getAnnotation():
+			noDoc = False
+			out += '\t\t' + self.getAnnotation().replace('{id}', str(self._target.getId())) + '\n\n'
+		
+		if self._inputs or self._outputs:
+			noDoc = False
+			
+			for p in self._inputs:
+				out += '\t\t:param ' + p.getName() + ': ' + p.getAnnotation() + '\n'
+				out += '\t\t:type ' + p.getName() + ': ' + p.getDataType().__name__ + '\n'
+			
+			# we can only have one return tag, so we just combine everything.
+			if self._outputs:
+				annotations = [p.getAnnotation() for p in self._outputs]
+				types = [p.getDataType().__name__ for p in self._outputs]
+				out += '\t\t:return: ({})\n'.format(", ".join(annotations))
+				out += '\t\t:rtype: ({})\n'.format(", ".join(types))
+			else:
+				out += '\t\t:return: None\n'
+				out += '\t\t:rtype: NoneType\n'
+		else:
+			out += '\t\t:return: None\n'
+			out += '\t\t:rtype: NoneType\n'
+		
+		if noDoc:
+			return '\t\t"""\n\t\tThis action has no annotations, inputs, or outputs.\n\t\t"""\n'
+		else:
+			out += '\t\t"""\n\n'
+			return out
 
 	def getMethodName(self) -> str:
 		"""
@@ -71,8 +113,8 @@ class ComponentAction(Action):
 		"""
 
 		if self._target is None:
-			return '_' + self.getName()  # TODO: We have to make sure that these actions have unique names
-		return '_' + str(self._target.getId()) + '_' + self.getName()
+			return '_' + self.getName().replace(' ', '_')  # TODO: We have to make sure that these actions have unique names
+		return '_' + str(self._target.getId()) + '_' + self.getName().replace(' ', '_')
 
 	def getMethodCode(self) -> str:
 		"""
@@ -87,10 +129,10 @@ class ComponentAction(Action):
 		code += self._spec.code.replace('\n', '\n\t\t\t')
 
 		if self._target is None:
-			code = code[:-1] + 'except Exception as e:\n\t\t\tprint(e.message)\n\t\t\traise ActionException("The action \'' + self.getName() + '\' was not executed ' \
+			code = code[:-1] + 'except Exception as e:\n\t\t\tprint(e)\n\t\t\traise ActionException("The action \'' + self.getName() + '\' was not executed ' \
 								'correctly. Please contact support for help.")\n'
 		else:
-			code = code[:-1] + 'except Exception as e:\n\t\t\tprint(e.message)\n\t\t\traise ActionException("The action \'' + self.getName() + '\' was not executed ' \
+			code = code[:-1] + 'except Exception as e:\n\t\t\tprint(e)\n\t\t\traise ActionException("The action \'' + self.getName() + '\' was not executed ' \
 							   'correctly on component with ID ' + str(self._target.getId()) + '. Please ' \
 								'contact support for help.")\n'
 

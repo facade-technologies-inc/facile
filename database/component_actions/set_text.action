@@ -1,11 +1,11 @@
 name = "Set Text"
-description = "Write to a component, overwriting any existing text."
+description = "Writes the contents of 'value' to component {id}, overwriting any existing text."
 targets = ['Edit']
 inputs = [
 	{
 		"name": "value",
 		"type": str,
-		"description": "Value to be written.",
+		"description": "Text to be written.",
 		"optional": False
 	}
 ]

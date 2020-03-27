@@ -23,6 +23,7 @@ This file contains the token class that weighs the importance of each attribute 
 from difflib import SequenceMatcher
 from enum import Enum, unique
 from datetime import datetime
+from functools import cmp_to_key
 
 import numpy as np
 from PIL import Image

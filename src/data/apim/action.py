@@ -269,7 +269,10 @@ class Action(Entity):
 		"""
 		Must be overwritten in children classes; raises exception here if not.
 		"""
+<<<<<<< HEAD
 
+=======
+>>>>>>> develop
 		raise ActionException("getMethodName() must be defined in the action type's class.")
 
 	def getParamStr(self) -> str:
@@ -291,50 +294,14 @@ class Action(Entity):
 
 	def getDocStr(self) -> str:
 		"""
-		Generates the docstring for the action. Adds the necessary spacing after docstring.
-		If the function has no inputs or outputs, the docstring states this.
-
-		:return: doc string describing action, inputs, and outputs
-		:rtype: str
+		Must be overwritten in children classes; raises exception here if not.
 		"""
-		out = '\t\t"""\n'
-		noDoc = True
-
-		if self.getAnnotation():
-			noDoc = False
-			out += '\t\t' + self.getAnnotation() + '\n\n'
-
-		if self._inputs or self._outputs:
-			noDoc = False
-
-			for p in self._inputs:
-				out += '\t\t:param ' + p.getName() + ': ' + p.getAnnotation() + '\n'
-				out += '\t\t:type ' + p.getName() + ': ' + p.getDataType().__name__ + '\n'
-			
-			# we can only have one return tag, so we just combine everything.
-			if self._outputs:
-				annotations = [p.getAnnotation() for p in self._outputs]
-				types = [p.getDataType().__name__ for p in self._outputs]
-				out += '\t\t:return: ({})\n'.format(", ".join(annotations))
-				out += '\t\t:rtype: ({})\n'.format(", ".join(types))
-			else:
-				out += '\t\t:return: None\n'
-				out += '\t\t:rtype: NoneType\n'
-		else:
-			out += '\t\t:return: None\n'
-			out += '\t\t:rtype: NoneType\n'
-		
-		if noDoc:
-			return '\t\t"""\n\t\tThis action has no annotations, inputs, or outputs.\n\t\t"""\n'
-		else:
-			out += '\t\t"""\n\n'
-			return out
+		raise ActionException("getDocStr() must be called from the action type's class.")
 
 	def getMethodCode(self):
 		"""
 		Must be overwritten in children classes; raises exception here if not.
 		"""
-
 		raise ActionException("getMethodCode() must be defined in the action type's class.")
 
 	def getMethod(self) -> str:

@@ -70,6 +70,11 @@ class ApiCompilerDialog(QDialog):
 		self.ui.dialogButtons.rejected.connect(self.reject)
 		
 		self.ui.error_label.setText("")
+
+		self.ui.checkBoxTokenExactMatch.setChecked(True)
+		self.ui.checkBoxTokenCloseMatch.setChecked(True)
+		self.ui.checkBoxPywinautoBestMatch.setChecked(True)
+
 	
 	# TODO: make it un-selectable before a project is open
 	
@@ -171,12 +176,13 @@ class ApiCompilerDialog(QDialog):
 			
 		# Construct a set for component resolution type
 		setcompResOpts = set()
-		# TODO: change option1 and option2 here, CompilationProfile, ui
-		if self.ui.checkBox1.isChecked():
+
+		if self.ui.checkBoxTokenExactMatch.isChecked():
 			setcompResOpts.add(MatchOption.ExactToken)
-		if self.ui.checkBox2.isChecked():
+		if self.ui.checkBoxTokenCloseMatch.isChecked():
 			setcompResOpts.add(MatchOption.CloseToken)
-		if self.ui.checkBoxPyw.isChecked():
+		if self.ui.checkBoxPywinautoBestMatch.isChecked():
+
 			setcompResOpts.add(MatchOption.PWABestMatch)
 			
 		if len(setcompResOpts) == 0:
@@ -198,7 +204,6 @@ class ApiCompilerDialog(QDialog):
 			return
 
 		# TODO: figure out why FindExecutable: There is no association for the file get printed
-		print("apicompilerdialog accepted")
 		self.setApiCompiler.emit(theCompilationProfile)
 		c = Compiler(theCompilationProfile).compileAPI()
 		return QDialog.accept(self)
