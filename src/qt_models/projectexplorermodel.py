@@ -354,8 +354,11 @@ class ProjectExplorerModel(QAbstractItemModel):
 			elif isinstance(innerData, Component):
 				visBehaviors = list(
 					self._project.getTargetGUIModel().getVisibilityBehaviors().values())
-				visBehaviorIdx = visBehaviors.index(parentData)
-				return self.registerAndCreateIndex(visBehaviorIdx, 0, parentData)
+				try:
+					visBehaviorIdx = visBehaviors.index(parentData)
+					return self.registerAndCreateIndex(visBehaviorIdx, 0, parentData)
+				except:
+					return QModelIndex()
 			
 			else:
 				raise ProjectExplorerModel.UnsupportedTypeException(

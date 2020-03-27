@@ -31,6 +31,7 @@ from gui.settriggeractiondialog import SetTriggerActionDialog
 
 
 class VBGraphics(QAbstractGraphicsShapeItem):
+
 	def __init__(self, dataVisibilityBehavior: 'VisibilityBehavior', parent: 'TGUIMScene'):
 		"""
 		Construct the VBGraphics class.
@@ -55,17 +56,19 @@ class VBGraphics(QAbstractGraphicsShapeItem):
 		self._x1, self._x2, self._y1, self._y2 = 0, 0, 0, 0
 
 		def onRemove():
-			sm.StateMachine.instance._project.getTargetGUIModel().removeVisibilityBehavior(self._dataVB)
+			tguim = sm.StateMachine.instance._project.getTargetGUIModel()
+			tguim.removeVisibilityBehavior(self._dataVB)
+			self.scene().removeItem(self)
+			sm.StateMachine.instance.view.ui.propertyEditorView.setModel(None)
 
-		def onSetTrigger():
+		def onSetTriggerAction():
 			dlg = SetTriggerActionDialog(self._dataVB)
 			dlg.exec_()
 
 		self.menu = VisibilityBehaviorMenu()
 		self.menu.onRemove(onRemove)
-		self.menu.onSetTrigger(onSetTrigger)
+		self.menu.onSetTrigger(onSetTriggerAction)
 
-	
 	def boundingRect(self):
 		"""
 		This pure virtual function defines the outer bounds of the item as a rectangle.

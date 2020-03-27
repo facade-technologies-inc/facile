@@ -203,12 +203,12 @@ class TargetGuiModel(QObject):
 		:return: None
 		:rtype: NoneType
 		"""
-		if vb not in self._visibilityBehaviors:
+		if vb not in self._visibilityBehaviors.values():
 			return
 
 		vb.getSrcComponent().removeSrcVisibilityBehavior(vb)
 		vb.getDestComponent().removeDestVisibilityBehavior(vb)
-		self._visibilityBehaviors.remove(vb)
+		del self._visibilityBehaviors[vb.getId()]
 		self.behaviorRemoved.emit(vb)
 	
 	def asDict(self) -> dict:

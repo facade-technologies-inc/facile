@@ -88,4 +88,9 @@ class SetTriggerActionDialog(QDialog):
 
         self._vb.setTriggerAction(self._curAction)
 
+        try:
+            sm.StateMachine.instance.view.onItemSelected(self._vb.getId())
+        except:
+            pass
+
         return QDialog.accept(self)
