@@ -28,7 +28,6 @@ from PySide2.QtGui import QPainterPath, QColor, QPen, Qt, QFont, QFontMetricsF
 from PySide2.QtWidgets import QGraphicsScene, QGraphicsItem, QGraphicsSceneContextMenuEvent, QMenu
 import data.statemachine as sm
 
-from data.statemachine import StateMachine
 from qt_models.componentmenu import ComponentMenu
 
 
@@ -62,7 +61,6 @@ class ComponentGraphics(QGraphicsItem):
 		self.setFlag(QGraphicsItem.ItemIsSelectable)
 
 		if parent is None:
-			dataComponent.getModel().getScene().addItem(self)
 			self.isRoot = True  # TODO: Have to resize scene to smallest possible
 		else:
 			self.isRoot = False
@@ -154,21 +152,18 @@ class ComponentGraphics(QGraphicsItem):
 			parentIsScene = True
 			self.setFlag(QGraphicsItem.ItemIsMovable)
 		else:
-			parent = self._dataComponent.getParent().getGraphicsItem()
+			parent = self.scene().getGraphics(self._dataComponent.getParent())
 			parentIsScene = False
 
-		siblings = [sibling.getGraphicsItem() for sibling in self._dataComponent.getSiblings() if
+		siblings = [self.scene().getGraphics(sibling) for sibling in self._dataComponent.getSiblings() if
 		            sibling is not self._dataComponent]
+		siblings = list(filter(None, siblings))
 		if self in siblings:
 			siblings.remove(self)
 
 		# Resolve collisions with siblings
 		self.checkForCollisions(siblings)
 
-		# If component isn't placed inside the parent, expand the parent
-		# if parentIsScene:
-		# 	self.expandSelf()
-		# el
 		if not parentIsScene:
 			allContained = True
 			for sib in siblings:
@@ -189,7 +184,7 @@ class ComponentGraphics(QGraphicsItem):
 		:type siblings: list[ComponentGraphics]
 		:return: None
 		"""
-		while True:  # TODO: Uncomment after testing
+		while True:
 			collidingSiblings = self.getCollidingComponents(siblings)
 			if collidingSiblings:
 				self.resolveCollisions(collidingSiblings)
@@ -342,17 +337,19 @@ class ComponentGraphics(QGraphicsItem):
 				                                      lnp.x(), lnp.y()))
 				
 				assert(not winner.overlapsWith(loser))
-				
-				sibsibs = [sibling.getGraphicsItem() for sibling in
-				            sib._dataComponent.getSiblings() if
-				            sibling is not sib._dataComponent]
+
+				try:
+					sibsibs = [self.scene().getGraphics(sibling) for sibling in
+								sib._dataComponent.getSiblings() if
+								sibling is not sib._dataComponent]
+				except:
+					sibsibs = []
 				
 				sibsibCollisions = sib.getCollidingComponents(sibsibs)
 				
 				if sibsibCollisions:
 					work.insert(0, (sib, sibsibCollisions))
 					
-			
 
 	def getMargin(self) -> float:
 		"""
@@ -391,7 +388,7 @@ class ComponentGraphics(QGraphicsItem):
 
 			# Checking if there's a collision in x or y direction
 			for sibling in self._dataComponent.getSiblings():
-				sib = sibling.getGraphicsItem()
+				sib = self.scene().getGraphics(sibling)
 				if sib == self:
 					continue
 
@@ -443,6 +440,9 @@ class ComponentGraphics(QGraphicsItem):
 		"""
 		collidingSiblings = []
 		for sibling in components:
+			if sibling is None:
+				continue
+
 			if self.overlapsWith(sibling):
 				collidingSiblings.append(sibling)
 		return collidingSiblings
@@ -460,8 +460,6 @@ class ComponentGraphics(QGraphicsItem):
 			category, name = self._dataComponent.getProperties().getProperty("Name")
 			return name.getValue()
 		except:
-			import traceback
-			traceback.print_exc()
 			return "No Label"
 
 	def overlapsWith(self, sibling: 'ComponentGraphics') -> bool:
@@ -672,9 +670,11 @@ class ComponentGraphics(QGraphicsItem):
 	def triggerSceneUpdate(self):
 		"""
 		Update the scene.
-
 		"""
 		self.scene().invalidate(self.scene().sceneRect(), QGraphicsScene.ItemLayer)
+
+	def onDataUpdated(self):
+		self.triggerSceneUpdate()
 
 	def __repr__(self):
 		"""

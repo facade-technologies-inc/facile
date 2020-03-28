@@ -25,19 +25,24 @@ import os
 from copy import deepcopy
 
 from PySide2.QtCore import Slot, QTimer, QItemSelection
-from PySide2.QtGui import Qt
-from PySide2.QtWidgets import QMainWindow, QFileDialog, QMessageBox, QLabel, \
-	QGraphicsOpacityEffect
+from PySide2.QtGui import Qt, QCloseEvent, QKeyEvent
+from PySide2.QtWidgets import QMainWindow, QFileDialog, QMessageBox, QLabel, QGraphicsOpacityEffect
 
 from data.project import Project
 from data.statemachine import StateMachine
 from data.tguim.component import Component
+from data.tguim.visibilitybehavior import VisibilityBehavior
+from data.apim.componentaction import ComponentAction
 from gui.copyprojectdialog import CopyProjectDialog
 from gui.manageprojectdialog import ManageProjectDialog
 from gui.newprojectdialog import NewProjectDialog
+from gui.validatorview import ValidatorView
 from gui.ui.ui_facileview import Ui_MainWindow as Ui_FacileView
 from qt_models.projectexplorermodel import ProjectExplorerModel
 from tguiil.blinker import Blinker
+from gui.actionmenu import ActionMenu
+
+import data.statemachine as sm
 
 
 class FacileView(QMainWindow):
@@ -58,7 +63,28 @@ class FacileView(QMainWindow):
 		self.ui = Ui_FacileView()
 		self.ui.setupUi(self)
 		
+		# add validator view
+		self.ui.validatorView = ValidatorView()
+		self.ui.validatorDockWidget.setWidget(self.ui.validatorView)
+		
 		self._blinker = None
+		
+		#State label in status bar
+		self.ui.stateLabel = QLabel("")
+		self.ui.statusBar.addPermanentWidget(self.ui.stateLabel)
+		
+		#Action Menu Initialization
+		self._componentActionMenu = ActionMenu()
+		self._actionPipelinesMenu = ActionMenu()
+		
+		#Add labels for each tab on the Action Menu to the view
+		self._componentActionMenu.setLabelText("Actions for current selected component.")
+		self._actionPipelinesMenu.setLabelText("All user-defined actions.")
+		
+		#Add Action Menu Tabs to the view
+		self.ui.actionMenuTabWidget.addTab(self._componentActionMenu, "Component Actions")
+		self.ui.actionMenuTabWidget.addTab(self._actionPipelinesMenu, "Action Pipelines")
+		self.ui.actionMenuTabWidget.removeTab(0)
 		
 		# State Machine Initialization
 		self._stateMachine = StateMachine(self)
@@ -231,8 +257,9 @@ class FacileView(QMainWindow):
 		index = selectedIndexes[0]
 		entity = index.internalPointer()
 		if not isinstance(entity, (ProjectExplorerModel.LeafIndex, str)):
-			self._project.getTargetGUIModel().getScene().clearSelection()
-			entity.getGraphicsItem().setSelected(True)
+			scene = sm.StateMachine.instance.view.ui.targetGUIModelView.scene()
+			scene.clearSelection()
+			scene.getGraphics(entity).setSelected(True)
 			self.ui.propertyEditorView.setModel(entity.getProperties().getModel())
 			self.ui.propertyEditorView.expandAll()
 	
@@ -254,6 +281,8 @@ class FacileView(QMainWindow):
 		:return: None
 		:rtype: NoneType
 		"""
+		
+		self.ui.actionPower_App.setChecked(True)
 		if confirm:
 			title = "Confirm Application Termination"
 			message = "Are you sure you'd like to terminate the target application?"
@@ -262,6 +291,7 @@ class FacileView(QMainWindow):
 			response = QMessageBox.StandardButton.Yes
 		
 		if response == QMessageBox.StandardButton.Yes:
+			self.ui.actionPower_App.setChecked(True)
 			self._project.stopTargetApplication()
 			self._stateMachine.stopApp()
 			self.info("The target application has been\nterminated.")
@@ -274,14 +304,25 @@ class FacileView(QMainWindow):
 		:return: None
 		:rtype: NoneType
 		"""
-		# TODO: Change to get any entity instead of just component
-		entity = self._project.getTargetGUIModel().getComponent(id)
+		entity = self._project.getTargetGUIModel().getEntity(id)
 		properties = entity.getProperties()
 		self.ui.propertyEditorView.setModel(properties.getModel())
 		
 		if type(entity) == Component:
 			self.ui.projectExplorerView.model().selectComponent(entity)
 			self._stateMachine.componentClicked(entity)
+			
+			# show all component actions in the component action menu
+			cType = entity.getProperties().getProperty('Class Name')[1].getValue()
+			specs = self._project.getAPIModel().getSpecifications(cType)
+			self._componentActionMenu.clearActions()
+			self.ui.actionMenuTabWidget.setCurrentWidget(self._componentActionMenu)
+			for spec in specs:
+				action = ComponentAction(entity, spec)
+				self._componentActionMenu.addAction(action)
+			
+		elif type(entity) == VisibilityBehavior:
+			self.ui.projectExplorerView.model().selectBehavior(entity)
 	
 	@Slot(int)
 	def onItemBlink(self, id: int) -> None:
@@ -368,7 +409,7 @@ class FacileView(QMainWindow):
 		fadeOutTimer = QTimer()
 		
 		waitTimer.setSingleShot(True)
-		waitTimer.setInterval(1000)
+		waitTimer.setInterval(3000)
 		
 		effect = QGraphicsOpacityEffect(label)
 		label.setGraphicsEffect(effect)
@@ -397,3 +438,57 @@ class FacileView(QMainWindow):
 		waitTimer.timeout.connect(wait)
 		fadeOutTimer.timeout.connect(fadeOut)
 		fadeInTimer.start(10)
+	
+	def closeEvent(self, event: QCloseEvent) -> None:
+		"""
+		Handles what happens when the user tries to quit the application.
+		
+		If there is a project open, ask them if they want to save their progress. We also give
+		the option to not save or to cancel the closing of Facile.
+		
+		If a project is not open, ask them if they are sure they want to quit.
+		
+		:param event: The close event used to determine if the application should be closed or not.
+		:type event: QCloseEvent
+		:return: None
+		:rtype: NoneType
+		"""
+		
+		title = "Cancel confirmation ..."
+		if self._project:
+			message = "Would you like to save your project before exiting?"
+			options = QMessageBox.Yes | QMessageBox.No | QMessageBox.Cancel
+			result = QMessageBox.question(self, title, message, options)
+			event.ignore()
+			
+			if result == QMessageBox.Yes:
+				self.onSaveProjectTriggered()
+				
+			if result != QMessageBox.Cancel:
+				event.accept()
+		else:
+			message = "Are you sure you want to quit?"
+			options = QMessageBox.Yes | QMessageBox.No
+			result = QMessageBox.question(self, title, message, options)
+			event.ignore()
+			
+			if result == QMessageBox.Yes:
+				self.onSaveProjectTriggered()
+				event.accept()
+	
+	def keyPressEvent(self, event: QKeyEvent) -> None:
+		"""
+		Handles key presses for the main window.
+		
+		When the "Esc" key is pressed, we'll try to close Facile
+		
+		:param event: The event carrying the code of the key that was pressed.
+		:type event: QKeyEvent
+		:return: None
+		:rtype: NoneType
+		"""
+		
+		if event.key() == Qt.Key_Escape:
+			self.close()
+		event.accept()
+

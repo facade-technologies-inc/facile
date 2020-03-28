@@ -25,7 +25,11 @@ from collections import OrderedDict
 from enum import Enum
 
 from data.property import Property
-from qt_models.propeditormodel import PropModel
+
+try: # FACILE
+	from qt_models.propeditormodel import PropModel
+except ImportError: # API
+	pass
 
 
 class Properties:
@@ -41,7 +45,6 @@ class Properties:
 		:rtype: Properties
 		"""
 		self._categories = OrderedDict()
-		self._model = PropModel(self)
 	
 	def newCategory(self, category: str) -> None:
 		"""
@@ -112,6 +115,12 @@ class Properties:
 				newProperties.addProperty("Visibility Behavior", "Reaction Type", None, Enum)
 				newProperties.addProperty("Visibility Behavior", "Source ID", 1, int, True)
 				newProperties.addProperty("Visibility Behavior", "Destination ID", 1, int, True)
+			elif predefinedCategories[i] == "Action":
+				pass
+			elif predefinedCategories[i] == "Port":
+				pass
+			elif predefinedCategories[i] == "Wire":
+				pass
 		
 		for category in customCategories.keys():
 			newProperties.newCategory(category)
@@ -125,14 +134,18 @@ class Properties:
 		
 		return newProperties
 	
-	def getModel(self) -> PropModel:
+	def getModel(self) -> 'PropModel':
 		"""
-		Gets the properties's objects model.
+		Gets a new PropModel object for this properties object.
 
 		:return: Model of properties object.
 		:rtype: PropModel
 		"""
-		return self._model
+
+		try: # FACILE
+			return PropModel(self)
+		except: # API
+			return None
 	
 	def getNumCategories(self) -> int:
 		"""

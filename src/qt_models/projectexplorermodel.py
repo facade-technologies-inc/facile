@@ -29,10 +29,8 @@ from PySide2.QtWidgets import QTreeView
 from data.apim.actionpipeline import ActionPipeline
 from data.tguim.component import Component
 from data.tguim.visibilitybehavior import VisibilityBehavior
-
-from qt_models.componentmenu import ComponentMenu
-
 import data.statemachine as sm
+from qt_models.componentmenu import ComponentMenu
 
 class ProjectExplorerModel(QAbstractItemModel):
 	"""

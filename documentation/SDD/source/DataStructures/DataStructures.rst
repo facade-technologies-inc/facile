@@ -155,11 +155,113 @@ target GUI. The Token class contains methods for deciding whether an observed co
     This class diagram depicts the structure of the Target GUI Model data structure. This is a
     highly critical part of Facile.
 
+.. raw:: latex
+
+    \newpage
+
 ----------------
 API Model (APIM)
 ----------------
 
-The APIModel class is currently under construction.
+The ApiModel class models and defines the functionality provided by the generated API. It consists of
+ActionPipelines, each corresponding to a function in the generated API.
+The apiModel class is composed of the following classes. See the UML class diagram: :num:`Fig. #apimclassdiagram`.
 
 
+.. _apimclassdiagram:
+
+.. figure:: ../../images/apimClassDiagram.png
+    :alt: API Model class diagram
+
+    This UML class diagram depicts the classes related to the API Model.
+
+
+.. raw:: latex
+
+    \newpage
+
+
+======
+Action
+======
+
+The Action class is the abstract base class of all types of "action" classes (see :num:`Fig. #apimclassdiagram`).
+It stores all of the common functionality of the derived classes. The Action class is responsible for managing ports.
+Actions can have any number of inputs and outputs. Each input and output is a port. Each action instance also maintains
+a list of action wrappers.
+
+==============
+ActionPipeline
+==============
+
+An action pipeline is what defines a function in the generated API. ActionPipelines are an aggregation of
+ActionWrappers which can wrap around ComponentActions and ActionPipelines. The internals of the ActionPipeline
+can be connected with wires that carry data. The internal actions are executed in the sequence in which they are
+stored. :num:`Fig. #actionpipelinediagram`
+
+.. _actionpipelinediagram:
+
+.. figure:: ../../images/ActionPipelineDiagram.png
+    :alt: ActionPipeline class diagram.
+
+    The ActionPipeline class.
+
+.. raw:: latex
+
+    \newpage
+
+===============
+ComponentAction
+===============
+
+The ComponentAction class is used to describe an action on a specific component. ComponentActions have a target
+Component from the Target Gui Model, and an ActionSpecification which defines how the action is actually performed.
+
+=============
+ActionWrapper
+=============
+
+The purpose of the ActionWrapper class is to prevent copying of action pipelines and other
+actions unnecessarily. The action wrapper allows us to update uses of an action very easily
+in the case that the user edits an action.
+
+To handle the user editing an action, the wrapper just needs to keep the ports synchronized
+with the referenced actions.
+
+The ActionWrapper can be thought of as a black-box for any other action.
+
+===================
+ActionSpecification
+===================
+
+The ActionSpecification class defines an action that can be performed on the target GUI. It defines which types
+of components this action can be performed on, the inputs needed to perform the action, the outputs of the action,
+and the python code needed to actually perform the action.
+
+ActionSpecifications are instantiated using the information in an action specification file.
+
+====
+Port
+====
+
+A Port defines the interface between an Action (ActionPipeline or ComponentAction) and the outside world.
+A Port has one input (could be None), and as many outputs as desired. In effect, the input of the Port is
+duplicated across all of its outputs. Ports specify the data type that may be passed across it.
+(Ports between different Actions are connected with Wires).
+
+=======
+WireSet
+=======
+
+A collection of all the wires in an ActionPipeline. An ActionPipeline has only one WireSet.
+The WireSet acts as the interface for creating and deleting wires.
+
+====
+Wire
+====
+
+The Wire class defines a data connection between two Actions inside of an ActionPipeline. (An Action
+may be dependant upon data that is output from another Action.)
+A Wire object consists of a reference to the source Action's desired output Port, and a reference
+to the destination Action's input Port.
 

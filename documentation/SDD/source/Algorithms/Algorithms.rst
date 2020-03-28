@@ -4,12 +4,28 @@ Algorithms
 
 This section describes the critical algorithms of Facile. The four primary algorithms used are:
 
+- Main State Machine
 - Token Comparison Algorithm
 - Observer Algorithm
 - Explorer Algorithm
 - Component Placement Algorithm
 
 These algorithms are discussed in detail in the following sections.
+
+-------------------------
+Main State Machine
+-------------------------
+
+Facile's state machine is growing as we develop Facile. Currently, it only shows the side of
+Facile that deals with building the model of the target GUI, but eventually it will show building
+the model of the API and compiling the API. The state machine is shown in :num:`Fig. #statemachine`.
+
+.. _StateMachine:
+
+.. figure:: ../../images/StateMachine.png
+    :alt: Facile's state machine.
+
+    Facile's state machine.
 
 --------------------------
 Token Comparison Algorithm
@@ -159,3 +175,85 @@ Facile uses the following methods:
            pushed  down until there is no longer an overlap with component 1.
         #. Otherwise, component 2 'wins' and the same rules are applied, but with component 1
            relative to component 2.
+
+------------
+API Compiler
+------------
+
+This section describes Facile's API compiler's behavior and functionality.
+The compiler performs two main actions: file copy and custom code generation. File copy is trivial, and hence will not
+be discussed in depth in this section. In contrast, the code generation is the main feature of the compiler that will be
+discussed here. Code generation is performed using the following classes in Facile:
+
+- Action
+- ComponentAction
+- ActionPipeline
+- TargetGuiModel
+- Compiler
+
+.. figure:: ../../images/compilerdiag.png
+    :alt: Compiler Diagram
+
+******
+Action
+******
+
+Since the action class is inherited by the action types, it only defines general methods that apply to all action types.
+Specifically, these are the most important methods in Action that are related to code generation, and their function:
+
+- getMethodSignature(): Gives the signature for a method using its name and parameter list.
+- getDocStr(): Generates the docstring for the action, including details about it and its ports.
+- getMethod(): Generates the entirety of the code needed for the action, using other available methods.
+
+While these functions are defined in the Action class, they are not functional without two additional functions:
+getMethodCode() and getMethodName(). These are defined in Action, but only raise an exception. The reason for this is
+that component actions and action pipelines have different naming conventions and inherently different code generation
+techniques.
+
+********************
+Function Definitions
+********************
+
+The functions getMethodName() and getMethodCode() are instantiated in the following ways:
+
+- ComponentAction class:
+    - getMethodName(): All component action method names are generated using a naming scheme of
+      "_(componentID)_(actionName)". Because component IDs are unique, and actions will only be instantiated once for
+      one component, this guarantees a unique name for the method, while the leading underscore classifies it as a
+      private method.
+    - getMethodCode(): ComponentActions use a predefined component finding algorithm in order to get a handle to
+      a component whose ID is known. Then, code specific to the action is read from predefined ".action" files and
+      injected into the code.
+
+- ActionPipeline class:
+    - getMethodName(): Since unique action pipeline names are enforced within Facile, their method names are simply
+      their names. This allows for more expected behavior, as the user can then simply use "myApp.customName()" to call
+      their function.
+    - getMethodCode(): The action pipeline code generation is not trivial. However, to put it in simple terms, an
+      action pipeline will iterate through its contained ActionWrappers, getting just the method call from each one.
+      The ports, inputs, and outputs are all connected using generated variable names spanning from a to z, the aa to
+      zz, and so on. It keeps tracks of which ports are associated to which file names.
+
+.. figure:: ../../images/apmethodgen.png
+    :alt: Action Pipeline Method Creation Diagram
+
+***********
+Compilation
+***********
+
+The API Compiler generates the API in 3 steps.
+
+- Copies over necessary files
+- Saves Target GUI Model and copies it over
+- Generates custom application.py file, putting it in the API directory
+
+The file copying is performed keeping the directory names, file names, and file heirarchy intact, so as to avoid
+rewriting every file. A noteworthy one of these files is baseapplication.py, which holds the BaseApplication class: the
+clas which contains all the core functions used by an Application class, without which the API would not run.
+
+When generating the Application class, BaseApplication is therefore set as its parent. From there, the compiler grabs a
+list of all CompilerActions and ActionPipelines contained in the API Model, and iterates through them, ComponentActions
+first, calling their getMethod() function.
+
+.. figure:: ../../images/customappgen.png
+    :alt: Custom Application File Generation Diagram

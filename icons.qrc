@@ -1,0 +1,190 @@
+
+<RCC>
+    <qresource prefix="/icon">
+        
+        <file alias="../resources/icons/facade_logo.png">resources/icons/facade_logo.png</file>
+
+        <file alias="../resources/icons/gradient/icons8-add-property-64.png">resources/icons/gradient/icons8-add-property-64.png</file>
+
+        <file alias="../resources/icons/gradient/icons8-database-view-64.png">resources/icons/gradient/icons8-database-view-64.png</file>
+
+        <file alias="../resources/icons/gradient/icons8-ophthalmology-64.png">resources/icons/gradient/icons8-ophthalmology-64.png</file>
+
+        <file alias="../resources/icons/gradient/icons8-search-property-64.png">resources/icons/gradient/icons8-search-property-64.png</file>
+
+        <file alias="../resources/icons/gradient/icons8-show-property-64.png">resources/icons/gradient/icons8-show-property-64.png</file>
+
+        <file alias="../resources/icons/gradient/start_app.png">resources/icons/gradient/start_app.png</file>
+
+        <file alias="../resources/icons/gradient/stop_app.png">resources/icons/gradient/stop_app.png</file>
+
+        <file alias="../resources/icons/office/action-pipeline.png">resources/icons/office/action-pipeline.png</file>
+
+        <file alias="../resources/icons/office/add-new.png">resources/icons/office/add-new.png</file>
+
+        <file alias="../resources/icons/office/add-visibility-behavior.png">resources/icons/office/add-visibility-behavior.png</file>
+
+        <file alias="../resources/icons/office/add.png">resources/icons/office/add.png</file>
+
+        <file alias="../resources/icons/office/arrow-right.png">resources/icons/office/arrow-right.png</file>
+
+        <file alias="../resources/icons/office/auto-explore.png">resources/icons/office/auto-explore.png</file>
+
+        <file alias="../resources/icons/office/cancel.png">resources/icons/office/cancel.png</file>
+
+        <file alias="../resources/icons/office/code.png">resources/icons/office/code.png</file>
+
+        <file alias="../resources/icons/office/compass.png">resources/icons/office/compass.png</file>
+
+        <file alias="../resources/icons/office/compile-python.png">resources/icons/office/compile-python.png</file>
+
+        <file alias="../resources/icons/office/copy.png">resources/icons/office/copy.png</file>
+
+        <file alias="../resources/icons/office/dark-finger-touch.png">resources/icons/office/dark-finger-touch.png</file>
+
+        <file alias="../resources/icons/office/dark-gear.png">resources/icons/office/dark-gear.png</file>
+
+        <file alias="../resources/icons/office/dark-user-male.png">resources/icons/office/dark-user-male.png</file>
+
+        <file alias="../resources/icons/office/delete.png">resources/icons/office/delete.png</file>
+
+        <file alias="../resources/icons/office/deploy.png">resources/icons/office/deploy.png</file>
+
+        <file alias="../resources/icons/office/detective.png">resources/icons/office/detective.png</file>
+
+        <file alias="../resources/icons/office/doc.png">resources/icons/office/doc.png</file>
+
+        <file alias="../resources/icons/office/edit-file.png">resources/icons/office/edit-file.png</file>
+
+        <file alias="../resources/icons/office/epub.png">resources/icons/office/epub.png</file>
+
+        <file alias="../resources/icons/office/export-python.png">resources/icons/office/export-python.png</file>
+
+        <file alias="../resources/icons/office/eye.png">resources/icons/office/eye.png</file>
+
+        <file alias="../resources/icons/office/file.png">resources/icons/office/file.png</file>
+
+        <file alias="../resources/icons/office/flow.png">resources/icons/office/flow.png</file>
+
+        <file alias="../resources/icons/office/gui.png">resources/icons/office/gui.png</file>
+
+        <file alias="../resources/icons/office/html.png">resources/icons/office/html.png</file>
+
+        <file alias="../resources/icons/office/invisible.png">resources/icons/office/invisible.png</file>
+
+        <file alias="../resources/icons/office/light-finger-touch.png">resources/icons/office/light-finger-touch.png</file>
+
+        <file alias="../resources/icons/office/lightning-arrow.png">resources/icons/office/lightning-arrow.png</file>
+
+        <file alias="../resources/icons/office/manual-explore.png">resources/icons/office/manual-explore.png</file>
+
+        <file alias="../resources/icons/office/nested-component.png">resources/icons/office/nested-component.png</file>
+
+        <file alias="../resources/icons/office/new-flow.png">resources/icons/office/new-flow.png</file>
+
+        <file alias="../resources/icons/office/open-door.png">resources/icons/office/open-door.png</file>
+
+        <file alias="../resources/icons/office/pdf.png">resources/icons/office/pdf.png</file>
+
+        <file alias="../resources/icons/office/picture.png">resources/icons/office/picture.png</file>
+
+        <file alias="../resources/icons/office/python-code.png">resources/icons/office/python-code.png</file>
+
+        <file alias="../resources/icons/office/python.png">resources/icons/office/python.png</file>
+
+        <file alias="../resources/icons/office/recent.png">resources/icons/office/recent.png</file>
+
+        <file alias="../resources/icons/office/reticle.png">resources/icons/office/reticle.png</file>
+
+        <file alias="../resources/icons/office/save-as.png">resources/icons/office/save-as.png</file>
+
+        <file alias="../resources/icons/office/save.png">resources/icons/office/save.png</file>
+
+        <file alias="../resources/icons/office/search-gui.png">resources/icons/office/search-gui.png</file>
+
+        <file alias="../resources/icons/office/settings.png">resources/icons/office/settings.png</file>
+
+        <file alias="../resources/icons/office/show-gui.png">resources/icons/office/show-gui.png</file>
+
+        <file alias="../resources/icons/office/show-view.png">resources/icons/office/show-view.png</file>
+
+        <file alias="../resources/icons/office/shutdown.png">resources/icons/office/shutdown.png</file>
+
+        <file alias="../resources/icons/office/spotlight.png">resources/icons/office/spotlight.png</file>
+
+        <file alias="../resources/icons/office/stop.png">resources/icons/office/stop.png</file>
+
+        <file alias="../resources/icons/office/tags.png">resources/icons/office/tags.png</file>
+
+        <file alias="../resources/icons/office/target.png">resources/icons/office/target.png</file>
+
+        <file alias="../resources/icons/office/trash.png">resources/icons/office/trash.png</file>
+
+        <file alias="../resources/icons/office/turn-on.png">resources/icons/office/turn-on.png</file>
+
+        <file alias="../resources/icons/office/two-sided-arrow.png">resources/icons/office/two-sided-arrow.png</file>
+
+        <file alias="../resources/icons/office/user.png">resources/icons/office/user.png</file>
+
+        <file alias="../resources/icons/office/verify.png">resources/icons/office/verify.png</file>
+
+        <file alias="../resources/icons/office/visibility-behavior-blue.png">resources/icons/office/visibility-behavior-blue.png</file>
+
+        <file alias="../resources/icons/office/visibility-behavior-green.png">resources/icons/office/visibility-behavior-green.png</file>
+
+        <file alias="../resources/icons/pastel/add.png">resources/icons/pastel/add.png</file>
+
+        <file alias="../resources/icons/pastel/add_arrow.png">resources/icons/pastel/add_arrow.png</file>
+
+        <file alias="../resources/icons/pastel/add_box.png">resources/icons/pastel/add_box.png</file>
+
+        <file alias="../resources/icons/pastel/add_person.png">resources/icons/pastel/add_person.png</file>
+
+        <file alias="../resources/icons/pastel/box.png">resources/icons/pastel/box.png</file>
+
+        <file alias="../resources/icons/pastel/copy.png">resources/icons/pastel/copy.png</file>
+
+        <file alias="../resources/icons/pastel/create.png">resources/icons/pastel/create.png</file>
+
+        <file alias="../resources/icons/pastel/delete.png">resources/icons/pastel/delete.png</file>
+
+        <file alias="../resources/icons/pastel/flash_light.png">resources/icons/pastel/flash_light.png</file>
+
+        <file alias="../resources/icons/pastel/image.png">resources/icons/pastel/image.png</file>
+
+        <file alias="../resources/icons/pastel/open_box.png">resources/icons/pastel/open_box.png</file>
+
+        <file alias="../resources/icons/pastel/pause.png">resources/icons/pastel/pause.png</file>
+
+        <file alias="../resources/icons/pastel/play.png">resources/icons/pastel/play.png</file>
+
+        <file alias="../resources/icons/pastel/power_off.png">resources/icons/pastel/power_off.png</file>
+
+        <file alias="../resources/icons/pastel/recent_box.png">resources/icons/pastel/recent_box.png</file>
+
+        <file alias="../resources/icons/pastel/record.png">resources/icons/pastel/record.png</file>
+
+        <file alias="../resources/icons/pastel/refresh.png">resources/icons/pastel/refresh.png</file>
+
+        <file alias="../resources/icons/pastel/right_arrow.png">resources/icons/pastel/right_arrow.png</file>
+
+        <file alias="../resources/icons/pastel/robot.png">resources/icons/pastel/robot.png</file>
+
+        <file alias="../resources/icons/pastel/save.png">resources/icons/pastel/save.png</file>
+
+        <file alias="../resources/icons/pastel/save_as.png">resources/icons/pastel/save_as.png</file>
+
+        <file alias="../resources/icons/pastel/search.png">resources/icons/pastel/search.png</file>
+
+        <file alias="../resources/icons/pastel/settings.png">resources/icons/pastel/settings.png</file>
+
+        <file alias="../resources/icons/pastel/space_shuttle.png">resources/icons/pastel/space_shuttle.png</file>
+
+        <file alias="../resources/icons/pastel/stop_recording.png">resources/icons/pastel/stop_recording.png</file>
+
+        <file alias="../resources/icons/pastel/tag.png">resources/icons/pastel/tag.png</file>
+
+        <file alias="../resources/icons/pastel/trash_can.png">resources/icons/pastel/trash_can.png</file>
+
+    </qresource>
+</RCC>

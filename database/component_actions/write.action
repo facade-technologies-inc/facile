@@ -1,0 +1,15 @@
+name = "Write"
+description = "Writes the contents of 'value' to component {id}. Will be added to any existing text."
+targets = ['Edit']
+inputs = [
+	{
+		"name": "value",
+		"type": str,
+		"description": "Text to be written.",
+		"optional": False
+	}
+]
+outputs = []
+code = """
+comp.type_keys(value, with_spaces=True)
+"""

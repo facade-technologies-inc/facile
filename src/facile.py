@@ -23,16 +23,17 @@ user and never imported.
 
 """
 import sys
+import os
 import warnings
-import time
+
+sys.path.append(os.path.abspath("./gui/rc/"))
 
 # These lines are needed to integrate Qt and pywinauto
 warnings.simplefilter("ignore", UserWarning)
 sys.coinit_flags = 2
 
-from PySide2.QtWidgets import QApplication, QSplashScreen
-from PySide2.QtGui import QPalette, QColor, Qt, QPixmap
-from PySide2.QtCore import QTimer
+from PySide2.QtWidgets import QApplication
+from PySide2.QtGui import QPalette, QColor, Qt
 
 from gui.facileview import FacileView
 from gui.splashscreen import FacileSplashScreen

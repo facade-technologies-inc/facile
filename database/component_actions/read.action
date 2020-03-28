@@ -1,0 +1,14 @@
+name = "Read Text"
+description = "Reads text from component {id}."
+targets = {'Edit', 'Static'}
+inputs = []
+outputs = [
+	{
+		"name": "value",
+		"description": "Value obtained from reading component text.",
+		"type": str,
+	}
+]
+code = """
+return comp.get_value()
+"""

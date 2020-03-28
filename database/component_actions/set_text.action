@@ -1,0 +1,15 @@
+name = "Set Text"
+description = "Writes the contents of 'value' to component {id}, overwriting any existing text."
+targets = ['Edit']
+inputs = [
+	{
+		"name": "value",
+		"type": str,
+		"description": "Text to be written.",
+		"optional": False
+	}
+]
+outputs = []
+code = """
+comp.set_edit_text(value)
+"""

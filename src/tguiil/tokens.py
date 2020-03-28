@@ -22,10 +22,13 @@ This file contains the token class that weighs the importance of each attribute 
 """
 from difflib import SequenceMatcher
 from enum import Enum, unique
+from datetime import datetime
+from functools import cmp_to_key
 
 import numpy as np
 from PIL import Image
 from pywinauto.win32structures import RECT
+import pywinauto
 from skimage.metrics import structural_similarity as ssim
 
 
@@ -33,6 +36,11 @@ class Token:
 	"""
 	Token class sets parameters of a token for each state that changes.
 	"""
+
+	# TODO: Store the control identifiers of the top level parent for more accurate lookup.
+	# TODO: Store mapping of control IDs to their count
+
+	control_ID_count = {}
 	
 	class CreationException(Exception):
 		def __init__(self, msg):
@@ -65,7 +73,7 @@ class Token:
 	def __init__(self, appTimeStamp: int, identifier: int, isDialog: bool, isEnabled: bool,
 	             isVisible: bool, processID: int, typeOf: str, rectangle: RECT, texts: list,
 	             title: str, numControls: int, controlIDs: list, parentTitle: str,
-	             parentType: str, topLevelParentTitle: str, topLevelParentType: str,
+	             parentType: str, topLevelParentControlIDs: list, topLevelParentTitle: str, topLevelParentType: str,
 	             childrenTexts: list, picture: Image = None, autoID: int = None,
 	             expandState: int = None, shownState: int = None):
 		"""
@@ -85,6 +93,8 @@ class Token:
 		:type parentTitle: str
 		:param parentType: stores the components parents type
 		:type parentType: str
+		:param topLevelParentControlIDs: A list of control identifiers for the dialog that contains (or is) this component.
+		:type topLevelParentControlIDs: List[str]
 		:param topLevelParentTitle: stores the components top level parents title
 		:type topLevelParentTitle: str
 		:param topLevelParentType: stores the components top level parents type
@@ -124,6 +134,7 @@ class Token:
 		self.isVisible = isVisible
 		self.parentTitle = parentTitle
 		self.parentType = parentType
+		self.topLevelParentControlIDs = topLevelParentControlIDs
 		self.topLevelParentTitle = topLevelParentTitle
 		self.topLevelParentType = topLevelParentType
 		self.processID = processID
@@ -150,6 +161,95 @@ class Token:
 		
 		self.childrenTexts.sort()
 		self.controlIDs.sort()
+	
+	@staticmethod
+	def createToken(timeStamp: datetime, component: pywinauto.base_wrapper.BaseWrapper) -> 'Token':
+		"""
+		Create a token from a pywinauto control.
+
+		:raises: Token.CreationException
+
+		:param timeStamp: The time that the application instance was created.
+		:type timeStamp: datetime
+		:param component: A pywinauto control from the target GUI.
+		:type component: pywinauto.base_wrapper
+		:return: The token that was created from the pywinauto control.
+		:rtype: Token
+		"""
+		
+		try:
+			parent = component.parent()
+			if parent:
+				parentTitle = parent.window_text()
+				parentType = parent.friendly_class_name()
+			else:
+				parentTitle = ""
+				parentType = ""
+			
+			topLevelParent = component.top_level_parent()
+			topLevelParentTitle = topLevelParent.window_text()
+			topLevelParentType = topLevelParent.friendly_class_name()
+			
+			# Information we can get about any element
+			id = component.control_id()
+			isDialog = component.is_dialog()
+			isEnabled = component.is_enabled()
+			isVisible = component.is_visible()
+			processID = component.process_id()
+			rectangle = component.rectangle()
+			texts = component.texts()[1:]
+			title = component.window_text()
+			numControls = component.control_count()
+			image = None  # component.capture_as_image()
+			typeOf = component.friendly_class_name()
+			
+			# get text of all children that are not editable.
+			childrenTexts = []
+			for child in component.children():
+				if type(child) != pywinauto.controls.win32_controls.EditWrapper:
+					try:
+						text = child.text()
+						if text is None:
+							text = child.window_text()
+						if text is None:
+							text = ""
+						childrenTexts.append(text)
+					except:
+						childrenTexts.append("")
+			
+			# additional information we can get about uia elements
+			try:
+				autoID = component.automation_id()
+				shownState = component.get_show_state()
+				expandState = component.get_expand_state()
+			except:
+				autoID = None
+				expandState = None
+				shownState = None
+			
+			# construct control identifiers
+			# There are 4 possible control identifiers:
+			#   - title
+			#   - friendly class
+			#   - title + friendly class
+			#   - closest text + friendly class (only if the title is empty)
+			
+			if title is None:
+				title = ""
+			
+			controlIDs = [title, typeOf, title + typeOf]
+			topLevelControlIDs = [topLevelParentTitle, topLevelParentType, topLevelParentTitle + topLevelParentType]
+
+		except Exception as e:
+			raise Token.CreationException("Could not build token: {}".format(str(e)))
+		
+		# create a new token
+		token = Token(timeStamp, id, isDialog, isEnabled, isVisible, processID, typeOf,
+		              rectangle, texts, title, numControls, controlIDs, parentTitle,
+		              parentType, topLevelControlIDs, topLevelParentTitle, topLevelParentType, childrenTexts, image,
+		              autoID, expandState, shownState)
+		
+		return token
 	
 	def isEqualTo(self, token2: 'Token'):
 		"""
@@ -349,7 +449,53 @@ class Token:
 			
 			else:
 				return Token.Match.NO, score
-	
+
+	def registerAsAccepted(self):
+		"""
+		This method should only be called on components that are stored in the TGUIM.
+
+		.. warning:: This method should only be called once on each token that is stored permanently.
+
+		:return: None
+		:rtype: NoneType
+		"""
+		for controlID in self.controlIDs:
+			if self.type == controlID or controlID.strip() == "":
+				newVal = 10000000
+			else:
+				newVal = Token.control_ID_count.get(controlID, 0) + 1
+			Token.control_ID_count[controlID] = newVal
+
+	def getControlIDs(self):
+		"""
+		Get the control IDs in order of uniqueness.
+
+		:return: The list of control identifiers in order of uniqueness. In case of a tie, the longer control ID will come first.
+		:rtype: List[str]
+		"""
+		return list(filter(len, sorted(self.controlIDs, key=cmp_to_key(Token.control_ID_comparator))))
+
+	def getTopLevelParentControlIDs(self):
+		"""
+		Get the top-level parent control IDs in order of uniqueness.
+
+		:return: The list of control identifiers in order of uniqueness. In case of a tie, the longer control ID will come first.
+		:rtype: List[str]
+		"""
+		return list(filter(len, sorted(self.topLevelParentControlIDs, key=cmp_to_key(Token.control_ID_comparator))))
+
+	@staticmethod
+	def control_ID_comparator(controlID1: str, controlID2: str):
+		count1 = Token.control_ID_count.get(controlID1, 100000000)
+		count2 = Token.control_ID_count.get(controlID2, 100000000)
+
+		if count1 < count2:
+			return -1
+		elif count1 > count2:
+			return 1
+		else:
+			return len(controlID2) - len(controlID1)
+
 	def __str__(self):
 		ret = "TOKEN:"
 		for key, val in vars(self).items():

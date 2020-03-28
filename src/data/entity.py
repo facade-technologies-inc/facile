@@ -24,16 +24,17 @@ This module contains the Entity class.
 
 # TODO: Import properties class for type hint purposes???
 
+from PySide2.QtCore import QObject, Signal
 
-class Entity:
+class Entity(QObject):
 	"""
 	This class is the abstract super class for the Component and VisibilityBehavior classes.
 	It defines a unique id for entities that are created, and has a properties object.
 	"""
 	count: int = 0  # Class variable used to uniquely identify every entity created.
-	
+	updated = Signal()
+
 	# TODO: Take a Properties object as an input parameter???
-	
 	def __init__(self):
 		"""
 		Constructs an Entity object.  Note: This is an abstract class, so this constructor is used
@@ -42,12 +43,12 @@ class Entity:
 		:return: The constructed Entity
 		:rtype: Entity
 		"""
-		
+		QObject.__init__(self)
 		Entity.count += 1
 		self._id: int = Entity.count
 		self._properties = None
 	
-	def getId(self) -> None:
+	def getId(self) -> int:
 		"""
 		Gets the unique id for the entity.
 
@@ -78,3 +79,54 @@ class Entity:
 		"""
 		
 		self._properties = propertiesObj
+		
+	def getName(self) -> str:
+		"""
+		Gets the name of this entity.
+		
+		:return: the name of the entity
+		:rtype: str
+		"""
+		return self.getProperties().getProperty("Name")[1].getValue()
+	
+	def setName(self, newName:str) -> None:
+		"""
+		Set the name of this entity.
+		
+		:param newName: The new name of the entity.
+		:type newName: str
+		:return: None
+		:rtype: NoneType
+		"""
+		self.getProperties().getProperty("Name")[1].setValue(newName)
+	
+	def getAnnotation(self) -> str:
+		"""
+		Gets the annotation for this Entity. The annotation is given by the user.
+
+		:return: The user's comment about this entity.
+		:rtype: str
+		"""
+		return self.getProperties().getProperty("Annotation")[1].getValue()
+	
+	def setAnnotation(self, annotation: str) -> None:
+		"""
+		Sets the annotation for this Entity. The annotation is given by the user.
+
+		:param annotation: The user's comment about this entity.
+		:type annotation: str
+		"""
+		return self.getProperties().getProperty("Annotation")[1].setValue(annotation)
+
+	def triggerUpdate(self) -> None:
+		"""
+		Tries to emit the updated signal, but don't do anything if updated can't be emitted.
+		This method shouldn't do anything if it's operating as part of an API.
+
+		:return: None
+		:rtype: NoneType
+		"""
+		try:
+			self.updated.emit()
+		except:
+			print("Couldn't emit updated signal. (Assuming we're running in an API)")
