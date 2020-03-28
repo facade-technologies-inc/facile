@@ -24,8 +24,10 @@ view, but can be zoomed.
 
 
 from PySide2.QtWidgets import QGraphicsScene, QGraphicsTextItem, QGraphicsRectItem
+from PySide2.QtCore import Signal
 
 import data.statemachine as sm
+from data.entity import Entity
 from gui.facilegraphicsview import FacileGraphicsView
 import graphics.apim.actionpipelinegraphics as apg
 from graphics.apim.portgraphics import PortGraphics
@@ -37,6 +39,8 @@ class FacileActionGraphicsView(FacileGraphicsView):
 	
 	This is primarily used as the view that shows the target GUI model and API model
 	"""
+
+	entitySelected = Signal(Entity)
 	
 	def showAction(self, action: 'Action') -> None:
 		newScene = QGraphicsScene()
