@@ -62,8 +62,7 @@ class VisibilityBehavior(Entity):
 		self._srcComponent = srcComp
 		self._condition = Condition()
 		self._tguim = tguim
-		
-		# TODO: Add a "trigger action" data member?
+		self._triggerAction = None
 		
 		if srcComp and destComp:
 			
@@ -152,6 +151,26 @@ class VisibilityBehavior(Entity):
 		:return:
 		"""
 		self.getProperties().getProperty("Reaction Type")[1].setValue(reactType)
+
+	def setTriggerAction(self, action: 'ComponentAction') -> None:
+		"""
+		Sets the action that triggers this visibility behavior.
+
+		:param action: An action operating on the source component that triggers the visibility behavior.
+		:type action: ComponentAction
+		:return: None
+		:rtype: NoneType
+		"""
+		self._triggerAction = action
+		self.getProperties().getProperty("Trigger Action")[1].setValue(action.getName())
+
+	def getTriggerAction(self) -> 'ComponentAction':
+		"""
+		Gets the action that triggers this visibility behavior
+
+		:return:
+		"""
+		return self._triggerAction
 	
 	def asDict(self) -> dict:
 		"""
@@ -161,7 +180,7 @@ class VisibilityBehavior(Entity):
 			This is not just a getter of the __dict__ attribute.
 		
 		.. todo::
-			save the condition
+			save the condition AND the trigger action
 
 		:return: The dictionary representation of the object.
 		:rtype: dict
@@ -184,6 +203,9 @@ class VisibilityBehavior(Entity):
 
 		.. note::
 			The graphics item will not be created here. It must be created later.
+
+		.. todo:
+			Restore the condition AND the trigger action.
 
 		:param d: The dictionary that represents the VisibilityBehavior.
 		:type d: dict
