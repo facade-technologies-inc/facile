@@ -5,10 +5,18 @@ from data.compilationprofile import CompilationProfile
 
 class DocGenerator:
     """
-	This class is used
+	This class is used to generate API documentations based on user's preference.
 	"""
     
     def __init__(self, docType: set, projectName: str):
+        """
+        Construct the class DocGenerator
+        
+        :param docType: user's choices on the type(s) of the documentations to be generated
+        :type docType: set
+        :param projectName: the name of the project
+        :type projectName: str
+        """
         self.projectDir = sm.StateMachine.instance._project.getProjectDir()
         #self.projectDir = r"C:\Users\ramos\Desktop\FacadeTechnology\FacileAPIs\NotePadAPIDemoExample"
         
@@ -17,6 +25,12 @@ class DocGenerator:
         self.sphinxFacileDir = r"C:\Users\ramos\Desktop\FacadeTechnology\facile\src\data\compiler\sphinx_src"
     
     def createDoc(self):
+        """
+        Create the documentation(s).
+        
+		:return: None
+		:rtype: NoneType
+        """
         if len(self.docType) == 0:
             return
         
@@ -73,6 +87,12 @@ class DocGenerator:
             os.system('RMDIR /Q/S src')
             
     def modifyConf(self):
+        """
+        Modify conf.py based on the current project
+        
+		:return: None
+		:rtype: NoneType
+        """
         srcDir = '{}\src'.format(self.projectDir)
         os.chdir(srcDir)
         
