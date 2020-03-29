@@ -16,60 +16,50 @@ class DocGenerator:
         self.sphinxFacileDir = r"C:\Users\ramos\Desktop\FacadeTechnology\facile\src\data\compiler\sphinx_src"
     
     def createDoc(self):
+        if len(self.docType) == 0:
+            return
+        
         for type in self.docType:
-            # os.chdir(self.projectDir)
-            # os.system('ls'
-            #           '& xcopy {0} /e'
-            #           '& cd src')
+            os.chdir(self.projectDir)
+            os.system('ls'
+                      '& xcopy {0} /e'.format(self.sphinxFacileDir))
+            # TODO: change conf.py here. So it won't mess up the default file in facile
             
             if type is CompilationProfile.DocType.Html:
-                os.chdir(self.projectDir)
                 formatChoice = "html"
-                os.system('ls '
-                          '& xcopy {0} /e'
-                          '& cd src'
-                          '& make {1}'
+                os.chdir(self.projectDir)
+                os.system('cd src'
+                          '& make {0}'
                           '& cd _build'
-                          '& move html {2}\Documentation'
-                          '& cd ../..'
-                          '& RMDIR /Q/S src'.format(self.sphinxFacileDir, formatChoice, self.projectDir))
+                          '& move {0} {1}\Documentation'.format(formatChoice, self.projectDir))
                 
             elif type is CompilationProfile.DocType.Doc:
                 formatChoice = "text"
                 os.chdir(self.projectDir)
-                os.system('ls '
-                          '& xcopy {0} /e'
-                          '& cd src'
-                          '& make {1}'
+                os.system('cd src'
+                          '& make {0}'
                           '& cd _build'
-                          '& move {1} {2}\Documentation'
-                          '& cd ../..'
-                          '& RMDIR /Q/S src'.format(self.sphinxFacileDir, formatChoice, self.projectDir))
+                          '& move {0} {1}\Documentation'.format(formatChoice, self.projectDir))
                 
             elif type is CompilationProfile.DocType.Pdf:
                 # TODO: fix pdf creation
                 formatChoice = "latex"
                 os.chdir(self.projectDir)
-                os.system('ls '
-                          '& xcopy {0} /e'
-                          '& cd src'
-                          '& make {1}'
+                os.system('cd src'
+                          '& make {0}'
                           '& cd _build'
-                          '& move {1} {2}\Documentation'
-                          '& cd ../..'
-                          '& RMDIR /Q/S src'.format(self.sphinxFacileDir, formatChoice, self.projectDir))
+                          '& move {0} {1}\Documentation'.format(formatChoice, self.projectDir))
             
             elif type is CompilationProfile.DocType.EPub:
                 formatChoice = "epub"
                 os.chdir(self.projectDir)
-                os.system('ls '
-                          '& xcopy {0} /e'
-                          '& cd src'
-                          '& make {1}'
+                os.system('cd src'
+                          '& make {0}'
                           '& cd _build'
-                          '& move {1} {2}\Documentation'
-                          '& cd ../..'
-                          '& RMDIR /Q/S src'.format(self.sphinxFacileDir, formatChoice, self.projectDir))
+                          '& move {0} {1}\Documentation'.format(formatChoice, self.projectDir))
+                
+            os.chdir(self.projectDir)
+            os.system('RMDIR /Q/S src')
 
 
 # setDocType = set()
