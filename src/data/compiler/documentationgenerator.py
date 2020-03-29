@@ -8,10 +8,11 @@ class DocGenerator:
 	This class is used
 	"""
     
-    def __init__(self, docType: set):
+    def __init__(self, docType: set, projectName: str):
         self.projectDir = sm.StateMachine.instance._project.getProjectDir()
         #self.projectDir = r"C:\Users\ramos\Desktop\FacadeTechnology\FacileAPIs\NotePadAPIDemoExample"
-    
+        
+        self.projectName = projectName
         self.docType = docType
         self.sphinxFacileDir = r"C:\Users\ramos\Desktop\FacadeTechnology\facile\src\data\compiler\sphinx_src"
     
@@ -24,6 +25,7 @@ class DocGenerator:
             os.system('ls'
                       '& xcopy {0} /e'.format(self.sphinxFacileDir))
             # TODO: change conf.py here. So it won't mess up the default file in facile
+            self.modifyConf()
             
             if type is CompilationProfile.DocType.Html:
                 formatChoice = "html"
@@ -60,6 +62,9 @@ class DocGenerator:
                 
             os.chdir(self.projectDir)
             os.system('RMDIR /Q/S src')
+            
+    def modifyConf(self):
+        print(self.projectName)
 
 
 # setDocType = set()
