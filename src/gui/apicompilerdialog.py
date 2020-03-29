@@ -28,6 +28,7 @@ from PySide2.QtCore import Signal, Slot
 from PySide2.QtWidgets import QDialog, QWidget, QFileDialog
 from data.compilationprofile import CompilationProfile
 from data.compiler.compiler import Compiler
+from data.compiler.documentationgenerator import DocGenerator
 from gui.ui.ui_apicompilerdialog import Ui_Dialog as Ui_ApiCompilerDialog
 from tguiil.matchoption import MatchOption
 from libs.bitness import getPythonBitness, isExecutable, appBitnessMatches, getExeBitness
@@ -202,8 +203,11 @@ class ApiCompilerDialog(QDialog):
 				errMsg += "\t" + err + "\n"
 			self.ui.error_label.setText(errMsg)
 			return
-
-		# TODO: figure out why FindExecutable: There is no association for the file get printed
+		
+		# no error? run document generation
+		docGenerator = DocGenerator(setDocType)
+		docGenerator.createDoc()
+		
 		self.setApiCompiler.emit(theCompilationProfile)
 		c = Compiler(theCompilationProfile).compileAPI()
 		return QDialog.accept(self)
