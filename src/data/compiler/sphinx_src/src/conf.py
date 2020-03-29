@@ -17,7 +17,7 @@ sys.path.insert(0, os.path.abspath('../API'))
 
 # -- Project information -----------------------------------------------------
 
-project = 'NotepadAPI'
+project = '{userDefinedProjectName}'
 copyright = '2020, Facade Technologies Inc.'
 author = 'Facade Technologies Inc.'
 
