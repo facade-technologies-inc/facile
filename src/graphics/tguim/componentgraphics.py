@@ -42,24 +42,26 @@ class ComponentGraphics(QGraphicsItem):
     TITLEBAR_H = 0  # Titlebar height
     TRIM = 1
     
-    # Variable Settings
-    # TODO: Should let user change these ones, and also warn them of extra processing power for smaller increment size.
+    # Variable Settings (CURRENTLY UNUSED, MAY INTERFERE IF IMPLEMENTED)
     SCALE_INCR = 0.05  # Increment to use when trying to scale components. Smaller increments lead to
-                       #   more realistic model, but require more processing power/time.
-    MIN_SIDE_LENGTH = 3  # Prevents components from getting any smaller when a side reaches this size.
+                        # more realistic model, but require more processing power/time.
+    MIN_SIDE_LENGTH = 0  # Prevents components from getting any smaller when a side reaches this size.
+    INIT_SCALEDOWN = .957  # All components get imported into Facile with larger dimensions than they really have.
+                            # This value fixes that problem. (Found by trial and error)
+    INIT_TL_WIDTH_SD = .957  # With the current algorithm, windows have extra space on the right, this fixes the issue
+                                # This is a percentage.
     
     # Top-Level Windows
     WINDOW_SPACING = 100  # Vertical spacing between windows in TGUIM
     MIN_AREA_THRESH_P = 0.25  # Qualifies a component to go to extra components section. Percent as proportion.
     WINDOW_LEFT_OFFSET = 30  # Offset from left side of scene to show all windows.
+    TOP_PADDING = 50  # Space from top of scene to start showing windows
     WINDOW_HEIGHT = 600  # The fixed height for all top-level windows
     
-    # Extra Components Sections
-    EC_X_PADDING = 0  # Padding between top level windows and the EC section
-    EC_MARGINS = 3  # *Half* of the spacing between components in the extra components section
-    EC_ABS_WIDTH = 1000  # Locks the right edge placement of the EC section relative to x=0 in the scene
+    # Extra Components Section
+    LRG_PCT_OVERLAP = 30  # Percent of overlap on either component for an overlap to be considered large (or 'a lot')
     MIN_TIME_DIFF = .05  # Time difference from the overlapping component
-                         #   to qualify moving self to extra components section
+                            # to qualify moving self to extra components section
     
     def __init__(self, dataComponent: 'Component', rect: tuple = (), parent=None):
         """
@@ -80,6 +82,10 @@ class ComponentGraphics(QGraphicsItem):
             self.isRoot = False
         
         self._dataComponent = dataComponent
+        try:
+            self._depth = dataComponent.getSuperToken().getTokens()[0].depth - 1  # Depth relative to top-level window
+        except:
+            self._depth = -1  # root
         
         # force components to have at least the minimum size
         self._x = rect[0]
@@ -94,8 +100,8 @@ class ComponentGraphics(QGraphicsItem):
         
         # Root
         if self._dataComponent.getParent() is None:
-            self._width = max(ComponentGraphics.MIN_SIDE_LENGTH, rect[2])
-            self._height = max(ComponentGraphics.MIN_SIDE_LENGTH, rect[3])
+            self._width = rect[2]
+            self._height = rect[3]
             self.setPos(max(0, rect[0]), max(0, rect[1]))
             self._parentGraphics = None
             self._parentIsScene = False
@@ -103,42 +109,43 @@ class ComponentGraphics(QGraphicsItem):
         
         # Top-Level Window
         elif self._dataComponent.getParent().getParent() is None:
-            # Set initial width, height, and scale
-            self._width = max(ComponentGraphics.MIN_SIDE_LENGTH, rect[2])
-            self._height = max(ComponentGraphics.MIN_SIDE_LENGTH, rect[3])
-            self._absScale = 1
-            
-            # Scale to uniform height
-            scale = ComponentGraphics.WINDOW_HEIGHT/self._height
-            self.setScale(scale)
+            # Set initial width and height
+            self._width = rect[2] * ComponentGraphics.INIT_TL_WIDTH_SD
+            self._height = rect[3]
 
             # Forces windows to snap to top-left, aligned vertically.
-            self.setPos(ComponentGraphics.WINDOW_LEFT_OFFSET, 0)
             self._parentGraphics = self.scene()
             self._parentIsScene = True
+            self.setPos(ComponentGraphics.WINDOW_LEFT_OFFSET, ComponentGraphics.TOP_PADDING)
+
+            # Scale to uniform height
+            self._absScale = ComponentGraphics.WINDOW_HEIGHT / self._height
+            self.setScale(self._absScale)
         
         # All other components
         else:
             self._width = max(ComponentGraphics.MIN_SIDE_LENGTH, rect[2])
-            self._height = max(ComponentGraphics.MIN_SIDE_LENGTH,
-                               rect[3] + ComponentGraphics.TITLEBAR_H)
-            self.setPos(max(0, rect[0]),
-                        max(0, rect[1] + ComponentGraphics.TITLEBAR_H))
+            self._height = max(ComponentGraphics.MIN_SIDE_LENGTH, rect[3] + ComponentGraphics.TITLEBAR_H)
+            self.setPos(max(0, rect[0]), max(0, rect[1] + ComponentGraphics.TITLEBAR_H))
             
             self._parentGraphics = self.scene().getGraphics(self._dataComponent.getParent())
-            
-            # Gets the absolute scale of the data parent and scales self accordingly
-            self._absScale = self._parentGraphics.getAbsScale()
-            self.setScale(self._absScale)
-            
             self._parentIsScene = False
+            
+            # Gets the absolute scale of the data parent and scales self accordingly, using the scaledown as well
+            self._absScale = self._parentGraphics.getAbsScale()
+            self.scalePos(self._absScale)
+            self._absScale *= ComponentGraphics.INIT_SCALEDOWN ** self._depth
+            self.setScale(self._absScale)
         
         self.adjustPositioning()
 
-        # Creates the top-level wrapper, places self in it.
+        # If window: Creates the top-level wrapper, places self in it.
         # Important that this is after adjustPositioning
         if self._parentIsScene:
-            self.scene().addItem(TopLevelWrapperGraphics(self))
+            tmp = TopLevelWrapperGraphics(self)
+            self._parentGraphics.addItem(tmp)
+            print("created wrapper for " + self.getLabel())
+            print('parent: ' + self.parentItem().getLabel())
         
         self.menu = ComponentMenu()
         self.menu.onBlink(lambda: self.scene().blinkComponent(self._dataComponent.getId()))
@@ -198,7 +205,7 @@ class ComponentGraphics(QGraphicsItem):
         :rtype: NoneType
         """
         
-        if self._parent is None:
+        if self._parentGraphics is None:
             # We're dealing with the root that should never be drawn.
             return
         
@@ -222,7 +229,7 @@ class ComponentGraphics(QGraphicsItem):
         
         # A window's 1st level of components
         elif self._dataComponent.getParent().getParent().getParent() is None:
-            self.chkExtraComponent()
+            self.chkExtraComponents()
             # self.resolveCollisions()
         
         # All other components
@@ -239,15 +246,25 @@ class ComponentGraphics(QGraphicsItem):
         :rtype: NoneType
         """
 
-        if self._dataComponent.getParent().getParent() is None:
+        if self._depth is 1:
             collidingSibs = self.getCollidingSiblings()
+            print('chkExtraComponents ran for ' + self.getLabel())
+            
             for sib in collidingSibs:
-                if self.wasFoundMuchLaterThan(sib) and self.overlapsALotWith(sib):
-                    if self._dataComponent.timestamp < sib.getDataComponent().timestamp:
-                        self._parent.addToExtraComponents(sib)
-                    else:  # timestamps are never going to be equal
-                        self._parent.addToExtraComponents(self)
+                if self.isOverlappedALotBy(sib) or sib.isOverlappedALotBy(self):
+                    print('Large overlap between ' + self.getLabel() + ' and ' + sib.getLabel())
+                    print(self.getLabel() + ": " + self.get)
+                
+                if self.isOverlappedALotBy(sib) and self.wasFoundMuchLaterThan(sib):
+                    self._parentGraphics.addToExtraComponents(self)
+                    print(self.getLabel() + ' added to ECs')
+                    break  # Don't want to continue this for loop after self is moved
+                elif sib.isOverlappedALotBy(self) and sib.wasFoundMuchLaterThan(self):
+                    self._parentGraphics.addToExtraComponents(sib)
+                    print(sib.getLabel() + ' added to ECs')
                 else:
+                    # TODO: Figure out what to do here.
+                    # self.tryToResolveCollisionWith(sib)
                     continue
                     
     def addToExtraComponents(self, component: 'ComponentGraphics'):
@@ -259,14 +276,11 @@ class ComponentGraphics(QGraphicsItem):
         :return: None
         """
         
-        if self._dataComponent.getParent().getParent() is None:
+        if self._dataComponent.getParent().getParent().getParent() is None:
             if not self._ecSection:
-                # TODO: Work on integrating with wrapper.
+                print("created ec section for " + self.getLabel())
                 self._ecSection = ScrollableGraphicsItem()
-                self._ecSection.setParentItem(self.parentItem())
-                self._ecSection.setRect(self.x() + self.width() + ComponentGraphics.EC_X_PADDING,
-                                        self.y(), ComponentGraphics.EC_ABS_WIDTH - self.width(),
-                                        self.height())
+                self._parentGraphics.addECSection(self._ecSection)
             
             self._ecSection.addItemToContents(component)
             self._extraComponents.append(component)
@@ -306,15 +320,27 @@ class ComponentGraphics(QGraphicsItem):
         Always relative to current size, not to original size.
 
         :param scale: scale to scale component by
+        :type scale: float
         :return: None
         :rtype: NoneType
         """
         
         self.prepareGeometryChange()
-        
-        self._absScale = scale * self._absScale
+        # QGraphicsItem.setScale(self, scale)
         self._width = scale * self._width
         self._height = scale * self._height
+
+    def scalePos(self, scale: float) -> None:
+        """
+        Scales self's coordinates relative to parent, using parameter scale.
+
+        :param scale: scale to scale position by
+        :type scale: float
+        :return: None
+        :rtype: NoneType
+        """
+        
+        self.setPos(scale * self.x(), scale * self.y())
     
     def scaleChildren(self, scale: float) -> None:
         """
@@ -377,26 +403,30 @@ class ComponentGraphics(QGraphicsItem):
         :rtype: bool
         """
         
-        if abs(self._dataComponent.timestamp - sib.getDataComponent().timestamp) > ComponentGraphics.MIN_TIME_DIFF:
+        if (self._dataComponent.timestamp - sib.getDataComponent().timestamp) >= ComponentGraphics.MIN_TIME_DIFF:
             return True
         else:
             return False
         
-    def overlapsALotWith(self, sib: 'ComponentGraphics') -> bool:
+    def isOverlappedALotBy(self, sib: 'ComponentGraphics') -> bool:
         """
-        Whether or not self overlaps a large area of sib
+        Whether or not sib overlaps a large area of self. Should only really be used by sub-top-level components.
+        Assumes it is already known that self and sib overlap.
         
         :param sib: Sibling component that overlaps with self
         :type sib: ComponentGraphics
         :return: Whether or not self overlaps a large area of sib
         :rtype: bool
         """
+
+        overlappingWidth = min(self.x() + self.width(), sib.x() + sib.width()) - max(self.x(), sib.x())
+        overlappingHeight = min(self.y() + self.height(), sib.y() + sib.height()) - max(self.y(), sib.y())
+        overlappingArea = overlappingWidth * overlappingHeight
+        selfArea = self.width() * self.height()
         
-        # TODO: Figure this out
-        if self.x() + self.width() > sib.x():
-            xoverlap = self.x() + self.width() - sib.x()
-        elif self.x() < sib.x() + sib.width():
-            pass
+        if overlappingArea >= ComponentGraphics.LRG_PCT_OVERLAP * selfArea:
+            return True
+        return False
     
     def getSiblings(self) -> list:
         """
@@ -481,11 +511,11 @@ class ComponentGraphics(QGraphicsItem):
         :rtype: bool
         """
         
-        selfBound = self.boundingRect(False)
+        selfBound = self.boundingRect()
         selfx = self.scenePos().x() + selfBound.x()
         selfy = self.scenePos().y() + selfBound.y()
         
-        sibBound = sibling.boundingRect(False)
+        sibBound = sibling.boundingRect()
         sibx = sibling.scenePos().x() + sibBound.x()
         siby = sibling.scenePos().y() + sibBound.y()
         

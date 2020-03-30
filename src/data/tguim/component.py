@@ -54,6 +54,7 @@ class Component(Entity):
 		self._destVisibilityBehaviors = []
 		self._model = tguim
 		self.timestamp = datetime.now().timestamp()
+		self.depth = -1
 		
 		if parent is not None:
 			parent.addChild(self)
@@ -80,9 +81,14 @@ class Component(Entity):
 			props.getProperty("Y")[1].setValue(geometry[1])
 			props.getProperty("Width")[1].setValue(geometry[2])
 			props.getProperty("Height")[1].setValue(geometry[3])
-			#props.getProperty("Has Moved")[1].setValue(self._graphicsItem.getNumMoves() != 0)
+			# props.getProperty("Has Moved")[1].setValue(self._graphicsItem.getNumMoves() != 0)
 			
 			self.setProperties(props)
+			
+			nxtParent = parent
+			while nxtParent:
+				self.depth += 1
+				nxtParent = nxtParent.parent()
 
 		self.triggerUpdate()
 	

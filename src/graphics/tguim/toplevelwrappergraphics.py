@@ -9,9 +9,12 @@ class TopLevelWrapperGraphics(QGraphicsRectItem):
     """
     A wrapper for the top-level graphics item and the scrollable extra items.
     """
-
+    
+    BUFFER = 2
     BUTTON_WIDTH = 50
-    BACKGROUND_COLOR = QColor(0,10,50)
+    BACKGROUND_COLOR = QColor(0, 10, 255)
+    
+    EC_ABS_WIDTH = 1000  # Locks the right edge placement of the EC section relative to x=0 in the scene
 
     class Button(QGraphicsRectItem):
         """
@@ -61,7 +64,6 @@ class TopLevelWrapperGraphics(QGraphicsRectItem):
 
     def __init__(self, topLevelGraphics=None):
         QGraphicsRectItem.__init__(self)
-        self.setBrush(TopLevelWrapperGraphics.BACKGROUND_COLOR)
         
         # Set the window
         self._topLevelGraphics = topLevelGraphics
@@ -74,26 +76,15 @@ class TopLevelWrapperGraphics(QGraphicsRectItem):
         
         # Add it to self and set its position to (0,0)
         self._topLevelGraphics.setParentItem(self)
-        self._topLevelGraphics.setPos(0, 0)
+        # self._topLevelGraphics.setPos(0, 0)
         
         # Set the unused parts to None for the moment.
         self._scrollableItem = None
         self._collapseButton = None
         self._expandButton = None
 
-        # Set size and position to the top-level graphics's old position
+        # Set size and position to the top-level graphics's position and size
         self.setRect(x, y, width, height)
-        
-    def setECSection(self, ecs: 'ScrollableGraphicsItem'):
-        """
-        Sets the extra components section of this item
-        
-        :param ecs: extra components section to set
-        :type ecs: ScrollableGraphicsItem
-        :return: None
-        """
-        
-        self._scrollableItem = ecs
         
     def addECSection(self, ecs: 'ScrollableGraphicsItem'):
         """
@@ -103,8 +94,13 @@ class TopLevelWrapperGraphics(QGraphicsRectItem):
         :type ecs: ScrollableGraphicsItem
         :return: None
         """
+
+        ecs.setParentItem(self)
+        self._scrollableItem = ecs
         
-        self.setECSection(ecs)
+        # Set the section's position and size
+        win = self._topLevelGraphics
+        ecs.setRect(win.x() + win.width(), win.y(), TopLevelWrapperGraphics.EC_ABS_WIDTH - win.width(), win.height())
 
         # Define some variables
         bWidth = TopLevelWrapperGraphics.BUTTON_WIDTH
@@ -124,7 +120,7 @@ class TopLevelWrapperGraphics(QGraphicsRectItem):
 
         # Adjust the size once we know how big things are
         ebbr = self._expandButton.boundingRect()
-        width = tlbr.width() + ebbr.width()
+        width = tlbr.width() + ebbr.width() + TopLevelWrapperGraphics.BUFFER
         self.setRect(self.x(), self.y(), width, height)
     
     def onCollapseClicked(self):
@@ -138,7 +134,7 @@ class TopLevelWrapperGraphics(QGraphicsRectItem):
         self._expandButton.show()
         width = self._topLevelGraphics.rect().width() + \
                 self._expandButton.rect().width() + \
-                TopLevelWrapperGraphics.BUFFER * 3
+                TopLevelWrapperGraphics.BUFFER
         self.setRect(self.rect().x(), self.rect().y(), width, self.rect().height())
 
     def onExpandClicked(self):
@@ -153,8 +149,18 @@ class TopLevelWrapperGraphics(QGraphicsRectItem):
         width = self._topLevelGraphics.rect().width() + \
                 self._scrollableItem.rect().width() + \
                 self._collapseButton.rect().width() + \
-                TopLevelWrapperGraphics.BUFFER * 4
+                TopLevelWrapperGraphics.BUFFER * 2
         self.setRect(self.rect().x(), self.rect().y(), width, self.rect().height())
+
+    def getLabel(self) -> str:
+        """
+        Gets the label from this TLW graphics item.
+        
+        :return: The label for this component.
+        :rtype: str
+        """
+    
+        return "Wrapper for " + self._topLevelGraphics.getLabel()
 
 if __name__ == "__main__":
     app = QApplication()

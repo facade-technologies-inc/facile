@@ -43,6 +43,11 @@ class Token:
     """
     Token class sets parameters of a token for each state that changes.
     """
+
+    # TODO: Store the control identifiers of the top level parent for more accurate lookup.
+    # TODO: Store mapping of control IDs to their count
+
+    control_ID_count = {}
     
     class CreationException(Exception):
         def __init__(self, msg):
@@ -72,8 +77,13 @@ class Token:
     
     MAX_WEIGHTS = sum(Weight.values())
     THRESH_PERCENT = 50
-    WCTEXTS_THRESH_L = 0.6  # if only WCTEXTS_THRESH_L of children texts are the same btwn toks for wins, diff wins.
-    TLWINDOW_THRESH = 0.6
+    
+    # ---- Per-Type Constants ---- #
+    # Windows
+    WCTEXTS_THRESH_L = 0.6  # if only WCTEXTS_THRESH_L of children texts are the same btwn tokens for wins, diff wins.
+    TLWINDOW_THRESH = 0.6  # Threshold for similarity % between two windows' names and children texts
+    # Menus
+    MENU_TITLE_SIMILARITY_THRESH = 0.8  # Threshold for similarity % between menu names
     
     # For handling strings not having any significant meaning
     STR1_NOT_SIG = -1.0
@@ -342,7 +352,6 @@ class Token:
         #
         elif self.isDialog:
             total = 0
-            
             # --- Title --- #
             titleSim = stringSimilarity(self.title, token2.title)
             
@@ -376,8 +385,24 @@ class Token:
             
             if total < Token.TLWINDOW_THRESH * (Token.Weight['TITLE'] + Token.Weight['CHILDREN_TEXTS']):
                 return Token.Match.NO, 0
-            
+
             return self.inDepthMatchCheck(token2)
+        
+        #
+        #                    -------------------------
+        #                              Menus
+        #                    -------------------------
+        #
+        #    *Only checks for NO MATCH, otherwise does probabilistic approach*
+        #
+        elif self.type is 'Menu':
+            # For menus, the name is extremely important, so this is the only criteria here for the moment.
+            titleSim = stringSimilarity(self.title, token2.title)
+            
+            if titleSim <= Token.MENU_TITLE_SIMILARITY_THRESH:
+                return Token.Match.NO, 0
+            else:
+                return self.inDepthMatchCheck(token2)
         
         ###------------------- EXAMPLE ---------------------###
         # Just an example one that would need to be filled out
@@ -537,6 +562,48 @@ class Token:
         
         else:
             return Token.Match.NO, score
+
+    def registerAsAccepted(self):
+        """
+        This method should only be called on components that are stored in the TGUIM.
+        .. warning:: This method should only be called once on each token that is stored permanently.
+        :return: None
+        :rtype: NoneType
+        """
+        for controlID in self.controlIDs:
+            if self.type == controlID or controlID.strip() == "":
+                newVal = 10000000
+            else:
+                newVal = Token.control_ID_count.get(controlID, 0) + 1
+            Token.control_ID_count[controlID] = newVal
+
+    def getControlIDs(self):
+        """
+        Get the control IDs in order of uniqueness.
+        :return: The list of control identifiers in order of uniqueness. In case of a tie, the longer control ID will come first.
+        :rtype: List[str]
+        """
+        return list(filter(len, sorted(self.controlIDs, key=cmp_to_key(Token.control_ID_comparator))))
+
+    def getTopLevelParentControlIDs(self):
+        """
+        Get the top-level parent control IDs in order of uniqueness.
+        :return: The list of control identifiers in order of uniqueness. In case of a tie, the longer control ID will come first.
+        :rtype: List[str]
+        """
+        return list(filter(len, sorted(self.topLevelParentControlIDs, key=cmp_to_key(Token.control_ID_comparator))))
+
+    @staticmethod
+    def control_ID_comparator(controlID1: str, controlID2: str):
+        count1 = Token.control_ID_count.get(controlID1, 100000000)
+        count2 = Token.control_ID_count.get(controlID2, 100000000)
+    
+        if count1 < count2:
+            return -1
+        elif count1 > count2:
+            return 1
+        else:
+            return len(controlID2) - len(controlID1)
     
     def __str__(self):
         ret = "TOKEN:"
