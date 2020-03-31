@@ -33,7 +33,6 @@ from PySide2.QtWidgets import QGraphicsScene, QGraphicsItem, QApplication, QGrap
 from qt_models.portmenu import PortMenu
 import data.apim.port as port
 from data.apim.actionwrapper import ActionWrapper
-import graphics.apim.actionpipelinegraphics as apg
 
 class PortGraphics(QGraphicsItem):
 	"""

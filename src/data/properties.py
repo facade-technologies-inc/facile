@@ -115,6 +115,7 @@ class Properties:
 				newProperties.addProperty("Visibility Behavior", "Reaction Type", None, Enum)
 				newProperties.addProperty("Visibility Behavior", "Source ID", 1, int, True)
 				newProperties.addProperty("Visibility Behavior", "Destination ID", 1, int, True)
+				newProperties.addProperty("Visibility Behavior", "Trigger Action", "None", str)
 			elif predefinedCategories[i] == "Action":
 				pass
 			elif predefinedCategories[i] == "Port":
