@@ -152,21 +152,21 @@ class Compiler():
         copyfile(os.path.join(dir, 'baseapplication.py'), os.path.join(self._srcFolder, 'baseapplication.py'))
 
         # Create setup.py so user can install install API as a package with pip.
-        setupTempFile = open("setup-template.txt", 'r')
+        setupTempFile = open(os.path.join(dir, "setup-template.txt"), 'r')
         setupStr = setupTempFile.read().format(projectName=self.statem._project.getName(),
-                                               projectVersion=self.statem._project.getVersion())
+                                               projectVersion='0.1.0')  # TODO Add versioning
         setupTempFile.close()
         setupFile = open(os.path.join(self._saveFolder, 'setup.py'), 'w')
         setupFile.write(setupStr)
         setupFile.close()
 
         # Create __init__.py so API is a package.
-        initTempFile = open("__init__template.txt", 'r')
+        initTempFile = open(os.path.join(dir, "__init__template.txt"), 'r')
         targetAppName = self.statem._project.getExecutableFile().split('/')[-1].split('.')[0]  # '.../app.exe' -> 'app'
         targetAppName = targetAppName[0].upper() + targetAppName[1:]  # 'app' -> 'App'
         initStr = initTempFile.read().format(targetApplicationName=targetAppName)
         initTempFile.close()
-        initFile = open(os.path.join(self._srcFolderFolder, '__init__.py'), 'w')
+        initFile = open(os.path.join(self._srcFolder, '__init__.py'), 'w')
         initFile.write(initStr)
         initFile.close()
         
