@@ -47,8 +47,8 @@ class Compiler():
         
         # Save Folders
         self._saveFolder = compProf.apiFolderDir + '/'
-        self._srcFolder = os.path.join(self._saveFolder, self.statem._project.getName() + 'API/')
-        self._docFolder = os.path.join(self._saveFolder, 'Documentation/')
+        self._srcFolder = os.path.join(self._saveFolder, self.statem._project.getName() + '/')
+        self._docFolder = os.path.join(self._srcFolder, 'Documentation/')
         
         # Make all save folders if they don't exist
         if not os.path.exists(self._saveFolder):  # If the user enters a path that doesn't exist, it is created
@@ -150,5 +150,24 @@ class Compiler():
         curPath = os.path.abspath(__file__)
         dir, filename = os.path.split(curPath)
         copyfile(os.path.join(dir, 'baseapplication.py'), os.path.join(self._srcFolder, 'baseapplication.py'))
+
+        # Create setup.py so user can install install API as a package with pip.
+        setupTempFile = open(os.path.join(dir, "setup-template.txt"), 'r')
+        setupStr = setupTempFile.read().format(projectName=self.statem._project.getName(),
+                                               projectVersion='0.1.0')  # TODO Add versioning
+        setupTempFile.close()
+        setupFile = open(os.path.join(self._saveFolder, 'setup.py'), 'w')
+        setupFile.write(setupStr)
+        setupFile.close()
+
+        # Create __init__.py so API is a package.
+        initTempFile = open(os.path.join(dir, "__init__template.txt"), 'r')
+        targetAppName = self.statem._project.getExecutableFile().split('/')[-1].split('.')[0]  # '.../app.exe' -> 'app'
+        targetAppName = targetAppName[0].upper() + targetAppName[1:]  # 'app' -> 'App'
+        initStr = initTempFile.read().format(targetApplicationName=targetAppName)
+        initTempFile.close()
+        initFile = open(os.path.join(self._srcFolder, '__init__.py'), 'w')
+        initFile.write(initStr)
+        initFile.close()
         
         self.generateCustomApp()
