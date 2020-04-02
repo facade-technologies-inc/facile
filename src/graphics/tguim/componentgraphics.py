@@ -179,7 +179,7 @@ class ComponentGraphics(QGraphicsItem):
         if self._parentIsScene:
             self.scene().addItem(TopLevelWrapperGraphics(self))
         
-        self.menu = ComponentMenu()
+        self.menu = ComponentMenu(dataComponent)
         self.menu.onBlink(lambda: self.scene().blinkComponent(self._dataComponent.getId()))
         
         try:
