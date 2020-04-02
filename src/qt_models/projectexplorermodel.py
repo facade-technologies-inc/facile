@@ -354,8 +354,11 @@ class ProjectExplorerModel(QAbstractItemModel):
 			elif isinstance(innerData, Component):
 				visBehaviors = list(
 					self._project.getTargetGUIModel().getVisibilityBehaviors().values())
-				visBehaviorIdx = visBehaviors.index(parentData)
-				return self.registerAndCreateIndex(visBehaviorIdx, 0, parentData)
+				try:
+					visBehaviorIdx = visBehaviors.index(parentData)
+					return self.registerAndCreateIndex(visBehaviorIdx, 0, parentData)
+				except:
+					return QModelIndex()
 			
 			else:
 				raise ProjectExplorerModel.UnsupportedTypeException(
@@ -477,7 +480,9 @@ class ProjectExplorerModel(QAbstractItemModel):
 			if col == 0:
 				return data.getProperties().getProperty("Name")[1].getValue()
 			elif col == 1:
-				return data.getProperties().getProperty("Reaction Type")[1].getValue().name
+				description = "{} on {}".format(data.getProperties().getProperty("Reaction Type")[1].getValue().name,
+												data.getProperties().getProperty("Trigger Action")[1].getValue())
+				return description
 			else:
 				return None
 		

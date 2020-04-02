@@ -41,6 +41,7 @@ class TargetGuiModel(QObject):
 	dataChanged = Signal(int)
 	newComponent = Signal(Component)
 	newBehavior = Signal(VisibilityBehavior)
+	behaviorRemoved = Signal(VisibilityBehavior)
 
 	def __init__(self) -> 'TargetGuiModel':
 		"""
@@ -204,6 +205,23 @@ class TargetGuiModel(QObject):
 		src.addSrcVisibilityBehavior(newVisBehavior)
 		dest.addDestVisibilityBehavior(newVisBehavior)
 		self.newBehavior.emit(newVisBehavior)
+
+	def removeVisibilityBehavior(self, vb: 'VisibilityBehavior') -> None:
+		"""
+		Removes a visibility behavior from the TGUIM completely. This action is not reversible.
+
+		:param vb: The visibility behavior to remove.
+		:type vb: VisibilityBehavior
+		:return: None
+		:rtype: NoneType
+		"""
+		if vb not in self._visibilityBehaviors.values():
+			return
+
+		vb.getSrcComponent().removeSrcVisibilityBehavior(vb)
+		vb.getDestComponent().removeDestVisibilityBehavior(vb)
+		del self._visibilityBehaviors[vb.getId()]
+		self.behaviorRemoved.emit(vb)
 	
 	def asDict(self) -> dict:
 		"""

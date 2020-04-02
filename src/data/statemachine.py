@@ -33,6 +33,7 @@ import data.tguim.visibilitybehavior as vb
 from gui.facilegraphicsview import FacileGraphicsView
 from gui.facileactiongraphicsview import FacileActionGraphicsView
 from gui.blackboxeditordialog import BlackBoxEditorDialog
+from gui.settriggeractiondialog import SetTriggerActionDialog
 from qt_models.propeditordelegate import PropertyEditorDelegate
 from data.configvars import ConfigVars
 from data.apim.actionpipeline import ActionPipeline
@@ -238,12 +239,12 @@ class StateMachine:
 					destComp = self.vbComponents[1]
 					tguim = self._project.getTargetGUIModel()
 					newVB = vb.VisibilityBehavior(tguim, srcComp, destComp)
+					SetTriggerActionDialog(newVB).exec_()
 					self.view._project.getTargetGUIModel().addVisibilityBehavior(newVB)
 					self.view.ui.projectExplorerView.update()
 					self.view.ui.projectExplorerView.model().selectBehavior(newVB)
 					nextState = StateMachine.State.MODEL_MANIPULATION
-		
-		
+
 		# If the user has initiated exploration and the target application is running, go into the
 		# EXPLORATION
 		elif event == StateMachine.Event.START_EXPLORATION:
