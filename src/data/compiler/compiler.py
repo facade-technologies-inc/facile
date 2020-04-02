@@ -99,7 +99,7 @@ class Compiler():
             
             for action in cas:
                 f.write(action.getMethod())
-            
+
             for ap in aps:
                 f.write(ap.getMethod())
     

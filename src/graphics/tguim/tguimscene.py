@@ -61,7 +61,7 @@ class TGUIMScene(QGraphicsScene):
 				work.append((child, graphics))
 
 		# Create all visibility behavior graphics
-		for vb in targetGUIModel.getVisibilityBehaviors():
+		for vb in (targetGUIModel.getEntity(id) for id in targetGUIModel.getVisibilityBehaviors()):
 			graphics = self.createVisibilityBehaviorGraphics(vb)
 			self.addItem(graphics)
 
