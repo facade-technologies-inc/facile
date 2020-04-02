@@ -1,0 +1,13 @@
+from setuptools import setup, find_packages
+
+setup(
+  name='{projectName}',
+  version='{projectVersion}',
+  packages=find_packages(),
+  #TODO: package_data values will need to change when we figure out how to include Facile's tguim and tguiil as binaries.
+  package_data={{'{projectName}': ['data/*.py', 'data/tguim/*.py',
+  'tguiil/*.py', 'Documentation/*', '*']}},
+
+  #Insert additional Metadata for PyPI here.
+
+)
