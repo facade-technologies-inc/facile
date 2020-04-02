@@ -27,7 +27,7 @@ import math
 from typing import Dict, List
 
 from PySide2.QtWidgets import QGraphicsItem, QApplication, QGraphicsView, QGraphicsScene, \
-	QWidget, QStyleOptionGraphicsItem
+	QWidget, QStyleOptionGraphicsItem, QGraphicsSceneMouseEvent
 from PySide2.QtGui import QPainter, QPainterPath, QColor, Qt
 from PySide2.QtCore import QRectF, Slot, SIGNAL, QObject
 from graphics.apim.portgraphics import PortGraphics
@@ -317,6 +317,20 @@ class ActionGraphics(QGraphicsItem):
 	def getWidth(self):
 		self.updateActionRect()
 		return self._width
+
+	def mousePressEvent(self, event: QGraphicsSceneMouseEvent):
+		"""
+		When a port is clicked, emit the entitySelected signal from the view.
+		:param event: the mouse click event
+		:type event: QGraphicsSceneMouseEvent
+		:return: None
+		"""
+		event.ignore()
+
+		try:
+			self.scene().views()[0].entitySelected.emit(self._port)
+		except:
+			pass
 		
 if __name__ == "__main__":
 	app = QApplication()

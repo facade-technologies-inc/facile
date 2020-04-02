@@ -105,7 +105,6 @@ class Properties:
 				newProperties.addProperty("Visual", "Y", 0, int, True)
 				newProperties.addProperty("Visual", "Width", 100, int, True)
 				newProperties.addProperty("Visual", "Height", 100, int, True)
-				#newProperties.addProperty("Visual", "Has Moved", False, bool, True)
 			elif predefinedCategories[i] == "GUI Component":
 				newProperties.addProperty("GUI Component", "Title", "default", str, True)
 				newProperties.addProperty("GUI Component", "Parent Title", "default", str, True)
@@ -116,9 +115,11 @@ class Properties:
 				newProperties.addProperty("Visibility Behavior", "Source ID", 1, int, True)
 				newProperties.addProperty("Visibility Behavior", "Destination ID", 1, int, True)
 				newProperties.addProperty("Visibility Behavior", "Trigger Action", "None", str)
-			elif predefinedCategories[i] == "Action":
-				pass
 			elif predefinedCategories[i] == "Port":
+				newProperties.addProperty("Port", "Data Type", "str", str)
+				newProperties.addProperty("Port", "Default Value", "0", str)
+				newProperties.addProperty("Port", "Optional", False, bool)
+			elif predefinedCategories[i] == "Action":
 				pass
 			elif predefinedCategories[i] == "Wire":
 				pass

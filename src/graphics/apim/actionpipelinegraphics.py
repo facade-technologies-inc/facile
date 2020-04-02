@@ -342,7 +342,9 @@ class ActionPipelineGraphics(ActionGraphics):
 		self.stagingConnection = pg
 		self.connectionIndicator.setColor(ConnectionIndicator.BAD_COLOR)
 		self.connectionIndicator.show()
-			
+
+		ActionGraphics.mousePressEvent(self, event)
+
 		event.accept()
 	
 	def mouseMoveEvent(self, event):

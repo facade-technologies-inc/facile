@@ -306,6 +306,10 @@ class FacileView(QMainWindow):
 		:rtype: NoneType
 		"""
 		entity = self._project.getTargetGUIModel().getEntity(id)
+		self.onEntitySelected(entity)
+
+	@Slot('Entity')
+	def onEntitySelected(self, entity: 'Entity') -> None:
 		properties = entity.getProperties()
 		self.ui.propertyEditorView.setModel(properties.getModel())
 		
@@ -325,8 +329,8 @@ class FacileView(QMainWindow):
 		elif type(entity) == VisibilityBehavior:
 			self.ui.projectExplorerView.model().selectBehavior(entity)
 
-		# elif type(entity) == Port:
-		# 	self.ui.propertyEditorView.setModel(PropModel(entity.getProperties()))
+		elif type(entity) == Port:
+			self.ui.propertyEditorView.setModel(PropModel(entity.getProperties()))
 	
 	@Slot(int)
 	def onItemBlink(self, id: int) -> None:
