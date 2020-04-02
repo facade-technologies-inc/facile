@@ -1,7 +1,31 @@
+"""
+..
+    /------------------------------------------------------------------------------\
+    |                 -- FACADE TECHNOLOGIES INC.  CONFIDENTIAL --                 |
+    |------------------------------------------------------------------------------|
+    |                                                                              |
+    |    Copyright [2019] Facade Technologies Inc.                                 |
+    |    All Rights Reserved.                                                      |
+    |                                                                              |
+    | NOTICE:  All information contained herein is, and remains the property of    |
+    | Facade Technologies Inc. and its suppliers if any.  The intellectual and     |
+    | and technical concepts contained herein are proprietary to Facade            |
+    | Technologies Inc. and its suppliers and may be covered by U.S. and Foreign   |
+    | Patents, patents in process, and are protected by trade secret or copyright  |
+    | law.  Dissemination of this information or reproduction of this material is  |
+    | strictly forbidden unless prior written permission is obtained from Facade   |
+    | Technologies Inc.                                                            |
+    |                                                                              |
+    \------------------------------------------------------------------------------/
 
+This file contains the TopLevelWrapperGraphics class, which wraps around windows
+and their extra components section.
+"""
+
+import os
 from PySide2.QtWidgets import QApplication, QGraphicsView, QGraphicsScene, QGraphicsRectItem, \
     QStyleOptionGraphicsItem, QWidget
-from PySide2.QtGui import QColor, QPainter, QPen
+from PySide2.QtGui import QColor, QPainter, QPen, QImageReader
 
 from graphics.tguim.scrollablegraphicsitem import ScrollableGraphicsItem
 
@@ -10,11 +34,9 @@ class TopLevelWrapperGraphics(QGraphicsRectItem):
     A wrapper for the top-level graphics item and the scrollable extra items.
     """
     
-    BUFFER = 2
-    BUTTON_WIDTH = 50
-    BACKGROUND_COLOR = QColor(0, 10, 255)
-    
-    EC_ABS_WIDTH = 1000  # Locks the right edge placement of the EC section relative to x=0 in the scene
+    BUFFER = 5
+    BUTTON_WIDTH = 60
+    BACKGROUND_COLOR = QColor(100, 100, 100, 60)
 
     class Button(QGraphicsRectItem):
         """
@@ -37,26 +59,19 @@ class TopLevelWrapperGraphics(QGraphicsRectItem):
             pen.setWidth(5)
             pen.setColor(TopLevelWrapperGraphics.Button.ARROW_COLOR)
             painter.setPen(pen)
-
-            br = self.boundingRect()
-            x = -br.width() / 2
-            y = -br.height() / 2
-
-            # calculate arrow points as if it were facing left, then flip if necessary.
-            vertexX = br.x() + br.width() / 4
-            vertexY = br.y() + br.height() / 2
-            topX = br.x() + br.width() * 3 / 4
-            topY = br.y() + br.height() / 4
-            bottomX = topX
-            bottomY = br.y() + br.height() * 3 / 4
-
-            if not self._left: # if right
-                vertexX = br.x() + br.width() * 3 / 4
-                topX = br.x() + br.width() / 4
-                bottomX = topX
-
-            painter.drawLine(vertexX, vertexY, bottomX, bottomY)
-            painter.drawLine(vertexX, vertexY, topX, topY)
+            
+            if self._left:
+                filename = 'button_col.jpg'
+            else:  # if right
+                filename = 'button_exp.jpg'
+                
+            ir = QImageReader()
+            curPath = os.path.abspath(__file__)
+            dir, tmp = os.path.split(curPath)
+            filename = os.path.join(dir, "images/" + filename)
+            ir.setFileName(filename)
+            
+            painter.drawImage(self.boundingRect(), ir.read())
 
         def mousePressEvent(self, event):
             event.accept()
@@ -64,15 +79,17 @@ class TopLevelWrapperGraphics(QGraphicsRectItem):
 
     def __init__(self, topLevelGraphics=None):
         QGraphicsRectItem.__init__(self)
+        self.setBrush(TopLevelWrapperGraphics.BACKGROUND_COLOR)
         
         # Set the window
         self._topLevelGraphics = topLevelGraphics
+        b = TopLevelWrapperGraphics.BUFFER
         
         # Get its size and position
-        x = self._topLevelGraphics.x()
-        y = self._topLevelGraphics.y()
+        self._x = self._topLevelGraphics.x() - b
+        self._yG = self._topLevelGraphics.y()
         width = self._topLevelGraphics.boundingRect().width()
-        height = self._topLevelGraphics.boundingRect().height()
+        self._heightG = self._topLevelGraphics.boundingRect().height()
         
         # Add it to self and set its position to (0,0)
         self._topLevelGraphics.setParentItem(self)
@@ -84,7 +101,7 @@ class TopLevelWrapperGraphics(QGraphicsRectItem):
         self._expandButton = None
 
         # Set size and position to the top-level graphics's position and size
-        self.setRect(x, y, width, height)
+        self.setRect(self._x, self._yG - b, width + b*2, self._heightG + b*2)
         
     def addECSection(self, ecs: 'ScrollableGraphicsItem'):
         """
@@ -97,31 +114,30 @@ class TopLevelWrapperGraphics(QGraphicsRectItem):
 
         ecs.setParentItem(self)
         self._scrollableItem = ecs
-        
-        # Set the section's position and size
-        win = self._topLevelGraphics
-        ecs.setRect(win.x() + win.width(), win.y(), TopLevelWrapperGraphics.EC_ABS_WIDTH - win.width(), win.height())
 
         # Define some variables
+        b = TopLevelWrapperGraphics.BUFFER
         bWidth = TopLevelWrapperGraphics.BUTTON_WIDTH
-        height = self._topLevelGraphics.boundingRect().height()
+        
+        # Set the section's position and size. It'll be the exact same size (width) as the window.
+        win = self._topLevelGraphics
+        ecs.setRect(win.scenePos().x() + win.width(), self._yG, win.width(), self._heightG)
 
         # Instantiate the Expand Button
-        tlbr = self._topLevelGraphics.boundingRect()
+        tlg = self._topLevelGraphics
         self._expandButton = TopLevelWrapperGraphics.Button(self, left=False, onClicked=self.onExpandClicked)
-        self._expandButton.setRect(tlbr.x() + tlbr.width(), tlbr.y(), bWidth, height)
+        self._expandButton.setRect(tlg.scenePos().x() + tlg.width() + b, self._yG, bWidth, self._heightG)
         self._expandButton.hide()
         
         # Instantiate the Collapse Button
-        sibr = self._scrollableItem.boundingRect()
+        sig = self._scrollableItem
         self._collapseButton = TopLevelWrapperGraphics.Button(self, left=True, onClicked=self.onCollapseClicked)
-        self._collapseButton.setRect(sibr.x() + sibr.width(), sibr.y(), bWidth, height)
-        self._collapseButton.hide()
+        self._collapseButton.setRect(tlg.scenePos().x() + 2*tlg.width() + b, self._yG, bWidth, self._heightG)
 
         # Adjust the size once we know how big things are
-        ebbr = self._expandButton.boundingRect()
-        width = tlbr.width() + ebbr.width() + TopLevelWrapperGraphics.BUFFER
-        self.setRect(self.x(), self.y(), width, height)
+        cbbr = self._collapseButton.boundingRect()
+        width = tlg.width() + sig.boundingRect().width() + cbbr.width() + b*3
+        self.setRect(self._x, self._yG - b, width, self._heightG + b*2)
     
     def onCollapseClicked(self):
         """
@@ -132,10 +148,12 @@ class TopLevelWrapperGraphics(QGraphicsRectItem):
         self._scrollableItem.hide()
         self._collapseButton.hide()
         self._expandButton.show()
-        width = self._topLevelGraphics.rect().width() + \
-                self._expandButton.rect().width() + \
-                TopLevelWrapperGraphics.BUFFER
-        self.setRect(self.rect().x(), self.rect().y(), width, self.rect().height())
+        width = self._topLevelGraphics.width() + \
+                TopLevelWrapperGraphics.BUTTON_WIDTH + \
+                TopLevelWrapperGraphics.BUFFER * 3
+        self.setRect(self._x, self._yG - TopLevelWrapperGraphics.BUFFER,
+                     width, self._heightG + TopLevelWrapperGraphics.BUFFER*2)
+        # self.boundingRect().setWidth(width)
 
     def onExpandClicked(self):
         """
@@ -146,11 +164,13 @@ class TopLevelWrapperGraphics(QGraphicsRectItem):
         self._scrollableItem.show()
         self._collapseButton.show()
         self._expandButton.hide()
-        width = self._topLevelGraphics.rect().width() + \
-                self._scrollableItem.rect().width() + \
-                self._collapseButton.rect().width() + \
-                TopLevelWrapperGraphics.BUFFER * 2
-        self.setRect(self.rect().x(), self.rect().y(), width, self.rect().height())
+        width = self._topLevelGraphics.width() + \
+                self._scrollableItem.boundingRect().width() + \
+                TopLevelWrapperGraphics.BUTTON_WIDTH + \
+                TopLevelWrapperGraphics.BUFFER * 3
+        self.setRect(self._x, self._yG - TopLevelWrapperGraphics.BUFFER,
+                     width, self._heightG + TopLevelWrapperGraphics.BUFFER*2)
+        # self.boundingRect().setWidth(width)
 
     def getLabel(self) -> str:
         """
@@ -161,6 +181,24 @@ class TopLevelWrapperGraphics(QGraphicsRectItem):
         """
     
         return "Wrapper for " + self._topLevelGraphics.getLabel()
+
+    def paint(self, painter, option, widget):
+        """
+        Paints the contents of the component. Override the parent paint function
+
+        :param painter: Use a Qpainter object.
+        :type painter: QPainter
+        :param option: It provides style options for the item.
+        :type option: QStyleOptionGraphicsItem
+        :param widget: QWidget
+        :type widget: It points to the widget that is being painted on; or make it = None.
+        :return: None
+        :rtype: NoneType
+        """
+    
+        boundingRect = self.boundingRect()
+        painter.setBrush(QColor(100, 100, 100, 80))
+        painter.drawRoundedRect(boundingRect, 5, 5)
 
 if __name__ == "__main__":
     app = QApplication()

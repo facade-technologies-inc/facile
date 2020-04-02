@@ -81,9 +81,14 @@ class Token:
     # ---- Per-Type Constants ---- #
     # Windows
     WCTEXTS_THRESH_L = 0.6  # if only WCTEXTS_THRESH_L of children texts are the same btwn tokens for wins, diff wins.
-    TLWINDOW_THRESH = 0.6  # Threshold for similarity % between two windows' names and children texts
+    TLWINDOW_THRESH = 0.6  # Threshold for similarity % between two windows' names
+                            # and children texts (otherwise no match)
     # Menus
-    MENU_TITLE_SIMILARITY_THRESH = 0.8  # Threshold for similarity % between menu names
+    MENU_TITLE_SIMILARITY_THRESH = 0.8  # Threshold for similarity % between menu names (otherwise no match)
+    MENU_TEXTS_THRESH_L = 0.8  # Threshold for similarity % between menu children texts (otherwise no match)
+    MENU_TOT_EX_THRESH = 0.8  # Threshold for similarity % between two Menus' names & children texts
+                                # for them to be *EXACT* matches (otherwise probabilistic approach)
+    # -----------------------------#
     
     # For handling strings not having any significant meaning
     STR1_NOT_SIG = -1.0
@@ -355,12 +360,12 @@ class Token:
             # --- Title --- #
             titleSim = stringSimilarity(self.title, token2.title)
             
-            if titleSim >= 0:
+            if titleSim > 0:
                 total += titleSim * Token.Weight['TITLE']
             
             # Not handling -1 or -2 since those already mean there's a v big difference in the titles
             
-            elif titleSim == -3.0:
+            elif titleSim == Token.BOTH_NOT_SIG:
                 if self.title == token2.title:
                     total += Token.Weight['TITLE']
             
@@ -370,7 +375,7 @@ class Token:
                     t1 = [text for sublist in self.childrenTexts for text in sublist]
                     t2 = [text for sublist in token2.childrenTexts for text in sublist]
                 except Exception as e:
-                    print('childrenTexts is deeper than 2, find another way to do this.')
+                    print('childrenTexts for window is deeper than 2, find another way to do this.')
                     raise e
                 
                 t1Str = ' '.join(t1)
@@ -393,16 +398,43 @@ class Token:
         #                              Menus
         #                    -------------------------
         #
-        #    *Only checks for NO MATCH, otherwise does probabilistic approach*
+        #    *Only checks for NO MATCH or EXACT match, otherwise does probabilistic approach*
         #
         elif self.type is 'Menu':
-            # For menus, the name is extremely important, so this is the only criteria here for the moment.
+            total = 0
+            
             titleSim = stringSimilarity(self.title, token2.title)
             
-            if titleSim <= Token.MENU_TITLE_SIMILARITY_THRESH:
+            if titleSim <= Token.MENU_TITLE_SIMILARITY_THRESH:  # For menus, the name is extremely important.
                 return Token.Match.NO, 0
             else:
-                return self.inDepthMatchCheck(token2)
+                total += titleSim * Token.Weight['TITLE']
+
+            if self.childrenTexts and token2.childrenTexts:
+                try:
+                    t1 = [text for sublist in self.childrenTexts for text in sublist]
+                    t2 = [text for sublist in token2.childrenTexts for text in sublist]
+                except Exception as e:
+                    print('childrenTexts for menu is deeper than 2, find another way to do this.')
+                    raise e
+    
+                t1Str = ' '.join(t1)
+                t2Str = ' '.join(t2)
+    
+                textsSim = stringSimilarity(t1Str, t2Str)
+    
+                if textsSim < Token.MENU_TEXTS_THRESH_L:
+                    return Token.Match.NO, 0
+                else:
+                    total += textsSim * Token.Weight['CHILDREN_TEXTS']
+            else:
+                # Not the same menu if one doesnt have children texts
+                return Token.Match.NO, 0
+            
+            if total > Token.MENU_TOT_EX_THRESH * (Token.Weight['TITLE'] + Token.Weight['CHILDREN_TEXTS']):
+                return Token.Match.EXACT, 0
+
+            return self.inDepthMatchCheck(token2)
         
         ###------------------- EXAMPLE ---------------------###
         # Just an example one that would need to be filled out
@@ -701,11 +733,11 @@ def stringSimilarity(str1: str, str2: str) -> float:
     # In those cases, we return a negative value to let Facile know what happened.
     ### -1: str1 is meaningless, -2: str2 is meaningless, -3: both are meaningless ###
     if not cleaned[0] and not cleaned[1]:
-        return -3.0
+        return Token.BOTH_NOT_SIG
     elif not cleaned[0]:
-        return -1.0
+        return Token.STR1_NOT_SIG
     elif not cleaned[1]:
-        return -2.0
+        return Token.STR2_NOT_SIG
     
     vectors = CountVectorizer().fit_transform(cleaned).toarray()
     

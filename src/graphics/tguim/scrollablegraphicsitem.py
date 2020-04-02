@@ -22,7 +22,8 @@ This module contains the ScrollableGraphicsItem class.
 """
 
 from PySide2.QtWidgets import QGraphicsItem, QApplication, QGraphicsView, QGraphicsScene, QGraphicsRectItem
-from PySide2.QtGui import QColor, QWheelEvent
+from PySide2.QtGui import QColor, QWheelEvent, Qt
+
 
 class ScrollableGraphicsItem(QGraphicsRectItem):
 
@@ -46,11 +47,15 @@ class ScrollableGraphicsItem(QGraphicsRectItem):
         item.setParentItem(self._ghostContainer)
 
         # set the position of the item
-        cumulativeX = 0
-        for i, item in enumerate(self.contents):
-            item.setPos(ScrollableGraphicsItem.MARGIN * (i+1) + cumulativeX - self.boundingRect().width()/2,
-                        -item.boundingRect().height()/2)
-            cumulativeX += item.boundingRect().width()
+        cumulativeX = self.scenePos().x() + self.boundingRect().width()
+        y = self.boundingRect().height()/2 - item.height()/2
+        if self.contents:
+            for i, curItem in enumerate(self.contents):
+                item.setPos(ScrollableGraphicsItem.MARGIN * (i+1) + cumulativeX, y)
+                cumulativeX += curItem.width()
+        else:
+            self._ghostContainer.setPos(self.scenePos().x(), self.scenePos().y())
+            item.setPos(ScrollableGraphicsItem.MARGIN, y)
 
     def removeItemFromContents(self, item):
         assert(item in self.contents)
@@ -86,26 +91,6 @@ class ScrollableGraphicsItem(QGraphicsRectItem):
         else:
             if canGoLeft:
                 self._ghostContainer.setPos(oldPos.x() - 6, oldPos.y())
-
-    def paint(self, painter, option, widget):
-        """
-        Paints the contents of the component. Override the parent paint function
-
-        :param painter: Use a Qpainter object.
-        :type painter: QPainter
-        :param option: It provides style options for the item.
-        :type option: QStyleOptionGraphicsItem
-        :param widget: QWidget
-        :type widget: It points to the widget that is being painted on; or make it = None.
-        :return: None
-        :rtype: NoneType
-        """
-        
-        boundingRect = self.boundingRect()
-        
-        painter.setBrush(QColor(10,10,10, 50))
-    
-        painter.drawRoundedRect(boundingRect, 5, 5)
         
 
 if __name__ == "__main__":

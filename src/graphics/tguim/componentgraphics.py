@@ -47,9 +47,10 @@ class ComponentGraphics(QGraphicsItem):
                         # more realistic model, but require more processing power/time.
     MIN_SIDE_LENGTH = 0  # Prevents components from getting any smaller when a side reaches this size.
     INIT_SCALEDOWN = .957  # All components get imported into Facile with larger dimensions than they really have.
-                            # This value fixes that problem. (Found by trial and error)
-    INIT_TL_WIDTH_SD = .957  # With the current algorithm, windows have extra space on the right, this fixes the issue
-                                # This is a percentage.
+                            # This value fixes that problem. (Found by trial and error).
+                            # With the current algorithm, windows have extra space on the right as well.
+                            # This number happens to fix the issue when applied to windows' widths,
+                            # I do not currently know why.
     
     # Top-Level Windows
     WINDOW_SPACING = 100  # Vertical spacing between windows in TGUIM
@@ -59,8 +60,8 @@ class ComponentGraphics(QGraphicsItem):
     WINDOW_HEIGHT = 600  # The fixed height for all top-level windows
     
     # Extra Components Section
-    LRG_PCT_OVERLAP = 30  # Percent of overlap on either component for an overlap to be considered large (or 'a lot')
-    MIN_TIME_DIFF = .05  # Time difference from the overlapping component
+    LRG_PCT_OVERLAP = .30  # Percent of overlap on either component for an overlap to be considered large (or 'a lot')
+    MIN_TIME_DIFF = .00005  # Time difference from the overlapping component
                             # to qualify moving self to extra components section
     
     def __init__(self, dataComponent: 'Component', rect: tuple = (), parent=None):
@@ -82,21 +83,56 @@ class ComponentGraphics(QGraphicsItem):
             self.isRoot = False
         
         self._dataComponent = dataComponent
-        try:
-            self._depth = dataComponent.getSuperToken().getTokens()[0].depth - 1  # Depth relative to top-level window
-        except:
-            self._depth = -1  # root
+        self._depth = dataComponent.depth  # Depth relative to top-level window (-1 if root)
+        self.isMenu = False
         
-        # force components to have at least the minimum size
+        # --- MENUS --- #
+        # Menus like to be special so this section puts them back in their place (both literally and figuratively)
+        if self._depth >= 0:
+            type = self._dataComponent.getSuperToken().getTokens()[0].type
+            
+            if type is 'Menu' and parent:
+                self.isMenu = True
+                self._depth = 0
+                nxtParent = parent
+                while not isinstance(nxtParent, TopLevelWrapperGraphics):
+                    self._depth += 1
+                    nxtParent = nxtParent.parentItem()
+
+            # Some menus are actually menuItems (who would've thought they would be even more annoying than
+            # they already are?), so this resets those menuitems' depths back to normal, and adds them to the
+            # extra components section if necessary.
+            elif type is 'MenuItem':
+                parentType = parent.getDataComponent().getSuperToken().getTokens()[0].type
+                if parentType is 'MenuItem':
+                    parent.isMenu = True
+                    parent.setDepth(0)
+                    nxtParent = parent.parentItem()
+                    while not isinstance(nxtParent, TopLevelWrapperGraphics):
+                        parent.setDepth(parent.getDepth() + 1)
+                        nxtParent = nxtParent.parentItem()
+                    parent.chkExtraComponents()
+        
+        # Store the original coordinates
         self._x = rect[0]
         self._y = rect[1]
         
-        # variables related to extra components algorithm
+        # Variables related to extra components algorithm
         self._extraComponents = []
         self.isExtraComponent = False
         self._ecSection = None  # reassigned later only if top-level window
-        
-        # --- This is where components get their initial positions set. ---
+
+        # For items with no width or height (therefore not visible)
+        if rect[2] is 0 or rect[3] is 0:
+            self.hide()  # So we hide it from view, yet keep it in the tguim just in case
+            self._width = rect[2]  # assign its variables to avoid errors
+            self._height = rect[3]
+            self._parentGraphics = None
+            self._parentIsScene = False
+            self._absScale = 1
+            return  # Then return the init function so we don't waste processing power
+
+        # --- This is where components get their initial positions set. --- #
         
         # Root
         if self._dataComponent.getParent() is None:
@@ -110,7 +146,7 @@ class ComponentGraphics(QGraphicsItem):
         # Top-Level Window
         elif self._dataComponent.getParent().getParent() is None:
             # Set initial width and height
-            self._width = rect[2] * ComponentGraphics.INIT_TL_WIDTH_SD
+            self._width = rect[2] * ComponentGraphics.INIT_SCALEDOWN
             self._height = rect[3]
 
             # Forces windows to snap to top-left, aligned vertically.
@@ -124,28 +160,24 @@ class ComponentGraphics(QGraphicsItem):
         
         # All other components
         else:
-            self._width = max(ComponentGraphics.MIN_SIDE_LENGTH, rect[2])
-            self._height = max(ComponentGraphics.MIN_SIDE_LENGTH, rect[3] + ComponentGraphics.TITLEBAR_H)
-            self.setPos(max(0, rect[0]), max(0, rect[1] + ComponentGraphics.TITLEBAR_H))
-            
+            self.setPos(max(0, rect[0]), max(0, rect[1]))
+
             self._parentGraphics = self.scene().getGraphics(self._dataComponent.getParent())
-            self._parentIsScene = False
             
-            # Gets the absolute scale of the data parent and scales self accordingly, using the scaledown as well
             self._absScale = self._parentGraphics.getAbsScale()
             self.scalePos(self._absScale)
-            self._absScale *= ComponentGraphics.INIT_SCALEDOWN ** self._depth
-            self.setScale(self._absScale)
+            self._absScale *= ComponentGraphics.INIT_SCALEDOWN  # ** self._depth
+            self._width = max(0, rect[2]) * self._absScale
+            self._height = max(0, rect[3]) * self._absScale
+
+            self._parentIsScene = False
         
         self.adjustPositioning()
 
         # If window: Creates the top-level wrapper, places self in it.
-        # Important that this is after adjustPositioning
+        # ***Important that this is after adjustPositioning***
         if self._parentIsScene:
-            tmp = TopLevelWrapperGraphics(self)
-            self._parentGraphics.addItem(tmp)
-            print("created wrapper for " + self.getLabel())
-            print('parent: ' + self.parentItem().getLabel())
+            self.scene().addItem(TopLevelWrapperGraphics(self))
         
         self.menu = ComponentMenu()
         self.menu.onBlink(lambda: self.scene().blinkComponent(self._dataComponent.getId()))
@@ -154,6 +186,27 @@ class ComponentGraphics(QGraphicsItem):
             self.triggerSceneUpdate()
         except:
             pass
+        
+    def setDepth(self, depth: int):
+        """
+        Sets the depth of self.
+        
+        :param depth: depth of this component
+        :type depth:
+        :return: None
+        """
+        
+        self._depth = depth
+        
+    def getDepth(self) -> int:
+        """
+        Gets the depth of self relative to its top-level window
+        
+        :return: depth of this item
+        :rtype: int
+        """
+        
+        return self._depth
     
     def getDataComponent(self) -> 'Component':
         """
@@ -228,7 +281,7 @@ class ComponentGraphics(QGraphicsItem):
             self.setPos(ComponentGraphics.WINDOW_LEFT_OFFSET, newYPos)
         
         # A window's 1st level of components
-        elif self._dataComponent.getParent().getParent().getParent() is None:
+        elif self._depth is 1:
             self.chkExtraComponents()
             # self.resolveCollisions()
         
@@ -246,44 +299,67 @@ class ComponentGraphics(QGraphicsItem):
         :rtype: NoneType
         """
 
-        if self._depth is 1:
+        if self._depth is 1 and not self.isExtraComponent:
+            
             collidingSibs = self.getCollidingSiblings()
-            print('chkExtraComponents ran for ' + self.getLabel())
+            
+            # Menus are usually dialogs, having a depth of 0.
+            # We want to compare them only to 1-level-deep components for overlaps
+            if self.isMenu:
+                for sibData in self.getWindowGraphics().getDataComponent().getChildren():
+                    sib = self.scene().getGraphics(sibData)
+                    if sib and self.overlapsWith(sib):
+                        collidingSibs.append(sib)
             
             for sib in collidingSibs:
                 if self.isOverlappedALotBy(sib) or sib.isOverlappedALotBy(self):
-                    print('Large overlap between ' + self.getLabel() + ' and ' + sib.getLabel())
-                    print(self.getLabel() + ": " + self.get)
-                
-                if self.isOverlappedALotBy(sib) and self.wasFoundMuchLaterThan(sib):
-                    self._parentGraphics.addToExtraComponents(self)
-                    print(self.getLabel() + ' added to ECs')
-                    break  # Don't want to continue this for loop after self is moved
-                elif sib.isOverlappedALotBy(self) and sib.wasFoundMuchLaterThan(self):
-                    self._parentGraphics.addToExtraComponents(sib)
-                    print(sib.getLabel() + ' added to ECs')
+                    window = self.getWindowGraphics()
+                    
+                    if self.wasFoundMuchLaterThan(sib):
+                        window.addToExtraComponents(self)
+                        break  # Don't want to continue this for loop after self is moved
+                    elif sib.wasFoundMuchLaterThan(self):
+                        window.addToExtraComponents(sib)
                 else:
                     # TODO: Figure out what to do here.
                     # self.tryToResolveCollisionWith(sib)
                     continue
                     
+    def getWindowGraphics(self) -> 'ComponentGraphics':
+        """
+        Gets the top level window graphics containing self
+        
+        :return: Top level window graphics containing self
+        :rtype: ComponentGraphics
+        """
+
+        if self._parentIsScene:
+            return self
+        elif self._depth > 0:
+            i = self._depth
+            tmp = self.parentItem()
+            while isinstance(tmp, ComponentGraphics):
+                tlgraphics = tmp
+                tmp = tmp.parentItem()
+                i -= 1
+            return tlgraphics
+                    
     def addToExtraComponents(self, component: 'ComponentGraphics'):
         """
-        Adds a component to the extra components section.
+        Adds a component to the extra components section. *Should only be called by top-level windows.*
         
         :param component: component to add to extra components section
         :type component: 'ComponentGraphics'
         :return: None
         """
+
+        if not self._ecSection:
+            self._ecSection = ScrollableGraphicsItem(self.parentItem())
+            self.parentItem().addECSection(self._ecSection)
         
-        if self._dataComponent.getParent().getParent().getParent() is None:
-            if not self._ecSection:
-                print("created ec section for " + self.getLabel())
-                self._ecSection = ScrollableGraphicsItem()
-                self._parentGraphics.addECSection(self._ecSection)
-            
-            self._ecSection.addItemToContents(component)
-            self._extraComponents.append(component)
+        self._ecSection.addItemToContents(component)
+        self.isExtraComponent = True
+        self._extraComponents.append(component)
             
     def getScrollableItem(self) -> 'ScrollableGraphicsItem':
         """
@@ -294,7 +370,7 @@ class ComponentGraphics(QGraphicsItem):
         :rtype: ScrollableGraphicsItem
         """
 
-        if self._dataComponent.getParent().getParent() is None:
+        if self._depth is 0:
             return self._ecSection
     
     def getCollidingSiblings(self) -> list:
@@ -341,46 +417,6 @@ class ComponentGraphics(QGraphicsItem):
         """
         
         self.setPos(scale * self.x(), scale * self.y())
-    
-    def scaleChildren(self, scale: float) -> None:
-        """
-        Scales all of self's children to percentage of original size, also scaling their position relative to self.
-        Scales towards top left corner of self. Always relative to current size, not to original size.
-
-        :param scale: scale to scale component by
-        :return: None
-        :rtype: NoneType
-        """
-        
-        for childData in self._dataComponent.getChildren():
-            self.scene().getGraphics(childData).hardScale(scale)
-    
-    def scaleSiblings(self, scale: float) -> None:
-        """
-        Scales all of self's siblings to percentage of original size, also scaling their position relative to parent.
-        Scales towards top left corner of self. Always relative to current size, not to original size.
-
-        :param scale: scale to scale component by
-        :return: None
-        :rtype: NoneType
-        """
-        
-        for sib in self.getSiblings():
-            sib.hardScale(scale)
-    
-    def hardScale(self, scale: float) -> None:
-        """
-        Scales self and all children to percentage of original size, and also scales self and all components' positions
-        relative to their parents as well. Always relative to current size, not to original size.
-
-        :param scale: scale to scale component by
-        :return: None
-        :rtype: NoneType
-        """
-        
-        self.setPos(self.x() * scale, self.y() * scale)
-        self.scaleChildren(scale)
-        self.setScale(scale)
         
     def getAbsScale(self) -> float:
         """
@@ -411,7 +447,7 @@ class ComponentGraphics(QGraphicsItem):
     def isOverlappedALotBy(self, sib: 'ComponentGraphics') -> bool:
         """
         Whether or not sib overlaps a large area of self. Should only really be used by sub-top-level components.
-        Assumes it is already known that self and sib overlap.
+        *Assumes it is already known that self and sib overlap.*
         
         :param sib: Sibling component that overlaps with self
         :type sib: ComponentGraphics
@@ -419,12 +455,15 @@ class ComponentGraphics(QGraphicsItem):
         :rtype: bool
         """
 
-        overlappingWidth = min(self.x() + self.width(), sib.x() + sib.width()) - max(self.x(), sib.x())
-        overlappingHeight = min(self.y() + self.height(), sib.y() + sib.height()) - max(self.y(), sib.y())
+        overlappingWidth = min(self.scenePos().x() + self.width(), sib.scenePos().x() + sib.width()) - \
+                           max(self.scenePos().x(), sib.scenePos().x())
+        overlappingHeight = min(self.scenePos().y() + self.height(), sib.scenePos().y() + sib.height()) - \
+                            max(self.scenePos().y(), sib.scenePos().y())
         overlappingArea = overlappingWidth * overlappingHeight
         selfArea = self.width() * self.height()
+        pctOverlap = overlappingArea/selfArea
         
-        if overlappingArea >= ComponentGraphics.LRG_PCT_OVERLAP * selfArea:
+        if pctOverlap >= ComponentGraphics.LRG_PCT_OVERLAP:
             return True
         return False
     

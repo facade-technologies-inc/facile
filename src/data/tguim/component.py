@@ -54,7 +54,7 @@ class Component(Entity):
 		self._destVisibilityBehaviors = []
 		self._model = tguim
 		self.timestamp = datetime.now().timestamp()
-		self.depth = -1
+		self.depth = -1  # -1 if root, 0 if window, etc.
 		
 		if parent is not None:
 			parent.addChild(self)
