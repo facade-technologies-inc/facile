@@ -703,7 +703,7 @@ class ProjectExplorerModel(QAbstractItemModel):
 		
 		v = sm.StateMachine.instance.view
 		if isinstance(data, Component):
-			menu = ComponentMenu()
+			menu = ComponentMenu(data)
 			menu.onBlink(lambda: v.onItemBlink(data.getId()))
 			menu.prerequest()
 			menu.exec_(self._view.viewport().mapToGlobal(point))

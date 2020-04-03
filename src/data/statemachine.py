@@ -125,7 +125,9 @@ class StateMachine:
 
 		# Initialize configuration variables (that affect what gets displayed in the Facile GUI)
 		self.configVars = ConfigVars()
-		
+		self.configVars.setShowBehaviors(facileView.ui.actionShow_Behaviors.isChecked())
+		self.configVars.setShowTokenTags(facileView.ui.actionShow_Token_Tags.isChecked())
+
 		# Stores the action pipeline that's currently being edited
 		self._currentActionPipeline = None
 

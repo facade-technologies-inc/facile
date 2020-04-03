@@ -32,7 +32,7 @@ import data.statemachine as sm
 
 class ComponentMenu(QMenu):
 	
-	def __init__(self):
+	def __init__(self, component):
 		"""
 		This class is the menu that shows when a component is right clicked in the TGUIM view.
 		
@@ -41,9 +41,15 @@ class ComponentMenu(QMenu):
 		instance, the *onBlink* method connects the "Show in target GUI" menu item to the
 		function passed in. Of course, that function should execute code to use the blinker
 		appropriately.
+
+		:param component: the component to show the menu for.
+		:type component: Component
 		"""
 		QMenu.__init__(self)
-		
+		self._component = component
+
+		self.tokenTag = self.addAction("0 tokens")
+		self.tokenTag.setDisabled(True)
 		self.blinkAction = self.addAction("Show in target GUI")
 		blinkIcon = QIcon()
 		blinkIcon.addPixmap(QPixmap(":/icon/resources/icons/office/spotlight.png"), QIcon.Normal, QIcon.Off)
@@ -66,6 +72,14 @@ class ComponentMenu(QMenu):
 		
 		:return: None
 		"""
+		numTokens = len(self._component.getSuperToken().tokens)
+		if numTokens > 1:
+			self.tokenTag.setText("{} tokens".format(numTokens))
+		elif numTokens == 1:
+			self.tokenTag.setText("1 token")
+		else:
+			raise Exception("Each component must have at least one token!")
+
 		if sm.StateMachine.instance._project.getProcess():
 			self.blinkAction.setEnabled(True)
 		else:
