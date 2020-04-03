@@ -33,6 +33,8 @@ class ScrollableGraphicsItem(QGraphicsRectItem):
         QGraphicsRectItem.__init__(self, parent)
         self.setFlag(QGraphicsItem.ItemClipsChildrenToShape)
 
+        self._leftTicks = 0
+
         # create empty invisible child
         self._ghostContainer = QGraphicsRectItem(self)
         self._ghostContainer.setFlag(QGraphicsItem.ItemHasNoContents)
@@ -82,14 +84,16 @@ class ScrollableGraphicsItem(QGraphicsRectItem):
         cbr = self.childrenBoundingRect() # because of clipping, this doesn't go beyond the bounding rect
 
         canGoLeft = cbr.x() + cbr.width() > br.x() + br.width() - ScrollableGraphicsItem.MARGIN
-        canGoRight = cbr.x() < br.x() + ScrollableGraphicsItem.MARGIN
+        canGoRight = self._leftTicks > 0
 
         oldPos = self._ghostContainer.pos()
         if event.delta() > 0:
             if canGoRight:
+                self._leftTicks -= 1
                 self._ghostContainer.setPos(oldPos.x() + 6, oldPos.y())
         else:
             if canGoLeft:
+                self._leftTicks += 1
                 self._ghostContainer.setPos(oldPos.x() - 6, oldPos.y())
 
     def paint(self, painter, option, widget):
@@ -125,5 +129,4 @@ if __name__ == "__main__":
 
     app.exec_()
 
-        
 
