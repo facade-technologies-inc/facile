@@ -22,7 +22,7 @@ This module contains the ScrollableGraphicsItem class.
 """
 
 from PySide2.QtWidgets import QGraphicsItem, QApplication, QGraphicsView, QGraphicsScene, QGraphicsRectItem
-from PySide2.QtGui import QColor, QWheelEvent, Qt
+from PySide2.QtGui import QColor, QWheelEvent, Qt, QPen
 
 
 class ScrollableGraphicsItem(QGraphicsRectItem):
@@ -91,7 +91,12 @@ class ScrollableGraphicsItem(QGraphicsRectItem):
         else:
             if canGoLeft:
                 self._ghostContainer.setPos(oldPos.x() - 6, oldPos.y())
-        
+
+    def paint(self, painter, option, widget):
+        pen = QPen()
+        pen.setWidth(1)
+        pen.setColor(QColor(Qt.transparent))
+        painter.setPen(pen)
 
 if __name__ == "__main__":
     app = QApplication()

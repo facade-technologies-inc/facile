@@ -269,7 +269,7 @@ class TargetGuiModel(QObject):
 		tguim._root = Component.fromDict(d["root"], tguim)
 		
 		# create all components
-		for id, comp in d['components'].items():
+		for id, comp in sorted(d['components'].items(), key=lambda item: item[1]['timestamp']):
 			newComp = Component.fromDict(comp, tguim)
 			tguim._components[int(id)] = newComp
 			tguim._superTokenToComponentMapping[newComp.getSuperToken()] = newComp

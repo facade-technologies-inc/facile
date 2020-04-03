@@ -119,21 +119,19 @@ class ComponentGraphics(QGraphicsItem):
         
         # Variables related to extra components algorithm
         self._extraComponents = []
-        self.isExtraComponent = False
         self._ecSection = None  # reassigned later only if top-level window
 
         # For items with no width or height (therefore not visible)
         if rect[2] is 0 or rect[3] is 0:
-            self.hide()  # So we hide it from view, yet keep it in the tguim just in case
-            self._width = rect[2]  # assign its variables to avoid errors
+            self._width = rect[2]  # assign them variables to avoid errors
             self._height = rect[3]
             self._parentGraphics = None
             self._parentIsScene = False
             self._absScale = 1
-            return  # Then return the init function so we don't waste processing power
+            self.hide()  # Then we hide them from view, yet keep them in the tguim just in case
+            return  # Then return from the init function so we don't waste processing power
 
         # --- This is where components get their initial positions set. --- #
-        
         # Root
         if self._dataComponent.getParent() is None:
             self._width = rect[2]
@@ -283,7 +281,6 @@ class ComponentGraphics(QGraphicsItem):
         # A window's 1st level of components
         elif self._depth is 1:
             self.chkExtraComponents()
-            # self.resolveCollisions()
         
         # All other components
         else:
@@ -299,8 +296,13 @@ class ComponentGraphics(QGraphicsItem):
         :rtype: NoneType
         """
 
-        if self._depth is 1 and not self.isExtraComponent:
-            
+        if self._dataComponent.loadedFromTGUIM:
+            if self._dataComponent.isExtraComponent:
+                window = self.getWindowGraphics()
+                window.addToExtraComponents(self)
+            # Set loadedFromTGUIM back to false
+            self._dataComponent.loadedFromTGUIM = False
+        elif self._depth is 1 and not self._dataComponent.isExtraComponent:
             collidingSibs = self.getCollidingSiblings()
             
             # Menus are usually dialogs, having a depth of 0.
@@ -315,11 +317,15 @@ class ComponentGraphics(QGraphicsItem):
                 if self.isOverlappedALotBy(sib) or sib.isOverlappedALotBy(self):
                     window = self.getWindowGraphics()
                     
-                    if self.wasFoundMuchLaterThan(sib):
-                        window.addToExtraComponents(self)
-                        break  # Don't want to continue this for loop after self is moved
-                    elif sib.wasFoundMuchLaterThan(self):
-                        window.addToExtraComponents(sib)
+                    try:
+                        if self.wasFoundMuchLaterThan(sib):
+                            window.addToExtraComponents(self)
+                            break  # Don't want to continue this for loop after self is moved
+                        elif sib.wasFoundMuchLaterThan(self):
+                            window.addToExtraComponents(sib)
+                    except Exception as e:
+                        raise Exception(self.getLabel() + ' has no containing top-level window: ' + str(e))
+                        
                 else:
                     # TODO: Figure out what to do here.
                     # self.tryToResolveCollisionWith(sib)
@@ -336,13 +342,9 @@ class ComponentGraphics(QGraphicsItem):
         if self._parentIsScene:
             return self
         elif self._depth > 0:
-            i = self._depth
-            tmp = self.parentItem()
-            while isinstance(tmp, ComponentGraphics):
-                tlgraphics = tmp
-                tmp = tmp.parentItem()
-                i -= 1
-            return tlgraphics
+            window, pos = self._dataComponent.getPathFromRoot()[-2]  # -1 position is root, -2 is window
+            print(self.scene().getGraphics(window).getLabel() + ' is the window for ' + self.getLabel())
+            return self.scene().getGraphics(window)
                     
     def addToExtraComponents(self, component: 'ComponentGraphics'):
         """
@@ -358,7 +360,7 @@ class ComponentGraphics(QGraphicsItem):
             self.parentItem().addECSection(self._ecSection)
         
         self._ecSection.addItemToContents(component)
-        self.isExtraComponent = True
+        component._dataComponent.isExtraComponent = True
         self._extraComponents.append(component)
             
     def getScrollableItem(self) -> 'ScrollableGraphicsItem':

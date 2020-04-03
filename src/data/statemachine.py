@@ -212,7 +212,7 @@ class StateMachine:
 		elif event == StateMachine.Event.FACILE_OPENED:
 			nextState = StateMachine.State.WAIT_FOR_PROJECT
 		
-		# When a propject is opened, allow the user to manipulate the models.
+		# When a project is opened, allow the user to manipulate the models.
 		elif event == StateMachine.Event.PROJECT_OPENED:
 			nextState = StateMachine.State.MODEL_MANIPULATION
 		
@@ -463,6 +463,7 @@ class StateMachine:
 			p.save()
 			p.addToRecents()
 			scene = TGUIMScene(p.getTargetGUIModel())
+			scene.addECs()
 			ui.targetGUIModelView.setScene(scene)
 			scene.itemSelected.connect(v.onItemSelected)
 			scene.itemBlink.connect(v.onItemBlink)

@@ -34,7 +34,7 @@ class TopLevelWrapperGraphics(QGraphicsRectItem):
     A wrapper for the top-level graphics item and the scrollable extra items.
     """
     
-    BUFFER = 5
+    BUFFER = 1
     BUTTON_WIDTH = 60
     BACKGROUND_COLOR = QColor(100, 100, 100, 60)
 
@@ -80,6 +80,7 @@ class TopLevelWrapperGraphics(QGraphicsRectItem):
     def __init__(self, topLevelGraphics=None):
         QGraphicsRectItem.__init__(self)
         self.setBrush(TopLevelWrapperGraphics.BACKGROUND_COLOR)
+        self.setFlag(QGraphicsRectItem.ItemClipsChildrenToShape)
         
         # Set the window
         self._topLevelGraphics = topLevelGraphics

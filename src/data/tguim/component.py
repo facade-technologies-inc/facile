@@ -55,6 +55,9 @@ class Component(Entity):
 		self._model = tguim
 		self.timestamp = datetime.now().timestamp()
 		self.depth = -1  # -1 if root, 0 if window, etc.
+		self.isExtraComponent = False
+		self.loadedFromTGUIM = False  # This is only set to true when loaded from a tguim file,
+										# then promptly set back to false
 		
 		if parent is not None:
 			parent.addChild(self)
@@ -88,7 +91,7 @@ class Component(Entity):
 			nxtParent = parent
 			while nxtParent:
 				self.depth += 1
-				nxtParent = nxtParent.parent()
+				nxtParent = nxtParent.getParent()
 
 		self.triggerUpdate()
 	
@@ -338,6 +341,9 @@ class Component(Entity):
 		d["srcBehaviors"] = [vb.getId() for vb in self._srcVisibilityBehaviors]
 		d["destBehaviors"] = [vb.getId() for vb in self._destVisibilityBehaviors]
 		d['children'] = [c.getId() for c in self._children]
+		d['isEC'] = self.isExtraComponent
+		d['depth'] = self.depth
+		d['timestamp'] = self.timestamp
 		
 		if self._properties:
 			d['properties'] = self.getProperties().asDict()
@@ -386,5 +392,9 @@ class Component(Entity):
 		comp._destVisibilityBehaviors = d['destBehaviors']
 		comp.setProperties(Properties.fromDict(d['properties']))
 		comp._parent = d['parent']
+		comp.timestamp = d['timestamp']
+		comp.depth = d['depth']
+		comp.isExtraComponent = d['isEC']
+		comp.loadedFromTGUIM = True
 		
 		return comp
