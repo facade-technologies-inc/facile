@@ -86,15 +86,17 @@ class ScrollableGraphicsItem(QGraphicsRectItem):
         canGoLeft = cbr.x() + cbr.width() > br.x() + br.width() - ScrollableGraphicsItem.MARGIN
         canGoRight = self._leftTicks > 0
 
-        oldPos = self._ghostContainer.pos()
+        oldY = self._ghostContainer.pos().y()
         if event.delta() > 0:
             if canGoRight:
                 self._leftTicks -= 1
-                self._ghostContainer.setPos(oldPos.x() + 6, oldPos.y())
+                for i in range(1, 17):
+                    self._ghostContainer.setPos(self._ghostContainer.pos().x() + 1, oldY)
         else:
             if canGoLeft:
                 self._leftTicks += 1
-                self._ghostContainer.setPos(oldPos.x() - 6, oldPos.y())
+                for i in range(1, 17):
+                    self._ghostContainer.setPos(self._ghostContainer.pos().x() - 1, oldY)
 
     def paint(self, painter, option, widget):
         pen = QPen()
