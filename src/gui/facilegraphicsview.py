@@ -70,6 +70,12 @@ class FacileGraphicsView(QGraphicsView):
 		:return: None
 		:rtype: NoneType
 		"""
+
+		# pass the event down to scene first
+		QGraphicsView.wheelEvent(self, event)
+		if event.isAccepted():
+			return
+
 		if event.modifiers() != Qt.ControlModifier:
 			return
 
@@ -78,6 +84,7 @@ class FacileGraphicsView(QGraphicsView):
 			self.zoomIn(event.pos())
 		else:
 			self.zoomOut(event.pos())
+
 	
 	def zoomIn(self, pos: QPoint) -> None:
 		"""
