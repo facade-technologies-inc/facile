@@ -31,7 +31,6 @@ from gui.settriggeractiondialog import SetTriggerActionDialog
 
 
 class VBGraphics(QAbstractGraphicsShapeItem):
-
 	def __init__(self, dataVisibilityBehavior: 'VisibilityBehavior', parent: 'TGUIMScene'):
 		"""
 		Construct the VBGraphics class.
