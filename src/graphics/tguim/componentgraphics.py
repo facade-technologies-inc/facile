@@ -167,6 +167,9 @@ class ComponentGraphics(QGraphicsItem):
             self._absScale *= ComponentGraphics.INIT_SCALEDOWN  # ** self._depth
             self._width = max(0, rect[2]) * self._absScale
             self._height = max(0, rect[3]) * self._absScale
+            
+            if self._dataComponent.getSuperToken().getTokens()[0].type is 'Menu':
+                self._width *= ComponentGraphics.INIT_SCALEDOWN  # Menus have the same width issue as top-level windows
 
             self._parentIsScene = False
         
