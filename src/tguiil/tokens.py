@@ -98,7 +98,7 @@ class Token:
     def __init__(self, appTimeStamp: int, identifier: int, isDialog: bool, isEnabled: bool,
                  isVisible: bool, processID: int, typeOf: str, rectangle: RECT, texts: list,
                  title: str, numControls: int, controlIDs: list, parentTitle: str,
-                 parentType: str, topLevelParentTitle: str, topLevelParentType: str,
+                 parentType: str, topLevelParentControlIDs: list, topLevelParentTitle: str, topLevelParentType: str,
                  childrenTexts: list, picture: Image = None, autoID: int = None,
                  expandState: int = None, shownState: int = None):
         """
@@ -118,6 +118,8 @@ class Token:
         :type parentTitle: str
         :param parentType: stores the components parents type
         :type parentType: str
+        :param topLevelParentControlIDs: A list of control identifiers for the dialog that contains (or is) this component.
+		:type topLevelParentControlIDs: List[str]
         :param topLevelParentTitle: stores the components top level parents title
         :type topLevelParentTitle: str
         :param topLevelParentType: stores the components top level parents type
@@ -157,6 +159,7 @@ class Token:
         self.isVisible = isVisible
         self.parentTitle = parentTitle
         self.parentType = parentType
+        self.topLevelParentControlIDs = topLevelParentControlIDs
         self.topLevelParentTitle = topLevelParentTitle
         self.topLevelParentType = topLevelParentType
         self.processID = processID
@@ -257,14 +260,15 @@ class Token:
             if title is None:
                 title = ""
             
-            controlIdentifiers = [title, typeOf, title + typeOf]
+            controlIDs = [title, typeOf, title + typeOf]
+            topLevelControlIDs = [topLevelParentTitle, topLevelParentType, topLevelParentTitle + topLevelParentType]
         except Exception as e:
             raise Token.CreationException("Could not build token: {}".format(str(e)))
         
         # create a new token
         token = Token(timeStamp, id, isDialog, isEnabled, isVisible, processID, typeOf,
-                      rectangle, texts, title, numControls, controlIdentifiers, parentTitle,
-                      parentType, topLevelParentTitle, topLevelParentType, childrenTexts, image,
+                      rectangle, texts, title, numControls, controlIDs, parentTitle,
+                      parentType, topLevelControlIDs, topLevelParentTitle, topLevelParentType, childrenTexts, image,
                       autoID, expandState, shownState)
         
         return token
@@ -626,7 +630,19 @@ class Token:
         return list(filter(len, sorted(self.topLevelParentControlIDs, key=cmp_to_key(Token.control_ID_comparator))))
 
     @staticmethod
-    def control_ID_comparator(controlID1: str, controlID2: str):
+    def control_ID_comparator(controlID1: str, controlID2: str) -> int:
+        """
+        Allows us to compare 2 control IDs based on their uniqueness.
+
+        :param controlID1: The first controlID to compare.
+        :type controlID1: str
+        :param controlID2: The second controlID to compare.
+        :type controlID2: str
+        :return: negative int if controlID1 is more unique than controlID2,
+                 positive int if controlID2 is more unique than controlID1,
+                 If 2 control IDs have same uniqueness, the longer one is considered more unique.
+        :rtype: int
+        """
         count1 = Token.control_ID_count.get(controlID1, 100000000)
         count2 = Token.control_ID_count.get(controlID2, 100000000)
     
