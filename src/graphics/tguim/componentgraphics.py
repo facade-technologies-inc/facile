@@ -21,13 +21,15 @@
 This module contains the ComponentGraphics class.
 """
 
+from PIL import Image
+
 from PySide2.QtCore import QRectF
-from PySide2.QtGui import QPainterPath, QColor, QPen, Qt, QFont, QFontMetricsF
-from PySide2.QtWidgets import QGraphicsScene, QGraphicsItem, QGraphicsSceneContextMenuEvent, QMenu, QGraphicsWidget
+from PySide2.QtGui import QPainterPath, QColor, QPen, Qt, QFont, QFontMetricsF, QImage, QPixmap
+from PySide2.QtWidgets import QGraphicsScene, QGraphicsItem, QGraphicsSceneContextMenuEvent, QGraphicsPixmapItem
+
 import data.statemachine as sm
 from graphics.tguim.scrollablegraphicsitem import ScrollableGraphicsItem
 from graphics.tguim.toplevelwrappergraphics import TopLevelWrapperGraphics
-
 from qt_models.componentmenu import ComponentMenu
 
 
@@ -85,6 +87,7 @@ class ComponentGraphics(QGraphicsItem):
         self._dataComponent = dataComponent
         self._depth = dataComponent.depth  # Depth relative to top-level window (-1 if root)
         self.isMenu = False
+        self.picChild = None
         
         # --- MENUS --- #
         # Menus like to be special so this section puts them back in their place (both literally and figuratively)
@@ -636,50 +639,77 @@ class ComponentGraphics(QGraphicsItem):
         :return: None
         :rtype: NoneType
         """
+        showPics = sm.StateMachine.instance.configVars.showComponentImages
+
         boundingRect = self.boundingRect()
         
         if self.isRoot or boundingRect.width() == 0 and boundingRect.height() == 0:
             painter.setPen(QPen(QColor(Qt.transparent)))
             painter.setBrush(QColor(Qt.transparent))
             return
-        
-        pen = QPen(QColor(100, 200, 255))
-        if self.isSelected():
-            pen.setStyle(Qt.DashDotLine)
-            pen.setColor(QColor(255, 0, 0))
+
         else:
-            pen.setStyle(Qt.SolidLine)
-            pen.setColor(QColor(0, 0, 0))
-        painter.setPen(pen)
-        
-        painter.setBrush(QColor(88, 183, 255))
-        
-        id = self._dataComponent.getId()
-        
-        painter.drawRoundedRect(boundingRect, 5, 5)
-        br = self.boundingRect()
-        
-        # draw name label
-        name = self.getLabel()
-        # TODO: make a better algorithm on font size in the future
-        # 44 width -> only cover 12 words with 5 -> 5Fonts one is 3.6 (added 5)
-        # 48 width -> only cover 18 words with 4 -> 4Fonts one is 2.6 (added 5)
-        if len(name) * 3.5 > self.boundingRect().width():
-            if len(name) * 2.5 > self.boundingRect().width():
-                nameFont = QFont("Times", 2)
+            pen = QPen(QColor(100, 200, 255))
+            if self.isSelected():
+                pen.setStyle(Qt.DashDotLine)
+                pen.setColor(QColor(255, 0, 0))
             else:
-                nameFont = QFont("Times", 4)
+                pen.setStyle(Qt.SolidLine)
+                pen.setColor(QColor(0, 0, 0))
+            painter.setPen(pen)
+
+        if showPics:
+            if self.isSelected():
+                pen.setColor(QColor(255,50,50))
+                painter.setBrush(QColor(255, 50, 50, 20))
+            else:
+                pen.setColor(QColor(50, 50, 255))
+                painter.setBrush(QColor(Qt.transparent))
+            painter.setPen(pen)
+
+            if not self.picChild:
+                im = self._dataComponent.getFirstImage()
+                r, g, b = im.split()
+                im = Image.merge("RGB", (b, g, r))
+                im2 = im.convert("RGBA")
+                data = im2.tobytes("raw", "RGBA")
+                qim = QImage(data, im.size[0], im.size[1], QImage.Format_ARGB32)
+                pixmap = QPixmap.fromImage(qim).scaled(boundingRect.width(), boundingRect.height())
+
+                self.picChild = QGraphicsPixmapItem(pixmap)
+                self.picChild.setFlags(QGraphicsItem.ItemStacksBehindParent | QGraphicsItem.ItemClipsChildrenToShape)
+
+            self.picChild.setParentItem(self)
+            painter.drawRoundedRect(boundingRect, 0, 0)
+
         else:
-            nameFont = QFont("Times", 5)
-        painter.setFont(nameFont)
-        fm = QFontMetricsF(nameFont)
-        name = fm.elidedText(name, Qt.ElideRight, br.width() - ComponentGraphics.TITLEBAR_H)
-        
-        painter.setBrush(QColor(100, 200, 255))
-        painter.drawText(self.boundingRect().x() + 5, 13, name)
-        
+            if self.picChild:
+                self.scene().removeItem(self.picChild)
+            painter.setBrush(QColor(88, 183, 255))
+            id = self._dataComponent.getId()
+            painter.drawRoundedRect(boundingRect, 5, 5)
+
+            # draw name label
+            name = self.getLabel()
+            # TODO: make a better algorithm on font size in the future
+            # 44 width -> only cover 12 words with 5 -> 5Fonts one is 3.6 (added 5)
+            # 48 width -> only cover 18 words with 4 -> 4Fonts one is 2.6 (added 5)
+            if len(name) * 3.5 > self.boundingRect().width():
+                if len(name) * 2.5 > self.boundingRect().width():
+                    nameFont = QFont("Times", 2)
+                else:
+                    nameFont = QFont("Times", 4)
+            else:
+                nameFont = QFont("Times", 5)
+            painter.setFont(nameFont)
+            fm = QFontMetricsF(nameFont)
+            name = fm.elidedText(name, Qt.ElideRight, boundingRect.width() - ComponentGraphics.TITLEBAR_H)
+
+            painter.setBrush(QColor(100, 200, 255))
+            painter.drawText(self.boundingRect().x() + 5, 13, name)
+
         if sm.StateMachine.instance.configVars.showTokenTags:
-            self.drawTokenTag(br, painter)
+            self.drawTokenTag(boundingRect, painter)
     
     def drawTokenTag(self, br: QRectF, painter: 'QPainter'):
         """

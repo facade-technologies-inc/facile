@@ -116,8 +116,8 @@ class VBGraphics(QAbstractGraphicsShapeItem):
 			pen.setWidth(10)
 			painter.setPen(pen)
 
-			srcBR = self.scene().getGraphics(self._dataVB.getSrcComponent()).boundingRect(withMargins=False)
-			dstBR = self.scene().getGraphics(self._dataVB.getDestComponent()).boundingRect(withMargins=False)
+			srcBR = self.scene().getGraphics(self._dataVB.getSrcComponent()).boundingRect()
+			dstBR = self.scene().getGraphics(self._dataVB.getDestComponent()).boundingRect()
 
 			lengthSrcNodeSrcEdgeList = len(self._dataVB.getSrcComponent().getSrcVisibilityBehaviors())
 			lengthDesNodeDesEdgeList = len(self._dataVB.getDestComponent().getDestVisibilityBehaviors())
@@ -229,7 +229,7 @@ class VBGraphics(QAbstractGraphicsShapeItem):
 		"""
 		
 		baseComponent = self.getOneComponentDownRoot()
-		baseBR = self.scene().getGraphics(baseComponent).boundingRect(withMargins=False)
+		baseBR = self.scene().getGraphics(baseComponent).boundingRect()
 		basePos = self.scene().getGraphics(baseComponent).scenePos()
 		baseComponentWidth = baseBR.width()
 		baseComponentHeight = baseBR.height()
