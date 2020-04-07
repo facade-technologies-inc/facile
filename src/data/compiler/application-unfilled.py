@@ -17,32 +17,42 @@
 	| Technologies Inc.                                                            |
 	|                                                                              |
 	\------------------------------------------------------------------------------/
-"""
-from typing import Set
-from enum import Enum
 
+	This document contains the custom generated Application class
+"""
+
+import sys, os
+from .baseapplication import BaseApplication
 from tguiil.matchoption import MatchOption
 
+pathToThisFile, thisFile = os.path.split(os.path.abspath(__file__))
+sys.path.insert(0, pathToThisFile)
 
-class CompilationProfile:
-	class DocType(Enum):
-		"""
-		Create a Enum class for documentation choice(s).
-		"""
-		
-		EPub = 4
-		Doc = 3
-		Html = 2
-		Pdf = 1
+
+class ActionException(Exception):
+	def __init__(self, msg: str):
+		Exception.__init__(self, msg)
+
+
+class Application(BaseApplication):
+	"""
+	This class allows a user to automate a predefined target GUI using functions (action pipelines) defined
+	in Facile itself.
+	"""
 	
-	def __init__(self, docTypes: Set['CompilationProfile.DocType'], compResOpts: Set['MatchOption'],
-	             apiFolderDir, interpExeDir, installApi: bool):
+	def __init__(self):
 		"""
-		Construct the CompilationProfile containing the information from ApiCompilerDialog.
+		Initializes the Application class, then initializes its superclass with the necessary information.
 		"""
 		
-		self.compResOpts = compResOpts
-		self.docTypes = docTypes
-		self.apiFolderDir = apiFolderDir
-		self.interpExeDir = interpExeDir
-		self.installApi = installApi
+		BaseApplication.__init__(self, {exeLoc}, {options}, {name}, {backend})
+	
+	def start(self) -> 'Application':
+		"""
+		Starts the target application, then waits for all processes' active window to be ready.
+		Returns self, that way the user can just call Application().start() when initializing their app.
+		"""
+		
+		self.startApp()
+		return self
+
