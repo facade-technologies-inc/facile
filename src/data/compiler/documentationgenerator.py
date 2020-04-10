@@ -44,47 +44,52 @@ class DocGenerator:
                 formatChoice = "html"
                 os.chdir(self.projectDir)
                 # remove the old html folder
-                os.system('cd Documentation'
-                          '& RMDIR /Q/S {0} 2>nul'.format(formatChoice))
+                # change made here
+                os.system('cd {0}'
+                          '& cd Documentation'
+                          '& RMDIR /Q/S {1} 2>nul'.format(self.projectName, formatChoice))
                 # create new html, move it to Documentation
                 os.system('cd src'
                           '& make {0}'
                           '& cd _build'
-                          '& move {0} {1}\Documentation'.format(formatChoice, self.projectDir))
+                          '& move {0} {1}\{2}\Documentation'.format(formatChoice, self.projectDir, self.projectName))
                 
             elif type is CompilationProfile.DocType.Doc:
                 formatChoice = "text"
                 os.chdir(self.projectDir)
-                os.system('cd Documentation'
-                          '& RMDIR /Q/S {0} 2>nul'.format(formatChoice))
+                os.system('cd {0}'
+                          '& cd Documentation'
+                          '& RMDIR /Q/S {1} 2>nul'.format(self.projectName, formatChoice))
                 os.system('cd src'
                           '& make {0}'
                           '& cd _build'
-                          '& move {0} {1}\Documentation'.format(formatChoice, self.projectDir))
+                          '& move {0} {1}\{2}\Documentation'.format(formatChoice, self.projectDir, self.projectName))
                 
             elif type is CompilationProfile.DocType.Pdf:
                 # TODO: fix pdf creation
                 formatChoice = "latex"
                 os.chdir(self.projectDir)
-                os.system('cd Documentation'
-                          '& RMDIR /Q/S {0} 2>nul'.format(formatChoice))
+                os.system('cd {0}'
+                          '& cd Documentation'
+                          '& RMDIR /Q/S {1} 2>nul'.format(self.projectName, formatChoice))
                 os.system('cd src'
                           '& make {0}'
                           '& cd _build'
                           # '& cd latex'
                           # '& make'
                           # '& cd ..'
-                          '& move {0} {1}\Documentation'.format(formatChoice, self.projectDir))
+                          '& move {0} {1}\{2}\Documentation'.format(formatChoice, self.projectDir, self.projectName))
             
             elif type is CompilationProfile.DocType.EPub:
                 formatChoice = "epub"
                 os.chdir(self.projectDir)
-                os.system('cd Documentation'
-                          '& RMDIR /Q/S {0} 2>nul'.format(formatChoice))
+                os.system('cd {0}'
+                          '& cd Documentation'
+                          '& RMDIR /Q/S {1} 2>nul'.format(self.projectName, formatChoice))
                 os.system('cd src'
                           '& make {0}'
                           '& cd _build'
-                          '& move {0} {1}\Documentation'.format(formatChoice, self.projectDir))
+                          '& move {0} {1}\{2}\Documentation'.format(formatChoice, self.projectDir, self.projectName))
                 
             os.chdir(self.projectDir)
             os.system('RMDIR /Q/S src')

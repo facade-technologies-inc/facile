@@ -203,11 +203,12 @@ class ApiCompilerDialog(QDialog):
 			self.ui.error_label.setText(errMsg)
 			return
 		
+		self.setApiCompiler.emit(theCompilationProfile)
+		c = Compiler(theCompilationProfile).compileAPI()
+		
 		# no error? run document generation
 		projectName = sm.StateMachine.instance._project.getName()
 		docGenerator = DocGenerator(setDocType, projectName)
 		docGenerator.createDoc()
 		
-		self.setApiCompiler.emit(theCompilationProfile)
-		c = Compiler(theCompilationProfile).compileAPI()
 		return QDialog.accept(self)
