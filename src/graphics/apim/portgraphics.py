@@ -175,7 +175,7 @@ class PortGraphics(QGraphicsItem):
 		:return: None
 		:rtype: NoneType
 		"""
-		return QGraphicsItem.contextMenuEvent(event)
+		return QGraphicsItem.contextMenuEvent(self, event)
 
 		# if not self._menuEnabled:
 		# 	return QGraphicsItem.contextMenuEvent(self, event)

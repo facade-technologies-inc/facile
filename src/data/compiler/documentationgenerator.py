@@ -75,9 +75,9 @@ class DocGenerator:
                 os.system('cd src'
                           '& make {0}'
                           '& cd _build'
-                          # '& cd latex'
-                          # '& make'
-                          # '& cd ..'
+                          '& cd latex'
+                          '& make'
+                          '& cd ..'
                           '& move {0} {1}\{2}\Documentation'.format(formatChoice, self.projectDir, self.projectName))
             
             elif type is CompilationProfile.DocType.EPub:
