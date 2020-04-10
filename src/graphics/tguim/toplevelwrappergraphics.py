@@ -37,6 +37,10 @@ class TopLevelWrapperGraphics(QGraphicsRectItem):
     BUFFER = 1
     BUTTON_WIDTH = 60
     BACKGROUND_COLOR = QColor(100, 100, 100, 60)
+    
+    # Scrollable Item
+    SGI_MIN_WIDTH = 1000
+    SGI_MAX_WIDTH = 2000
 
     class Button(QGraphicsRectItem):
         """
@@ -104,6 +108,16 @@ class TopLevelWrapperGraphics(QGraphicsRectItem):
         # Set size and position to the top-level graphics's position and size
         self.setRect(self._x, self._yG - b, width + b*2, self._heightG + b*2)
         
+    def getWindowGraphics(self):
+        """
+        Gets the top-level component that is stored in this item.
+        
+        :return: Top-level window component being stored in this wrapper
+        :rtype: ComponentGraphics
+        """
+        
+        return self._topLevelGraphics
+        
     def addECSection(self, ecs: 'ScrollableGraphicsItem'):
         """
         Adds the extra components section to this item, setting up the buttons with it.
@@ -122,7 +136,8 @@ class TopLevelWrapperGraphics(QGraphicsRectItem):
         
         # Set the section's position and size. It'll be the exact same size (width) as the window.
         win = self._topLevelGraphics
-        ecs.setRect(win.scenePos().x() + win.width(), self._yG, win.width(), self._heightG)
+        ecsWidth = min(TopLevelWrapperGraphics.SGI_MAX_WIDTH, max(TopLevelWrapperGraphics.SGI_MIN_WIDTH, win.width()))
+        ecs.setRect(win.scenePos().x() + win.width(), self._yG, ecsWidth, self._heightG)
 
         # Instantiate the Expand Button
         tlg = self._topLevelGraphics
@@ -133,7 +148,7 @@ class TopLevelWrapperGraphics(QGraphicsRectItem):
         # Instantiate the Collapse Button
         sig = self._scrollableItem
         self._collapseButton = TopLevelWrapperGraphics.Button(self, left=True, onClicked=self.onCollapseClicked)
-        self._collapseButton.setRect(tlg.scenePos().x() + 2*tlg.width() + b, self._yG, bWidth, self._heightG)
+        self._collapseButton.setRect(tlg.scenePos().x() + tlg.width() + ecsWidth + b, self._yG, bWidth, self._heightG)
 
         # Adjust the size once we know how big things are
         cbbr = self._collapseButton.boundingRect()

@@ -49,7 +49,7 @@ class ScrollableGraphicsItem(QGraphicsRectItem):
         item.setParentItem(self._ghostContainer)
 
         # set the position of the item
-        cumulativeX = self.scenePos().x() + self.boundingRect().width()
+        cumulativeX = self.scenePos().x() + self.parentItem().getWindowGraphics().width()
         y = self.boundingRect().height()/2 - item.height()/2
         if self.contents:
             for i, curItem in enumerate(self.contents):
