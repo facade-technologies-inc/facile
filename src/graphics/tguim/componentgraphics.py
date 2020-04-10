@@ -658,7 +658,7 @@ class ComponentGraphics(QGraphicsItem):
                 pen.setColor(QColor(0, 0, 0))
             painter.setPen(pen)
 
-        if showPics:
+        if showPics and self._dataComponent.getFirstImage() is not None:
             if self.isSelected():
                 pen.setColor(QColor(255,50,50))
                 painter.setBrush(QColor(255, 50, 50, 20))

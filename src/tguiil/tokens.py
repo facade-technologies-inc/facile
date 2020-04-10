@@ -188,7 +188,7 @@ class Token:
         self.controlIDs.sort()
     
     @staticmethod
-    def createToken(timeStamp: datetime, component: pywinauto.base_wrapper.BaseWrapper) -> 'Token':
+    def createToken(timeStamp: datetime, component: pywinauto.base_wrapper.BaseWrapper, captureImage:bool=True) -> 'Token':
         """
         Create a token from a pywinauto control.
 
@@ -225,8 +225,12 @@ class Token:
             texts = component.texts()[1:]
             title = component.window_text()
             numControls = component.control_count()
-            image = component.capture_as_image()
             typeOf = component.friendly_class_name()
+
+            if captureImage:
+                image = component.capture_as_image()
+            else:
+                image = None
             
             # get text of all children that are not editable.
             childrenTexts = []
@@ -337,7 +341,8 @@ class Token:
                 self.title == token2.title and \
                 self.rectangle == token2.rectangle and \
                 self.numControls == token2.numControls and \
-                self.childrenTexts == self.childrenTexts:
+                self.childrenTexts == token2.childrenTexts and \
+                ((self.pic is None) == (token2.pic is None)):
             return Token.Match.EXACT, 1
         
         #####################################################################
@@ -496,27 +501,27 @@ class Token:
         total += Token.Weight["CONTROL_ID"] * controlSimilarity
         
         # compare pictures
-        if self.pic != None and token2.pic != None:
+        if self.pic is not None and token2.pic is not None:
             if self.pic.size == token2.pic.size:
                 try:
                     picSimilarity = (ssim(np.array(self.pic), np.array(token2.pic)) + 1) / 2
                     total += picSimilarity * Token.Weight["PIC"]
                 except:
                     total += 0
+        elif self.pic is not None or token2.pic is not None:
+            total += 0
         else:
             max -= Token.Weight["PIC"]
         
         if self.autoid is not None and token2.autoid is not None and (
                 self.autoid != "" or token2.autoid != ""):
-            total += SequenceMatcher(None, self.autoid, token2.autoid).ratio() * Token.Weight[
-                "AUTO_ID"]
+            total += SequenceMatcher(None, self.autoid, token2.autoid).ratio() * Token.Weight["AUTO_ID"]
         else:
             max -= Token.Weight["AUTO_ID"]
         
         # compare title, parent title, and top level parent title
         titleSequence1 = ' > '.join([self.title, self.parentTitle, self.topLevelParentTitle])
-        titleSequence2 = ' > '.join(
-            [token2.title, token2.parentTitle, token2.topLevelParentTitle])
+        titleSequence2 = ' > '.join([token2.title, token2.parentTitle, token2.topLevelParentTitle])
         titleSimilarity = SequenceMatcher(None, titleSequence1, titleSequence2).ratio()
         total += titleSimilarity * Token.Weight["TITLE"]
         
@@ -527,6 +532,8 @@ class Token:
         total += textsSimilarity * Token.Weight["TEXTS"]
         
         # compare children texts
+        # TODO: flatten nested lists first using methods as link below...
+        #  https://symbiosisacademy.org/tutorial-index/python-flatten-nested-lists-tuples-sets/
         try:
             t1 = [text for sublist in self.childrenTexts for text in sublist]
             t2 = [text for sublist in token2.childrenTexts for text in sublist]
@@ -676,7 +683,7 @@ class Token:
         d['rectangle'] = [self.rectangle.left, self.rectangle.top, self.rectangle.width(),
                           self.rectangle.height()]
         if 'pic' in d and d['pic'] is not None:
-            d['pic'] = np.array(self.picture).tolist()
+            d['pic'] = np.array(self.pic).tolist()
         
         return d
     
@@ -697,7 +704,7 @@ class Token:
         t = Token.__new__(Token)
         
         if d['pic']:
-            d["pic"] = Image.fromarray(np.uint8(np.asarray(d["picture"])))
+            d["pic"] = Image.fromarray(np.uint8(np.asarray(d["pic"])))
         
         if d['rectangle']:
             r = RECT()

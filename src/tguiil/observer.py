@@ -60,7 +60,7 @@ class Observer(QThread):
 	# ignoreTypes.add("wxWindowNR")
 	# ignoreTypes.add("wxWindow")
 	
-	def __init__(self, processID: int, backend: str = "uia"):
+	def __init__(self, processID: int, captureImages: bool, backend: str = "uia"):
 		"""
 		Constructs an Observer. The target application must already be started before constructing the Observer.
 		
@@ -68,6 +68,10 @@ class Observer(QThread):
 		:raises: AccessDenied
 		:param processID: The ID of the process to watch.
 		:type processID: int
+		:param captureImages: If True, capture images of components. If false, don't.
+		:type captureImages: bool
+		:param backend: "win32" or "uia"
+		:type backend: str
 		:return: None
 		:rtype: NoneType
 		"""
@@ -83,6 +87,8 @@ class Observer(QThread):
 		
 		self._playing = False
 		self._playingLock = Lock()
+
+		self.capturing = captureImages
 	
 	def loadSuperTokens(self, tguim: 'TargetGuiModel') -> None:
 		"""
@@ -148,7 +154,7 @@ class Observer(QThread):
 				curComponent, parentSuperToken = work.pop()
 				if curComponent.friendly_class_name() not in Observer.ignoreTypes:
 					try:
-						token = Token.createToken(appTimeStamp, curComponent)
+						token = Token.createToken(appTimeStamp, curComponent, captureImage=self.capturing)
 					
 					# List boxes have a ton of children that we probably don't care about.
 					# There are probably other types like it where we just want to ignore the
@@ -232,6 +238,9 @@ class Observer(QThread):
 		else:
 			selectedSuperToken.addToken(token)
 			return selectedSuperToken
+
+	def captureImages(self, status: bool) -> None:
+		self.capturing = True
 	
 	def setPlaying(self, status: bool) -> None:
 		"""
