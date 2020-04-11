@@ -227,10 +227,23 @@ class Token:
             numControls = component.control_count()
             typeOf = component.friendly_class_name()
 
+            image = None
             if captureImage:
                 image = component.capture_as_image()
-            else:
-                image = None
+
+                # size of dialogs is a bit off, so we trim to adjust.
+                if isDialog:
+                    width, height = image.size
+
+                    # Setting the points for cropped image
+                    left = 15
+                    top = 0
+                    right = width - 16
+                    bottom = height - 16
+
+                    # Cropped image of above dimension
+                    # (It will not change orginal image)
+                    image = image.crop((left, top, right, bottom))
             
             # get text of all children that are not editable.
             childrenTexts = []
