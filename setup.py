@@ -30,11 +30,11 @@ bdistOptions = {}
 base = None
 
 # Uncomment for GUI applications to NOT show cmd window while running.
-if sys.platform=='win32':
+if sys.platform =='win32':
     base = 'Win32GUI'
 
 executables = [
-    Executable('src/facile.py', base=base, targetName = 'facile.exe')
+    Executable(script = 'src/facile.py', base=base, targetName = 'facile.exe', icon = 'facade_logo.ico')
 ]
 
 setup(name='Facile',
