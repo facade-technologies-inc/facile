@@ -4,6 +4,7 @@ scripts = [
     "01_build_icon_resource.py",
     "02_build_rc.py",
     "03_build_ui.py",
+    "04_extra_downloads.py",
 ]
 
 for script in scripts:

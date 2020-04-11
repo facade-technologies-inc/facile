@@ -109,7 +109,8 @@ class Project:
 			new = False
 			if self._observer is None:
 				self._observer = Observer(self._process.pid, self._backend)
-				self._observer.newSuperToken.connect(self._targetGUIModel.createComponent)
+				self._observer.newSuperToken.connect(self._targetGUIModel.createComponent,
+				                                     type=Qt.BlockingQueuedConnection)
 				new = True
 			elif self._observer.getPID() != self._process.pid:
 				self._observer.pause()

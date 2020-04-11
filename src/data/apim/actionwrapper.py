@@ -37,7 +37,7 @@ class ActionWrapper(act.Action):
 	
 	The ActionWrapper can be thought of as a black-box for any other action.
 	"""
-
+	
 	def __init__(self, actionRef: 'act.Action', parent: 'ap.ActionPipeline') -> 'ActionWrapper':
 		"""
 		Constructs a WrapperAction that stores a reference to an action.
