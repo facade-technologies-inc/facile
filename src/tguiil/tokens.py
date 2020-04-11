@@ -43,10 +43,6 @@ class Token:
     """
     Token class sets parameters of a token for each state that changes.
     """
-
-    # TODO: Store the control identifiers of the top level parent for more accurate lookup.
-    # TODO: Store mapping of control IDs to their count
-
     control_ID_count = {}
     
     class CreationException(Exception):
@@ -119,7 +115,7 @@ class Token:
         :param parentType: stores the components parents type
         :type parentType: str
         :param topLevelParentControlIDs: A list of control identifiers for the dialog that contains (or is) this component.
-		:type topLevelParentControlIDs: List[str]
+        :type topLevelParentControlIDs: List[str]
         :param topLevelParentTitle: stores the components top level parents title
         :type topLevelParentTitle: str
         :param topLevelParentType: stores the components top level parents type
@@ -276,7 +272,7 @@ class Token:
             
             if title is None:
                 title = ""
-            
+
             controlIDs = [title, typeOf, title + typeOf]
             topLevelControlIDs = [topLevelParentTitle, topLevelParentType, topLevelParentTitle + topLevelParentType]
         except Exception as e:

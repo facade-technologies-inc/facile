@@ -23,6 +23,7 @@ This module contains the Component class.
 from PIL.Image import Image
 from datetime import datetime
 
+from datetime import datetime
 from data.entity import Entity
 from data.properties import Properties
 from data.tguim.visibilitybehavior import VisibilityBehavior

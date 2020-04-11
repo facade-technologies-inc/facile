@@ -26,6 +26,12 @@ from PIL import Image
 from PySide2.QtCore import QRectF
 from PySide2.QtGui import QPainterPath, QColor, QPen, Qt, QFont, QFontMetricsF, QImage, QPixmap
 from PySide2.QtWidgets import QGraphicsScene, QGraphicsItem, QGraphicsSceneContextMenuEvent, QGraphicsPixmapItem
+from PySide2.QtCore import QRectF
+from PySide2.QtGui import QPainterPath, QColor, QPen, Qt, QFont, QFontMetricsF
+from PySide2.QtWidgets import QGraphicsScene, QGraphicsItem, QGraphicsSceneContextMenuEvent, QMenu, QGraphicsWidget
+import data.statemachine as sm
+from graphics.tguim.scrollablegraphicsitem import ScrollableGraphicsItem
+from graphics.tguim.toplevelwrappergraphics import TopLevelWrapperGraphics
 
 import data.statemachine as sm
 from graphics.tguim.scrollablegraphicsitem import ScrollableGraphicsItem
@@ -132,7 +138,10 @@ class ComponentGraphics(QGraphicsItem):
             self._parentIsScene = False
             self._absScale = 1
             self.hide()  # Then we hide them from view, yet keep them in the tguim just in case
+            self.isVisible = False
             return  # Then return from the init function so we don't waste processing power
+        else:
+            self.isVisible = True
 
         # --- This is where components get their initial positions set. --- #
         # Root
@@ -361,13 +370,14 @@ class ComponentGraphics(QGraphicsItem):
         :return: None
         """
 
-        if not self._ecSection:
-            self._ecSection = ScrollableGraphicsItem(self.parentItem())
-            self.parentItem().addECSection(self._ecSection)
-        
-        self._ecSection.addItemToContents(component)
-        component._dataComponent.isExtraComponent = True
-        self._extraComponents.append(component)
+        if component.isVisible:
+            if not self._ecSection:
+                self._ecSection = ScrollableGraphicsItem(self.parentItem())
+                self.parentItem().addECSection(self._ecSection)
+            
+            self._ecSection.addItemToContents(component)
+            component._dataComponent.isExtraComponent = True
+            self._extraComponents.append(component)
             
     def getScrollableItem(self) -> 'ScrollableGraphicsItem':
         """
