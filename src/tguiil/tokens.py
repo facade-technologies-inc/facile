@@ -234,8 +234,8 @@ class Token:
                     # Setting the points for cropped image
                     left = 15
                     top = 0
-                    right = width - 16
-                    bottom = height - 16
+                    right = width - 17
+                    bottom = height - 17
 
                     # Cropped image of above dimension
                     # (It will not change orginal image)
