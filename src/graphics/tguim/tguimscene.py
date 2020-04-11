@@ -105,6 +105,18 @@ class TGUIMScene(QGraphicsScene):
 		graphics = vbg.VBGraphics(dataItem, self)
 		self._dataToGraphicsMapping[dataItem] = graphics
 		return graphics
+	
+	def addECs(self):
+		"""
+		This method ensures that extra components will be added to the sections
+		they belong in after loading a tguim from a file.
+		
+		:return: None
+		"""
+	
+		for data in self._dataToGraphicsMapping:
+			graphics = self.getGraphics(data)
+			graphics.chkExtraComponents()
 
 	def getGraphics(self, dataItem):
 		"""
