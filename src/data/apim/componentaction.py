@@ -123,17 +123,21 @@ class ComponentAction(Action):
 		:return: code necessary to perform action
 		:rtype: str
 		"""
-
-		code = '\t\tcomp = self.findComponent(' + str(self._target.getId()) + ')\n'
+		
+		if self._target.getSuperToken().getTokens90[0].type not in ['Menu', 'MenuItem']:
+			code = '\t\tcomp = self.findComponent(' + str(self._target.getId()) + ')\n'
+		else:
+			code = '\t\tcomp = self.getComponentObject(' + str(self._target.getId()) + ')\n'
+		
 		code += '\n\t\ttry:'
 		code += self._spec.code.replace('\n', '\n\t\t\t')
 
 		if self._target is None:
-			code = code[:-1] + 'except Exception as e:\n\t\t\tprint(e)\n\t\t\traise ActionException("The action \'' + self.getName() + '\' was not executed ' \
-								'correctly. Please contact support for help.")\n'
+			code = code[:-1] + 'except Exception as e:\n\t\t\tprint(e)\n\t\t\traise ActionException("The action \'' \
+			       + self.getName() + '\' was not executed correctly. Please contact support for help.")\n'
 		else:
-			code = code[:-1] + 'except Exception as e:\n\t\t\tprint(e)\n\t\t\traise ActionException("The action \'' + self.getName() + '\' was not executed ' \
-							   'correctly on component with ID ' + str(self._target.getId()) + '. Please ' \
-								'contact support for help.")\n'
+			code = code[:-1] + 'except Exception as e:\n\t\t\tprint(e)\n\t\t\traise ActionException("The action \'' \
+			       + self.getName() + '\' was not executed correctly on component with ID ' + str(self._target.getId()) \
+			       + '. Please contact support for help.")\n'
 
 		return code
