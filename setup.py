@@ -23,12 +23,16 @@ buildOptions = {
 
     "includes": ["scipy.sparse.csgraph._validation",
                  "scipy.ndimage._ni_support",
-                 "scipy._distributor_init"
+                 "scipy._distributor_init",
                  ],
 
-    "include_files": ["database/"],
+    "include_files": ["database/",
+                      os.path.join(python_dir, "python3.dll"),
+                      os.path.join(python_dir, "vcruntime140.dll"),
 
-    "excludes": []
+],
+
+    "excludes": ["scipy.spatial.cKDTree"]
 }
 
 installOptions = {}
