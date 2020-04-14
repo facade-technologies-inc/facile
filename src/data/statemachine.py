@@ -125,7 +125,9 @@ class StateMachine:
 
 		# Initialize configuration variables (that affect what gets displayed in the Facile GUI)
 		self.configVars = ConfigVars()
-		
+		self.configVars.setShowBehaviors(facileView.ui.actionShow_Behaviors.isChecked())
+		self.configVars.setShowTokenTags(facileView.ui.actionShow_Token_Tags.isChecked())
+
 		# Stores the action pipeline that's currently being edited
 		self._currentActionPipeline = None
 
@@ -212,7 +214,7 @@ class StateMachine:
 		elif event == StateMachine.Event.FACILE_OPENED:
 			nextState = StateMachine.State.WAIT_FOR_PROJECT
 		
-		# When a propject is opened, allow the user to manipulate the models.
+		# When a project is opened, allow the user to manipulate the models.
 		elif event == StateMachine.Event.PROJECT_OPENED:
 			nextState = StateMachine.State.MODEL_MANIPULATION
 		
@@ -258,10 +260,12 @@ class StateMachine:
 					self.view.ui.actionManualExplore.setChecked(False)
 					self.view.ui.actionAutoExplore.setChecked(False)
 		
-		# If we've been requested to stop exploration and we're in the exploration state, go to the
-		# MODEL_MANIPULATION state
+		# If we've been requested to stop exploration and we're in the exploration state, update the tguim by
+		# resolving component collisions, then go to the MODEL_MANIPULATION state.
 		elif event == StateMachine.Event.STOP_EXPLORATION:
 			if self.curState == StateMachine.State.EXPLORATION:
+				# tguim = self._project.getTargetGUIModel() # TODO: Uncomment and work on
+				# tguim.resolveComponentCollisions()
 				nextState = StateMachine.State.MODEL_MANIPULATION
 		
 		# Advance to the next state
@@ -461,6 +465,7 @@ class StateMachine:
 			p.save()
 			p.addToRecents()
 			scene = TGUIMScene(p.getTargetGUIModel())
+			scene.addECs()
 			ui.targetGUIModelView.setScene(scene)
 			scene.itemSelected.connect(v.onItemSelected)
 			scene.itemBlink.connect(v.onItemBlink)

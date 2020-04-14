@@ -171,3 +171,9 @@ class Compiler():
         initFile.close()
         
         self.generateCustomApp()
+
+        # Auto install API if user selected to do so.
+        if self._compProf.installApi:
+            os.chdir(self._saveFolder)
+            os.system(self._compProf.interpExeDir + " -m pip install .")
+
