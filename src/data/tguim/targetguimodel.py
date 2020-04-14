@@ -61,6 +61,16 @@ class TargetGuiModel(QObject):
 
 		# Allows easy lookup of components given a super token
 		self._superTokenToComponentMapping = {None: None}
+
+	def resolveComponentCollisions(self) -> None:
+		"""
+		Resolves any component collisions that are present, when called.
+
+		:return: None
+		:rtype: NoneType
+		"""
+
+		pass
 	
 	def getRoot(self) -> 'Component':
 		"""
@@ -131,6 +141,8 @@ class TargetGuiModel(QObject):
 			parentComponent = self._root
 		else:
 			parentComponent = self._superTokenToComponentMapping[parentToken]
+			if parentComponent is None:
+				print('THIS SHOULDNT HAPPEN----------: ' + newSuperToken.getTokens()[0].title)
 		
 		newComponent = Component(self, parentComponent, newSuperToken)
 		
@@ -257,7 +269,7 @@ class TargetGuiModel(QObject):
 		tguim._root = Component.fromDict(d["root"], tguim)
 		
 		# create all components
-		for id, comp in d['components'].items():
+		for id, comp in sorted(d['components'].items(), key=lambda item: item[1]['timestamp']):
 			newComp = Component.fromDict(comp, tguim)
 			tguim._components[int(id)] = newComp
 			tguim._superTokenToComponentMapping[newComp.getSuperToken()] = newComp
