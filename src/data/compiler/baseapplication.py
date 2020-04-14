@@ -17,7 +17,7 @@
     | Technologies Inc.                                                            |
     |                                                                              |
     \------------------------------------------------------------------------------/
-    
+
     This document contains the BaseApplication class
 """
 
@@ -51,7 +51,7 @@ class BaseApplication():
     def __init__(self, exeLoc: str, options: Set['MatchOption'], name: str, backend: str = 'uia'):
         """
         Initializes a BaseApplication instance.
-        
+
         :param exeLoc: filepath to executable for target application
         :type exeLoc: str
         :param options: options to use when searching for a component
@@ -96,7 +96,7 @@ class BaseApplication():
         Pauses until state is reached for each process's active window, timing out in timeout seconds.
         Useful when waiting for target app to complete execution of a task, or when starting up.
         Wraps around pywinauto's wait function.
-        
+
         :param state: state to wait for ('visible', 'ready', 'exists', 'enabled', 'active'), or time to wait in s or m
         :type state: str
         :param timeout: Maximum number of seconds to wait for state to be reached. Defaults to a minute, should be longer for apps with more windows.
@@ -117,7 +117,7 @@ class BaseApplication():
     def findComponent(self, compID: int) -> 'pywinauto.base_wrapper.BaseWrapper':
         """
         Finds the component with ID compID forcing its appearance if not visible.
-        
+
         :param compID: ID of component to find.
         :type compID: int
         :return: handle to component
@@ -129,32 +129,30 @@ class BaseApplication():
         comp = self.getComponentObject(compID)
         self.forceShow(comp)
         return cf.find(comp.getSuperToken())
-        
+    
     def getComponentObject(self, compID: int) -> 'Component':
         """
         Gets the component item for an item with ID compID. Handles possible errors with getting it.
-        
+
         :param compID: ID of component to get the Component object for
         :type compID: int
         :return: The component item for an item with ID compID
         :rtype: Component
         """
-        if self._tgm:
-            try:
-                comp = self._tgm.getComponent(compID)
-                if comp:
-                    return comp
-                else:
-                    raise Exception("Could not get component " + str(compID) + " from TGUIM.")
-            except Exception as e:
-                raise Exception(str(e))
-        else:
-            raise Exception("No Target GUI Model in this API.")
+        
+        try:
+            comp = self._tgm.getComponent(compID)
+            if comp:
+                return comp
+            else:
+                raise Exception("Could not get component " + str(compID) + " from TGUIM.")
+        except Exception as e:
+            raise Exception(str(e))
     
     def forceShow(self, comp: 'Component'):
         """
         Attempts to force the component to be visible using visibility behaviors.
-        
+
         :param comp: Component to show
         :type comp: Component
         """
@@ -165,7 +163,7 @@ class BaseApplication():
     def selectMenuItem(self, component: 'Component'):
         """
         MenuItems can't be clicked the same way as other components, so this function takes care of this.
-        
+
         :param component: menuItem to be selected
         :type component: Component
         :return: None
@@ -186,16 +184,14 @@ class BaseApplication():
         pathStr = ''
         while compPath:
             comp = compPath.pop()
-            pathStr += comp.getSuperToken().getTokens()[0].texts[0] + '->'
+            pathStr += comp.getSuperToken().getTokens()[0].title + '->'
         pathStr = pathStr[:-2]
         
         # Then get the containing top-level window
-        while not nxtParent.getSuperToken().getTokens()[0].isDialog:
-            curComp = nxtParent
-            nxtParent = nxtParent.getParent()
+        windowComp, pos = nxtParent.getPathFromRoot()[-2]  # -1 position is root, -2 is window
         
         # Now force show the window, and get its handle
-        window = self.findComponent(nxtParent)
+        window = self.findComponent(windowComp.getId())
         
         # Then finally select the menuItem
         window.menu_select(pathStr)

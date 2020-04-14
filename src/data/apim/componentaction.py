@@ -124,7 +124,7 @@ class ComponentAction(Action):
 		:rtype: str
 		"""
 		
-		if self._target.getSuperToken().getTokens90[0].type not in ['Menu', 'MenuItem']:
+		if self._target.getSuperToken().getTokens()[0].type not in ['Menu', 'MenuItem']:
 			code = '\t\tcomp = self.findComponent(' + str(self._target.getId()) + ')\n'
 		else:
 			code = '\t\tcomp = self.getComponentObject(' + str(self._target.getId()) + ')\n'
