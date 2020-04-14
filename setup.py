@@ -8,18 +8,26 @@ sys.path.append(os.path.abspath("./src/gui/rc/"))
 # Dependencies are automatically detected, but it might need
 # fine tuning.
 buildOptions = {
-    "packages": ["src.gui",
+    "packages": [
+                # Facile sub-packages
+                 "src.gui",
                  "src.qt_models",
                  "src.data",
                  "src.libs",
                  "src.tguiil",
-                 "src.graphics"
+                 "src.graphics",
+
+                # External dependencies
+                 "distutils"
                  ],
+
     "includes": ["scipy.sparse.csgraph._validation",
                  "scipy.ndimage._ni_support",
                  "scipy._distributor_init"
                  ],
+
     "include_files": ["database/"],
+
     "excludes": []
 }
 
@@ -34,7 +42,7 @@ if sys.platform =='win32':
     base = 'Win32GUI'
 
 executables = [
-    Executable(script = 'src/facile.py', base=base, targetName = 'facile.exe', icon = 'facade_logo.ico')
+    Executable(script = 'src/facile.py', base=base, targetName = 'facile.exe', icon = 'resources/facade_logo_256.ico')
 ]
 
 setup(name='Facile',
