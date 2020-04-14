@@ -190,10 +190,9 @@ class ApiCompilerDialog(QDialog):
 		
 		apiFolderDir = self.ui.apiLocation.text()
 		interpExeDir = self.ui.interpreterLocation.text()
+		installApi = self.ui.checkBoxInstallAPI.isChecked()
 		
-		theCompilationProfile = CompilationProfile(setDocType, setcompResOpts, apiFolderDir, interpExeDir)
-		
-		
+		theCompilationProfile = CompilationProfile(setDocType, setcompResOpts, apiFolderDir, interpExeDir, installApi)
 		
 		# if there are any errors, show them, then return.
 		if len(errors) != 0:
