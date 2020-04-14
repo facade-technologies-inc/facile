@@ -22,6 +22,9 @@ class DocGenerator:
         
         self.projectName = projectName
         self.docType = docType
+        # FIXME this is not universal for every machine...
+        # maybe use project to get it's current directory\sphinx_src
+        # store that dir in project and get that use sm
         self.sphinxFacileDir = r"C:\Users\ramos\Desktop\FacadeTechnology\facile\src\data\compiler\sphinx_src"
     
     def createDoc(self):
