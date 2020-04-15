@@ -22,11 +22,11 @@ This module contains the **ComponentAction** class which is used to tie a user a
 component from the TGUIM.
 """
 
-from data.apim.action import Action
+import data.apim.action as act
 from data.apim.actionspecification import ActionSpecification
 import data.apim.port as pt
 
-class ComponentAction(Action):
+class ComponentAction(act.Action):
 	
 	def __init__(self, targetComponent: 'Component', actionSpec: 'ActionSpecification'):
 		"""
@@ -37,7 +37,7 @@ class ComponentAction(Action):
 		:param actionSpec: The specification for how to perform the action.
 		:type actionSpec: ActionSpecification
 		"""
-		Action.__init__(self)
+		act.Action.__init__(self)
 		self._target = targetComponent
 		self._spec = actionSpec
 		
@@ -51,6 +51,16 @@ class ComponentAction(Action):
 			
 		self.setName(actionSpec.name)
 		self.setAnnotation(self._spec.description)
+	
+	def getActionSpec(self) -> ActionSpecification:
+		"""
+		Gets the action spec associated to this item.
+		
+		:return: the action spec associated to this item
+		:rtype: ActionSpecification
+		"""
+		
+		return self._spec
 
 	def getTargetComponent(self) -> 'Component':
 		"""

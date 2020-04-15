@@ -26,16 +26,20 @@ import os
 import time as t
 import json
 import pywinauto
+import pyautogui
 import traceback
+from datetime import datetime
 from typing import Set
-from tguiil.application import Application
-from tguiil.matchoption import MatchOption
-from tguiil.componentfinder import ComponentFinder
-from data.tguim.targetguimodel import TargetGuiModel
+from .tguiil.tokens import Token
+from .tguiil.application import Application
+from .tguiil.matchoption import MatchOption
+from .tguiil.componentfinder import ComponentFinder
+from .data.tguim.targetguimodel import TargetGuiModel
+from .data.tguim.visibilitybehavior import VisibilityBehavior
 
 pathToThisFile, thisFile = os.path.split(os.path.abspath(__file__))
 sys.path.insert(0, pathToThisFile)
-
+# TODO: Might want to make some functions private.
 
 class WaitException(Exception):
     def __init__(self, msg: str):
@@ -67,6 +71,7 @@ class BaseApplication():
         self._options = options
         self._exeLoc = exeLoc
         self._name = name
+        self._compFinder = ComponentFinder(self.app, self._options)
         
         try:
             with open(os.path.join(pathToThisFile, self._name + ".tguim"), 'r') as tguimFile:
@@ -76,6 +81,9 @@ class BaseApplication():
             print("Couldn't load from {}".format('./' + self._name + '.tguim'))
             self._tgm = None
             traceback.print_exc()
+        
+
+        self._searchGraph = self.generateSearchGraph()
     
     def startApp(self):
         """
@@ -124,15 +132,13 @@ class BaseApplication():
         :rtype: pywinauto.base_wrapper.BaseWrapper
         """
         
-        cf = ComponentFinder(self.app, self._options)
-        
         comp = self.getComponentObject(compID)
         self.forceShow(comp)
-        return cf.find(comp.getSuperToken())
+        return self._compFinder.find(comp.getSuperToken())
     
     def getComponentObject(self, compID: int) -> 'Component':
         """
-        Gets the component item for an item with ID compID. Handles possible errors with getting it.
+        Gets the Component object for an item with ID compID. Handles possible errors with getting it.
 
         :param compID: ID of component to get the Component object for
         :type compID: int
@@ -148,17 +154,95 @@ class BaseApplication():
                 raise Exception("Could not get component " + str(compID) + " from TGUIM.")
         except Exception as e:
             raise Exception(str(e))
+        
+    def getWindowObjectFromHandle(self, winHandle: pywinauto.base_wrapper.BaseWrapper) -> 'Component':
+        """
+        Gets the Component object for a component with handle compHandle.
+        ** ONLY WORKS FOR WINDOWS ** (Can be modified for more, but implemented this way to save processing power/time.
+
+        :param winHandle: handle of window to get Component object for
+        :type winHandle: pywinauto.base_wrapper.BaseWrapper
+        :return: The Component object for an item with handle compHandle
+        :rtype: Component
+        """
+        
+        # Create Token for handle
+        timeStamp = datetime.now()
+        Token.createToken(timeStamp, winHandle)
+        
+        # Find a SuperToken from the tguim that matches. TODO: Finish
+        pass
     
-    def forceShow(self, comp: 'Component'):
+    def forceShow(self, compObj: 'Component'):
         """
         Attempts to force the component to be visible using visibility behaviors.
+        Uses a simple breadth-first search algorithm.
 
         :param comp: Component to show
         :type comp: Component
+        :return: None
         """
         
-        # comp.wait('exists')
-        pass
+        # --- This may be useful for other search algorithms later --- #
+        # # First, get all necessary lists.
+        # # The instantiated Visibility Behaviors (These are the edges)
+        # visBs = self._tgm.getVisibilityBehaviors()
+        # # All top-level windows in the TGUIM (These are the nodes)
+        # tlwComps = self._tgm.getTopLevelWindows()
+        # ------------------------------------------------------------ #
+
+        # Get the window that we want to show. This is the starting point.
+        startWindow = compObj.getPathFromRoot()[-2]  # -1 position is root, -2 is window
+        
+        # Get the currently active windows, which are the algorithm's targets.
+        # We want the component objects for these, not the actual handles.
+        targets = []
+        for handle in self.app.windows():
+            targets.append(self.getWindowObjectFromHandle(handle))
+        
+        # Find path to one of the windows from desired component's window.
+        # How this works:
+        # Store lists of (component, window, VB) tuples, where the VB is performed on component.
+        # These lists are the path to the most recent item in the list, and the containing list holds all paths
+        work = [[(compObj, startWindow, None)]]
+        seen = []
+        path = []
+        success = False
+        while work:  # TODO: Might want to modify this to have a "backup" path as well: just find the first 2 paths
+            path = work.pop(0)
+            curComp, window, visB = path[-1]
+            if window in targets:  # Found closest path
+                success = True
+                break
+            elif window in seen:  # already saw window; ignoring it
+                continue
+            else:
+                seen.append(window)  # avoids seeing a window multiple times and getting an infinite loop
+                for vb in curComp.getDestVisibilityBehaviors():  # Dst bc we're going backwards
+                    if vb.getReactionType() is VisibilityBehavior.ReactionType.Show:
+                        tmp = path[:]
+                        tmpComp = vb.getDestComponent()
+                        tmpWin = vb.getDestComponent().getPathFromRoot()[-2]
+                        tmp.append((tmpComp, tmpWin, vb))
+                        work.append(tmp)
+        
+        if not success:
+            pyautogui.alert('Could not force component appearance. Please manually ensure that component "' +
+                            compObj.getName() + '" in window "' + startWindow.getName() + '" is visible, then press '
+                                                                                          'OK.')
+        else:
+            print(path)
+            # Now, window is one of the active windows, so we can now interact with the application and
+            # force comp's appearance.
+            while path:
+                curComp, window, visB = path.pop()
+                if visB:
+                    if curComp.getSuperToken().getTokens()[0].type not in ['Menu', 'MenuItem']:
+                        comp = self._compFinder.find(curComp.getSuperToken())
+                    else:
+                        comp = curComp
+                    code = visB.getTriggerAction().getActionSpec().code
+                    exec(code)
     
     def selectMenuItem(self, component: 'Component'):
         """
@@ -191,7 +275,15 @@ class BaseApplication():
         windowComp, pos = nxtParent.getPathFromRoot()[-2]  # -1 position is root, -2 is window
         
         # Now force show the window, and get its handle
-        window = self.findComponent(windowComp.getId())
+        self.forceShow(windowComp)
+        window = self._compFinder.find(windowComp.getSuperToken())
         
         # Then finally select the menuItem
         window.menu_select(pathStr)
+        
+    def generateSearchGraph(self) -> list:
+        """
+        Generates the graph/matrix that is used to search for the best path from one window to another.
+        You can go to any space with a 0 from any space with a 0, and 1s represent obstacles.
+        :return:
+        """

@@ -58,14 +58,16 @@ class Compiler():
         if not os.path.exists(self._docFolder):
             os.mkdir(self._docFolder)
         
-        # List was reduced in size by making custom, "stripped" versions of files that only
-        #  have the required functions & dependencies. That way no need to import graphics files and all that.
         self._necessaryFiles = ["../../tguiil/componentfinder.py", "../../tguiil/application.py",
                                 "../../tguiil/tokens.py", "../../tguiil/supertokens.py",
                                 "../../tguiil/matchoption.py", "../../data/entity.py",
                                 "../../data/tguim/component.py", "../../data/tguim/visibilitybehavior.py",
                                 "../../data/properties.py", "../../data/tguim/condition.py",
-                                "../../data/tguim/targetguimodel.py", "../../data/property.py"]
+                                "../../data/tguim/targetguimodel.py", "../../data/property.py",
+                                "../../data/apim/componentaction.py", "../../data/apim/action.py",
+                                "../../data/apim/actionspecification.py", "../../data/apim/port.py",
+                                "../../data/apim/wire.py", "../../data/apim/actionpipeline.py",
+                                "../../data/apim/actionwrapper.py", "../../data/apim/wireset.py"]
     
     def generateCustomApp(self) -> None:
         """
@@ -111,7 +113,7 @@ class Compiler():
         """
         
         # make necessary directories before copying files
-        targetDirs = ['data', 'data/tguim', 'tguiil']
+        targetDirs = ['data', 'data/tguim', 'data/apim', 'tguiil']
         for dir in targetDirs:
             dir = os.path.join(self._srcFolder, dir)
             if not os.path.exists(dir):
@@ -120,7 +122,6 @@ class Compiler():
         curPath = os.path.abspath(__file__)
         dir, filename = os.path.split(curPath)
         for path in self._necessaryFiles:
-            # Make sure to copy necessary files into baseFiles dir, and remove unnecessary fns and dependencies.
             copyfile(os.path.join(dir, path), os.path.join(self._srcFolder, path[6:]))
     
     def saveTGUIM(self):
@@ -134,8 +135,7 @@ class Compiler():
         path = self.statem._project.getTargetGUIModelFile()
         name = self.statem._project.getName()
         
-        copyfile(path,
-                 os.path.join(self._srcFolder, name + '.tguim'))  # tguim saved to root, alongside baseapp and customapp
+        copyfile(path, os.path.join(self._srcFolder, name + '.tguim'))  # tguim saved to root
     
     def compileAPI(self) -> None:
         """
@@ -176,4 +176,4 @@ class Compiler():
         if self._compProf.installApi:
             os.chdir(self._saveFolder)
             os.system(self._compProf.interpExeDir + " -m pip install .")
-
+            return

@@ -26,6 +26,7 @@ from PySide2.QtWidgets import QGraphicsScene
 
 from graphics.tguim.componentgraphics import ComponentGraphics
 import graphics.tguim.visibilitybehaviorgraphics as vbg
+from data.tguim.component import Component
 
 class TGUIMScene(QGraphicsScene):
 	itemSelected = Signal(int)
@@ -115,8 +116,9 @@ class TGUIMScene(QGraphicsScene):
 		"""
 	
 		for data in self._dataToGraphicsMapping:
-			graphics = self.getGraphics(data)
-			graphics.chkExtraComponents()
+			if isinstance(data, Component):
+				graphics = self.getGraphics(data)
+				graphics.chkExtraComponents()
 
 	def getGraphics(self, dataItem):
 		"""
