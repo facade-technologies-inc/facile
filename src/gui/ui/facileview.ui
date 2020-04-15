@@ -266,6 +266,9 @@
    <property name="text">
     <string>Show Component Images</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+I</string>
+   </property>
   </action>
   <action name="actionAutoExplore">
    <property name="checkable">

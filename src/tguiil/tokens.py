@@ -43,10 +43,6 @@ class Token:
     """
     Token class sets parameters of a token for each state that changes.
     """
-
-    # TODO: Store the control identifiers of the top level parent for more accurate lookup.
-    # TODO: Store mapping of control IDs to their count
-
     control_ID_count = {}
     
     class CreationException(Exception):
@@ -98,7 +94,7 @@ class Token:
     def __init__(self, appTimeStamp: int, identifier: int, isDialog: bool, isEnabled: bool,
                  isVisible: bool, processID: int, typeOf: str, rectangle: RECT, texts: list,
                  title: str, numControls: int, controlIDs: list, parentTitle: str,
-                 parentType: str, topLevelParentTitle: str, topLevelParentType: str,
+                 parentType: str, topLevelParentControlIDs: list, topLevelParentTitle: str, topLevelParentType: str,
                  childrenTexts: list, picture: Image = None, autoID: int = None,
                  expandState: int = None, shownState: int = None):
         """
@@ -118,6 +114,8 @@ class Token:
         :type parentTitle: str
         :param parentType: stores the components parents type
         :type parentType: str
+        :param topLevelParentControlIDs: A list of control identifiers for the dialog that contains (or is) this component.
+        :type topLevelParentControlIDs: List[str]
         :param topLevelParentTitle: stores the components top level parents title
         :type topLevelParentTitle: str
         :param topLevelParentType: stores the components top level parents type
@@ -157,6 +155,7 @@ class Token:
         self.isVisible = isVisible
         self.parentTitle = parentTitle
         self.parentType = parentType
+        self.topLevelParentControlIDs = topLevelParentControlIDs
         self.topLevelParentTitle = topLevelParentTitle
         self.topLevelParentType = topLevelParentType
         self.processID = processID
@@ -185,7 +184,7 @@ class Token:
         self.controlIDs.sort()
     
     @staticmethod
-    def createToken(timeStamp: datetime, component: pywinauto.base_wrapper.BaseWrapper) -> 'Token':
+    def createToken(timeStamp: datetime, component: pywinauto.base_wrapper.BaseWrapper, captureImage:bool=True) -> 'Token':
         """
         Create a token from a pywinauto control.
 
@@ -222,8 +221,31 @@ class Token:
             texts = component.texts()[1:]
             title = component.window_text()
             numControls = component.control_count()
-            image = None  # component.capture_as_image()
             typeOf = component.friendly_class_name()
+
+            image = None
+            if captureImage:
+                image = component.capture_as_image()
+
+            # size of dialogs is a bit off, so we trim to adjust.
+            if isDialog:
+
+                # Setting amounts to trim off dialog size
+                leftAdjust = 15
+                topAdjust = 0
+                rightAdjust = -17
+                bottomAdjust = -17
+
+                # resize rectangle size
+                rectangle.left += leftAdjust
+                rectangle.top += topAdjust
+                rectangle.right += rightAdjust
+                rectangle.bottom += bottomAdjust
+
+                # crop image
+                if image is not None:
+                    width, height = image.size
+                    image = image.crop((leftAdjust, topAdjust, width+rightAdjust, height+bottomAdjust))
             
             # get text of all children that are not editable.
             childrenTexts = []
@@ -256,15 +278,16 @@ class Token:
             
             if title is None:
                 title = ""
-            
-            controlIdentifiers = [title, typeOf, title + typeOf]
+
+            controlIDs = [title, typeOf, title + typeOf]
+            topLevelControlIDs = [topLevelParentTitle, topLevelParentType, topLevelParentTitle + topLevelParentType]
         except Exception as e:
             raise Token.CreationException("Could not build token: {}".format(str(e)))
         
         # create a new token
         token = Token(timeStamp, id, isDialog, isEnabled, isVisible, processID, typeOf,
-                      rectangle, texts, title, numControls, controlIdentifiers, parentTitle,
-                      parentType, topLevelParentTitle, topLevelParentType, childrenTexts, image,
+                      rectangle, texts, title, numControls, controlIDs, parentTitle,
+                      parentType, topLevelControlIDs, topLevelParentTitle, topLevelParentType, childrenTexts, image,
                       autoID, expandState, shownState)
         
         return token
@@ -333,7 +356,8 @@ class Token:
                 self.title == token2.title and \
                 self.rectangle == token2.rectangle and \
                 self.numControls == token2.numControls and \
-                self.childrenTexts == self.childrenTexts:
+                self.childrenTexts == token2.childrenTexts and \
+                ((self.pic is None) == (token2.pic is None)):
             return Token.Match.EXACT, 1
         
         #####################################################################
@@ -492,27 +516,27 @@ class Token:
         total += Token.Weight["CONTROL_ID"] * controlSimilarity
         
         # compare pictures
-        if self.pic != None and token2.pic != None:
+        if self.pic is not None and token2.pic is not None:
             if self.pic.size == token2.pic.size:
                 try:
                     picSimilarity = (ssim(np.array(self.pic), np.array(token2.pic)) + 1) / 2
                     total += picSimilarity * Token.Weight["PIC"]
                 except:
                     total += 0
+        elif self.pic is not None or token2.pic is not None:
+            total += 0
         else:
             max -= Token.Weight["PIC"]
         
         if self.autoid is not None and token2.autoid is not None and (
                 self.autoid != "" or token2.autoid != ""):
-            total += SequenceMatcher(None, self.autoid, token2.autoid).ratio() * Token.Weight[
-                "AUTO_ID"]
+            total += SequenceMatcher(None, self.autoid, token2.autoid).ratio() * Token.Weight["AUTO_ID"]
         else:
             max -= Token.Weight["AUTO_ID"]
         
         # compare title, parent title, and top level parent title
         titleSequence1 = ' > '.join([self.title, self.parentTitle, self.topLevelParentTitle])
-        titleSequence2 = ' > '.join(
-            [token2.title, token2.parentTitle, token2.topLevelParentTitle])
+        titleSequence2 = ' > '.join([token2.title, token2.parentTitle, token2.topLevelParentTitle])
         titleSimilarity = SequenceMatcher(None, titleSequence1, titleSequence2).ratio()
         total += titleSimilarity * Token.Weight["TITLE"]
         
@@ -523,6 +547,8 @@ class Token:
         total += textsSimilarity * Token.Weight["TEXTS"]
         
         # compare children texts
+        # TODO: flatten nested lists first using methods as link below...
+        #  https://symbiosisacademy.org/tutorial-index/python-flatten-nested-lists-tuples-sets/
         try:
             t1 = [text for sublist in self.childrenTexts for text in sublist]
             t2 = [text for sublist in token2.childrenTexts for text in sublist]
@@ -626,7 +652,19 @@ class Token:
         return list(filter(len, sorted(self.topLevelParentControlIDs, key=cmp_to_key(Token.control_ID_comparator))))
 
     @staticmethod
-    def control_ID_comparator(controlID1: str, controlID2: str):
+    def control_ID_comparator(controlID1: str, controlID2: str) -> int:
+        """
+        Allows us to compare 2 control IDs based on their uniqueness.
+
+        :param controlID1: The first controlID to compare.
+        :type controlID1: str
+        :param controlID2: The second controlID to compare.
+        :type controlID2: str
+        :return: negative int if controlID1 is more unique than controlID2,
+                 positive int if controlID2 is more unique than controlID1,
+                 If 2 control IDs have same uniqueness, the longer one is considered more unique.
+        :rtype: int
+        """
         count1 = Token.control_ID_count.get(controlID1, 100000000)
         count2 = Token.control_ID_count.get(controlID2, 100000000)
     
@@ -660,7 +698,7 @@ class Token:
         d['rectangle'] = [self.rectangle.left, self.rectangle.top, self.rectangle.width(),
                           self.rectangle.height()]
         if 'pic' in d and d['pic'] is not None:
-            d['pic'] = np.array(self.picture).tolist()
+            d['pic'] = np.array(self.pic).tolist()
         
         return d
     
@@ -681,7 +719,7 @@ class Token:
         t = Token.__new__(Token)
         
         if d['pic']:
-            d["pic"] = Image.fromarray(np.uint8(np.asarray(d["picture"])))
+            d["pic"] = Image.fromarray(np.uint8(np.asarray(d["pic"])))
         
         if d['rectangle']:
             r = RECT()
