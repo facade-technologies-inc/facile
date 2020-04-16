@@ -41,6 +41,7 @@ pathToThisFile, thisFile = os.path.split(os.path.abspath(__file__))
 sys.path.insert(0, pathToThisFile)
 # TODO: Might want to make some functions private.
 
+
 class WaitException(Exception):
     def __init__(self, msg: str):
         Exception.__init__(self, msg)
@@ -51,6 +52,13 @@ class BaseApplication():
     The core of all Facile APIs: contains functions that are necessary for any API. The
     custom generated Application class inherits from this.
     """
+
+    ignoreTypes = set()
+    ignoreTypes.add("SysShadow")
+    ignoreTypes.add("ToolTips")
+    ignoreTypes.add("MSCTFIME UI")
+    ignoreTypes.add("IME")
+    ignoreTypes.add("Pane")
     
     def __init__(self, exeLoc: str, options: Set['MatchOption'], name: str, backend: str = 'uia'):
         """
@@ -81,9 +89,6 @@ class BaseApplication():
             print("Couldn't load from {}".format('./' + self._name + '.tguim'))
             self._tgm = None
             traceback.print_exc()
-        
-
-        self._searchGraph = self.generateSearchGraph()
     
     def startApp(self):
         """
@@ -168,10 +173,45 @@ class BaseApplication():
         
         # Create Token for handle
         timeStamp = datetime.now()
-        Token.createToken(timeStamp, winHandle)
+        token = Token.createToken(timeStamp, winHandle, captureImage=False)
+        print(token)
+    
+        # determine if the new token matches any super tokens and how well it matches if it does.
+        bestMatch = 0
+        bestDecision = Token.Match.NO.value
+        selectedComponent = None
+        potentialMatches = []
+        comps = self._tgm.getComponents()
+        for id in comps:
+            comp = comps[id]
+            st = comp.getSuperToken()
+            if st.tokens[0].isDialog:
+                potentialMatches.append((st, comp))
+    
+        for superToken, comp in potentialMatches:
+            decision, matchVal = superToken.shouldContain(token)
+            bestDecision = min(bestDecision, decision.value)
+            if comp.getId() is 5:  # TODO: Remove this after debugging
+                return comp
+            if decision == Token.Match.NO:
+                continue
         
-        # Find a SuperToken from the tguim that matches. TODO: Finish
-        pass
+            elif decision == Token.Match.EXACT:
+                return comp
+        
+            elif decision == Token.Match.CLOSE:
+                # in the case that multiple SuperTokens closely match the token,
+                # we'll use the SuperToken that has the higher match.
+                print('close')
+                if matchVal > bestMatch:
+                    bestMatch = matchVal
+                    selectedComponent = comp
+
+        token.registerAsAccepted()
+        print(bestMatch, selectedComponent)
+        # returning no matter what: if selected Comp is none, we don't care, we just return none since this is only used
+        # for getting the target windows that have already been defined in Facile
+        return selectedComponent
     
     def forceShow(self, compObj: 'Component'):
         """
@@ -185,20 +225,22 @@ class BaseApplication():
         
         # --- This may be useful for other search algorithms later --- #
         # # First, get all necessary lists.
-        # # The instantiated Visibility Behaviors (These are the edges)
-        # visBs = self._tgm.getVisibilityBehaviors()
         # # All top-level windows in the TGUIM (These are the nodes)
         # tlwComps = self._tgm.getTopLevelWindows()
         # ------------------------------------------------------------ #
 
         # Get the window that we want to show. This is the starting point.
-        startWindow = compObj.getPathFromRoot()[-2]  # -1 position is root, -2 is window
+        startWindow, pos = compObj.getPathFromRoot()[-2]  # -1 position is root, -2 is window
+
+        # The instantiated Visibility Behaviors (These are the edges)
+        visBs = self._tgm.getVisibilityBehaviors()
         
         # Get the currently active windows, which are the algorithm's targets.
         # We want the component objects for these, not the actual handles.
         targets = []
         for handle in self.app.windows():
             targets.append(self.getWindowObjectFromHandle(handle))
+        print(targets)
         
         # Find path to one of the windows from desired component's window.
         # How this works:
@@ -211,6 +253,7 @@ class BaseApplication():
         while work:  # TODO: Might want to modify this to have a "backup" path as well: just find the first 2 paths
             path = work.pop(0)
             curComp, window, visB = path[-1]
+            print(curComp, window, visB)
             if window in targets:  # Found closest path
                 success = True
                 break
@@ -218,15 +261,19 @@ class BaseApplication():
                 continue
             else:
                 seen.append(window)  # avoids seeing a window multiple times and getting an infinite loop
-                for vb in curComp.getDestVisibilityBehaviors():  # Dst bc we're going backwards
-                    if vb.getReactionType() is VisibilityBehavior.ReactionType.Show:
+                for id in visBs:
+                    vb = visBs[id]
+                    print(vb.getSrcComponent(), vb.getDestComponent(), curComp, window)
+                    if vb.getDestComponent() in [window, curComp]:  #vb.getReactionType() is VisibilityBehavior.ReactionType.Show and \
+                        print("adding element")
                         tmp = path[:]
-                        tmpComp = vb.getDestComponent()
-                        tmpWin = vb.getDestComponent().getPathFromRoot()[-2]
+                        tmpComp = vb.getSrcComponent()
+                        tmpWin, pos = vb.getSrcComponent().getPathFromRoot()[-2]
                         tmp.append((tmpComp, tmpWin, vb))
                         work.append(tmp)
         
         if not success:
+            print(compObj, startWindow)
             pyautogui.alert('Could not force component appearance. Please manually ensure that component "' +
                             compObj.getName() + '" in window "' + startWindow.getName() + '" is visible, then press '
                                                                                           'OK.')
@@ -280,10 +327,3 @@ class BaseApplication():
         
         # Then finally select the menuItem
         window.menu_select(pathStr)
-        
-    def generateSearchGraph(self) -> list:
-        """
-        Generates the graph/matrix that is used to search for the best path from one window to another.
-        You can go to any space with a 0 from any space with a 0, and 1s represent obstacles.
-        :return:
-        """

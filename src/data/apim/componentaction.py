@@ -22,9 +22,10 @@ This module contains the **ComponentAction** class which is used to tie a user a
 component from the TGUIM.
 """
 
+import data.apim.port as pt
 import data.apim.action as act
 from data.apim.actionspecification import ActionSpecification
-import data.apim.port as pt
+
 
 class ComponentAction(act.Action):
 	
@@ -151,3 +152,36 @@ class ComponentAction(act.Action):
 			       + '. Please contact support for help.")\n'
 
 		return code
+	
+	def asDict(self) -> dict:
+		"""
+		Get a dictionary representation of the component action.
+
+		:return: The dictionary representation of the object.
+		:rtype: dict
+		"""
+		d = {}
+		d["target"] = self._target.getId()
+		d["spec"] = self._spec.asDict()
+		
+		return d
+	
+	@staticmethod
+	def fromDict(d: dict, tguim: 'TargetGuiModel') -> 'ComponentAction':
+		"""
+		Creates object from a dictionary.
+
+		:param d: The dictionary that represents the object.
+		:type d: dict
+		:param tguim: The target GUI model to add the component to
+		:type tguim: TargetGuiModel
+		:return: The ComponentAction object that was constructed from the dictionary
+		:rtype: ComponentAction
+		"""
+		
+		if d is None:
+			return None
+		
+		target = tguim.getComponent(int(d["target"]))
+		spec = ActionSpecification.fromDict(d["spec"])
+		return ComponentAction(target, spec)

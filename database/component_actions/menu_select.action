@@ -1,7 +1,7 @@
 
 name = "Select"
 description = "Selects (clicks) menu item with ID {id}."
-targets = {'MenuItem', 'Menu'}
+targets = ['MenuItem', 'Menu']
 inputs = []
 outputs = []
 code = """
