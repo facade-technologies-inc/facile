@@ -27,10 +27,7 @@ buildOptions = {
                  ],
 
     "include_files": ["database/",
-                      os.path.join(python_dir, "python3.dll"),
-                      os.path.join(python_dir, "vcruntime140.dll"),
-
-],
+                      ] + ["./venv/Scripts/"+ file for file in os.listdir("./venv/Scripts/") if file.endswith(".dll")],
 
     "excludes": ["scipy.spatial.cKDTree"]
 }
@@ -42,8 +39,8 @@ bdistOptions = {}
 base = None
 
 # Uncomment for GUI applications to NOT show cmd window while running.
-if sys.platform =='win32':
-    base = 'Win32GUI'
+# if sys.platform =='win32':
+#     base = 'Win32GUI'
 
 executables = [
     Executable(script = 'src/facile.py', base=base, targetName = 'facile.exe', icon = 'resources/facade_logo_256.ico')
