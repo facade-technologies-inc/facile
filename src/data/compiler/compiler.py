@@ -88,10 +88,10 @@ class Compiler():
             with open(os.path.join(dir, 'application-unfilled.py'), 'r') as g:
                 appStr = g.read()
             
-            optStr = '['
+            optStr = '{'
             for opt in self._opts:
                 optStr += str(opt) + ', '
-            optStr = optStr[:-2] + ']'
+            optStr = optStr[:-2] + '}'
             
             appStr = appStr.format(exeLoc="'" + self._exeLoc + "'", options=optStr, name="'" + self._name + "'",
                                    backend="'" + self._backend + "'")

@@ -61,14 +61,14 @@ class BaseApplication():
     ignoreTypes.add("IME")
     ignoreTypes.add("Pane")
     
-    def __init__(self, exeLoc: str, options: list, name: str, backend: str = 'uia'):
+    def __init__(self, exeLoc: str, options: Set['MatchOption'], name: str, backend: str = 'uia'):
         """
         Initializes a BaseApplication instance.
 
         :param exeLoc: filepath to executable for target application
         :type exeLoc: str
         :param options: options to use when searching for a component
-        :type options: list
+        :type options: set
         :param name: project name (necessary for opening tguim file)
         :type name: str
         :param backend: backend type
