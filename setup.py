@@ -17,9 +17,6 @@ buildOptions = {
                  "src.libs",
                  "src.tguiil",
                  "src.graphics",
-
-                # External dependencies
-                 "distutils"
                  ],
 
     "includes": ["scipy.sparse.csgraph._validation",
@@ -29,10 +26,11 @@ buildOptions = {
 
     "include_files": ["database/",
                       "src/tguiil/",
-                      "src/data/",
-                      ] + ["./venv/Scripts/"+ file for file in os.listdir("./venv/Scripts/") if file.endswith(".dll")],
+                      "src/data/"
+                      ],
 
-    "excludes": ["scipy.spatial.cKDTree"]
+    "excludes": ["scipy.spatial.cKDTree",
+                 ]
 }
 
 installOptions = {}
