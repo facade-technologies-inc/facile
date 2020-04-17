@@ -44,24 +44,26 @@ class ComponentFinder:
     the specified matching schemes.
     """
 
-    PYWINAUTO_TIMEOUT = 5 # seconds
+    PYWINAUTO_TIMEOUT = 5  # seconds
 
     def __init__(self, app: Application, options: Set[MatchOption], defaultOption=MatchOption.CloseToken):
         """
         Initialize a component finder object.
 
         :param app: The application instance used to traverse the target GUI.
-        :type app: tguiil.application.Application (preffered) OR pywinauto.application.Application
+        :type app: tguiil.application.Application (preferred) OR pywinauto.application.Application
         :param options: The set of matching schemes that will be used to match the super token to a component.
         :type options: Set[MatchOption]
         :param defaultOption: If the options are empty, the default option will be used.
         :type defaultOption: MatchOption
         """
         self._app = app
-        self._matchOptions = options
+        self._matchOptions = []
+        for option in options:
+            self._matchOptions.append(option.value)
 
-        if self._matchOptions == {}:
-            self._matchOptions.add(defaultOption)
+        if not self._matchOptions:
+            self._matchOptions.append(defaultOption.value)
 
         timings.Timings.window_find_timeout = ComponentFinder.PYWINAUTO_TIMEOUT
 
@@ -86,7 +88,7 @@ class ComponentFinder:
         # |  traverse the GUI, build tokens for each component and compare to the tokens within the super token given to
         # |  determine if there is a match. Depending on the match options, we may return if we find an exact match
         # |  or we may return a match that's close enough.
-        if MatchOption.CloseToken in self._matchOptions or MatchOption.ExactToken in self._matchOptions:
+        if MatchOption.CloseToken.value in self._matchOptions or MatchOption.ExactToken.value in self._matchOptions:
             timestamp = self._app.getStartTime()
             bestCertainty = 0
             closestComponent = None
@@ -102,10 +104,10 @@ class ComponentFinder:
                     print(str(e))
                 else:
                     decision, certainty = superToken.shouldContain(token)
-                    if decision == Token.Match.EXACT:
-                        if MatchOption.ExactToken in self._matchOptions:
+                    if decision.value == Token.Match.EXACT.value:
+                        if MatchOption.ExactToken.value in self._matchOptions:
                             return curComponent
-                    elif decision == Token.Match.CLOSE:
+                    elif decision.value == Token.Match.CLOSE.value:
                         if certainty > bestCertainty:
                             closestComponent = curComponent
                             bestCertainty = certainty
@@ -115,7 +117,7 @@ class ComponentFinder:
                     work.append(child)
 
             if closestComponent:
-                if MatchOption.CloseToken in self._matchOptions:
+                if MatchOption.CloseToken.value in self._matchOptions:
                     return closestComponent
 
         # PYWINAUTO BEST MATCH:
@@ -135,7 +137,7 @@ class ComponentFinder:
         # |           To get around this, we create pywinauto.application.Application instances for each process in the
         # |           that belongs to the application and search it for the dialog, then the component that we care
         # |           about.
-        if MatchOption.PWABestMatch in self._matchOptions:
+        if MatchOption.PWABestMatch.value in self._matchOptions:
             tokens = superToken.getTokens()
             isDialog = tokens[0].isDialog
 
