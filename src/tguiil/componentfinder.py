@@ -23,10 +23,16 @@ from typing import Set
 import pywinauto
 from pywinauto import timings
 
-from tguiil.tokens import Token
-from tguiil.matchoption import MatchOption
-from tguiil.application import Application
-from tguiil.supertokens import SuperToken
+try: # Facile imports
+    from tguiil.tokens import Token
+    from tguiil.matchoption import MatchOption
+    from tguiil.application import Application
+    from tguiil.supertokens import SuperToken
+except ImportError: # API imports
+    from .tokens import Token
+    from .matchoption import MatchOption
+    from .application import Application
+    from .supertokens import SuperToken
 
 class ComponentNotFoundException(Exception):
     def __init__(self, msg):

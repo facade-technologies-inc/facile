@@ -24,10 +24,17 @@ from PIL.Image import Image
 from datetime import datetime
 
 from datetime import datetime
-from data.entity import Entity
-from data.properties import Properties
-from data.tguim.visibilitybehavior import VisibilityBehavior
-from tguiil.supertokens import SuperToken
+
+try: # Facile imports
+	from data.entity import Entity
+	from data.properties import Properties
+	from data.tguim.visibilitybehavior import VisibilityBehavior
+	from tguiil.supertokens import SuperToken
+except ImportError: # API imports
+	from ..entity import Entity
+	from ..properties import Properties
+	from .visibilitybehavior import VisibilityBehavior
+	from ...tguiil.supertokens import SuperToken
 
 
 
