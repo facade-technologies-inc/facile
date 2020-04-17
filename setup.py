@@ -33,9 +33,9 @@ buildOptions = {
                  ]
 }
 
-installOptions = {}
+installOptions = {"skip_build":True}
 
-bdistOptions = {}
+bdistOptions = {"skip_build":True}
 
 base = None
 
