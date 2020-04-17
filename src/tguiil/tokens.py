@@ -231,16 +231,16 @@ class Token:
             if isDialog:
 
                 # Setting amounts to trim off dialog size
-                leftAdjust = 15
+                leftAdjust = 12
                 topAdjust = 0
-                rightAdjust = -17
-                bottomAdjust = -17
+                rightAdjust = -8
+                bottomAdjust = -8
 
                 # resize rectangle size
-                rectangle.left += leftAdjust
-                rectangle.top += topAdjust
-                rectangle.right += rightAdjust
-                rectangle.bottom += bottomAdjust
+                # rectangle.left += leftAdjust
+                # rectangle.top += topAdjust
+                # rectangle.right += rightAdjust
+                # rectangle.bottom += bottomAdjust
 
                 # crop image
                 if image is not None:
