@@ -24,8 +24,10 @@ iterates through the tokens in the token list.
 
 from threading import Lock
 
-from tguiil.tokens import Token
-
+try: # Facile imports
+	from tguiil.tokens import Token
+except ImportError: # API imports
+	from .tokens import Token
 
 class SuperToken:
 	"""

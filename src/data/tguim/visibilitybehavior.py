@@ -23,11 +23,15 @@ This module contains the VisibilityBehavior class.
 
 from enum import Enum, auto
 
-from data.entity import Entity
-from data.properties import Properties
-from data.tguim.condition import Condition
-from data.apim.componentaction import ComponentAction
-
+try: # Facile imports
+	from data.entity import Entity
+	from data.properties import Properties
+	from data.tguim.condition import Condition
+	from data.apim.componentaction import ComponentAction
+except ImportError: # API imports
+	from ..entity import Entity
+	from ..properties import Properties
+	from .condition import Condition
 
 class VisibilityBehavior(Entity):
 	"""
