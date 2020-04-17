@@ -63,11 +63,11 @@ class Compiler():
                                 "../../tguiil/matchoption.py", "../../data/entity.py",
                                 "../../data/tguim/component.py", "../../data/tguim/visibilitybehavior.py",
                                 "../../data/properties.py", "../../data/tguim/condition.py",
-                                "../../data/tguim/targetguimodel.py", "../../data/property.py",
-                                "../../data/apim/componentaction.py", "../../data/apim/action.py",
-                                "../../data/apim/actionspecification.py", "../../data/apim/port.py",
-                                "../../data/apim/wire.py", "../../data/apim/actionpipeline.py",
-                                "../../data/apim/actionwrapper.py", "../../data/apim/wireset.py"]
+                                "../../data/tguim/targetguimodel.py", "../../data/property.py"]
+                                # "../../data/apim/componentaction.py", "../../data/apim/action.py",
+                                # "../../data/apim/actionspecification.py", "../../data/apim/port.py",
+                                # "../../data/apim/wire.py", "../../data/apim/actionpipeline.py",
+                                # "../../data/apim/actionwrapper.py", "../../data/apim/wireset.py"]
     
     def generateCustomApp(self) -> None:
         """
@@ -98,10 +98,17 @@ class Compiler():
             f.write(appStr)
             
             aps, cas = self._apim.getActionsByType()
+            vbs = self._tguim.getVisibilityBehaviors()
+            alreadyWritten = []
             
             for action in cas:
+                alreadyWritten.append(action.getMethodName())
                 f.write(action.getMethod())
-
+            for id in vbs:
+                vb = vbs[id]
+                name = vb.methodName
+                if name not in alreadyWritten:
+                    f.write(vb.getTriggerAction().getMethod())
             for ap in aps:
                 f.write(ap.getMethod())
     
@@ -113,7 +120,7 @@ class Compiler():
         """
         
         # make necessary directories before copying files
-        targetDirs = ['data', 'data/tguim', 'data/apim', 'tguiil']
+        targetDirs = ['data', 'data/tguim', 'tguiil']  # 'data/apim',
         for dir in targetDirs:
             dir = os.path.join(self._srcFolder, dir)
             if not os.path.exists(dir):

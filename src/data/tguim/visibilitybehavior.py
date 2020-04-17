@@ -64,6 +64,7 @@ class VisibilityBehavior(Entity):
 		self._condition = Condition()
 		self._tguim = tguim
 		self._triggerAction = None
+		self.methodName = None
 		
 		if srcComp and destComp:
 			
@@ -164,6 +165,7 @@ class VisibilityBehavior(Entity):
 		"""
 		self._triggerAction = action
 		self.getProperties().getProperty("Trigger Action")[1].setValue(action.getName())
+		self.methodName = action.getMethodName()
 
 	def getTriggerAction(self) -> 'ComponentAction':
 		"""
@@ -191,7 +193,8 @@ class VisibilityBehavior(Entity):
 		d["src"] = self._srcComponent.getId()
 		d["dest"] = self._destComponent.getId()
 		d['properties'] = self.getProperties().asDict()
-		d['triggerAction'] = self._triggerAction.asDict()
+		# d['triggerAction'] = self._triggerAction.asDict()
+		d["methodName"] = self.methodName
 		
 		return d
 	
@@ -228,5 +231,12 @@ class VisibilityBehavior(Entity):
 		reactionType = vb.getProperties().getProperty("Reaction Type")[1].getValue()
 		vb.getProperties().getProperty("Reaction Type")[1].setValue(
 			VisibilityBehavior.ReactionType[reactionType])
-		vb._triggerAction = ComponentAction.fromDict(d['triggerAction'], tguim)
+		# vb._triggerAction = ComponentAction.fromDict(d['triggerAction'], tguim)
+		methodName = d["methodName"]
+		vb.methodName = methodName
+		
+		# Getting the trigger action from tguim
+		# s = methodName.split("_")
+		# id = s[1]
+		# vb._triggerAction = ComponentAction(tguim.getComponent(id), None)
 		return vb

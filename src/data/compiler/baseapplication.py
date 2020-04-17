@@ -25,6 +25,7 @@ import sys
 import os
 import time as t
 import json
+import psutil
 import pywinauto
 import pyautogui
 import traceback
@@ -76,6 +77,7 @@ class BaseApplication():
         
         # Note that app is a custom Desktop instance from pywinauto, not an application instance.
         self.app = Application(backend=backend)
+        self._isRunning = False
         self._options = options
         self._exeLoc = exeLoc
         self._name = name
@@ -94,17 +96,30 @@ class BaseApplication():
         """
         Starts the target application, then waits for all processes' active window to be ready.
         """
-        
-        self.app.start(self._exeLoc)
+        if not self._isRunning:
+            self.app.start(self._exeLoc)
+            self._isRunning = True
+        else:
+            print('Your app is already running. If you want more instances, '
+                  'import the API again under a different name and start it.\n(i.e. from myAPI import myApp as myApp2)')
     
     def stop(self):
         """
         Stops the target application and the processes spawned by it
         """
+        if self._isRunning:
+            self.app.kill()
+        else:
+            print('Your app should not be running. If it is, please report this as a bug on our website.')
+            
+    def pause(self):
+        """
+        Pauses execution while the user interacts with their app.
+        """
         
-        self.app.kill()
+        pyautogui.alert('Execution paused. Press "OK" when ready to continue.')
     
-    def wait(self, state: str, timeout: int = 60):
+    def wait(self, state: str, timeout: int = 10):
         """
         Pauses until state is reached for each process's active window, timing out in timeout seconds.
         Useful when waiting for target app to complete execution of a task, or when starting up.
@@ -160,7 +175,7 @@ class BaseApplication():
         except Exception as e:
             raise Exception(str(e))
         
-    def getWindowObjectFromHandle(self, winHandle: pywinauto.base_wrapper.BaseWrapper) -> 'Component':
+    def getWindowObjectIDFromHandle(self, winHandle: pywinauto.base_wrapper.BaseWrapper) -> 'Component':
         """
         Gets the Component object for a component with handle compHandle.
         ** ONLY WORKS FOR WINDOWS ** (Can be modified for more, but implemented this way to save processing power/time.
@@ -174,7 +189,6 @@ class BaseApplication():
         # Create Token for handle
         timeStamp = datetime.now()
         token = Token.createToken(timeStamp, winHandle, captureImage=False)
-        print(token)
     
         # determine if the new token matches any super tokens and how well it matches if it does.
         bestMatch = 0
@@ -187,31 +201,30 @@ class BaseApplication():
             st = comp.getSuperToken()
             if st.tokens[0].isDialog:
                 potentialMatches.append((st, comp))
-    
+        
         for superToken, comp in potentialMatches:
             decision, matchVal = superToken.shouldContain(token)
             bestDecision = min(bestDecision, decision.value)
-            if comp.getId() is 5:  # TODO: Remove this after debugging
-                return comp
-            if decision == Token.Match.NO:
+            
+            if decision.value == Token.Match.NO.value:
                 continue
         
-            elif decision == Token.Match.EXACT:
-                return comp
+            elif decision.value == Token.Match.EXACT.value:
+                return comp.getId()
         
-            elif decision == Token.Match.CLOSE:
+            elif decision.value == Token.Match.CLOSE.value:
                 # in the case that multiple SuperTokens closely match the token,
                 # we'll use the SuperToken that has the higher match.
-                print('close')
                 if matchVal > bestMatch:
                     bestMatch = matchVal
                     selectedComponent = comp
 
-        token.registerAsAccepted()
-        print(bestMatch, selectedComponent)
+        # return comps[257]
+        # print(bestMatch, selectedComponent)
         # returning no matter what: if selected Comp is none, we don't care, we just return none since this is only used
         # for getting the target windows that have already been defined in Facile
-        return selectedComponent
+        if selectedComponent:
+            return selectedComponent.getId()
     
     def forceShow(self, compObj: 'Component'):
         """
@@ -225,22 +238,25 @@ class BaseApplication():
         
         # --- This may be useful for other search algorithms later --- #
         # # First, get all necessary lists.
+        # # The instantiated Visibility Behaviors (These are the edges)
+        # visBs = self._tgm.getVisibilityBehaviors()
         # # All top-level windows in the TGUIM (These are the nodes)
         # tlwComps = self._tgm.getTopLevelWindows()
         # ------------------------------------------------------------ #
 
         # Get the window that we want to show. This is the starting point.
         startWindow, pos = compObj.getPathFromRoot()[-2]  # -1 position is root, -2 is window
-
-        # The instantiated Visibility Behaviors (These are the edges)
-        visBs = self._tgm.getVisibilityBehaviors()
         
         # Get the currently active windows, which are the algorithm's targets.
         # We want the component objects for these, not the actual handles.
         targets = []
-        for handle in self.app.windows():
-            targets.append(self.getWindowObjectFromHandle(handle))
-        print(targets)
+        handles = self.app.windows()
+        while handles:
+            handle = handles.pop()
+            for child in handle.children():
+                if child.is_dialog():
+                    handles.append(child)
+            targets.append(self.getWindowObjectIDFromHandle(handle))  # Ids are faster to compare than Comps
         
         # Find path to one of the windows from desired component's window.
         # How this works:
@@ -250,27 +266,24 @@ class BaseApplication():
         seen = []
         path = []
         success = False
-        while work:  # TODO: Might want to modify this to have a "backup" path as well: just find the first 2 paths
+        while work:  # TODO: Might want to modify this to have a "backup" path as well: just keep the first 2 paths
             path = work.pop(0)
             curComp, window, visB = path[-1]
-            print(curComp, window, visB)
-            if window in targets:  # Found closest path
+            
+            if window.getId() in targets:  # Found closest path
                 success = True
                 break
-            elif window in seen:  # already saw window; ignoring it
+            elif window.getId() in seen:  # already saw window; ignoring it
                 continue
             else:
-                seen.append(window)  # avoids seeing a window multiple times and getting an infinite loop
-                for id in visBs:
-                    vb = visBs[id]
-                    print(vb.getSrcComponent(), vb.getDestComponent(), curComp, window)
-                    if vb.getDestComponent() in [window, curComp]:  #vb.getReactionType() is VisibilityBehavior.ReactionType.Show and \
-                        print("adding element")
-                        tmp = path[:]
-                        tmpComp = vb.getSrcComponent()
-                        tmpWin, pos = vb.getSrcComponent().getPathFromRoot()[-2]
-                        tmp.append((tmpComp, tmpWin, vb))
-                        work.append(tmp)
+                seen.append(window.getId())  # avoids seeing a window multiple times and getting an infinite loop
+                for vb in (curComp.getDestVisibilityBehaviors() + window.getDestVisibilityBehaviors()):
+                    # if vb.getReactionType() is VisibilityBehavior.ReactionType.Show:
+                    tmp = path[:]
+                    tmpComp = vb.getSrcComponent()
+                    tmpWin, pos = vb.getSrcComponent().getPathFromRoot()[-2]
+                    tmp.append((tmpComp, tmpWin, vb))
+                    work.append(tmp)
         
         if not success:
             print(compObj, startWindow)
@@ -278,18 +291,17 @@ class BaseApplication():
                             compObj.getName() + '" in window "' + startWindow.getName() + '" is visible, then press '
                                                                                           'OK.')
         else:
-            print(path)
             # Now, window is one of the active windows, so we can now interact with the application and
             # force comp's appearance.
             while path:
                 curComp, window, visB = path.pop()
                 if visB:
-                    if curComp.getSuperToken().getTokens()[0].type not in ['Menu', 'MenuItem']:
-                        comp = self._compFinder.find(curComp.getSuperToken())
-                    else:
-                        comp = curComp
-                    code = visB.getTriggerAction().getActionSpec().code
-                    exec(code)
+                    # if curComp.getSuperToken().getTokens()[0].type not in ['Menu', 'MenuItem']:
+                    #     comp = self._compFinder.find(curComp.getSuperToken())
+                    # else:
+                    #     comp = curComp
+                    methodName = visB.methodName
+                    exec("self." + methodName + "()")
     
     def selectMenuItem(self, component: 'Component'):
         """
