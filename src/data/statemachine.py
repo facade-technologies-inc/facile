@@ -127,6 +127,7 @@ class StateMachine:
 		self.configVars = ConfigVars()
 		self.configVars.setShowBehaviors(facileView.ui.actionShow_Behaviors.isChecked())
 		self.configVars.setShowTokenTags(facileView.ui.actionShow_Token_Tags.isChecked())
+		self.configVars.setShowComponentImages(facileView.ui.actionDetailed_View.isChecked())
 
 		# Stores the action pipeline that's currently being edited
 		self._currentActionPipeline = None
@@ -375,6 +376,7 @@ class StateMachine:
 		ui.actionAdd_Behavior.triggered.connect(v.onAddBehaviorTriggered)
 		ui.actionShow_Behaviors.triggered.connect(self.configVars.setShowBehaviors)
 		ui.actionShow_Token_Tags.triggered.connect(self.configVars.setShowTokenTags)
+		ui.actionDetailed_View.triggered.connect(self.configVars.setShowComponentImages)
 		ui.actionValidate.triggered.connect(ui.validatorView.ran.emit)
 		
 		def onPowerApp(checked):
