@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>549</width>
-    <height>569</height>
+    <height>585</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -117,6 +117,9 @@
        <property name="text">
         <string>Install API</string>
        </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
       </widget>
      </item>
      <item>
@@ -143,19 +146,22 @@
        </property>
        <layout class="QVBoxLayout" name="verticalLayout">
         <item>
-         <widget class="QCheckBox" name="checkBoxDocx">
+         <widget class="QCheckBox" name="checkBoxTxt">
           <property name="text">
            <string/>
           </property>
           <property name="icon">
            <iconset resource="../../../icons.qrc">
-            <normaloff>:/icon/resources/icons/office/doc.png</normaloff>:/icon/resources/icons/office/doc.png</iconset>
+            <normaloff>:/icon/resources/icons/office/txt.png</normaloff>:/icon/resources/icons/office/txt.png</iconset>
           </property>
           <property name="iconSize">
            <size>
             <width>80</width>
             <height>80</height>
            </size>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
           </property>
          </widget>
         </item>
@@ -174,6 +180,9 @@
             <height>80</height>
            </size>
           </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
          </widget>
         </item>
         <item>
@@ -191,6 +200,9 @@
             <height>80</height>
            </size>
           </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
          </widget>
         </item>
         <item>
@@ -207,6 +219,9 @@
             <width>80</width>
             <height>80</height>
            </size>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
           </property>
          </widget>
         </item>

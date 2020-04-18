@@ -30,7 +30,7 @@ import os
 facile_dir = os.path.abspath("../")
 src_dir = os.path.abspath("../src/")
 
-icons_dir = os.path.abspath("../resources/icons")
+icons_dir = os.path.abspath("../resources")
 icons_resouce_file = os.path.abspath("../icons.qrc")
 
 wrapper = """

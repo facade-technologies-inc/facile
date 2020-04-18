@@ -22,7 +22,11 @@
 """
 
 import sys, os
-from .baseapplication import BaseApplication
+try:
+    from .baseapplication import BaseApplication
+except:
+    # When importing from sphinx
+    from baseapplication import BaseApplication
 from tguiil.matchoption import MatchOption
 
 pathToThisFile, thisFile = os.path.split(os.path.abspath(__file__))

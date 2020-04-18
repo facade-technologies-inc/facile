@@ -2,6 +2,20 @@
 <RCC>
     <qresource prefix="/icon">
         
+        <file alias="../resources/facade_animation.gif">resources/facade_animation.gif</file>
+
+        <file alias="../resources/facade_logo.png">resources/facade_logo.png</file>
+
+        <file alias="../resources/facade_logo_128.ico">resources/facade_logo_128.ico</file>
+
+        <file alias="../resources/facade_logo_256.ico">resources/facade_logo_256.ico</file>
+
+        <file alias="../resources/facade_logo_animation.json">resources/facade_logo_animation.json</file>
+
+        <file alias="../resources/splash_screen_01.png">resources/splash_screen_01.png</file>
+
+        <file alias="../resources/splash_screen_02.png">resources/splash_screen_02.png</file>
+
         <file alias="../resources/icons/facade_logo.png">resources/icons/facade_logo.png</file>
 
         <file alias="../resources/icons/gradient/icons8-add-property-64.png">resources/icons/gradient/icons8-add-property-64.png</file>
@@ -123,6 +137,8 @@
         <file alias="../resources/icons/office/turn-on.png">resources/icons/office/turn-on.png</file>
 
         <file alias="../resources/icons/office/two-sided-arrow.png">resources/icons/office/two-sided-arrow.png</file>
+
+        <file alias="../resources/icons/office/txt.png">resources/icons/office/txt.png</file>
 
         <file alias="../resources/icons/office/user.png">resources/icons/office/user.png</file>
 

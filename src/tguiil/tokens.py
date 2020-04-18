@@ -29,6 +29,7 @@ import numpy as np
 from PIL import Image
 from pywinauto.win32structures import RECT
 import pywinauto
+import pyautogui
 from skimage.metrics import structural_similarity as ssim
 
 import string
@@ -40,6 +41,7 @@ stopwords = stopwords.words('english')
 
 
 # Can support more languages in future
+screenWidth = pyautogui.size()[0]
 
 
 class Token:
@@ -226,6 +228,30 @@ class Token:
             title = component.window_text()
             numControls = component.control_count()
             typeOf = component.friendly_class_name()
+
+            image = None
+            if captureImage:
+                image = component.capture_as_image()
+
+            # size of dialogs is a bit off, so we trim to adjust.
+            if isDialog:
+
+                # Setting amounts to trim off dialog size
+                leftAdjust = (15/4096)*screenWidth
+                topAdjust = 0
+                rightAdjust = -(17/4096)*screenWidth
+                bottomAdjust = -(17/4096)*screenWidth
+
+                # resize rectangle size
+                # rectangle.left += leftAdjust
+                # rectangle.top += topAdjust
+                # rectangle.right += rightAdjust
+                # rectangle.bottom += bottomAdjust
+
+                # crop image
+                if image is not None:
+                    width, height = image.size
+                    image = image.crop((leftAdjust, topAdjust, width+rightAdjust, height+bottomAdjust))
             
             image = None
             if captureImage:
@@ -282,7 +308,7 @@ class Token:
             
             if title is None:
                 title = ""
-            
+
             controlIDs = [title, typeOf, title + typeOf]
             topLevelControlIDs = [topLevelParentTitle, topLevelParentType, topLevelParentTitle + topLevelParentType]
         except Exception as e:

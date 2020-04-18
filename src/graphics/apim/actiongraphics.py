@@ -28,7 +28,7 @@ from typing import Dict, List
 
 from PySide2.QtWidgets import QGraphicsItem, QApplication, QGraphicsView, QGraphicsScene, \
 	QWidget, QStyleOptionGraphicsItem
-from PySide2.QtGui import QPainter, QPainterPath, QColor, Qt
+from PySide2.QtGui import QPainter, QPainterPath, QColor, Qt, QPen
 from PySide2.QtCore import QRectF, Slot, SIGNAL, QObject
 from graphics.apim.portgraphics import PortGraphics
 from data.apim.action import Action

@@ -38,6 +38,7 @@ except ImportError: # API imports
 
 
 
+
 class Component(Entity):
 	"""
 	This class models an individual GUI component in the target gui.
