@@ -328,9 +328,11 @@ class FacileView(QMainWindow):
 			
 		elif type(entity) == VisibilityBehavior:
 			self.ui.projectExplorerView.model().selectBehavior(entity)
+			self.ui.propertyEditorView.expandAll()
 
 		elif type(entity) == Port:
 			self.ui.propertyEditorView.setModel(PropModel(entity.getProperties()))
+			self.ui.propertyEditorView.expandAll()
 	
 	@Slot(int)
 	def onItemBlink(self, id: int) -> None:

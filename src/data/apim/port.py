@@ -62,6 +62,7 @@ class Port(Entity):
         predefinedCategories = ["Base", "Port"]
         customCategories = {}
         props = Properties.createPropertiesObject(predefinedCategories, customCategories)
+        props.getProperty("ID")[1].setValue(self.getId())
         props.getProperty("Type")[1].setValue("Port")
         self.setProperties(props)
         

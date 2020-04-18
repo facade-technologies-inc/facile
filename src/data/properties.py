@@ -116,9 +116,9 @@ class Properties:
 				newProperties.addProperty("Visibility Behavior", "Destination ID", 1, int, True)
 				newProperties.addProperty("Visibility Behavior", "Trigger Action", "None", str)
 			elif predefinedCategories[i] == "Port":
-				newProperties.addProperty("Port", "Data Type", "str", str)
-				newProperties.addProperty("Port", "Default Value", "0", str)
-				newProperties.addProperty("Port", "Optional", False, bool)
+				newProperties.addProperty("Port", "Data Type", "str", str, True)
+				newProperties.addProperty("Port", "Default Value", "0", str, True)
+				newProperties.addProperty("Port", "Optional", False, bool, True)
 			elif predefinedCategories[i] == "Action":
 				pass
 			elif predefinedCategories[i] == "Wire":
