@@ -35,6 +35,7 @@ from data.apim.apimodel import ApiModel
 from qt_models.projectexplorermodel import ProjectExplorerModel
 from tguiil.explorer import Explorer
 from tguiil.observer import Observer
+import data.statemachine as sm
 
 
 class Project:
@@ -102,25 +103,29 @@ class Project:
 		:return: The project's observer
 		:rtype: Observer
 		"""
-		
+		detailedViewAction = sm.StateMachine.instance.view.ui.actionDetailed_View
+		captureImages = detailedViewAction.isChecked()
+
 		if self._process is None or not self._process.is_running():
 			return None
 		else:
 			new = False
 			if self._observer is None:
-				self._observer = Observer(self._process.pid, self._backend)
+				self._observer = Observer(self._process.pid, captureImages, self._backend)
 				self._observer.newSuperToken.connect(self._targetGUIModel.createComponent,
 				                                     type=Qt.BlockingQueuedConnection)
 				new = True
 			elif self._observer.getPID() != self._process.pid:
 				self._observer.pause()
-				self._observer = Observer(self._process.pid, self._backend)
+				self._observer = Observer(self._process.pid, captureImages, self._backend)
 				self._observer.newSuperToken.connect(self._targetGUIModel.createComponent,
 				                                     type=Qt.BlockingQueuedConnection)
 				new = True
 			
 			if new:
 				self._observer.loadSuperTokens(self._targetGUIModel)
+
+			detailedViewAction.triggered.connect(self._observer.captureImages, type=Qt.QueuedConnection)
 			
 			return self._observer
 	
