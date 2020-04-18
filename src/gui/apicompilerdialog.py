@@ -207,7 +207,7 @@ class ApiCompilerDialog(QDialog):
 		c = Compiler(theCompilationProfile).compileAPI()
 		
 		# no error? run document generation
-		projectName = sm.StateMachine.instance._project.getName()
+		projectName = sm.StateMachine.instance._project.getAPIName()
 		docGenerator = DocGenerator(setDocType, projectName)
 		docGenerator.createDoc()
 		

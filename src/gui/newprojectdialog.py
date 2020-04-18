@@ -187,8 +187,8 @@ class NewProjectDialog(QDialog):
 		errors = []
 		if not name:
 			errors.append("Need project name")
-		elif not name.isidentifier():
-			errors.append("The project name must be a valid python identifier")
+		if not name.replace(" ", "_").isidentifier():
+			errors.append("The project name may only contain alphanumeric characters and spaces and cannot begin with a number.")
 		if not description:
 			errors.append("Need project description")
 		

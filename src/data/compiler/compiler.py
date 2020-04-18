@@ -39,6 +39,7 @@ class Compiler():
         self.statem = sm.StateMachine.instance
         self._compProf = compProf
         self._name = self.statem._project.getName()
+        self._apiName = self.statem._project.getAPIName()
         self._backend = self.statem._project.getBackend()
         self._exeLoc = self.statem._project.getExecutableFile()
         self._opts = compProf.compResOpts
@@ -47,7 +48,7 @@ class Compiler():
         
         # Save Folders
         self._saveFolder = compProf.apiFolderDir + '/'
-        self._srcFolder = os.path.join(self._saveFolder, self.statem._project.getName() + '/')
+        self._srcFolder = os.path.join(self._saveFolder, self._apiName + '/')
         self._docFolder = os.path.join(self._srcFolder, 'Documentation/')
         
         # Make all save folders if they don't exist
@@ -153,7 +154,7 @@ class Compiler():
 
         # Create setup.py so user can install install API as a package with pip.
         setupTempFile = open(os.path.join(dir, "setup-template.txt"), 'r')
-        setupStr = setupTempFile.read().format(projectName=self.statem._project.getName(),
+        setupStr = setupTempFile.read().format(projectName=self.statem._project.getAPIName(),
                                                projectVersion='0.1.0')  # TODO Add versioning
         setupTempFile.close()
         setupFile = open(os.path.join(self._saveFolder, 'setup.py'), 'w')

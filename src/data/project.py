@@ -244,6 +244,16 @@ class Project:
 		"""
 		
 		return self._name
+
+	def getAPIName(self) -> str:
+		"""
+		Gets the name of the API.
+
+		:return: The API's name.
+		:rtype: str
+		"""
+
+		return self._name.replace(" ", "_")
 	
 	def getExecutableFile(self) -> str:
 		"""
