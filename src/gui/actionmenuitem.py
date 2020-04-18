@@ -105,17 +105,6 @@ class ActionMenuItem(QWidget):
 		:rtype: str
 		"""
 		return self._action.getProperties().getProperty("Name")[1].getValue()
-		
-	def setText(self, text: str) -> None:
-		"""
-		Sets the name of the action item.
-		
-		:param text: Name of action item.
-		:type text: str
-		:return: None
-		:rtype: Nonetype
-		"""
-		self.ui.actionLabel.setText(text)
 	
 	def contextMenuEvent(self, event: QContextMenuEvent) -> None:
 		"""
@@ -171,8 +160,6 @@ class ActionMenuItem(QWidget):
 		:return: None
 		:rtype: NoneType
 		"""
-		self.setText(self.getName())
-
 		self._actionGraphics.updateGraphics()
 		br = self._actionGraphics.boundingRect()
 		self._pix = QPixmap(br.width(), br.height())
