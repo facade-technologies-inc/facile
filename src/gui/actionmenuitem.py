@@ -23,7 +23,7 @@ This module contains the ActionMenuItem() Class.
 
 from PySide2.QtWidgets import QWidget, QGraphicsScene, QDialog
 from PySide2.QtCore import Qt, QEvent
-from PySide2.QtGui import QContextMenuEvent
+from PySide2.QtGui import QContextMenuEvent, QPainter, QPixmap
 from gui.ui.ui_actionmenuitem import Ui_Form as Ui_ActionMenuItem
 from graphics.apim.actionicongraphics import ActionIconGraphics
 from data.apim.actionpipeline import ActionPipeline
@@ -58,7 +58,6 @@ class ActionMenuItem(QWidget):
 		#Add ActionGraphics to Graphics View
 		self._actionGraphics = ActionIconGraphics(self._action)
 		self._scene = QGraphicsScene()
-		self.ui.actionIcon.setScene(self._scene)
 		self._scene.addItem(self._actionGraphics)
 		
 		# set action name text field and shrink action graphics to fit.
@@ -148,7 +147,6 @@ class ActionMenuItem(QWidget):
 			self.menu.editExternals()
 		elif type(self._action) == ComponentAction:
 			event.accept()
-			self.menu.edit()
 	
 	def mousePressEvent(self, event: QEvent):
 		"""
@@ -168,11 +166,17 @@ class ActionMenuItem(QWidget):
 			
 	def update(self):
 		"""
-		Snaps the action icon to the size of the graphics view.
+		updates the icon for the menu item.
 		
 		:return: None
 		:rtype: NoneType
 		"""
 		self.setText(self.getName())
+
 		self._actionGraphics.updateGraphics()
-		self.ui.actionIcon.fitInView(self._actionGraphics, Qt.KeepAspectRatioByExpanding)
+		br = self._actionGraphics.boundingRect()
+		self._pix = QPixmap(br.width(), br.height())
+		self._pix.setMask(self._pix.createHeuristicMask())
+		painter = QPainter(self._pix)
+		self._scene.render(painter)
+		self.ui.actionIcon.setPixmap(self._pix)
