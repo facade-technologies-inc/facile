@@ -18,16 +18,9 @@ class DocGenerator:
         :type projectName: str
         """
         self.projectDir = sm.StateMachine.instance._project.getProjectDir()
-        #self.projectDir = r"C:\Users\ramos\Desktop\FacadeTechnology\FacileAPIs\NotePadAPIDemoExample"
-        
         self.projectName = projectName
         self.docType = docType
-        # FIXME this is not universal for every machine...
-        
-        # maybe use project to get it's current directory\sphinx_src
-        # store that dir in project and get that use sm
-        # self.sphinxFacileDir = r"C:\Users\ramos\Desktop\FacadeTechnology\facile\src\data\compiler\sphinx_src"
-        self.sphinxFacileDir = os.path.join(os.path.split(__file__)[0]) + "\\sphinx_src"
+        self.sphinxFacileDir = os.path.join(os.path.split(__file__)[0], "sphinx_src")
     
     def createDoc(self):
         """
@@ -41,7 +34,7 @@ class DocGenerator:
         
         for type in self.docType:
             os.chdir(self.projectDir)
-            os.system('xcopy {0} /e'.format(self.sphinxFacileDir))
+            os.system('xcopy {0} /e 1>nul 2>&1'.format(self.sphinxFacileDir))
             self.modifyConf()
 
             if type is CompilationProfile.DocType.Html:
@@ -50,51 +43,51 @@ class DocGenerator:
                 # remove the old html folder
                 os.system('cd {0}'
                           '& cd Documentation'
-                          '& RMDIR /Q/S {1} 2>nul'.format(self.projectName, formatChoice))
+                          '& RMDIR /Q/S {1} 1>nul 2>&1'.format(self.projectName, formatChoice))
                 # create new html, move it to Documentation
                 os.system('cd src'
                           '& make {0} 1> {1}\\{2}\\Documentation\\build_html.log 2>&1'
                           '& cd _build'
-                          '& move {0} {1}\{2}\Documentation'.format(formatChoice, self.projectDir, self.projectName))
+                          '& move {0} {1}\{2}\Documentation 1>nul 2>&1'.format(formatChoice, self.projectDir, self.projectName))
                 
-            elif type is CompilationProfile.DocType.Doc:
+            elif type is CompilationProfile.DocType.Txt:
                 formatChoice = "text"
                 os.chdir(self.projectDir)
                 os.system('cd {0}'
                           '& cd Documentation'
-                          '& RMDIR /Q/S {1} 2>nul'.format(self.projectName, formatChoice))
+                          '& RMDIR /Q/S {1} 1>nul 2>&1'.format(self.projectName, formatChoice))
                 os.system('cd src'
                           '& make {0} 1> {1}\\{2}\\Documentation\\build_text.log 2>&1'
                           '& cd _build'
-                          '& move {0} {1}\{2}\Documentation'.format(formatChoice, self.projectDir, self.projectName))
+                          '& move {0} {1}\{2}\Documentation 1>nul 2>&1'.format(formatChoice, self.projectDir, self.projectName))
                 
             elif type is CompilationProfile.DocType.Pdf:
                 formatChoice = "latex"
                 os.chdir(self.projectDir)
                 os.system('cd {0}'
                           '& cd Documentation'
-                          '& RMDIR /Q/S {1} 2>nul'.format(self.projectName, formatChoice))
+                          '& RMDIR /Q/S {1} 1>nul 2>&1'.format(self.projectName, formatChoice))
                 os.system('cd src'
                           '& make {0} 1> {1}\\{2}\\Documentation\\build_latex.log 2>&1'
                           '& cd _build'
                           '& cd latex'
                           '& make 1> {1}\\{2}\\Documentation\\build_pdf.log 2>&1'
                           '& cd ..'
-                          '& move {0} {1}\{2}\Documentation'.format(formatChoice, self.projectDir, self.projectName))
+                          '& move {0} {1}\{2}\Documentation 1>nul 2>&1'.format(formatChoice, self.projectDir, self.projectName))
             
             elif type is CompilationProfile.DocType.EPub:
                 formatChoice = "epub"
                 os.chdir(self.projectDir)
                 os.system('cd {0}'
                           '& cd Documentation'
-                          '& RMDIR /Q/S {1} 2>nul'.format(self.projectName, formatChoice))
+                          '& RMDIR /Q/S {1} 1>nul 2>&1'.format(self.projectName, formatChoice))
                 os.system('cd src'
                           '& make {0} 1> {1}\\{2}\\Documentation\\build_epub.log 2>&1'
                           '& cd _build'
-                          '& move {0} {1}\{2}\Documentation'.format(formatChoice, self.projectDir, self.projectName))
+                          '& move {0} {1}\{2}\Documentation 1>nul 2>&1'.format(formatChoice, self.projectDir, self.projectName))
                 
             os.chdir(self.projectDir)
-            os.system('RMDIR /Q/S src')
+            os.system('RMDIR /Q/S src 1>nul 2>&1')
             
     def modifyConf(self):
         """

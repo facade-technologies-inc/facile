@@ -175,5 +175,5 @@ class Compiler():
         # Auto install API if user selected to do so.
         if self._compProf.installApi:
             os.chdir(self._saveFolder)
-            os.system(self._compProf.interpExeDir + " -m pip install .")
+            os.system(self._compProf.interpExeDir + " -m pip install . 1>install.log 2>&1")
 

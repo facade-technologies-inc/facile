@@ -163,8 +163,8 @@ class ApiCompilerDialog(QDialog):
 		
 		# Construct a set for documentation type
 		setDocType = set()
-		if self.ui.checkBoxDocx.isChecked():
-			setDocType.add(CompilationProfile.DocType.Doc)
+		if self.ui.checkBoxTxt.isChecked():
+			setDocType.add(CompilationProfile.DocType.Txt)
 		if self.ui.checkBoxHtml.isChecked():
 			setDocType.add(CompilationProfile.DocType.Html)
 		if self.ui.checkBoxPdf.isChecked():
