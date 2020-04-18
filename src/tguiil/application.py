@@ -215,9 +215,23 @@ if __name__ == "__main__":
 	
 	# Notepad++ doesn't use multiple processes, so I'm not completely testing this correctly. I should run with the
 	# calculator app.
-	process = psutil.Popen(["C:\\Program Files\\Notepad++\\notepad++.exe"])
+	process = psutil.Popen(['Notepad.exe'])
 	app = Application(backend="uia")
 	app.setProcess(process)
-	time.sleep(2)
+	time.sleep(10)
 	print(app.getPIDs())
 	print(app.windows())
+
+	childrenTexts = []
+	for child in app.windows()[0].children():
+		if type(child) != pywinauto.controls.win32_controls.EditWrapper:
+			try:
+				text = child.texts()
+				if text is None:
+					text = child.window_text()
+				if text is None:
+					text = "-"
+				childrenTexts.append(text)
+			except:
+				childrenTexts.append("*")
+	print(childrenTexts)

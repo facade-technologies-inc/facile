@@ -15,7 +15,7 @@ else:
 
 print("Removing existing compiled UI files...")
 for file in os.listdir(ui_folder):
-    if file.endswith(".py"):
+    if file.startswith("ui_") and file.endswith(".py"):
         print("\t" + file)
         os.remove(os.path.join(ui_folder, file))
 

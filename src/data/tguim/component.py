@@ -20,11 +20,15 @@
 
 This module contains the Component class.
 """
+from PIL.Image import Image
+from datetime import datetime
 
+from datetime import datetime
 from data.entity import Entity
 from data.properties import Properties
 from data.tguim.visibilitybehavior import VisibilityBehavior
 from tguiil.supertokens import SuperToken
+
 
 
 class Component(Entity):
@@ -52,6 +56,11 @@ class Component(Entity):
 		self._srcVisibilityBehaviors = []
 		self._destVisibilityBehaviors = []
 		self._model = tguim
+		self.timestamp = datetime.now().timestamp()
+		self.depth = -1  # -1 if root, 0 if window, etc.
+		self.isExtraComponent = False
+		self.loadedFromTGUIM = False  # This is only set to true when loaded from a tguim file,
+										# then promptly set back to false
 		
 		if parent is not None:
 			parent.addChild(self)
@@ -78,9 +87,14 @@ class Component(Entity):
 			props.getProperty("Y")[1].setValue(geometry[1])
 			props.getProperty("Width")[1].setValue(geometry[2])
 			props.getProperty("Height")[1].setValue(geometry[3])
-			#props.getProperty("Has Moved")[1].setValue(self._graphicsItem.getNumMoves() != 0)
+			# props.getProperty("Has Moved")[1].setValue(self._graphicsItem.getNumMoves() != 0)
 			
 			self.setProperties(props)
+			
+			nxtParent = parent
+			while nxtParent:
+				self.depth += 1
+				nxtParent = nxtParent.getParent()
 
 		self.triggerUpdate()
 	
@@ -330,6 +344,9 @@ class Component(Entity):
 		d["srcBehaviors"] = [vb.getId() for vb in self._srcVisibilityBehaviors]
 		d["destBehaviors"] = [vb.getId() for vb in self._destVisibilityBehaviors]
 		d['children'] = [c.getId() for c in self._children]
+		d['isEC'] = self.isExtraComponent
+		d['depth'] = self.depth
+		d['timestamp'] = self.timestamp
 		
 		if self._properties:
 			d['properties'] = self.getProperties().asDict()
@@ -378,5 +395,21 @@ class Component(Entity):
 		comp._destVisibilityBehaviors = d['destBehaviors']
 		comp.setProperties(Properties.fromDict(d['properties']))
 		comp._parent = d['parent']
+		comp.timestamp = d['timestamp']
+		comp.depth = d['depth']
+		comp.isExtraComponent = d['isEC']
+		comp.loadedFromTGUIM = True
 		
 		return comp
+
+	def getFirstImage(self) -> 'PIL.Image':
+		"""
+		If any of the tokens in this component's supertoken have a valid image, return the first image.
+
+		If no tokens have images, return None.
+		:return: The first image out of all tokens in this component's super token.
+		:rtype: PIL.Image
+		"""
+		for token in self._superToken.tokens:
+			if token.pic:
+				return token.pic

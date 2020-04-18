@@ -31,12 +31,12 @@ class CompilationProfile:
 		"""
 		
 		EPub = 4
-		Doc = 3
+		Txt = 3
 		Html = 2
 		Pdf = 1
 	
 	def __init__(self, docTypes: Set['CompilationProfile.DocType'], compResOpts: Set['MatchOption'],
-	             apiFolderDir, interpExeDir):
+	             apiFolderDir, interpExeDir, installApi: bool):
 		"""
 		Construct the CompilationProfile containing the information from ApiCompilerDialog.
 		"""
@@ -45,3 +45,4 @@ class CompilationProfile:
 		self.docTypes = docTypes
 		self.apiFolderDir = apiFolderDir
 		self.interpExeDir = interpExeDir
+		self.installApi = installApi

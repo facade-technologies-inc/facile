@@ -269,6 +269,7 @@ class Action(Entity):
 		"""
 		Must be overwritten in children classes; raises exception here if not.
 		"""
+		
 		raise ActionException("getMethodName() must be defined in the action type's class.")
 
 	def getParamStr(self) -> str:

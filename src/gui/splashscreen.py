@@ -34,7 +34,7 @@ class FacileSplashScreen(QSplashScreen):
 		self.setWindowFlags(self.windowFlags() | Qt.WindowStaysOnTopHint)
 		height = QApplication.instance().primaryScreen().size().height() * .25
 		width = QApplication.instance().primaryScreen().size().width() * .25
-		
-		logo = QPixmap('../resources/splash_screen_02.png').scaledToHeight(height)
+
+		logo = QPixmap(':/icon/resources/splash_screen_02.png').scaledToHeight(height)
 		
 		self.setPixmap(logo)

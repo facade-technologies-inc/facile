@@ -41,6 +41,7 @@ class ConfigVars(QObject):
         QObject.__init__(self)
         self.showBehaviors = True
         self.showTokenTags = True
+        self.showComponentImages = True
 
     @Slot(bool)
     def setShowBehaviors(self, isChecked: bool):
@@ -72,4 +73,20 @@ class ConfigVars(QObject):
         :rtype: NoneType
         """
         self.showTokenTags = isChecked
+        self.updateTGUIMView.emit()
+
+    @Slot(bool)
+    def setShowComponentImages(self, isChecked: bool):
+        """
+        This is a Slot function.
+        Sets the showComponentImages configuration variable to the given input boolean.
+        E.g. If showComponentImages is true, the component pictures will be shown in the TGUIM View.
+        The updateTGUIMView signal is emitted when this function is called.
+
+        :param isChecked: Boolean value that's true if the user selects to show visibility behaviors.
+        :type isChecked: bool
+        :return: None
+        :rtype: NoneType
+        """
+        self.showComponentImages = isChecked
         self.updateTGUIMView.emit()
