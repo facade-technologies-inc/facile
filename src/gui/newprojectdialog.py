@@ -187,6 +187,8 @@ class NewProjectDialog(QDialog):
 		errors = []
 		if not self.ui.project_name_edit.text():
 			errors.append("Need project name")
+		elif not self.ui.project_name_edit.text().isidentifier():
+			errors.append("The project name must be a valid python identifier")
 		if not self.ui.description_edit.toPlainText():
 			errors.append("Need project description")
 		
