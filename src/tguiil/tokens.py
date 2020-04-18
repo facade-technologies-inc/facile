@@ -29,6 +29,7 @@ import numpy as np
 from PIL import Image
 from pywinauto.win32structures import RECT
 import pywinauto
+import pyautogui
 from skimage.metrics import structural_similarity as ssim
 
 import string
@@ -37,6 +38,7 @@ from sklearn.feature_extraction.text import CountVectorizer
 from nltk.corpus import stopwords
 stopwords = stopwords.words('english')
 # Can support more languages in future
+screenWidth = pyautogui.size()[0]
 
 
 class Token:
@@ -231,10 +233,10 @@ class Token:
             if isDialog:
 
                 # Setting amounts to trim off dialog size
-                leftAdjust = 12
+                leftAdjust = (15/4096)*screenWidth
                 topAdjust = 0
-                rightAdjust = -8
-                bottomAdjust = -8
+                rightAdjust = -(17/4096)*screenWidth
+                bottomAdjust = -(17/4096)*screenWidth
 
                 # resize rectangle size
                 # rectangle.left += leftAdjust
