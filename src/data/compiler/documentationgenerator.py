@@ -43,19 +43,17 @@ class DocGenerator:
             os.chdir(self.projectDir)
             os.system('xcopy {0} /e'.format(self.sphinxFacileDir))
             self.modifyConf()
-            
-            # TODO: delete the html folder if existed already. So user can create a new one.
+
             if type is CompilationProfile.DocType.Html:
                 formatChoice = "html"
                 os.chdir(self.projectDir)
                 # remove the old html folder
-                # change made here
                 os.system('cd {0}'
                           '& cd Documentation'
                           '& RMDIR /Q/S {1} 2>nul'.format(self.projectName, formatChoice))
                 # create new html, move it to Documentation
                 os.system('cd src'
-                          '& make {0}'
+                          '& make {0} 1> {1}\\{2}\\Documentation\\build_html.log 2>&1'
                           '& cd _build'
                           '& move {0} {1}\{2}\Documentation'.format(formatChoice, self.projectDir, self.projectName))
                 
@@ -66,22 +64,21 @@ class DocGenerator:
                           '& cd Documentation'
                           '& RMDIR /Q/S {1} 2>nul'.format(self.projectName, formatChoice))
                 os.system('cd src'
-                          '& make {0}'
+                          '& make {0} 1> {1}\\{2}\\Documentation\\build_text.log 2>&1'
                           '& cd _build'
                           '& move {0} {1}\{2}\Documentation'.format(formatChoice, self.projectDir, self.projectName))
                 
             elif type is CompilationProfile.DocType.Pdf:
-                # TODO: fix pdf creation
                 formatChoice = "latex"
                 os.chdir(self.projectDir)
                 os.system('cd {0}'
                           '& cd Documentation'
                           '& RMDIR /Q/S {1} 2>nul'.format(self.projectName, formatChoice))
                 os.system('cd src'
-                          '& make {0}'
+                          '& make {0} 1> {1}\\{2}\\Documentation\\build_latex.log 2>&1'
                           '& cd _build'
                           '& cd latex'
-                          '& make'
+                          '& make 1> {1}\\{2}\\Documentation\\build_pdf.log 2>&1'
                           '& cd ..'
                           '& move {0} {1}\{2}\Documentation'.format(formatChoice, self.projectDir, self.projectName))
             
@@ -92,7 +89,7 @@ class DocGenerator:
                           '& cd Documentation'
                           '& RMDIR /Q/S {1} 2>nul'.format(self.projectName, formatChoice))
                 os.system('cd src'
-                          '& make {0}'
+                          '& make {0} 1> {1}\\{2}\\Documentation\\build_epub.log 2>&1'
                           '& cd _build'
                           '& move {0} {1}\{2}\Documentation'.format(formatChoice, self.projectDir, self.projectName))
                 
