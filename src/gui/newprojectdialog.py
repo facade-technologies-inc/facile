@@ -175,21 +175,21 @@ class NewProjectDialog(QDialog):
 		:rtype: NoneType
 		"""
 		
-		name = self.ui.project_name_edit.text()
-		description = self.ui.description_edit.toPlainText()
-		projectDir = self.ui.project_folder_edit.text()
-		appExe = self.ui.executable_file_edit.text()
+		name = self.ui.project_name_edit.text().strip()
+		description = self.ui.description_edit.toPlainText().strip()
+		projectDir = self.ui.project_folder_edit.text().strip()
+		appExe = self.ui.executable_file_edit.text().strip()
 		
 		# clear error message
 		self.ui.error_label.setText("")
 		
 		# detect any errors
 		errors = []
-		if not self.ui.project_name_edit.text():
+		if not name:
 			errors.append("Need project name")
-		elif not self.ui.project_name_edit.text().isidentifier():
+		elif not name.isidentifier():
 			errors.append("The project name must be a valid python identifier")
-		if not self.ui.description_edit.toPlainText():
+		if not description:
 			errors.append("Need project description")
 		
 		# Check for valid project directory.
