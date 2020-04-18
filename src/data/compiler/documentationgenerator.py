@@ -1,12 +1,19 @@
 import os
+
+from PySide2.QtCore import QObject, Signal
+
 import data.statemachine as sm
 from data.compilationprofile import CompilationProfile
 
 
-class DocGenerator:
+class DocGenerator(QObject):
     """
 	This class is used to generate API documentations based on user's preference.
 	"""
+
+    stepStarted = Signal(str)
+    stepComplete = Signal()
+    finished = Signal()
     
     def __init__(self, docType: set, projectName: str):
         """
@@ -17,6 +24,7 @@ class DocGenerator:
         :param projectName: the name of the project
         :type projectName: str
         """
+        QObject.__init__(self)
         self.projectDir = sm.StateMachine.instance._project.getProjectDir()
         self.projectName = projectName
         self.docType = docType
@@ -38,6 +46,7 @@ class DocGenerator:
             self.modifyConf()
 
             if type is CompilationProfile.DocType.Html:
+                self.stepStarted.emit("Generating HTML documentation...")
                 formatChoice = "html"
                 os.chdir(self.projectDir)
                 # remove the old html folder
@@ -49,8 +58,10 @@ class DocGenerator:
                           '& make {0} 1> {1}\\{2}\\Documentation\\build_html.log 2>&1'
                           '& cd _build'
                           '& move {0} {1}\{2}\Documentation 1>nul 2>&1'.format(formatChoice, self.projectDir, self.projectName))
+
                 
             elif type is CompilationProfile.DocType.Txt:
+                self.stepStarted.emit("Generating TXT documentation...")
                 formatChoice = "text"
                 os.chdir(self.projectDir)
                 os.system('cd {0}'
@@ -62,6 +73,7 @@ class DocGenerator:
                           '& move {0} {1}\{2}\Documentation 1>nul 2>&1'.format(formatChoice, self.projectDir, self.projectName))
                 
             elif type is CompilationProfile.DocType.Pdf:
+                self.stepStarted.emit("Generating PDF documentation...")
                 formatChoice = "latex"
                 os.chdir(self.projectDir)
                 os.system('cd {0}'
@@ -76,6 +88,7 @@ class DocGenerator:
                           '& move {0} {1}\{2}\Documentation 1>nul 2>&1'.format(formatChoice, self.projectDir, self.projectName))
             
             elif type is CompilationProfile.DocType.EPub:
+                self.stepStarted.emit("Generating EPUB documentation...")
                 formatChoice = "epub"
                 os.chdir(self.projectDir)
                 os.system('cd {0}'
@@ -88,6 +101,9 @@ class DocGenerator:
                 
             os.chdir(self.projectDir)
             os.system('RMDIR /Q/S src 1>nul 2>&1')
+            self.stepComplete.emit()
+
+        self.finished.emit()
             
     def modifyConf(self):
         """
