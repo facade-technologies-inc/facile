@@ -29,22 +29,9 @@
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
-      <widget class="QGraphicsView" name="actionIcon">
-       <property name="maximumSize">
-        <size>
-         <width>100</width>
-         <height>100</height>
-        </size>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QLabel" name="actionLabel">
-       <property name="styleSheet">
-        <string notr="true">font: 87 12pt &quot;Segoe UI Black&quot;;</string>
-       </property>
+      <widget class="QLabel" name="actionIcon">
        <property name="text">
-        <string>TextLabel</string>
+        <string>ICON GOES HERE</string>
        </property>
       </widget>
      </item>
