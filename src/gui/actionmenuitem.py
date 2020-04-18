@@ -146,6 +146,8 @@ class ActionMenuItem(QWidget):
 		:param event:
 		:return:
 		"""
+		sm.StateMachine.instance.view.onEntitySelected(self._action)
+
 		if event.buttons() != Qt.LeftButton:
 			return
 		
