@@ -64,6 +64,7 @@ class Port(Entity):
         props = Properties.createPropertiesObject(predefinedCategories, customCategories)
         props.getProperty("ID")[1].setValue(self.getId())
         props.getProperty("Type")[1].setValue("Port")
+        props.getProperty("Data Type")[1].setValue(str(dataType))
         self.setProperties(props)
         
         self._input: 'wr.Wire' = None
@@ -195,6 +196,7 @@ class Port(Entity):
         :rtype: NoneType
         """
         self._optional = isOptional
+        self.getProperties().getProperty("Optional")[1].setValue(self._optional)
         
         if not isOptional:
             self._default = None

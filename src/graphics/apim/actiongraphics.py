@@ -325,10 +325,10 @@ class ActionGraphics(QGraphicsItem):
 		:type event: QGraphicsSceneMouseEvent
 		:return: None
 		"""
-		event.ignore()
+		event.accept()
 
 		try:
-			self.scene().views()[0].entitySelected.emit(self._port)
+			self.scene().views()[0].entitySelected.emit(self._action)
 		except:
 			pass
 		

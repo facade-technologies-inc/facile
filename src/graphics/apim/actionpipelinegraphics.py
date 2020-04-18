@@ -324,6 +324,8 @@ class ActionPipelineGraphics(ActionGraphics):
 		:return: None
 		:rtype: NoneType
 		"""
+		ActionGraphics.mousePressEvent(self, event)
+
 		# get the port under the mouse
 		pg = self.getPortGraphicsAtPos(event.scenePos().x(), event.scenePos().y())
 		if not pg:
@@ -342,8 +344,6 @@ class ActionPipelineGraphics(ActionGraphics):
 		self.stagingConnection = pg
 		self.connectionIndicator.setColor(ConnectionIndicator.BAD_COLOR)
 		self.connectionIndicator.show()
-
-		ActionGraphics.mousePressEvent(self, event)
 
 		event.accept()
 	

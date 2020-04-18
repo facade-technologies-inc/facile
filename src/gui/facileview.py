@@ -33,6 +33,7 @@ from data.statemachine import StateMachine
 from data.tguim.component import Component
 from data.tguim.visibilitybehavior import VisibilityBehavior
 from data.apim.componentaction import ComponentAction
+from data.apim.action import Action
 from data.apim.port import Port
 from gui.copyprojectdialog import CopyProjectDialog
 from gui.manageprojectdialog import ManageProjectDialog
@@ -331,6 +332,10 @@ class FacileView(QMainWindow):
 			self.ui.propertyEditorView.expandAll()
 
 		elif type(entity) == Port:
+			self.ui.propertyEditorView.setModel(PropModel(entity.getProperties()))
+			self.ui.propertyEditorView.expandAll()
+
+		elif isinstance(entity, Action):
 			self.ui.propertyEditorView.setModel(PropModel(entity.getProperties()))
 			self.ui.propertyEditorView.expandAll()
 	
