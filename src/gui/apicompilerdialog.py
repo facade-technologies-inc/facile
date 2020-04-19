@@ -257,7 +257,13 @@ class ApiCompilerDialog(QDialog):
 		compiler.finished.connect(docGenerator.createDoc)
 		docGenerator.finished.connect(thread.terminate)
 		docGenerator.finished.connect(self.close)
+		docGenerator.finished.connect(thread.deleteLater)
+		docGenerator.finished.connect(docGenerator.deleteLater)
+		docGenerator.finished.connect(compiler.deleteLater)
 		progress.canceled.connect(thread.terminate)
+		progress.canceled.connect(thread.deleteLater)
+		progress.canceled.connect(docGenerator.deleteLater)
+		progress.canceled.connect(compiler.deleteLater)
 
 		thread.start()
 
