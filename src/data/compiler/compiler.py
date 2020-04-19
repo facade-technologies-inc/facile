@@ -160,7 +160,6 @@ class Compiler(QObject):
 
         :return: None
         """
-        print("compiling")
         self.copyNecessaryFiles()
         self.saveTGUIM()
 

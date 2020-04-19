@@ -42,8 +42,6 @@ class ApiCompilerDialog(QDialog):
 	"""
 	
 	setApiCompiler = Signal(CompilationProfile)
-	runCompiler = Signal()
-	runDocGenerator = Signal()
 	
 	def __init__(self, parent: QWidget = None):
 		"""
@@ -228,7 +226,8 @@ class ApiCompilerDialog(QDialog):
 		numSteps += len(compProfile.docTypes)
 
 		# create and show progressbar dialog
-		progress = QProgressDialog("Compiling API...", "Cancel", 0, numSteps * 2, parent=self)
+		progress = QProgressDialog("Compiling API...", "Cancel", 0, numSteps * 2, parent=self.parent())
+		progress.setValue(0)
 		progress.setModal(True)
 
 		def stepStartedCatcher(message):
@@ -238,9 +237,6 @@ class ApiCompilerDialog(QDialog):
 		def stepCompleteCatcher():
 			progress.setValue(progress.value() + 1)
 			progress.setLabelText(progress.labelText() + " done.")
-
-		def docGeneratorFinishedCatcher():
-			self._finished = True
 
 		# since compilation takes a long time, we do it in another thread to keep the GUI responsive.
 		thread = QThread()
@@ -255,15 +251,15 @@ class ApiCompilerDialog(QDialog):
 		docGenerator.stepStarted.connect(stepStartedCatcher)
 		docGenerator.stepComplete.connect(stepCompleteCatcher)
 
-		self.runCompiler.connect(progress.exec_)
-		self.runCompiler.connect(compiler.compileAPI)
-		compiler.finished.connect(self.runDocGenerator)
-		self.runDocGenerator.connect(docGenerator.createDoc)
-		compiler.finished.connect(docGeneratorFinishedCatcher)
+		thread.started.connect(progress.exec_, type=Qt.QueuedConnection)
+		thread.started.connect(compiler.compileAPI, type=Qt.QueuedConnection)
+		compiler.finished.connect(docGenerator.createDoc)
+		docGenerator.finished.connect(thread.quit)
+		docGenerator.finished.connect(self.close)
+		progress.canceled.connect(thread.terminate)
 
-		self._finished = False
-		self.runCompiler.emit()	# run the compiler
+		thread.start()
 
-		# keep the GUI responsive
-		while not self._finished:
+		# spin, but keep the GUI responsive
+		while thread.isRunning:
 			QApplication.instance().processEvents()
