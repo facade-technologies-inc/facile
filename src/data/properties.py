@@ -24,12 +24,11 @@ This module contains the Properties() class.
 from collections import OrderedDict
 from enum import Enum
 
-from data.property import Property
-
-try: # FACILE
+try: # Facile imports
+	from data.property import Property
 	from qt_models.propeditormodel import PropModel
-except ImportError: # API
-	pass
+except ImportError: # API imports
+	from .property import Property
 
 
 class Properties:

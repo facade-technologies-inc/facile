@@ -24,8 +24,6 @@ and *ActionPipeline* classes.
 
 from typing import List
 
-from PySide2.QtCore import QObject, Signal
-
 import data.apim.port as pt
 from data.entity import Entity
 from data.properties import Properties

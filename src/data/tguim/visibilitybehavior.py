@@ -23,10 +23,15 @@ This module contains the VisibilityBehavior class.
 
 from enum import Enum, auto
 
-from data.entity import Entity
-from data.properties import Properties
-from data.tguim.condition import Condition
-
+try: # Facile imports
+	from data.entity import Entity
+	from data.properties import Properties
+	from data.tguim.condition import Condition
+	from data.apim.componentaction import ComponentAction
+except ImportError: # API imports
+	from ..entity import Entity
+	from ..properties import Properties
+	from .condition import Condition
 
 class VisibilityBehavior(Entity):
 	"""
@@ -63,6 +68,7 @@ class VisibilityBehavior(Entity):
 		self._condition = Condition()
 		self._tguim = tguim
 		self._triggerAction = None
+		self.methodName = None
 		
 		if srcComp and destComp:
 			
@@ -163,6 +169,7 @@ class VisibilityBehavior(Entity):
 		"""
 		self._triggerAction = action
 		self.getProperties().getProperty("Trigger Action")[1].setValue(action.getName())
+		self.methodName = action.getMethodName()
 
 	def getTriggerAction(self) -> 'ComponentAction':
 		"""
@@ -180,7 +187,7 @@ class VisibilityBehavior(Entity):
 			This is not just a getter of the __dict__ attribute.
 		
 		.. todo::
-			save the condition AND the trigger action
+			save the condition
 
 		:return: The dictionary representation of the object.
 		:rtype: dict
@@ -190,11 +197,13 @@ class VisibilityBehavior(Entity):
 		d["src"] = self._srcComponent.getId()
 		d["dest"] = self._destComponent.getId()
 		d['properties'] = self.getProperties().asDict()
+		# d['triggerAction'] = self._triggerAction.asDict()
+		d["methodName"] = self.methodName
 		
 		return d
 	
 	@staticmethod
-	def fromDict(d: dict, tguim: 'TargetGuiModel') -> 'Component':
+	def fromDict(d: dict, tguim: 'TargetGuiModel') -> 'VisibilityBehavior':
 		"""
 		Creates a visibility behavior from a dictionary.
 
@@ -205,7 +214,7 @@ class VisibilityBehavior(Entity):
 			The graphics item will not be created here. It must be created later.
 
 		.. todo:
-			Restore the condition AND the trigger action.
+			Restore the condition
 
 		:param d: The dictionary that represents the VisibilityBehavior.
 		:type d: dict
@@ -226,4 +235,12 @@ class VisibilityBehavior(Entity):
 		reactionType = vb.getProperties().getProperty("Reaction Type")[1].getValue()
 		vb.getProperties().getProperty("Reaction Type")[1].setValue(
 			VisibilityBehavior.ReactionType[reactionType])
+		# vb._triggerAction = ComponentAction.fromDict(d['triggerAction'], tguim)
+		methodName = d["methodName"]
+		vb.methodName = methodName
+		
+		# Getting the trigger action from tguim
+		# s = methodName.split("_")
+		# id = s[1]
+		# vb._triggerAction = ComponentAction(tguim.getComponent(id), None)
 		return vb

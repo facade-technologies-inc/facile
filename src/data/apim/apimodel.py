@@ -76,7 +76,10 @@ class ApiModel(QObject):
 			if file.endswith(".action"):
 				filepath = os.path.join(specDir, file)
 				aS = ActionSpecification().fromFile(filepath)
-				
+
+				if aS.viableTargets is None:
+					continue
+
 				# Map all targets to the specification for easy lookup later.
 				for target in aS.viableTargets:
 					if target in self._specifications:

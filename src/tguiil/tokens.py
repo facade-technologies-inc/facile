@@ -36,7 +36,10 @@ import string
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.feature_extraction.text import CountVectorizer
 from nltk.corpus import stopwords
+
 stopwords = stopwords.words('english')
+
+
 # Can support more languages in future
 screenWidth = pyautogui.size()[0]
 
@@ -80,12 +83,12 @@ class Token:
     # Windows
     WCTEXTS_THRESH_L = 0.6  # if only WCTEXTS_THRESH_L of children texts are the same btwn tokens for wins, diff wins.
     TLWINDOW_THRESH = 0.6  # Threshold for similarity % between two windows' names
-                            # and children texts (otherwise no match)
+    # and children texts (otherwise no match)
     # Menus
     MENU_TITLE_SIMILARITY_THRESH = 0.8  # Threshold for similarity % between menu names (otherwise no match)
     MENU_TEXTS_THRESH_L = 0.8  # Threshold for similarity % between menu children texts (otherwise no match)
     MENU_TOT_EX_THRESH = 0.8  # Threshold for similarity % between two Menus' names & children texts
-                                # for them to be *EXACT* matches (otherwise probabilistic approach)
+    # for them to be *EXACT* matches (otherwise probabilistic approach)
     # -----------------------------#
     
     # For handling strings not having any significant meaning
@@ -186,16 +189,17 @@ class Token:
         self.controlIDs.sort()
     
     @staticmethod
-    def createToken(timeStamp: datetime, component: pywinauto.base_wrapper.BaseWrapper, captureImage:bool=True) -> 'Token':
+    def createToken(timeStamp: datetime, component: pywinauto.base_wrapper.BaseWrapper,
+                    captureImage: bool = True) -> 'Token':
         """
         Create a token from a pywinauto control.
-
-        :raises: Token.CreationException
 
         :param timeStamp: The time that the application instance was created.
         :type timeStamp: datetime
         :param component: A pywinauto control from the target GUI.
         :type component: pywinauto.base_wrapper
+        :param captureImage: whether or not to take image of component
+        :type captureImage: bool
         :return: The token that was created from the pywinauto control.
         :rtype: Token
         """
@@ -248,6 +252,30 @@ class Token:
                 if image is not None:
                     width, height = image.size
                     image = image.crop((leftAdjust, topAdjust, width+rightAdjust, height+bottomAdjust))
+            
+            image = None
+            if captureImage:
+                image = component.capture_as_image()
+            
+            # size of dialogs is a bit off, so we trim to adjust.
+            if isDialog:
+                
+                # Setting amounts to trim off dialog size
+                leftAdjust = 15
+                topAdjust = 0
+                rightAdjust = -17
+                bottomAdjust = -17
+                
+                # resize rectangle size
+                # rectangle.left += leftAdjust
+                # rectangle.top += topAdjust
+                # rectangle.right += rightAdjust
+                # rectangle.bottom += bottomAdjust
+                
+                # crop image
+                if image is not None:
+                    width, height = image.size
+                    image = image.crop((leftAdjust, topAdjust, width + rightAdjust, height + bottomAdjust))
             
             # get text of all children that are not editable.
             childrenTexts = []
@@ -416,7 +444,7 @@ class Token:
             
             if total < Token.TLWINDOW_THRESH * (Token.Weight['TITLE'] + Token.Weight['CHILDREN_TEXTS']):
                 return Token.Match.NO, 0
-
+            
             return self.inDepthMatchCheck(token2)
         
         #
@@ -435,7 +463,7 @@ class Token:
                 return Token.Match.NO, 0
             else:
                 total += titleSim * Token.Weight['TITLE']
-
+            
             if self.childrenTexts and token2.childrenTexts:
                 try:
                     t1 = [text for sublist in self.childrenTexts for text in sublist]
@@ -443,12 +471,12 @@ class Token:
                 except Exception as e:
                     print('childrenTexts for menu is deeper than 2, find another way to do this.')
                     raise e
-    
+                
                 t1Str = ' '.join(t1)
                 t2Str = ' '.join(t2)
-    
+                
                 textsSim = stringSimilarity(t1Str, t2Str)
-    
+                
                 if textsSim < Token.MENU_TEXTS_THRESH_L:
                     return Token.Match.NO, 0
                 else:
@@ -459,7 +487,7 @@ class Token:
             
             if total > Token.MENU_TOT_EX_THRESH * (Token.Weight['TITLE'] + Token.Weight['CHILDREN_TEXTS']):
                 return Token.Match.EXACT, 0
-
+            
             return self.inDepthMatchCheck(token2)
         
         ###------------------- EXAMPLE ---------------------###
@@ -622,7 +650,7 @@ class Token:
         
         else:
             return Token.Match.NO, score
-
+    
     def registerAsAccepted(self):
         """
         This method should only be called on components that are stored in the TGUIM.
@@ -636,7 +664,7 @@ class Token:
             else:
                 newVal = Token.control_ID_count.get(controlID, 0) + 1
             Token.control_ID_count[controlID] = newVal
-
+    
     def getControlIDs(self):
         """
         Get the control IDs in order of uniqueness.
@@ -644,7 +672,7 @@ class Token:
         :rtype: List[str]
         """
         return list(filter(len, sorted(self.controlIDs, key=cmp_to_key(Token.control_ID_comparator))))
-
+    
     def getTopLevelParentControlIDs(self):
         """
         Get the top-level parent control IDs in order of uniqueness.
@@ -652,7 +680,7 @@ class Token:
         :rtype: List[str]
         """
         return list(filter(len, sorted(self.topLevelParentControlIDs, key=cmp_to_key(Token.control_ID_comparator))))
-
+    
     @staticmethod
     def control_ID_comparator(controlID1: str, controlID2: str) -> int:
         """
@@ -669,7 +697,7 @@ class Token:
         """
         count1 = Token.control_ID_count.get(controlID1, 100000000)
         count2 = Token.control_ID_count.get(controlID2, 100000000)
-    
+        
         if count1 < count2:
             return -1
         elif count1 > count2:
@@ -734,6 +762,7 @@ class Token:
         t.__dict__ = d
         return t
 
+
 def cleanString(myStr: str, sws: bool = True):
     """
     Removes punctuation, puts myStr in lowercase, and removes stopwords
@@ -751,6 +780,7 @@ def cleanString(myStr: str, sws: bool = True):
     if sws:
         myStr = ' '.join([word for word in myStr.split() if word not in stopwords])
     return myStr
+
 
 def stringSimilarity(str1: str, str2: str) -> float:
     """
