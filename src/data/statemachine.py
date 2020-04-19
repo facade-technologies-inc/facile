@@ -27,7 +27,7 @@ from enum import Enum, auto
 
 from PySide2.QtCore import Slot, QTimer
 from PySide2.QtGui import QStandardItem, QStandardItemModel, Qt, QIcon, QPixmap
-from PySide2.QtWidgets import QGraphicsScene, QDialog, QLabel, QVBoxLayout, QWidget, QSizePolicy
+from PySide2.QtWidgets import QGraphicsScene, QDialog, QMessageBox, QWidget, QSizePolicy
 
 import data.tguim.visibilitybehavior as vb
 from gui.facilegraphicsview import FacileGraphicsView
@@ -403,8 +403,24 @@ class StateMachine:
 		v._actionPipelinesMenu.actionSelected.connect(self.setCurrentActionPipeline)
 		
 		def onAPICompiler():
-			apicomp = ApiCompilerDialog()
-			apicomp.exec_()
+			ui.validatorDockWidget.show()
+
+			def onVerificationComplete(success):
+				if success:
+					apicomp = ApiCompilerDialog()
+					apicomp.exec_()
+				else:
+					msg = QMessageBox()
+					msg.setIcon(QMessageBox.Critical)
+					msg.setText("Error")
+					msg.setInformativeText("Please resolve all verification errors before compiling.")
+					msg.setWindowTitle("Error")
+					msg.exec_()
+				v.ui.validatorView.finished.disconnect(onVerificationComplete)
+
+			v.ui.validatorView.finished.connect(onVerificationComplete)
+			v.ui.validatorView.onRun()
+
 	
 		ui.actionShow_API_Compiler.triggered.connect(onAPICompiler)
 
