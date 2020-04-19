@@ -26,10 +26,10 @@ from PySide2.QtGui import QPainter, QColor, QTransform
 from PySide2.QtCore import QRectF, Slot, QPointF
 
 from graphics.apim.actiongraphics import ActionGraphics
-from graphics.apim.actionwrappergraphics import ActionWrapperGraphics
 from graphics.apim.wiregraphics import WireGraphics
 from graphics.apim.portgraphics import PortGraphics
 from graphics.apim.connectionindicator import ConnectionIndicator
+from graphics.apim.actionwrappergraphics import ActionWrapperGraphics
 
 
 class ActionPipelineGraphics(ActionGraphics):
@@ -214,8 +214,6 @@ class ActionPipelineGraphics(ActionGraphics):
 		self._wireGraphics.clear()
 		for wireGraphics in newOrdering:
 			self._wireGraphics.append(wireGraphics)
-			
-		
 
 	def placeActions(self) -> None:
 		"""
@@ -292,28 +290,6 @@ class ActionPipelineGraphics(ActionGraphics):
 		self.getActionRect(self._action.getInputPorts(), self._action.getOutputPorts())
 		ActionGraphics.paint(self, painter, option, index)
 		self.placeActions()
-		
-	def getPortGraphicsAtPos(self, x: float, y: float) -> None:
-		"""
-		If there is a port at the position x, y, return it. The port does not have to be the
-		item with the greatest Z value. This is different from the scene.itemAt function which only
-		gets the top item.
-		
-		:param x: the scene x coordinate.
-		:type x: float
-		:param y: the scene y coordinate.
-		:type y: float
-		:return: the port graphics item at position (x, y)
-		:rtype: PortGraphics
-		"""
-		rect = QRectF(x - 1, y - 1, 2, 2)
-		items = self.scene().items(rect)
-		
-		# get the port graphics under the mouse if it exists.
-		for item in items:
-			if type(item) == PortGraphics:
-				return item
-		return None
 	
 	def mousePressEvent(self, event):
 		"""
@@ -326,6 +302,7 @@ class ActionPipelineGraphics(ActionGraphics):
 		"""
 		# get the port under the mouse
 		pg = self.getPortGraphicsAtPos(event.scenePos().x(), event.scenePos().y())
+		ActionGraphics.mousePressEvent(self, event, emitSelected = (pg is None))
 		if not pg:
 			return
 		
@@ -342,7 +319,7 @@ class ActionPipelineGraphics(ActionGraphics):
 		self.stagingConnection = pg
 		self.connectionIndicator.setColor(ConnectionIndicator.BAD_COLOR)
 		self.connectionIndicator.show()
-			
+
 		event.accept()
 	
 	def mouseMoveEvent(self, event):

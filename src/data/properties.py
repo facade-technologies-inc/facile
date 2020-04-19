@@ -24,12 +24,11 @@ This module contains the Properties() class.
 from collections import OrderedDict
 from enum import Enum
 
-from data.property import Property
-
-try: # FACILE
+try: # Facile imports
+	from data.property import Property
 	from qt_models.propeditormodel import PropModel
-except ImportError: # API
-	pass
+except ImportError: # API imports
+	from .property import Property
 
 
 class Properties:
@@ -105,7 +104,6 @@ class Properties:
 				newProperties.addProperty("Visual", "Y", 0, int, True)
 				newProperties.addProperty("Visual", "Width", 100, int, True)
 				newProperties.addProperty("Visual", "Height", 100, int, True)
-				#newProperties.addProperty("Visual", "Has Moved", False, bool, True)
 			elif predefinedCategories[i] == "GUI Component":
 				newProperties.addProperty("GUI Component", "Title", "default", str, True)
 				newProperties.addProperty("GUI Component", "Parent Title", "default", str, True)
@@ -116,9 +114,11 @@ class Properties:
 				newProperties.addProperty("Visibility Behavior", "Source ID", 1, int, True)
 				newProperties.addProperty("Visibility Behavior", "Destination ID", 1, int, True)
 				newProperties.addProperty("Visibility Behavior", "Trigger Action", "None", str)
-			elif predefinedCategories[i] == "Action":
-				pass
 			elif predefinedCategories[i] == "Port":
+				newProperties.addProperty("Port", "Data Type", "str", str, True)
+				newProperties.addProperty("Port", "Default Value", "0", str, True)
+				newProperties.addProperty("Port", "Optional", False, bool, True)
+			elif predefinedCategories[i] == "Action":
 				pass
 			elif predefinedCategories[i] == "Wire":
 				pass

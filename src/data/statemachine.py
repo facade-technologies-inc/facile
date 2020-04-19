@@ -305,6 +305,7 @@ class StateMachine:
 		ui.tempView.hide()
 		ui.targetGUIModelView = FacileGraphicsView()
 		ui.apiModelView = FacileActionGraphicsView()
+		ui.apiModelView.entitySelected.connect(lambda e: v.onEntitySelected(e))
 		ui.viewSplitter.addWidget(ui.targetGUIModelView)
 		ui.viewSplitter.addWidget(ui.apiModelView)
 		
@@ -467,7 +468,6 @@ class StateMachine:
 			p.save()
 			p.addToRecents()
 			scene = TGUIMScene(p.getTargetGUIModel())
-			scene.addECs()
 			ui.targetGUIModelView.setScene(scene)
 			scene.itemSelected.connect(v.onItemSelected)
 			scene.itemBlink.connect(v.onItemBlink)

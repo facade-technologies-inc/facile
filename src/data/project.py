@@ -244,6 +244,16 @@ class Project:
 		"""
 		
 		return self._name
+
+	def getAPIName(self) -> str:
+		"""
+		Gets the name of the API.
+
+		:return: The API's name.
+		:rtype: str
+		"""
+
+		return self._name.replace(" ", "_")
 	
 	def getExecutableFile(self) -> str:
 		"""
@@ -436,7 +446,6 @@ class Project:
 		# save Target GUI Model
 		with open(self.getTargetGUIModelFile(), 'w') as tguimFile:
 			d = self._targetGUIModel.asDict()
-			print(d)
 			tguimFile.write(json.dumps(d, indent=4))
 			
 		# TODO: Save the API Model.

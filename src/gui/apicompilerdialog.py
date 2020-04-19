@@ -205,7 +205,7 @@ class ApiCompilerDialog(QDialog):
 		
 		# no error? compiler and run document generation
 		self._compile(theCompilationProfile)
-		
+
 		return QDialog.accept(self)
 
 	def _compile(self, compProfile: CompilationProfile) -> None:
@@ -218,7 +218,7 @@ class ApiCompilerDialog(QDialog):
 		:rtype: NoneType
 		"""
 		self.setApiCompiler.emit(compProfile)
-		projectName = sm.StateMachine.instance._project.getName()
+		projectName = sm.StateMachine.instance._project.getAPIName()
 
 		# determine number of steps in compilation and documentation generation.
 		numSteps = 0

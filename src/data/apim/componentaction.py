@@ -22,11 +22,12 @@ This module contains the **ComponentAction** class which is used to tie a user a
 component from the TGUIM.
 """
 
-from data.apim.action import Action
-from data.apim.actionspecification import ActionSpecification
 import data.apim.port as pt
+import data.apim.action as act
+from data.apim.actionspecification import ActionSpecification
 
-class ComponentAction(Action):
+
+class ComponentAction(act.Action):
 	
 	def __init__(self, targetComponent: 'Component', actionSpec: 'ActionSpecification'):
 		"""
@@ -37,7 +38,7 @@ class ComponentAction(Action):
 		:param actionSpec: The specification for how to perform the action.
 		:type actionSpec: ActionSpecification
 		"""
-		Action.__init__(self)
+		act.Action.__init__(self)
 		self._target = targetComponent
 		self._spec = actionSpec
 		
@@ -51,6 +52,16 @@ class ComponentAction(Action):
 			
 		self.setName(actionSpec.name)
 		self.setAnnotation(self._spec.description)
+	
+	def getActionSpec(self) -> ActionSpecification:
+		"""
+		Gets the action spec associated to this item.
+		
+		:return: the action spec associated to this item
+		:rtype: ActionSpecification
+		"""
+		
+		return self._spec
 
 	def getTargetComponent(self) -> 'Component':
 		"""
@@ -123,17 +134,54 @@ class ComponentAction(Action):
 		:return: code necessary to perform action
 		:rtype: str
 		"""
-
-		code = '\t\tcomp = self.findComponent(' + str(self._target.getId()) + ')\n'
+		
+		if self._target.getSuperToken().getTokens()[0].type not in ['Menu', 'MenuItem']:
+			code = '\t\tcomp = self.findComponent(' + str(self._target.getId()) + ')\n'
+		else:
+			code = '\t\tcomp = self.getComponentObject(' + str(self._target.getId()) + ')\n'
+		
 		code += '\n\t\ttry:'
 		code += self._spec.code.replace('\n', '\n\t\t\t')
 
 		if self._target is None:
-			code = code[:-1] + 'except Exception as e:\n\t\t\tprint(e)\n\t\t\traise ActionException("The action \'' + self.getName() + '\' was not executed ' \
-								'correctly. Please contact support for help.")\n'
+			code = code[:-1] + 'except Exception as e:\n\t\t\tprint(e)\n\t\t\traise ActionException("The action \'' \
+			       + self.getName() + '\' was not executed correctly. Please contact support for help.")\n'
 		else:
-			code = code[:-1] + 'except Exception as e:\n\t\t\tprint(e)\n\t\t\traise ActionException("The action \'' + self.getName() + '\' was not executed ' \
-							   'correctly on component with ID ' + str(self._target.getId()) + '. Please ' \
-								'contact support for help.")\n'
+			code = code[:-1] + 'except Exception as e:\n\t\t\tprint(e)\n\t\t\traise ActionException("The action \'' \
+			       + self.getName() + '\' was not executed correctly on component with ID ' + str(self._target.getId()) \
+			       + '. Please contact support for help.")\n'
 
 		return code
+	
+	def asDict(self) -> dict:
+		"""
+		Get a dictionary representation of the component action.
+
+		:return: The dictionary representation of the object.
+		:rtype: dict
+		"""
+		d = {}
+		d["target"] = self._target.getId()
+		d["spec"] = self._spec.asDict()
+		
+		return d
+	
+	@staticmethod
+	def fromDict(d: dict, tguim: 'TargetGuiModel') -> 'ComponentAction':
+		"""
+		Creates object from a dictionary.
+
+		:param d: The dictionary that represents the object.
+		:type d: dict
+		:param tguim: The target GUI model to add the component to
+		:type tguim: TargetGuiModel
+		:return: The ComponentAction object that was constructed from the dictionary
+		:rtype: ComponentAction
+		"""
+		
+		if d is None:
+			return None
+		
+		target = tguim.getComponent(int(d["target"]))
+		spec = ActionSpecification.fromDict(d["spec"])
+		return ComponentAction(target, spec)

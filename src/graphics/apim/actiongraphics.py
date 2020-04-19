@@ -27,8 +27,8 @@ import math
 from typing import Dict, List
 
 from PySide2.QtWidgets import QGraphicsItem, QApplication, QGraphicsView, QGraphicsScene, \
-	QWidget, QStyleOptionGraphicsItem
-from PySide2.QtGui import QPainter, QPainterPath, QColor, Qt, QPen
+	QWidget, QStyleOptionGraphicsItem, QGraphicsSceneMouseEvent
+from PySide2.QtGui import QPainter, QPainterPath, QColor, Qt
 from PySide2.QtCore import QRectF, Slot, SIGNAL, QObject
 from graphics.apim.portgraphics import PortGraphics
 from data.apim.action import Action
@@ -317,6 +317,42 @@ class ActionGraphics(QGraphicsItem):
 	def getWidth(self):
 		self.updateActionRect()
 		return self._width
+
+	def getPortGraphicsAtPos(self, x: float, y: float) -> 'PortGraphics':
+		"""
+		If there is a port at the position x, y, return it. The port does not have to be the
+		item with the greatest Z value. This is different from the scene.itemAt function which only
+		gets the top item.
+
+		:param x: the scene x coordinate.
+		:type x: float
+		:param y: the scene y coordinate.
+		:type y: float
+		:return: the port graphics item at position (x, y)
+		:rtype: PortGraphics
+		"""
+		rect = QRectF(x - 1, y - 1, 2, 2)
+		items = self.scene().items(rect)
+
+		# get the port graphics under the mouse if it exists.
+		for item in items:
+			if type(item) == PortGraphics:
+				return item
+		return None
+
+	def mousePressEvent(self, event: QGraphicsSceneMouseEvent, emitSelected:bool = True):
+		"""
+		When a port is clicked, emit the entitySelected signal from the view.
+		:param event: the mouse click event
+		:type event: QGraphicsSceneMouseEvent
+		:param emitSelected: Decide if we want to show the action's properties in the properties editor or not.
+		:type emitSelected: bool
+		:return: None
+		"""
+		event.ignore()
+
+		if emitSelected:
+			self.scene().views()[0].entitySelected.emit(self._action)
 		
 if __name__ == "__main__":
 	app = QApplication()
