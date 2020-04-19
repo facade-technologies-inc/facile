@@ -26,9 +26,11 @@ sys.path.append(os.path.abspath("../../"))
 
 import data.apim.port as pt
 
+
 class ActionSpecificationException(Exception):
 	def __init__(self, msg):
 		Exception.__init__(self, msg)
+
 
 class ActionSpecification:
 	"""
@@ -42,7 +44,48 @@ class ActionSpecification:
 		self.inputs = []
 		self.outputs = []
 		self.code = ""
+	
+	def asDict(self) -> dict:
+		"""
+		Get a dictionary representation of the component action.
+
+		:return: The dictionary representation of the object.
+		:rtype: dict
+		"""
+		d = {}
+		d["name"] = self.name
+		d["description"] = self.description
+		d["viableTargets"] = self.viableTargets
+		d["inputs"] = self.inputs
+		d["outputs"] = self.outputs
+		d["code"] = self.code
 		
+		return d
+	
+	@staticmethod
+	def fromDict(d: dict) -> 'ActionSpecification':
+		"""
+		Creates object from a dictionary.
+
+		:param d: The dictionary that represents the object.
+		:type d: dict
+		:return: The ActionSpecification object that was constructed from the dictionary
+		:rtype: ActionSpecification
+		"""
+		
+		if d is None:
+			return None
+		
+		actS = ActionSpecification()
+		actS.name = d["name"]
+		actS.description = d["description"]
+		actS.viableTargets = d["viableTargets"]
+		actS.inputs = d["inputs"]
+		actS.outputs = d["outputs"]
+		actS.code = d["code"]
+		
+		return actS
+	
 	@staticmethod
 	def fromFile(specFile: "str") -> 'ActionSpecification':
 		with open(specFile, 'r+') as f:

@@ -25,11 +25,16 @@ from collections import OrderedDict
 
 from PySide2.QtCore import QObject, Slot, Signal
 
-from data.entity import Entity
-from tguiil.supertokens import SuperToken
-from data.tguim.component import Component
-from data.tguim.visibilitybehavior import VisibilityBehavior
-
+try: # Facile imports
+	from data.entity import Entity
+	from tguiil.supertokens import SuperToken
+	from data.tguim.component import Component
+	from data.tguim.visibilitybehavior import VisibilityBehavior
+except ImportError: # API imports
+	from ..entity import Entity
+	from ...tguiil.supertokens import SuperToken
+	from .component import Component
+	from .visibilitybehavior import VisibilityBehavior
 
 class TargetGuiModel(QObject):
 	"""
@@ -89,6 +94,20 @@ class TargetGuiModel(QObject):
 		:rtype: dict
 		"""
 		return self._components
+	
+	def getTopLevelWindows(self) -> list:
+		"""
+		Gets a list of all top-level components in the tguim
+		
+		:return: list of all top-level components in the tguim
+		:rtype: list
+		"""
+		
+		windows = []
+		for id, comp in self._components:
+			if comp.depth is 0:
+				windows.append(comp)
+		return windows
 	
 	def getComponent(self, iD: int) -> 'Component':
 		"""

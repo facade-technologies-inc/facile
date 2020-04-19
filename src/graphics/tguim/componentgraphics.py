@@ -360,7 +360,6 @@ class ComponentGraphics(QGraphicsItem):
             return self
         elif self._depth > 0:
             window, pos = self._dataComponent.getPathFromRoot()[-2]  # -1 position is root, -2 is window
-            print(self.scene().getGraphics(window).getLabel() + ' is the window for ' + self.getLabel())
             return self.scene().getGraphics(window)
                     
     def addToExtraComponents(self, component: 'ComponentGraphics'):
