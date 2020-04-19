@@ -436,7 +436,6 @@ class Project:
 		# save Target GUI Model
 		with open(self.getTargetGUIModelFile(), 'w') as tguimFile:
 			d = self._targetGUIModel.asDict()
-			print(d)
 			tguimFile.write(json.dumps(d, indent=4))
 			
 		# TODO: Save the API Model.
