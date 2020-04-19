@@ -349,7 +349,7 @@ class ActionGraphics(QGraphicsItem):
 		:type emitSelected: bool
 		:return: None
 		"""
-		event.accept()
+		event.ignore()
 
 		if emitSelected:
 			self.scene().views()[0].entitySelected.emit(self._action)

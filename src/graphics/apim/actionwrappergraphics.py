@@ -237,18 +237,18 @@ class ActionWrapperGraphics(ActionGraphics):
 		for view in self.scene().views():
 			view.refresh()
 
-	def mousePressEvent(self, event: QGraphicsSceneMouseEvent):
-		"""
-		When a port is clicked, emit the entitySelected signal from the view.
-		:param event: the mouse click event
-		:type event: QGraphicsSceneMouseEvent
-		:param emitSelected: Decide if we want to show the action's properties in the properties editor or not.
-		:type emitSelected: bool
-		:return: None
-		"""
-
-		if self.getPortGraphicsAtPos(event.scenePos().x(), event.scenePos().y()) is None:
-			return ActionGraphics.mousePressEvent(self, event, emitSelected=True)
-		else:
-			event.accept()
-			return ActionGraphics.mousePressEvent(self, event, emitSelected=False)
+	# def mousePressEvent(self, event: QGraphicsSceneMouseEvent):
+	# 	"""
+	# 	When a port is clicked, emit the entitySelected signal from the view.
+	# 	:param event: the mouse click event
+	# 	:type event: QGraphicsSceneMouseEvent
+	# 	:param emitSelected: Decide if we want to show the action's properties in the properties editor or not.
+	# 	:type emitSelected: bool
+	# 	:return: None
+	# 	"""
+	#
+	# 	if self.getPortGraphicsAtPos(event.scenePos().x(), event.scenePos().y()) is None:
+	# 		return ActionGraphics.mousePressEvent(self, event, emitSelected=True)
+	# 	else:
+	# 		event.accept()
+	# 		return ActionGraphics.mousePressEvent(self, event, emitSelected=False)
