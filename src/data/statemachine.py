@@ -467,7 +467,6 @@ class StateMachine:
 			p.save()
 			p.addToRecents()
 			scene = TGUIMScene(p.getTargetGUIModel())
-			scene.addECs()
 			ui.targetGUIModelView.setScene(scene)
 			scene.itemSelected.connect(v.onItemSelected)
 			scene.itemBlink.connect(v.onItemBlink)
