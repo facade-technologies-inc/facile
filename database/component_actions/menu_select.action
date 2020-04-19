@@ -5,5 +5,5 @@ targets = ['MenuItem', 'Menu']
 inputs = []
 outputs = []
 code = """
-self.selectMenuItem(comp)
+self._selectMenuItem(comp)
 """
