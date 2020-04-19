@@ -226,7 +226,7 @@ class ApiCompilerDialog(QDialog):
 		numSteps += len(compProfile.docTypes)
 
 		# create and show progressbar dialog
-		progress = QProgressDialog("Compiling API...", "Cancel", 0, numSteps * 2, parent=self.parent())
+		progress = QProgressDialog("Compiling API...", "Cancel API Generation", 0, numSteps * 2, parent=self.parent())
 		progress.setValue(0)
 		progress.setModal(True)
 
