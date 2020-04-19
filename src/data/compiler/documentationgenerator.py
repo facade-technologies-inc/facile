@@ -54,6 +54,11 @@ class DocGenerator(QObject):
         os.chdir(docDir)
         os.system('xcopy {0} /e 1>nul 2>&1'.format(self.sphinxFacileDir))
         srcDir = os.path.join(self.projectDir, self.apiName, "Documentation", "src")
+
+        # wait until src dir exists.
+        while not os.path.exists(srcDir):
+            pass
+
         os.chdir(srcDir)
         self.modifyConf()
 
@@ -96,6 +101,11 @@ class DocGenerator(QObject):
 		:return: None
 		:rtype: NoneType
         """
+
+        # make sure conf.py is done being copied.
+        while not os.path.exists("conf.py"):
+            pass
+
         f = open("conf.py")
         fileStr = f.read()
         f.close()
