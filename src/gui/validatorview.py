@@ -150,6 +150,7 @@ class ValidatorView(QWidget):
 		self.ui.runButton.setEnabled(False)
 		self.ui.stopButton.setEnabled(True)
 		sm.StateMachine.instance.view.ui.actionValidate.setEnabled(False)
+		sm.StateMachine.instance.view.ui.actionShow_API_Compiler.setEnabled(False) # disable api compiler action
 	
 	@Slot()
 	def clear(self) -> None:
@@ -316,5 +317,7 @@ class ValidatorView(QWidget):
 			self.ui.runButton.setEnabled(True)
 			self.ui.stopButton.setEnabled(False)
 			sm.StateMachine.instance.view.ui.actionValidate.setEnabled(True)
-		
 
+			# if there are no errors and we've finished, enable the API compiler.
+			if self._mostSevere != ValidatorMessage.Level.Error.value:
+				sm.StateMachine.instance.view.ui.actionShow_API_Compiler.setEnabled(True)

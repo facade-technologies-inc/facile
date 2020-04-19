@@ -508,7 +508,6 @@ class StateMachine:
 		ui.actionAutoExplore.setChecked(False)
 		ui.actionAdd_Action_Pipeline.setEnabled(True)
 		ui.actionPower_App.setEnabled(True)
-		ui.actionShow_API_Compiler.setEnabled(True)
 		ui.actionValidate.setEnabled(True)
 		
 		# enable validator buttons
@@ -537,7 +536,6 @@ class StateMachine:
 		self.view.ui.actionShow_Token_Tags.setEnabled(True)
 		self.view.ui.actionAdd_Behavior.setEnabled(True)
 		self.view.ui.actionPower_App.setEnabled(True)
-		self.view.ui.actionShow_API_Compiler.setEnabled(True)
 		self.view.ui.actionValidate.setEnabled(True)
 	
 	def _state_EXPLORATION(self, event: Event, previousState: State, *args, **kwargs) -> None:
@@ -573,7 +571,6 @@ class StateMachine:
 		self.view.ui.actionShow_Token_Tags.setEnabled(True)
 		self.view.ui.actionAdd_Behavior.setEnabled(False)
 		self.view.ui.actionPower_App.setEnabled(True)
-		self.view.ui.actionShow_API_Compiler.setEnabled(True)
 		self.view.ui.actionValidate.setEnabled(True)
 	
 	############################################################################

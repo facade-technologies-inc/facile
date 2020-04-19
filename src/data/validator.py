@@ -24,6 +24,7 @@ class Validator(QThread):
 	
 	sentMessage = Signal(ValidatorMessage)
 	updateProgress = Signal(float)
+
 	
 	def __init__(self):
 		"""

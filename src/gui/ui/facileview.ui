@@ -156,6 +156,9 @@
    </widget>
   </widget>
   <widget class="QToolBar" name="toolBar">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
    <property name="sizePolicy">
     <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
      <horstretch>0</horstretch>
@@ -377,6 +380,9 @@
    <property name="checkable">
     <bool>true</bool>
    </property>
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="icon">
     <iconset resource="../../../icons.qrc">
      <normaloff>:/icon/resources/icons/office/compile-python.png</normaloff>:/icon/resources/icons/office/compile-python.png</iconset>
@@ -385,7 +391,7 @@
     <string>Show API Compiler</string>
    </property>
    <property name="toolTip">
-    <string>Compile</string>
+    <string>Compile the API</string>
    </property>
   </action>
   <action name="actionValidate">
