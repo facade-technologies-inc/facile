@@ -240,6 +240,7 @@ class ApiCompilerDialog(QDialog):
 
 		# since compilation takes a long time, we do it in another thread to keep the GUI responsive.
 		thread = QThread()
+		thread.setTerminationEnabled(True)
 		compiler = Compiler(compProfile)
 		docGenerator = DocGenerator(compProfile.docTypes, projectName)
 
@@ -254,7 +255,7 @@ class ApiCompilerDialog(QDialog):
 		thread.started.connect(progress.exec_, type=Qt.QueuedConnection)
 		thread.started.connect(compiler.compileAPI, type=Qt.QueuedConnection)
 		compiler.finished.connect(docGenerator.createDoc)
-		docGenerator.finished.connect(thread.quit)
+		docGenerator.finished.connect(thread.terminate)
 		docGenerator.finished.connect(self.close)
 		progress.canceled.connect(thread.terminate)
 

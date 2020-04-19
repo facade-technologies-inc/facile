@@ -1,4 +1,5 @@
 import os
+import shutil
 
 from PySide2.QtCore import QObject, Signal
 
@@ -26,6 +27,7 @@ class DocGenerator(QObject):
         """
         QObject.__init__(self)
         self.projectDir = sm.StateMachine.instance._project.getProjectDir()
+        self.apiName = sm.StateMachine.instance._project.getAPIName()
         self.projectName = projectName
         self.docType = docType
         self.sphinxFacileDir = os.path.join(os.path.split(__file__)[0], "sphinx_src")
@@ -37,71 +39,53 @@ class DocGenerator(QObject):
 		:return: None
 		:rtype: NoneType
         """
-        if len(self.docType) == 0:
-            return
-        
+        restorePoint = os.getcwd()
+        docDir = os.path.join(self.projectDir, self.apiName, "Documentation")
+
+        # Clear documentation directory
+        if os.path.exists(docDir):
+            shutil.rmtree(docDir, ignore_errors=True)
+
+        while os.path.exists(docDir):
+            pass
+
+        os.mkdir(docDir)
+
+        os.chdir(docDir)
+        os.system('xcopy {0} /e 1>nul 2>&1'.format(self.sphinxFacileDir))
+        srcDir = os.path.join(self.projectDir, self.apiName, "Documentation", "src")
+        os.chdir(srcDir)
+        self.modifyConf()
+
         for type in self.docType:
-            os.chdir(self.projectDir)
-            os.system('xcopy {0} /e 1>nul 2>&1'.format(self.sphinxFacileDir))
-            self.modifyConf()
 
             if type is CompilationProfile.DocType.Html:
                 self.stepStarted.emit("Generating HTML documentation...")
-                formatChoice = "html"
-                os.chdir(self.projectDir)
-                # remove the old html folder
-                os.system('cd {0}'
-                          '& cd Documentation'
-                          '& RMDIR /Q/S {1} 1>nul 2>&1'.format(self.projectName, formatChoice))
-                # create new html, move it to Documentation
-                os.system('cd src'
-                          '& make {0} 1> {1}\\{2}\\Documentation\\build_html.log 2>&1'
-                          '& cd _build'
-                          '& move {0} {1}\{2}\Documentation 1>nul 2>&1'.format(formatChoice, self.projectDir, self.projectName))
+                os.system('cd ../ & RMDIR /Q/S html 1>nul 2>&1')
+                os.system('make html 1> ..\\build_html.log 2>&1 & move _build\\html ..\\ 1>nul 2>&1')
 
-                
             elif type is CompilationProfile.DocType.Txt:
                 self.stepStarted.emit("Generating TXT documentation...")
-                formatChoice = "text"
-                os.chdir(self.projectDir)
-                os.system('cd {0}'
-                          '& cd Documentation'
-                          '& RMDIR /Q/S {1} 1>nul 2>&1'.format(self.projectName, formatChoice))
-                os.system('cd src'
-                          '& make {0} 1> {1}\\{2}\\Documentation\\build_text.log 2>&1'
-                          '& cd _build'
-                          '& move {0} {1}\{2}\Documentation 1>nul 2>&1'.format(formatChoice, self.projectDir, self.projectName))
+                os.system('cd ../ & RMDIR /Q/S text 1>nul 2>&1')
+                os.system('make text 1> ..\\build_text.log 2>&1 & move _build\\text ..\\ 1>nul 2>&1')
                 
             elif type is CompilationProfile.DocType.Pdf:
                 self.stepStarted.emit("Generating PDF documentation...")
-                formatChoice = "latex"
-                os.chdir(self.projectDir)
-                os.system('cd {0}'
-                          '& cd Documentation'
-                          '& RMDIR /Q/S {1} 1>nul 2>&1'.format(self.projectName, formatChoice))
-                os.system('cd src'
-                          '& make {0} 1> {1}\\{2}\\Documentation\\build_latex.log 2>&1'
-                          '& cd _build'
-                          '& cd latex'
-                          '& make 1> {1}\\{2}\\Documentation\\build_pdf.log 2>&1'
-                          '& cd ..'
-                          '& move {0} {1}\{2}\Documentation 1>nul 2>&1'.format(formatChoice, self.projectDir, self.projectName))
+                os.system('cd ../ & RMDIR /Q/S pdf 1>nul 2>&1')
+                os.system('make latex 1> ..\\build_pdf.log 2>&1 & cd _build\\latex & make 1>nul 2>&1 & cd ..\\..\\ & move _build\\latex ..\\ 1>nul 2>&1')
             
             elif type is CompilationProfile.DocType.EPub:
                 self.stepStarted.emit("Generating EPUB documentation...")
-                formatChoice = "epub"
-                os.chdir(self.projectDir)
-                os.system('cd {0}'
-                          '& cd Documentation'
-                          '& RMDIR /Q/S {1} 1>nul 2>&1'.format(self.projectName, formatChoice))
-                os.system('cd src'
-                          '& make {0} 1> {1}\\{2}\\Documentation\\build_epub.log 2>&1'
-                          '& cd _build'
-                          '& move {0} {1}\{2}\Documentation 1>nul 2>&1'.format(formatChoice, self.projectDir, self.projectName))
-                
-            os.chdir(self.projectDir)
-            os.system('RMDIR /Q/S src 1>nul 2>&1')
+                os.system('cd ../ & RMDIR /Q/S epub 1>nul 2>&1')
+                os.system('make epub 1> ..\\build_epub.log 2>&1 & move _build\\epub ..\\ 1>nul 2>&1')
+
             self.stepComplete.emit()
+
+        # remove the src directory.
+        shutil.rmtree(srcDir, ignore_errors=True)
+
+        # step out of directory.
+        os.chdir(restorePoint)
 
         self.finished.emit()
             
@@ -112,9 +96,6 @@ class DocGenerator(QObject):
 		:return: None
 		:rtype: NoneType
         """
-        srcDir = '{}\src'.format(self.projectDir)
-        os.chdir(srcDir)
-        
         f = open("conf.py")
         fileStr = f.read()
         f.close()
