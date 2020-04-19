@@ -305,6 +305,7 @@ class StateMachine:
 		ui.tempView.hide()
 		ui.targetGUIModelView = FacileGraphicsView()
 		ui.apiModelView = FacileActionGraphicsView()
+		ui.apiModelView.entitySelected.connect(lambda e: v.onEntitySelected(e))
 		ui.viewSplitter.addWidget(ui.targetGUIModelView)
 		ui.viewSplitter.addWidget(ui.apiModelView)
 		

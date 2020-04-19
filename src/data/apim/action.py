@@ -57,6 +57,8 @@ class Action(Entity):
 		customCategories = {}
 		props = Properties.createPropertiesObject(predefinedCategories, customCategories)
 		self.setProperties(props)
+		props.getProperty("ID")[1].setValue(self.getId())
+		props.getProperty("Type")[1].setValue(type(self).__name__)
 
 		# inputs and outputs are lists of ports.
 		self._inputs = []
