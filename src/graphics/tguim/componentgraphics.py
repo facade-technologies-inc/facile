@@ -132,7 +132,7 @@ class ComponentGraphics(QGraphicsItem):
 
         # For items with no width or height (therefore not visible)
         if rect[2] is 0 or rect[3] is 0:
-            self._width = rect[2]  # assign them variables to avoid errors
+            self._width = rect[2]  # assign them values to avoid errors
             self._height = rect[3]
             self._parentGraphics = None
             self._parentIsScene = False
@@ -170,6 +170,8 @@ class ComponentGraphics(QGraphicsItem):
         
         # All other components
         else:
+            self._width = 0
+            self._height = 0
             self.setPos(max(0, rect[0]), max(0, rect[1]))
 
             self._parentGraphics = self.scene().getGraphics(self._dataComponent.getParent())

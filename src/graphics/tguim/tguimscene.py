@@ -28,6 +28,7 @@ from graphics.tguim.componentgraphics import ComponentGraphics
 import graphics.tguim.visibilitybehaviorgraphics as vbg
 from data.tguim.component import Component
 
+
 class TGUIMScene(QGraphicsScene):
 	itemSelected = Signal(int)
 	itemBlink = Signal(int)
@@ -59,6 +60,8 @@ class TGUIMScene(QGraphicsScene):
 
 			for child in data.getChildren():
 				graphics = self.createComponentGraphics(child, parentGraphics)
+				if isinstance(graphics, ComponentGraphics):
+					graphics.chkExtraComponents()
 				work.append((child, graphics))
 
 		# Create all visibility behavior graphics
@@ -106,19 +109,6 @@ class TGUIMScene(QGraphicsScene):
 		graphics = vbg.VBGraphics(dataItem, self)
 		self._dataToGraphicsMapping[dataItem] = graphics
 		return graphics
-	
-	def addECs(self):
-		"""
-		This method ensures that extra components will be added to the sections
-		they belong in after loading a tguim from a file.
-		
-		:return: None
-		"""
-	
-		for data in self._dataToGraphicsMapping:
-			if isinstance(data, Component):
-				graphics = self.getGraphics(data)
-				graphics.chkExtraComponents()
 
 	def getGraphics(self, dataItem):
 		"""
