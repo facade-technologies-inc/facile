@@ -28,7 +28,7 @@ sys.path.append(os.path.abspath("../../"))
 from PySide2.QtCore import QRectF, QPoint
 from PySide2.QtGui import QPainterPath, QPainter, QPolygon, QColor, Qt, QPen, QFont, QFontMetricsF
 from PySide2.QtWidgets import QGraphicsScene, QGraphicsItem, QApplication, QGraphicsView, QStyleOptionGraphicsItem, \
-	QWidget, QGraphicsSceneContextMenuEvent, QGraphicsTextItem
+	QWidget, QGraphicsSceneContextMenuEvent, QGraphicsTextItem, QGraphicsSceneMouseEvent
 
 from qt_models.portmenu import PortMenu
 import data.apim.port as port
@@ -175,7 +175,7 @@ class PortGraphics(QGraphicsItem):
 		:return: None
 		:rtype: NoneType
 		"""
-		return QGraphicsItem.contextMenuEvent(event)
+		return QGraphicsItem.contextMenuEvent(self, event)
 
 		# if not self._menuEnabled:
 		# 	return QGraphicsItem.contextMenuEvent(self, event)
@@ -183,9 +183,19 @@ class PortGraphics(QGraphicsItem):
 		# self.setSelected(True)
 		# self.menu.exec_(event.screenPos())
 	
-	def mousePressEvent(self, event):
+	def mousePressEvent(self, event: QGraphicsSceneMouseEvent):
+		"""
+		When a port is clicked, emit the entitySelected signal from the view.
+		:param event: the mouse click event
+		:type event: QGraphicsSceneMouseEvent
+		:return: None
+		"""
 		event.ignore()
 
+		try:
+			self.scene().views()[0].entitySelected.emit(self._port)
+		except:
+			pass
 
 if __name__ == "__main__":
 	app = QApplication()

@@ -138,6 +138,8 @@
 
         <file alias="../resources/icons/office/two-sided-arrow.png">resources/icons/office/two-sided-arrow.png</file>
 
+        <file alias="../resources/icons/office/txt.png">resources/icons/office/txt.png</file>
+
         <file alias="../resources/icons/office/user.png">resources/icons/office/user.png</file>
 
         <file alias="../resources/icons/office/verify.png">resources/icons/office/verify.png</file>

@@ -27,7 +27,7 @@ from enum import Enum, auto
 
 from PySide2.QtCore import Slot, QTimer
 from PySide2.QtGui import QStandardItem, QStandardItemModel, Qt, QIcon, QPixmap
-from PySide2.QtWidgets import QGraphicsScene, QDialog, QLabel, QVBoxLayout, QWidget, QSizePolicy
+from PySide2.QtWidgets import QGraphicsScene, QDialog, QMessageBox, QWidget, QSizePolicy
 
 import data.tguim.visibilitybehavior as vb
 from gui.facilegraphicsview import FacileGraphicsView
@@ -127,6 +127,7 @@ class StateMachine:
 		self.configVars = ConfigVars()
 		self.configVars.setShowBehaviors(facileView.ui.actionShow_Behaviors.isChecked())
 		self.configVars.setShowTokenTags(facileView.ui.actionShow_Token_Tags.isChecked())
+		self.configVars.setShowComponentImages(facileView.ui.actionDetailed_View.isChecked())
 
 		# Stores the action pipeline that's currently being edited
 		self._currentActionPipeline = None
@@ -304,6 +305,7 @@ class StateMachine:
 		ui.tempView.hide()
 		ui.targetGUIModelView = FacileGraphicsView()
 		ui.apiModelView = FacileActionGraphicsView()
+		ui.apiModelView.entitySelected.connect(lambda e: v.onEntitySelected(e))
 		ui.viewSplitter.addWidget(ui.targetGUIModelView)
 		ui.viewSplitter.addWidget(ui.apiModelView)
 		
@@ -375,6 +377,7 @@ class StateMachine:
 		ui.actionAdd_Behavior.triggered.connect(v.onAddBehaviorTriggered)
 		ui.actionShow_Behaviors.triggered.connect(self.configVars.setShowBehaviors)
 		ui.actionShow_Token_Tags.triggered.connect(self.configVars.setShowTokenTags)
+		ui.actionDetailed_View.triggered.connect(self.configVars.setShowComponentImages)
 		ui.actionValidate.triggered.connect(ui.validatorView.ran.emit)
 		
 		def onPowerApp(checked):
@@ -400,8 +403,24 @@ class StateMachine:
 		v._actionPipelinesMenu.actionSelected.connect(self.setCurrentActionPipeline)
 		
 		def onAPICompiler():
-			apicomp = ApiCompilerDialog()
-			apicomp.exec_()
+			ui.validatorDockWidget.show()
+
+			def onVerificationComplete(success):
+				if success:
+					apicomp = ApiCompilerDialog()
+					apicomp.exec_()
+				else:
+					msg = QMessageBox()
+					msg.setIcon(QMessageBox.Critical)
+					msg.setText("Error")
+					msg.setInformativeText("Please resolve all verification errors before compiling.")
+					msg.setWindowTitle("Error")
+					msg.exec_()
+				v.ui.validatorView.finished.disconnect(onVerificationComplete)
+
+			v.ui.validatorView.finished.connect(onVerificationComplete)
+			v.ui.validatorView.onRun()
+
 	
 		ui.actionShow_API_Compiler.triggered.connect(onAPICompiler)
 
@@ -465,7 +484,6 @@ class StateMachine:
 			p.save()
 			p.addToRecents()
 			scene = TGUIMScene(p.getTargetGUIModel())
-			scene.addECs()
 			ui.targetGUIModelView.setScene(scene)
 			scene.itemSelected.connect(v.onItemSelected)
 			scene.itemBlink.connect(v.onItemBlink)

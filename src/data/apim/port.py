@@ -62,6 +62,9 @@ class Port(Entity):
         predefinedCategories = ["Base", "Port"]
         customCategories = {}
         props = Properties.createPropertiesObject(predefinedCategories, customCategories)
+        props.getProperty("ID")[1].setValue(self.getId())
+        props.getProperty("Type")[1].setValue("Port")
+        props.getProperty("Data Type")[1].setValue(str(dataType))
         self.setProperties(props)
         
         self._input: 'wr.Wire' = None
@@ -176,6 +179,7 @@ class Port(Entity):
         """
         if type(newType) == type:
             self._dataType = newType
+            self.getProperties().getProperty("Data Type")[1].setValue(newType.__name__)
         else:
             raise TypeError("setDataType()'s input parameter must specify a Python type [e.g. int, str, bool].")
         
@@ -192,6 +196,7 @@ class Port(Entity):
         :rtype: NoneType
         """
         self._optional = isOptional
+        self.getProperties().getProperty("Optional")[1].setValue(self._optional)
         
         if not isOptional:
             self._default = None
@@ -214,6 +219,7 @@ class Port(Entity):
             raise PortException("Cannot set a default value for a port that is not optional")
         
         self._default = value
+        self.getProperties().getProperty("Default Value")[1].setValue(str(value))
         
         if self._action is not None:
             self._action.synchronizeWrappers()

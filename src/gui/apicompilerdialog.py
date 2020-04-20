@@ -28,6 +28,7 @@ from PySide2.QtCore import Signal, Slot
 from PySide2.QtWidgets import QDialog, QWidget, QFileDialog
 from data.compilationprofile import CompilationProfile
 from data.compiler.compiler import Compiler
+from data.compiler.documentationgenerator import DocGenerator
 from gui.ui.ui_apicompilerdialog import Ui_Dialog as Ui_ApiCompilerDialog
 from tguiil.matchoption import MatchOption
 from libs.bitness import getPythonBitness, isExecutable, appBitnessMatches, getExeBitness
@@ -162,8 +163,8 @@ class ApiCompilerDialog(QDialog):
 		
 		# Construct a set for documentation type
 		setDocType = set()
-		if self.ui.checkBoxDocx.isChecked():
-			setDocType.add(CompilationProfile.DocType.Doc)
+		if self.ui.checkBoxTxt.isChecked():
+			setDocType.add(CompilationProfile.DocType.Txt)
 		if self.ui.checkBoxHtml.isChecked():
 			setDocType.add(CompilationProfile.DocType.Html)
 		if self.ui.checkBoxPdf.isChecked():
@@ -201,8 +202,13 @@ class ApiCompilerDialog(QDialog):
 				errMsg += "\t" + err + "\n"
 			self.ui.error_label.setText(errMsg)
 			return
-
-		# TODO: figure out why FindExecutable: There is no association for the file get printed
+		
 		self.setApiCompiler.emit(theCompilationProfile)
 		c = Compiler(theCompilationProfile).compileAPI()
+		
+		# no error? run document generation
+		projectName = sm.StateMachine.instance._project.getAPIName()
+		docGenerator = DocGenerator(setDocType, projectName)
+		docGenerator.createDoc()
+		
 		return QDialog.accept(self)

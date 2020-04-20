@@ -138,7 +138,7 @@ class BlackBoxEditorDialog(QDialog):
 		name = self.ui.actionName.text().strip()
 		
 		# Make sure name of action pipeline is unique
-		if name in [ap.getName() for ap in apim.getActionPipelines()]:
+		if name in [ap.getName() for ap in apim.getActionPipelines() if ap is not self._action]:
 			errors.append("An action pipeline with the name '%s' already exists." % name)
 			
 		# Make sure name is a valid identifier

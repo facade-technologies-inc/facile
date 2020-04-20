@@ -24,8 +24,6 @@ and *ActionPipeline* classes.
 
 from typing import List
 
-from PySide2.QtCore import QObject, Signal
-
 import data.apim.port as pt
 from data.entity import Entity
 from data.properties import Properties
@@ -59,6 +57,8 @@ class Action(Entity):
 		customCategories = {}
 		props = Properties.createPropertiesObject(predefinedCategories, customCategories)
 		self.setProperties(props)
+		props.getProperty("ID")[1].setValue(self.getId())
+		props.getProperty("Type")[1].setValue(type(self).__name__)
 
 		# inputs and outputs are lists of ports.
 		self._inputs = []

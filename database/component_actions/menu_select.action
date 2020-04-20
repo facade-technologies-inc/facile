@@ -1,0 +1,9 @@
+
+name = "Select"
+description = "Selects (clicks) menu item with ID {id}."
+targets = ['MenuItem', 'Menu']
+inputs = []
+outputs = []
+code = """
+self.selectMenuItem(comp)
+"""

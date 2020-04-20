@@ -33,12 +33,15 @@ from data.statemachine import StateMachine
 from data.tguim.component import Component
 from data.tguim.visibilitybehavior import VisibilityBehavior
 from data.apim.componentaction import ComponentAction
+from data.apim.action import Action
+from data.apim.port import Port
 from gui.copyprojectdialog import CopyProjectDialog
 from gui.manageprojectdialog import ManageProjectDialog
 from gui.newprojectdialog import NewProjectDialog
 from gui.validatorview import ValidatorView
 from gui.ui.ui_facileview import Ui_MainWindow as Ui_FacileView
 from qt_models.projectexplorermodel import ProjectExplorerModel
+from qt_models.propeditormodel import PropModel
 from tguiil.blinker import Blinker
 from gui.actionmenu import ActionMenu
 
@@ -196,7 +199,6 @@ class FacileView(QMainWindow):
 		:return: None
 		:rtype: NoneType
 		"""
-		
 		self.setProject(Project.load(self.sender().text()))
 	
 	@Slot()
@@ -305,6 +307,10 @@ class FacileView(QMainWindow):
 		:rtype: NoneType
 		"""
 		entity = self._project.getTargetGUIModel().getEntity(id)
+		self.onEntitySelected(entity)
+
+	@Slot('Entity')
+	def onEntitySelected(self, entity: 'Entity') -> None:
 		properties = entity.getProperties()
 		self.ui.propertyEditorView.setModel(properties.getModel())
 		
@@ -323,6 +329,15 @@ class FacileView(QMainWindow):
 			
 		elif type(entity) == VisibilityBehavior:
 			self.ui.projectExplorerView.model().selectBehavior(entity)
+			self.ui.propertyEditorView.expandAll()
+
+		elif type(entity) == Port:
+			self.ui.propertyEditorView.setModel(PropModel(entity.getProperties()))
+			self.ui.propertyEditorView.expandAll()
+
+		elif isinstance(entity, Action):
+			self.ui.propertyEditorView.setModel(PropModel(entity.getProperties()))
+			self.ui.propertyEditorView.expandAll()
 	
 	@Slot(int)
 	def onItemBlink(self, id: int) -> None:

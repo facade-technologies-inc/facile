@@ -39,6 +39,7 @@ class Compiler():
         self.statem = sm.StateMachine.instance
         self._compProf = compProf
         self._name = self.statem._project.getName()
+        self._apiName = self.statem._project.getAPIName()
         self._backend = self.statem._project.getBackend()
         self._exeLoc = self.statem._project.getExecutableFile()
         self._opts = compProf.compResOpts
@@ -47,7 +48,7 @@ class Compiler():
         
         # Save Folders
         self._saveFolder = compProf.apiFolderDir + '/'
-        self._srcFolder = os.path.join(self._saveFolder, self.statem._project.getName() + '/')
+        self._srcFolder = os.path.join(self._saveFolder, self._apiName + '/')
         self._docFolder = os.path.join(self._srcFolder, 'Documentation/')
         
         # Make all save folders if they don't exist
@@ -58,14 +59,16 @@ class Compiler():
         if not os.path.exists(self._docFolder):
             os.mkdir(self._docFolder)
         
-        # List was reduced in size by making custom, "stripped" versions of files that only
-        #  have the required functions & dependencies. That way no need to import graphics files and all that.
         self._necessaryFiles = ["../../tguiil/componentfinder.py", "../../tguiil/application.py",
                                 "../../tguiil/tokens.py", "../../tguiil/supertokens.py",
                                 "../../tguiil/matchoption.py", "../../data/entity.py",
                                 "../../data/tguim/component.py", "../../data/tguim/visibilitybehavior.py",
                                 "../../data/properties.py", "../../data/tguim/condition.py",
                                 "../../data/tguim/targetguimodel.py", "../../data/property.py"]
+                                # "../../data/apim/componentaction.py", "../../data/apim/action.py",
+                                # "../../data/apim/actionspecification.py", "../../data/apim/port.py",
+                                # "../../data/apim/wire.py", "../../data/apim/actionpipeline.py",
+                                # "../../data/apim/actionwrapper.py", "../../data/apim/wireset.py"]
     
     def generateCustomApp(self) -> None:
         """
@@ -96,10 +99,17 @@ class Compiler():
             f.write(appStr)
             
             aps, cas = self._apim.getActionsByType()
+            vbs = self._tguim.getVisibilityBehaviors()
+            alreadyWritten = []
             
             for action in cas:
+                alreadyWritten.append(action.getMethodName())
                 f.write(action.getMethod())
-
+            for id in vbs:
+                vb = vbs[id]
+                name = vb.methodName
+                if name not in alreadyWritten:
+                    f.write(vb.getTriggerAction().getMethod())
             for ap in aps:
                 f.write(ap.getMethod())
     
@@ -111,7 +121,7 @@ class Compiler():
         """
         
         # make necessary directories before copying files
-        targetDirs = ['data', 'data/tguim', 'tguiil']
+        targetDirs = ['data', 'data/tguim', 'tguiil']  # 'data/apim',
         for dir in targetDirs:
             dir = os.path.join(self._srcFolder, dir)
             if not os.path.exists(dir):
@@ -120,7 +130,6 @@ class Compiler():
         curPath = os.path.abspath(__file__)
         dir, filename = os.path.split(curPath)
         for path in self._necessaryFiles:
-            # Make sure to copy necessary files into baseFiles dir, and remove unnecessary fns and dependencies.
             copyfile(os.path.join(dir, path), os.path.join(self._srcFolder, path[6:]))
     
     def saveTGUIM(self):
@@ -134,8 +143,7 @@ class Compiler():
         path = self.statem._project.getTargetGUIModelFile()
         name = self.statem._project.getName()
         
-        copyfile(path,
-                 os.path.join(self._srcFolder, name + '.tguim'))  # tguim saved to root, alongside baseapp and customapp
+        copyfile(path, os.path.join(self._srcFolder, name + '.tguim'))  # tguim saved to root
     
     def compileAPI(self) -> None:
         """
@@ -153,7 +161,7 @@ class Compiler():
 
         # Create setup.py so user can install install API as a package with pip.
         setupTempFile = open(os.path.join(dir, "setup-template.txt"), 'r')
-        setupStr = setupTempFile.read().format(projectName=self.statem._project.getName(),
+        setupStr = setupTempFile.read().format(projectName=self.statem._project.getAPIName(),
                                                projectVersion='0.1.0')  # TODO Add versioning
         setupTempFile.close()
         setupFile = open(os.path.join(self._saveFolder, 'setup.py'), 'w')
@@ -175,5 +183,5 @@ class Compiler():
         # Auto install API if user selected to do so.
         if self._compProf.installApi:
             os.chdir(self._saveFolder)
-            os.system(self._compProf.interpExeDir + " -m pip install .")
+            os.system(self._compProf.interpExeDir + " -m pip install . 1>install.log 2>&1")
 

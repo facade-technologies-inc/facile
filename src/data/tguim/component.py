@@ -20,12 +20,23 @@
 
 This module contains the Component class.
 """
+from PIL.Image import Image
+from datetime import datetime
 
 from datetime import datetime
-from data.entity import Entity
-from data.properties import Properties
-from data.tguim.visibilitybehavior import VisibilityBehavior
-from tguiil.supertokens import SuperToken
+
+try: # Facile imports
+	from data.entity import Entity
+	from data.properties import Properties
+	from data.tguim.visibilitybehavior import VisibilityBehavior
+	from tguiil.supertokens import SuperToken
+except ImportError: # API imports
+	from ..entity import Entity
+	from ..properties import Properties
+	from .visibilitybehavior import VisibilityBehavior
+	from ...tguiil.supertokens import SuperToken
+
+
 
 
 class Component(Entity):
@@ -398,3 +409,15 @@ class Component(Entity):
 		comp.loadedFromTGUIM = True
 		
 		return comp
+
+	def getFirstImage(self) -> 'PIL.Image':
+		"""
+		If any of the tokens in this component's supertoken have a valid image, return the first image.
+
+		If no tokens have images, return None.
+		:return: The first image out of all tokens in this component's super token.
+		:rtype: PIL.Image
+		"""
+		for token in self._superToken.tokens:
+			if token.pic:
+				return token.pic

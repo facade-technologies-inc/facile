@@ -51,6 +51,7 @@ class ValidatorView(QWidget):
 	ran = Signal()
 	refreshed = Signal()
 	cleared = Signal()
+	finished = Signal(bool)
 	
 	LABEL_STYLE = '<span style="font-weight:bold;color:{color};">{{}}</span> {label}'
 	
@@ -316,5 +317,9 @@ class ValidatorView(QWidget):
 			self.ui.runButton.setEnabled(True)
 			self.ui.stopButton.setEnabled(False)
 			sm.StateMachine.instance.view.ui.actionValidate.setEnabled(True)
-		
+
+			if self._mostSevere == ValidatorMessage.Level.Error.value:
+				self.finished.emit(False)
+			else:
+				self.finished.emit(True)
 

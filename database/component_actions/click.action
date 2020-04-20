@@ -1,7 +1,7 @@
 
 name = "Click"
 description = "Left-clicks component {id}."
-targets = {'Button', 'MenuItem', '_treeview_element', '_toolbar_element', '_listview_element'}
+targets = ['Button', '_treeview_element', '_toolbar_element', '_listview_element']
 inputs = []
 outputs = []
 code = """
