@@ -52,7 +52,7 @@ class DocGenerator(QObject):
         os.mkdir(docDir)
 
         os.chdir(docDir)
-        os.system('xcopy {0} /e 1>nul 2>&1'.format(self.sphinxFacileDir))
+        os.system('xcopy "{0}" /e 1>nul 2>&1'.format(self.sphinxFacileDir))
         srcDir = os.path.join(self.projectDir, self.apiName, "Documentation", "src")
 
         # wait until src dir exists.
