@@ -16,6 +16,10 @@
 
         <file alias="../resources/splash_screen_02.png">resources/splash_screen_02.png</file>
 
+        <file alias="../resources/EC_Buttons/button_col.jpg">resources/EC_Buttons/button_col.jpg</file>
+
+        <file alias="../resources/EC_Buttons/button_exp.jpg">resources/EC_Buttons/button_exp.jpg</file>
+
         <file alias="../resources/icons/facade_logo.png">resources/icons/facade_logo.png</file>
 
         <file alias="../resources/icons/gradient/icons8-add-property-64.png">resources/icons/gradient/icons8-add-property-64.png</file>
