@@ -31,12 +31,21 @@ import pyautogui
 import traceback
 from datetime import datetime
 from typing import Set
-from .tguiil.tokens import Token
-from .tguiil.application import Application
-from .tguiil.matchoption import MatchOption
-from .tguiil.componentfinder import ComponentFinder
-from .data.tguim.targetguimodel import TargetGuiModel
-from .data.tguim.visibilitybehavior import VisibilityBehavior
+
+try: # API
+    from .tguiil.tokens import Token
+    from .tguiil.application import Application
+    from .tguiil.matchoption import MatchOption
+    from .tguiil.componentfinder import ComponentFinder
+    from .data.tguim.targetguimodel import TargetGuiModel
+    from .data.tguim.visibilitybehavior import VisibilityBehavior
+except: # SPHINX
+    from tguiil.tokens import Token
+    from tguiil.application import Application
+    from tguiil.matchoption import MatchOption
+    from tguiil.componentfinder import ComponentFinder
+    from data.tguim.targetguimodel import TargetGuiModel
+    from data.tguim.visibilitybehavior import VisibilityBehavior
 
 pathToThisFile, thisFile = os.path.split(os.path.abspath(__file__))
 sys.path.insert(0, pathToThisFile)

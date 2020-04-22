@@ -24,8 +24,8 @@ import sys
 import os
 import data.statemachine as sm
 
-from PySide2.QtCore import Signal, Slot
-from PySide2.QtWidgets import QDialog, QWidget, QFileDialog
+from PySide2.QtCore import Signal, Slot, Qt, QThread
+from PySide2.QtWidgets import QDialog, QFileDialog, QWidget, QProgressDialog, QApplication
 from data.compilationprofile import CompilationProfile
 from data.compiler.compiler import Compiler
 from data.compiler.documentationgenerator import DocGenerator
@@ -177,13 +177,11 @@ class ApiCompilerDialog(QDialog):
 			
 		# Construct a set for component resolution type
 		setcompResOpts = set()
-
 		if self.ui.checkBoxTokenExactMatch.isChecked():
 			setcompResOpts.add(MatchOption.ExactToken)
 		if self.ui.checkBoxTokenCloseMatch.isChecked():
 			setcompResOpts.add(MatchOption.CloseToken)
 		if self.ui.checkBoxPywinautoBestMatch.isChecked():
-
 			setcompResOpts.add(MatchOption.PWABestMatch)
 			
 		if len(setcompResOpts) == 0:
@@ -203,12 +201,72 @@ class ApiCompilerDialog(QDialog):
 			self.ui.error_label.setText(errMsg)
 			return
 		
-		self.setApiCompiler.emit(theCompilationProfile)
-		c = Compiler(theCompilationProfile).compileAPI()
-		
-		# no error? run document generation
-		projectName = sm.StateMachine.instance._project.getAPIName()
-		docGenerator = DocGenerator(setDocType, projectName)
-		docGenerator.createDoc()
-		
+		# no error? compiler and run document generation
+		self._compile(theCompilationProfile)
+
 		return QDialog.accept(self)
+
+	def _compile(self, compProfile: CompilationProfile) -> None:
+		"""
+		Run the compiler and documentation generator while showing a progress bar
+
+		:param compProfile: The compilation profile specifying how to compile.
+		:type compProfile: CompilationProfile
+		:return: None
+		:rtype: NoneType
+		"""
+		self.setApiCompiler.emit(compProfile)
+		projectName = sm.StateMachine.instance._project.getAPIName()
+
+		# determine number of steps in compilation and documentation generation.
+		numSteps = 0
+		numSteps += 6  # number of required compile steps (you have to go count)
+		if compProfile.installApi:
+			numSteps += 1 # optional if installing API.
+		numSteps += len(compProfile.docTypes)
+
+		# create and show progressbar dialog
+		progress = QProgressDialog("Compiling API...", "Cancel API Generation", 0, numSteps * 2, parent=self.parent())
+		progress.setValue(0)
+		progress.setModal(True)
+
+		def stepStartedCatcher(message):
+			progress.setValue(progress.value() + 1)
+			progress.setLabelText(message + "...")
+
+		def stepCompleteCatcher():
+			progress.setValue(progress.value() + 1)
+			progress.setLabelText(progress.labelText() + " done.")
+
+		# since compilation takes a long time, we do it in another thread to keep the GUI responsive.
+		thread = QThread()
+		thread.setTerminationEnabled(True)
+		compiler = Compiler(compProfile)
+		docGenerator = DocGenerator(compProfile.docTypes, projectName)
+
+		compiler.moveToThread(thread)
+		docGenerator.moveToThread(thread)
+
+		compiler.stepStarted.connect(stepStartedCatcher)
+		compiler.stepComplete.connect(stepCompleteCatcher)
+		docGenerator.stepStarted.connect(stepStartedCatcher)
+		docGenerator.stepComplete.connect(stepCompleteCatcher)
+
+		thread.started.connect(progress.exec_, type=Qt.QueuedConnection)
+		thread.started.connect(compiler.compileAPI, type=Qt.QueuedConnection)
+		compiler.finished.connect(docGenerator.createDoc)
+		docGenerator.finished.connect(thread.terminate)
+		docGenerator.finished.connect(self.close)
+		docGenerator.finished.connect(thread.deleteLater)
+		docGenerator.finished.connect(docGenerator.deleteLater)
+		docGenerator.finished.connect(compiler.deleteLater)
+		progress.canceled.connect(thread.terminate)
+		progress.canceled.connect(thread.deleteLater)
+		progress.canceled.connect(docGenerator.deleteLater)
+		progress.canceled.connect(compiler.deleteLater)
+
+		thread.start()
+
+		# spin, but keep the GUI responsive
+		while thread.isRunning:
+			QApplication.instance().processEvents()

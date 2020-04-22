@@ -22,12 +22,18 @@ This file contains the Compiler class - the part of Facile that interprets a use
 work in the gui, and converts it into the desired API.
 """
 import os
-import data.statemachine as sm
-from data.compilationprofile import CompilationProfile
 from shutil import copyfile
 
+from PySide2.QtCore import QObject, Signal
 
-class Compiler():
+import data.statemachine as sm
+from data.compilationprofile import CompilationProfile
+
+
+class Compiler(QObject):
+    stepStarted = Signal(str)
+    stepComplete = Signal()
+    finished = Signal()
     
     def __init__(self, compProf: 'CompilationProfile' = None) -> None:
         """
@@ -35,7 +41,7 @@ class Compiler():
 
         :return: None
         """
-        
+        QObject.__init__(self)
         self.statem = sm.StateMachine.instance
         self._compProf = compProf
         self._name = self.statem._project.getName()
@@ -76,7 +82,7 @@ class Compiler():
 
         :return: None
         """
-        
+        self.stepStarted.emit("Generating custom application driver")
         with open(self._srcFolder + "application.py", "w+") as f:
             
             # TODO: The Facade Tech watermark thing is a little intense when the user needs
@@ -112,6 +118,7 @@ class Compiler():
                     f.write(vb.getTriggerAction().getMethod())
             for ap in aps:
                 f.write(ap.getMethod())
+        self.stepComplete.emit()
     
     def copyNecessaryFiles(self) -> None:
         """
@@ -119,7 +126,7 @@ class Compiler():
 
         :return: None
         """
-        
+        self.stepStarted.emit("Copying necessary files")
         # make necessary directories before copying files
         targetDirs = ['data', 'data/tguim', 'tguiil']  # 'data/apim',
         for dir in targetDirs:
@@ -131,6 +138,7 @@ class Compiler():
         dir, filename = os.path.split(curPath)
         for path in self._necessaryFiles:
             copyfile(os.path.join(dir, path), os.path.join(self._srcFolder, path[6:]))
+        self.stepComplete.emit()
     
     def saveTGUIM(self):
         """
@@ -138,12 +146,13 @@ class Compiler():
 
         :return: None
         """
-        
+        self.stepStarted.emit("Saving target GUI model")
         self.statem._project.save()
         path = self.statem._project.getTargetGUIModelFile()
         name = self.statem._project.getName()
-        
-        copyfile(path, os.path.join(self._srcFolder, name + '.tguim'))  # tguim saved to root
+
+        copyfile(path, os.path.join(self._srcFolder, name + '.tguim'))  # tguim saved to root, alongside baseapp and customapp
+        self.stepComplete.emit()
     
     def compileAPI(self) -> None:
         """
@@ -151,15 +160,17 @@ class Compiler():
 
         :return: None
         """
-        
         self.copyNecessaryFiles()
         self.saveTGUIM()
-        
+
+        self.stepStarted.emit("Copying base application")
         curPath = os.path.abspath(__file__)
         dir, filename = os.path.split(curPath)
         copyfile(os.path.join(dir, 'baseapplication.py'), os.path.join(self._srcFolder, 'baseapplication.py'))
+        self.stepComplete.emit()
 
         # Create setup.py so user can install install API as a package with pip.
+        self.stepStarted.emit("Generating setup.py file")
         setupTempFile = open(os.path.join(dir, "setup-template.txt"), 'r')
         setupStr = setupTempFile.read().format(projectName=self.statem._project.getAPIName(),
                                                projectVersion='0.1.0')  # TODO Add versioning
@@ -167,8 +178,10 @@ class Compiler():
         setupFile = open(os.path.join(self._saveFolder, 'setup.py'), 'w')
         setupFile.write(setupStr)
         setupFile.close()
+        self.stepComplete.emit()
 
         # Create __init__.py so API is a package.
+        self.stepStarted.emit("Generating __init__.py file")
         initTempFile = open(os.path.join(dir, "__init__template.txt"), 'r')
         targetAppName = self.statem._project.getExecutableFile().split('/')[-1].split('.')[0]  # '.../app.exe' -> 'app'
         targetAppName = targetAppName[0].upper() + targetAppName[1:]  # 'app' -> 'App'
@@ -177,11 +190,15 @@ class Compiler():
         initFile = open(os.path.join(self._srcFolder, '__init__.py'), 'w')
         initFile.write(initStr)
         initFile.close()
+        self.stepComplete.emit()
         
         self.generateCustomApp()
 
         # Auto install API if user selected to do so.
         if self._compProf.installApi:
+            self.stepStarted.emit("Installing as python package")
             os.chdir(self._saveFolder)
             os.system(self._compProf.interpExeDir + " -m pip install . 1>install.log 2>&1")
+            self.stepComplete.emit()
 
+        self.finished.emit()
