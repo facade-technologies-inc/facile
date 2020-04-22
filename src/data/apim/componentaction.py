@@ -136,9 +136,9 @@ class ComponentAction(act.Action):
 		"""
 		
 		if self._target.getSuperToken().getTokens()[0].type not in ['Menu', 'MenuItem']:
-			code = '\t\tcomp = self.findComponent(' + str(self._target.getId()) + ')\n'
+			code = '\t\tcomp = self._findComponent(' + str(self._target.getId()) + ')\n'
 		else:
-			code = '\t\tcomp = self.getComponentObject(' + str(self._target.getId()) + ')\n'
+			code = '\t\tcomp = self._getComponentObject(' + str(self._target.getId()) + ')\n'
 		
 		code += '\n\t\ttry:'
 		code += self._spec.code.replace('\n', '\n\t\t\t')

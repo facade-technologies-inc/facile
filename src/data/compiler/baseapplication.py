@@ -31,16 +31,24 @@ import pyautogui
 import traceback
 from datetime import datetime
 from typing import Set
-from .tguiil.tokens import Token
-from .tguiil.application import Application
-from .tguiil.matchoption import MatchOption
-from .tguiil.componentfinder import ComponentFinder
-from .data.tguim.targetguimodel import TargetGuiModel
-from .data.tguim.visibilitybehavior import VisibilityBehavior
+
+try: # API
+    from .tguiil.tokens import Token
+    from .tguiil.application import Application
+    from .tguiil.matchoption import MatchOption
+    from .tguiil.componentfinder import ComponentFinder
+    from .data.tguim.targetguimodel import TargetGuiModel
+    from .data.tguim.visibilitybehavior import VisibilityBehavior
+except: # SPHINX
+    from tguiil.tokens import Token
+    from tguiil.application import Application
+    from tguiil.matchoption import MatchOption
+    from tguiil.componentfinder import ComponentFinder
+    from data.tguim.targetguimodel import TargetGuiModel
+    from data.tguim.visibilitybehavior import VisibilityBehavior
 
 pathToThisFile, thisFile = os.path.split(os.path.abspath(__file__))
 sys.path.insert(0, pathToThisFile)
-# TODO: Might want to make some functions private.
 
 
 class WaitException(Exception):
@@ -48,18 +56,11 @@ class WaitException(Exception):
         Exception.__init__(self, msg)
 
 
-class BaseApplication():
+class BaseApplication:
     """
     The core of all Facile APIs: contains functions that are necessary for any API. The
     custom generated Application class inherits from this.
     """
-
-    ignoreTypes = set()
-    ignoreTypes.add("SysShadow")
-    ignoreTypes.add("ToolTips")
-    ignoreTypes.add("MSCTFIME UI")
-    ignoreTypes.add("IME")
-    ignoreTypes.add("Pane")
     
     def __init__(self, exeLoc: str, options: Set['MatchOption'], name: str, backend: str = 'uia'):
         """
@@ -142,7 +143,7 @@ class BaseApplication():
             raise WaitException('Not a valid wait time or state. Please use "x s" or "x m" for x seconds/minutes \
             respectively, or use one of "visible", "ready", "exists", "enabled", "active" as state to wait for.')
     
-    def findComponent(self, compID: int) -> 'pywinauto.base_wrapper.BaseWrapper':
+    def _findComponent(self, compID: int) -> 'pywinauto.base_wrapper.BaseWrapper':
         """
         Finds the component with ID compID forcing its appearance if not visible.
 
@@ -152,11 +153,11 @@ class BaseApplication():
         :rtype: pywinauto.base_wrapper.BaseWrapper
         """
         
-        comp = self.getComponentObject(compID)
-        self.forceShow(comp)
+        comp = self._getComponentObject(compID)
+        self._forceShow(comp)
         return self._compFinder.find(comp.getSuperToken())
     
-    def getComponentObject(self, compID: int) -> 'Component':
+    def _getComponentObject(self, compID: int) -> 'Component':
         """
         Gets the Component object for an item with ID compID. Handles possible errors with getting it.
 
@@ -175,7 +176,7 @@ class BaseApplication():
         except Exception as e:
             raise Exception(str(e))
         
-    def getWindowObjectIDFromHandle(self, winHandle: pywinauto.base_wrapper.BaseWrapper) -> 'Component':
+    def _getWindowObjectIDFromHandle(self, winHandle: pywinauto.base_wrapper.BaseWrapper) -> 'Component':
         """
         Gets the Component object for a component with handle compHandle.
         ** ONLY WORKS FOR WINDOWS ** (Can be modified for more, but implemented this way to save processing power/time.
@@ -226,13 +227,13 @@ class BaseApplication():
         if selectedComponent:
             return selectedComponent.getId()
     
-    def forceShow(self, compObj: 'Component'):
+    def _forceShow(self, compObj: 'Component'):
         """
         Attempts to force the component to be visible using visibility behaviors.
         Uses a simple breadth-first search algorithm.
 
-        :param comp: Component to show
-        :type comp: Component
+        :param compObj: Component to show
+        :type compObj: Component
         :return: None
         """
         
@@ -256,7 +257,7 @@ class BaseApplication():
             for child in handle.children():
                 if child.is_dialog():
                     handles.append(child)
-            targets.append(self.getWindowObjectIDFromHandle(handle))  # Ids are faster to compare than Comps
+            targets.append(self._getWindowObjectIDFromHandle(handle))  # Ids are faster to compare than Comps
         
         # Find path to one of the windows from desired component's window.
         # How this works:
@@ -303,7 +304,7 @@ class BaseApplication():
                     methodName = visB.methodName
                     exec("self." + methodName + "()")
     
-    def selectMenuItem(self, component: 'Component'):
+    def _selectMenuItem(self, component: 'Component'):
         """
         MenuItems can't be clicked the same way as other components, so this function takes care of this.
 
@@ -334,7 +335,7 @@ class BaseApplication():
         windowComp, pos = nxtParent.getPathFromRoot()[-2]  # -1 position is root, -2 is window
         
         # Now force show the window, and get its handle
-        self.forceShow(windowComp)
+        self._forceShow(windowComp)
         window = self._compFinder.find(windowComp.getSuperToken())
         
         # Then finally select the menuItem

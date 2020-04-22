@@ -21,9 +21,10 @@
 This module contains the ActionMenuItem() Class.
 """
 
-from PySide2.QtWidgets import QWidget, QGraphicsScene, QDialog
+from PySide2.QtWidgets import QWidget, QGraphicsScene, QGraphicsRectItem, QApplication
 from PySide2.QtCore import Qt, QEvent
 from PySide2.QtGui import QContextMenuEvent, QPainter, QPixmap
+
 from gui.ui.ui_actionmenuitem import Ui_Form as Ui_ActionMenuItem
 from graphics.apim.actionicongraphics import ActionIconGraphics
 from data.apim.actionpipeline import ActionPipeline
@@ -56,10 +57,14 @@ class ActionMenuItem(QWidget):
 		self._action = action
 		
 		#Add ActionGraphics to Graphics View
+		side = 10_000_000
+		background = QGraphicsRectItem(-side / 2, -side / 2, side, side, None)
+		background.setBrush(QApplication.instance().palette(self).window())
 		self._actionGraphics = ActionIconGraphics(self._action)
 		self._scene = QGraphicsScene()
-		self._scene.addItem(self._actionGraphics)
-		
+		self._scene.addItem(background)
+		self._actionGraphics.setParentItem(background)
+
 		# set action name text field and shrink action graphics to fit.
 		self.update()
 		
@@ -167,5 +172,5 @@ class ActionMenuItem(QWidget):
 		self._pix = QPixmap(br.width(), br.height())
 		self._pix.setMask(self._pix.createHeuristicMask())
 		painter = QPainter(self._pix)
-		self._scene.render(painter)
+		self._scene.render(painter, source=br)
 		self.ui.actionIcon.setPixmap(self._pix)

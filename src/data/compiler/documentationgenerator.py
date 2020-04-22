@@ -1,12 +1,20 @@
 import os
+import shutil
+
+from PySide2.QtCore import QObject, Signal
+
 import data.statemachine as sm
 from data.compilationprofile import CompilationProfile
 
 
-class DocGenerator:
+class DocGenerator(QObject):
     """
 	This class is used to generate API documentations based on user's preference.
 	"""
+
+    stepStarted = Signal(str)
+    stepComplete = Signal()
+    finished = Signal()
     
     def __init__(self, docType: set, projectName: str):
         """
@@ -17,77 +25,75 @@ class DocGenerator:
         :param projectName: the name of the project
         :type projectName: str
         """
+        QObject.__init__(self)
         self.projectDir = sm.StateMachine.instance._project.getProjectDir()
+        self.apiName = sm.StateMachine.instance._project.getAPIName()
         self.projectName = projectName
         self.docType = docType
         self.sphinxFacileDir = os.path.join(os.path.split(__file__)[0], "sphinx_src")
     
-    def createDoc(self):
+    def createDoc(self, debug:bool=False):
         """
         Create the documentation(s).
-        
+
+        :param debug: If true, invalid commands will be printed to the console.
+        :type debug: bool
 		:return: None
 		:rtype: NoneType
         """
-        if len(self.docType) == 0:
-            return
-        
+        restorePoint = os.getcwd()
+        docDir = os.path.join(self.projectDir, self.apiName, "Documentation")
+
+        if not os.path.exists(docDir):
+            os.mkdir(docDir)
+
+        os.chdir(docDir)
+        self.execCommand('xcopy "{0}" /e 1>nul 2>&1'.format(self.sphinxFacileDir), printErrorCode=debug)
+
+        srcDir = os.path.join(self.projectDir, self.apiName, "Documentation", "src")
+
+        # wait until src dir exists.
+        while not os.path.exists(srcDir):
+            pass
+
+        os.chdir(srcDir)
+        self.modifyConf()
+
         for type in self.docType:
-            os.chdir(self.projectDir)
-            os.system('xcopy {0} /e 1>nul 2>&1'.format(self.sphinxFacileDir))
-            self.modifyConf()
 
             if type is CompilationProfile.DocType.Html:
-                formatChoice = "html"
-                os.chdir(self.projectDir)
-                # remove the old html folder
-                os.system('cd {0}'
-                          '& cd Documentation'
-                          '& RMDIR /Q/S {1} 1>nul 2>&1'.format(self.projectName, formatChoice))
-                # create new html, move it to Documentation
-                os.system('cd src'
-                          '& make {0} 1> {1}\\{2}\\Documentation\\build_html.log 2>&1'
-                          '& cd _build'
-                          '& move {0} {1}\{2}\Documentation 1>nul 2>&1'.format(formatChoice, self.projectDir, self.projectName))
-                
+                self.stepStarted.emit("Generating HTML documentation...")
+                if os.path.exists(os.path.abspath('../html')):
+                    self.execCommand('cd ../ & RMDIR /Q/S html 1>nul 2>&1', printErrorCode=debug)
+                self.execCommand('make html 1> ..\\build_html.log 2>&1 & move _build\\html ..\\ 1>nul 2>&1', printErrorCode=debug)
+
             elif type is CompilationProfile.DocType.Txt:
-                formatChoice = "text"
-                os.chdir(self.projectDir)
-                os.system('cd {0}'
-                          '& cd Documentation'
-                          '& RMDIR /Q/S {1} 1>nul 2>&1'.format(self.projectName, formatChoice))
-                os.system('cd src'
-                          '& make {0} 1> {1}\\{2}\\Documentation\\build_text.log 2>&1'
-                          '& cd _build'
-                          '& move {0} {1}\{2}\Documentation 1>nul 2>&1'.format(formatChoice, self.projectDir, self.projectName))
-                
+                self.stepStarted.emit("Generating TXT documentation...")
+                if os.path.exists(os.path.abspath('../text')):
+                    self.execCommand('cd ../ & RMDIR /Q/S text 1>nul 2>&1', printErrorCode=debug)
+                self.execCommand('make text 1> ..\\build_text.log 2>&1 & move _build\\text ..\\ 1>nul 2>&1', printErrorCode=debug)
+
             elif type is CompilationProfile.DocType.Pdf:
-                formatChoice = "latex"
-                os.chdir(self.projectDir)
-                os.system('cd {0}'
-                          '& cd Documentation'
-                          '& RMDIR /Q/S {1} 1>nul 2>&1'.format(self.projectName, formatChoice))
-                os.system('cd src'
-                          '& make {0} 1> {1}\\{2}\\Documentation\\build_latex.log 2>&1'
-                          '& cd _build'
-                          '& cd latex'
-                          '& make 1> {1}\\{2}\\Documentation\\build_pdf.log 2>&1'
-                          '& cd ..'
-                          '& move {0} {1}\{2}\Documentation 1>nul 2>&1'.format(formatChoice, self.projectDir, self.projectName))
+                self.stepStarted.emit("Generating PDF documentation...")
+                if os.path.exists(os.path.abspath('../pdf')):
+                    self.execCommand('cd ../ & RMDIR /Q/S pdf 1>nul 2>&1', printErrorCode=debug)
+                self.execCommand('make latex 1> ..\\build_pdf.log 2>&1 & cd _build\\latex & make 1>nul 2>&1 & cd ..\\..\\ & move _build\\latex ..\\ 1>nul 2>&1', printErrorCode=debug)
             
             elif type is CompilationProfile.DocType.EPub:
-                formatChoice = "epub"
-                os.chdir(self.projectDir)
-                os.system('cd {0}'
-                          '& cd Documentation'
-                          '& RMDIR /Q/S {1} 1>nul 2>&1'.format(self.projectName, formatChoice))
-                os.system('cd src'
-                          '& make {0} 1> {1}\\{2}\\Documentation\\build_epub.log 2>&1'
-                          '& cd _build'
-                          '& move {0} {1}\{2}\Documentation 1>nul 2>&1'.format(formatChoice, self.projectDir, self.projectName))
-                
-            os.chdir(self.projectDir)
-            os.system('RMDIR /Q/S src 1>nul 2>&1')
+                self.stepStarted.emit("Generating EPUB documentation...")
+                if os.path.exists(os.path.abspath('../epub')):
+                    self.execCommand('cd ../ & RMDIR /Q/S epub 1>nul 2>&1', printErrorCode=debug)
+                self.execCommand('make epub 1> ..\\build_epub.log 2>&1 & move _build\\epub ..\\ 1>nul 2>&1', printErrorCode=debug)
+
+            self.stepComplete.emit()
+
+        # step out of directory.
+        os.chdir(restorePoint)
+
+        # remove the src directory.
+        self.execCommand(f'RMDIR /S/Q {srcDir} 1>nul 2>&1', printErrorCode=debug)
+
+        self.finished.emit()
             
     def modifyConf(self):
         """
@@ -96,9 +102,11 @@ class DocGenerator:
 		:return: None
 		:rtype: NoneType
         """
-        srcDir = '{}\src'.format(self.projectDir)
-        os.chdir(srcDir)
-        
+
+        # make sure conf.py is done being copied.
+        while not os.path.exists("conf.py"):
+            pass
+
         f = open("conf.py")
         fileStr = f.read()
         f.close()
@@ -106,3 +114,23 @@ class DocGenerator:
         f = open("conf.py", "w")
         f.write(fileStr.format(userDefinedProjectName = self.projectName))
         f.close()
+
+    def execCommand(self, command:str, printErrorCode:bool=True) -> int:
+        """
+        Execute the command and return the error code.
+        :param command: The command to execute.
+        :type command: str
+        :param printErrorCode: If there was an error, print the error code if true.
+        :type printErrorCode: bool
+        :return: The exit code from the command.
+        :rtype: int
+        """
+
+        exit_code = os.system(command)
+        if printErrorCode and exit_code != 0:
+            print()
+            print(f'CURRENT DIRECTORY: {os.getcwd()}')
+            print(f'COMMAND:           {command}')
+            print(f'EXIT CODE:         {exit_code}')
+            print()
+        return exit_code
