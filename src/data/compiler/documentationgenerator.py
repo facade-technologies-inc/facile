@@ -32,10 +32,12 @@ class DocGenerator(QObject):
         self.docType = docType
         self.sphinxFacileDir = os.path.join(os.path.split(__file__)[0], "sphinx_src")
     
-    def createDoc(self):
+    def createDoc(self, debug:bool=False):
         """
         Create the documentation(s).
-        
+
+        :param debug: If true, invalid commands will be printed to the console.
+        :type debug: bool
 		:return: None
 		:rtype: NoneType
         """
@@ -52,7 +54,8 @@ class DocGenerator(QObject):
         os.mkdir(docDir)
 
         os.chdir(docDir)
-        os.system('xcopy "{0}" /e 1>nul 2>&1'.format(self.sphinxFacileDir))
+        self.execCommand('xcopy "{0}" /e 1>nul 2>&1'.format(self.sphinxFacileDir), printErrorCode=debug)
+
         srcDir = os.path.join(self.projectDir, self.apiName, "Documentation", "src")
 
         # wait until src dir exists.
@@ -66,31 +69,35 @@ class DocGenerator(QObject):
 
             if type is CompilationProfile.DocType.Html:
                 self.stepStarted.emit("Generating HTML documentation...")
-                os.system('cd ../ & RMDIR /Q/S html 1>nul 2>&1')
-                os.system('make html 1> ..\\build_html.log 2>&1 & move _build\\html ..\\ 1>nul 2>&1')
+                if os.path.exists(os.path.abspath('../html')):
+                    self.execCommand('cd ../ & RMDIR /Q/S html 1>nul 2>&1', printErrorCode=debug)
+                self.execCommand('make html 1> ..\\build_html.log 2>&1 & move _build\\html ..\\ 1>nul 2>&1', printErrorCode=debug)
 
             elif type is CompilationProfile.DocType.Txt:
                 self.stepStarted.emit("Generating TXT documentation...")
-                os.system('cd ../ & RMDIR /Q/S text 1>nul 2>&1')
-                os.system('make text 1> ..\\build_text.log 2>&1 & move _build\\text ..\\ 1>nul 2>&1')
-                
+                if os.path.exists(os.path.abspath('../text')):
+                    self.execCommand('cd ../ & RMDIR /Q/S text 1>nul 2>&1', printErrorCode=debug)
+                self.execCommand('make text 1> ..\\build_text.log 2>&1 & move _build\\text ..\\ 1>nul 2>&1', printErrorCode=debug)
+
             elif type is CompilationProfile.DocType.Pdf:
                 self.stepStarted.emit("Generating PDF documentation...")
-                os.system('cd ../ & RMDIR /Q/S pdf 1>nul 2>&1')
-                os.system('make latex 1> ..\\build_pdf.log 2>&1 & cd _build\\latex & make 1>nul 2>&1 & cd ..\\..\\ & move _build\\latex ..\\ 1>nul 2>&1')
+                if os.path.exists(os.path.abspath('../pdf')):
+                    self.execCommand('cd ../ & RMDIR /Q/S pdf 1>nul 2>&1', printErrorCode=debug)
+                self.execCommand('make latex 1> ..\\build_pdf.log 2>&1 & cd _build\\latex & make 1>nul 2>&1 & cd ..\\..\\ & move _build\\latex ..\\ 1>nul 2>&1', printErrorCode=debug)
             
             elif type is CompilationProfile.DocType.EPub:
                 self.stepStarted.emit("Generating EPUB documentation...")
-                os.system('cd ../ & RMDIR /Q/S epub 1>nul 2>&1')
-                os.system('make epub 1> ..\\build_epub.log 2>&1 & move _build\\epub ..\\ 1>nul 2>&1')
+                if os.path.exists(os.path.abspath('../epub')):
+                    self.execCommand('cd ../ & RMDIR /Q/S epub 1>nul 2>&1', printErrorCode=debug)
+                self.execCommand('make epub 1> ..\\build_epub.log 2>&1 & move _build\\epub ..\\ 1>nul 2>&1', printErrorCode=debug)
 
             self.stepComplete.emit()
 
-        # remove the src directory.
-        shutil.rmtree(srcDir, ignore_errors=True)
-
         # step out of directory.
         os.chdir(restorePoint)
+
+        # remove the src directory.
+        self.execCommand(f'RMDIR /S/Q {srcDir} 1>nul 2>&1', printErrorCode=debug)
 
         self.finished.emit()
             
@@ -113,3 +120,23 @@ class DocGenerator(QObject):
         f = open("conf.py", "w")
         f.write(fileStr.format(userDefinedProjectName = self.projectName))
         f.close()
+
+    def execCommand(self, command:str, printErrorCode:bool=True) -> int:
+        """
+        Execute the command and return the error code.
+        :param command: The command to execute.
+        :type command: str
+        :param printErrorCode: If there was an error, print the error code if true.
+        :type printErrorCode: bool
+        :return: The exit code from the command.
+        :rtype: int
+        """
+
+        exit_code = os.system(command)
+        if printErrorCode and exit_code != 0:
+            print()
+            print(f'CURRENT DIRECTORY: {os.getcwd()}')
+            print(f'COMMAND:           {command}')
+            print(f'EXIT CODE:         {exit_code}')
+            print()
+        return exit_code
