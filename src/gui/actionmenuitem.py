@@ -115,7 +115,7 @@ class ActionMenuItem(QWidget):
 		:return: None
 		:rtype: NoneType
 		"""
-		
+		self.menu.prerequest()
 		self.menu.exec_(event.globalPos())
 	
 	def mouseDoubleClickEvent(self, event: QEvent):

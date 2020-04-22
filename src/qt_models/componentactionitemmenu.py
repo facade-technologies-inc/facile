@@ -54,4 +54,5 @@ class ComponentActionItemMenu(ActionItemMenu):
 		
 		:return: None
 		"""
+		ActionItemMenu.prerequest(self)
 		pass
