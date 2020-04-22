@@ -72,4 +72,9 @@ class ActionItemMenu(QMenu):
 		
 		:return: None
 		"""
-		pass
+		cap = sm.StateMachine.instance.getCurrentActionPipeline()
+
+		if cap:
+			self._addAction.setEnabled(True)
+		else:
+			self._addAction.setEnabled(False)
