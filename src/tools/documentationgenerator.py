@@ -1,3 +1,26 @@
+"""
+..
+    /------------------------------------------------------------------------------\
+    |                 -- FACADE TECHNOLOGIES INC.  CONFIDENTIAL --                 |
+    |------------------------------------------------------------------------------|
+    |                                                                              |
+    |    Copyright [2019] Facade Technologies Inc.                                 |
+    |    All Rights Reserved.                                                      |
+    |                                                                              |
+    | NOTICE:  All information contained herein is, and remains the property of    |
+    | Facade Technologies Inc. and its suppliers if any.  The intellectual and     |
+    | and technical concepts contained herein are proprietary to Facade            |
+    | Technologies Inc. and its suppliers and may be covered by U.S. and Foreign   |
+    | Patents, patents in process, and are protected by trade secret or copyright  |
+    | law.  Dissemination of this information or reproduction of this material is  |
+    | strictly forbidden unless prior written permission is obtained from Facade   |
+    | Technologies Inc.                                                            |
+    |                                                                              |
+    \------------------------------------------------------------------------------/
+
+    This document contains the DocGenerator class
+"""
+
 import os
 import shutil
 
@@ -30,7 +53,7 @@ class DocGenerator(QObject):
         self.apiName = sm.StateMachine.instance._project.getAPIName()
         self.projectName = projectName
         self.docType = docType
-        self.sphinxFacileDir = os.path.join(os.path.split(__file__)[0], "sphinx_src")
+        self.sphinxFacileDir = os.path.join(os.path.split(__file__)[0], "compiler/sphinx_src")
     
     def createDoc(self, debug:bool=False):
         """

@@ -115,7 +115,7 @@ class Compiler(QObject):
                 vb = vbs[id]
                 name = vb.methodName
                 if name not in alreadyWritten:
-                    f.write(vb.getTriggerAction().getMethod())
+                    f.write(vb.getTriggerAction().getMethod())  # TODO: Currently won't work if project is loaded
             for ap in aps:
                 f.write(ap.getMethod())
         self.stepComplete.emit()
@@ -151,7 +151,7 @@ class Compiler(QObject):
         path = self.statem._project.getTargetGUIModelFile()
         name = self.statem._project.getName()
 
-        copyfile(path, os.path.join(self._srcFolder, name + '.tguim'))  # tguim saved to root, alongside baseapp and customapp
+        copyfile(path, os.path.join(self._srcFolder, name + '.tguim'))
         self.stepComplete.emit()
     
     def compileAPI(self) -> None:

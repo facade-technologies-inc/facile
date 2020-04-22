@@ -27,8 +27,8 @@ import data.statemachine as sm
 from PySide2.QtCore import Signal, Slot, Qt, QThread
 from PySide2.QtWidgets import QDialog, QFileDialog, QWidget, QProgressDialog, QApplication
 from data.compilationprofile import CompilationProfile
-from data.compiler.compiler import Compiler
-from data.compiler.documentationgenerator import DocGenerator
+from tools.compiler.compiler import Compiler
+from tools.documentationgenerator import DocGenerator
 from gui.ui.ui_apicompilerdialog import Ui_Dialog as Ui_ApiCompilerDialog
 from tguiil.matchoption import MatchOption
 from libs.bitness import getPythonBitness, isExecutable, appBitnessMatches, getExeBitness
