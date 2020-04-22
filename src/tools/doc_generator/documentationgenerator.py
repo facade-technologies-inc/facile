@@ -53,9 +53,9 @@ class DocGenerator(QObject):
         self.apiName = sm.StateMachine.instance._project.getAPIName()
         self.projectName = projectName
         self.docType = docType
-        self.sphinxFacileDir = os.path.join(os.path.split(__file__)[0], "compiler/sphinx_src")
+        self.sphinxFacileDir = os.path.join(os.path.split(__file__)[0], "sphinx_src")
     
-    def createDoc(self, debug:bool=False):
+    def createDoc(self, debug:bool=True):
         """
         Create the documentation(s).
 
@@ -100,7 +100,10 @@ class DocGenerator(QObject):
                 self.stepStarted.emit("Generating PDF documentation...")
                 if os.path.exists(os.path.abspath('../pdf')):
                     self.execCommand('cd ../ & RMDIR /Q/S pdf 1>nul 2>&1', printErrorCode=debug)
-                self.execCommand('make latex 1> ..\\build_pdf.log 2>&1 & cd _build\\latex & make 1>nul 2>&1 & cd ..\\..\\ & move _build\\latex ..\\ 1>nul 2>&1', printErrorCode=debug)
+                self.execCommand('make latex 1> ..\\build_pdf.log 2>&1', printErrorCode=debug)
+                self.execCommand('cd _build\\latex & make 1>nul 2>&1 ', printErrorCode=debug)
+                self.execCommand('mkdir ..\\pdf', printErrorCode=debug)
+                self.execCommand('xcopy _build\\latex\\*.pdf ..\\pdf 1>nul 2>&1', printErrorCode=debug)
             
             elif type is CompilationProfile.DocType.EPub:
                 self.stepStarted.emit("Generating EPUB documentation...")
