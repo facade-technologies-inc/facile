@@ -1,5 +1,5 @@
 name = "Set Text"
-description = "Writes the contents of 'value' to component {id}, overwriting any existing text."
+description = "Overwrites the contents of component {id} with contents of 'value'."
 targets = ['Edit']
 inputs = [
 	{
