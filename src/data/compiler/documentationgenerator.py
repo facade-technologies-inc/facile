@@ -44,14 +44,8 @@ class DocGenerator(QObject):
         restorePoint = os.getcwd()
         docDir = os.path.join(self.projectDir, self.apiName, "Documentation")
 
-        # Clear documentation directory
-        if os.path.exists(docDir):
-            shutil.rmtree(docDir, ignore_errors=True)
-
-        while os.path.exists(docDir):
-            pass
-
-        os.mkdir(docDir)
+        if not os.path.exists(docDir):
+            os.mkdir(docDir)
 
         os.chdir(docDir)
         self.execCommand('xcopy "{0}" /e 1>nul 2>&1'.format(self.sphinxFacileDir), printErrorCode=debug)
