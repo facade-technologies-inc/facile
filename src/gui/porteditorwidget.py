@@ -29,6 +29,18 @@ class PortEditorWidget(QWidget):
 	"""
 	The PortEditorWidget is used to edit a single port object.
 	"""
+
+	# pairs of selectable types. The first value will be shown in the port type dropdown menu, and the second
+	# type will be the data value used.
+	PORT_TYPES =[ ("String",         'str'),
+				  ("Integer",        'int'),
+				  ("Floating Point", 'float'),
+				  ("Boolean",        'bool'),
+				  ("List",           'list'),
+				  ("Set",            'set'),
+				  ("Tuple",          'tuple'),
+				  ("Dictionary",     'dict'),
+				]
 	
 	def __init__(self, port: 'Port' = None, allowOptional: bool = True) -> 'PortEditorWidget':
 		"""
@@ -42,7 +54,11 @@ class PortEditorWidget(QWidget):
 		QWidget.__init__(self)
 		self.ui = Ui_PortEditorWidget()
 		self.ui.setupUi(self)
-		
+
+		for typeLabel, type in PortEditorWidget.PORT_TYPES:
+			self.ui.typeEdit.addItem(typeLabel, type)
+		self.ui.typeEdit.setCurrentText(PortEditorWidget.PORT_TYPES[0][0])
+
 		if port is not None:
 			self._port = port
 		else:
@@ -103,7 +119,13 @@ class PortEditorWidget(QWidget):
 		:rtype: NoneType
 		"""
 		self.ui.nameEdit.setText(self._port.getName())
-		self.ui.typeEdit.setText(str(self._port.getDataType().__name__))
+
+		# get the pretty version of the type
+		typeStr = str(self._port.getDataType().__name__)
+		for typeLabel, type in PortEditorWidget.PORT_TYPES:
+			if typeStr == type:
+				typeStr = typeLabel
+		self.ui.typeEdit.setCurrentText(typeStr)
 		
 		if self._port.isOptional():
 			self.ui.optionalButton.setText("Optional")
@@ -139,15 +161,19 @@ class PortEditorWidget(QWidget):
 			p.setOptional(True)
 		else:
 			p.setOptional(False)
-		
+
+		curText = self.ui.typeEdit.currentText()
+
+		for text, type_ in PortEditorWidget.PORT_TYPES:
+			if text == curText:
+				curText = type_
+				break
+
 		try:
-			dataType = eval(self.ui.typeEdit.text())
-			assert (type(dataType) == type)
-		except:
-			# TODO: Figure out what to do in the case that we didn't recognize it as a type.
-			pass
-		else:
-			p.setDataType(dataType)
+			dataType = eval(curText)
+		except NameError:
+			dataType = curText
+		p.setDataType(dataType, enforceType=False)
 		
 		if p.isOptional():
 			p.setDefaultValue(self.ui.defaultEdit.text())

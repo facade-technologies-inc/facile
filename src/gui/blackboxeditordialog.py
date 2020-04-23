@@ -26,7 +26,8 @@ import os
 sys.path.append(os.path.abspath("./rc"))
 
 
-from PySide2.QtWidgets import QDialog, QWidget, QVBoxLayout
+from PySide2.QtWidgets import QDialog, QWidget, QVBoxLayout, QMessageBox
+from PySide2.QtCore import Qt
 from gui.ui.ui_blackboxeditordialog import Ui_Dialog as Ui_BlackBoxEditorDialog
 from gui.porteditorwidget import PortEditorWidget
 import data.statemachine as sm
@@ -132,6 +133,7 @@ class BlackBoxEditorDialog(QDialog):
 		# clear error message
 		self.ui.errorLabel.setText("")
 		errors = []
+		warnings = []
 		#################################
 		# VALIDATE ACTION NAME AND PORTS
 		#################################
@@ -143,7 +145,11 @@ class BlackBoxEditorDialog(QDialog):
 			
 		# Make sure name is a valid identifier
 		if not name.isidentifier():
-			errors.append("The name of the action pipeline must be a valid Python identifier.")
+			msg = "The name of the action pipeline must:" \
+			      "		- Only contain alphanumeric characters and underscores." \
+			      " 	- Not contain any white space." \
+			      " 	- Not start with a number."
+			errors.append(msg)
 			
 		# Name must start with a lower-case character
 		if name[0].isupper():
@@ -162,7 +168,19 @@ class BlackBoxEditorDialog(QDialog):
 			if port.getName() in outputNames:
 				errors.append("Duplicate name '{}' in output ports is not allowed.".format(port.getName()))
 			outputNames.add(port.getName())
-			
+
+		# Make sure port types are valid
+		for port in inputPorts + outputPorts:
+			try: # is the port type valid?
+				assert type(eval(port.getDataType().__name__)) == type
+			except: # if not, is it at least a valid python identifier?
+				t = str(port.getDataType())
+				name = port.getName()
+				if t.isidentifier():
+					warnings.append(f"Port '{name}': the type '{t}' is not a known Python type.")
+				else:
+					errors.append(f"Port '{name}': the type '{t}' is not a valid Python type.")
+
 		# Make sure that optional inputs come after required inputs
 		optionalFound = False
 		for port in inputPorts:
@@ -210,7 +228,8 @@ class BlackBoxEditorDialog(QDialog):
 						
 				if bad:
 					errors.append("The default value is not the correct type for port '{}'.".format(port.getName()))
-		
+
+		# If errors exist, show the errors and don't continue.
 		if len(errors) != 0:
 			errMsg = "Errors:\n"
 			for err in errors:
@@ -218,6 +237,23 @@ class BlackBoxEditorDialog(QDialog):
 			self.ui.errorLabel.setText(errMsg)
 			self.ui.errorLabel.show()
 			return
+
+		# If no errors exist and warnings do exist, show a message box asking the user if they want to continue.
+		# If the user selects "yes", continue.
+		# If the user selects "no", stop.
+		elif len(warnings) != 0:
+			title = "Port Type Warning"
+			message = "Warnings exist.\nWould you like to continue?"
+			detailedText = "\n".join([f"- {warning}" for warning in warnings])
+			buttons = QMessageBox.Yes | QMessageBox.No
+			message = QMessageBox(QMessageBox.Warning, title, message, buttons=buttons, flags=Qt.Dialog)
+			message.setDetailedText(detailedText)
+			result = message.exec_()
+
+			if result == QMessageBox.No:
+				return
+
+		# If no errors exit, hide the error label.
 		else:
 			self.ui.errorLabel.hide()
 		
