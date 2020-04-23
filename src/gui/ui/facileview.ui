@@ -374,9 +374,6 @@
    </property>
   </action>
   <action name="actionShow_API_Compiler">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
    <property name="icon">
     <iconset resource="../../../icons.qrc">
      <normaloff>:/icon/resources/icons/office/compile-python.png</normaloff>:/icon/resources/icons/office/compile-python.png</iconset>

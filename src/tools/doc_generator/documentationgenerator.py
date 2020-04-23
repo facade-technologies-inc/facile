@@ -1,3 +1,26 @@
+"""
+..
+    /------------------------------------------------------------------------------\
+    |                 -- FACADE TECHNOLOGIES INC.  CONFIDENTIAL --                 |
+    |------------------------------------------------------------------------------|
+    |                                                                              |
+    |    Copyright [2019] Facade Technologies Inc.                                 |
+    |    All Rights Reserved.                                                      |
+    |                                                                              |
+    | NOTICE:  All information contained herein is, and remains the property of    |
+    | Facade Technologies Inc. and its suppliers if any.  The intellectual and     |
+    | and technical concepts contained herein are proprietary to Facade            |
+    | Technologies Inc. and its suppliers and may be covered by U.S. and Foreign   |
+    | Patents, patents in process, and are protected by trade secret or copyright  |
+    | law.  Dissemination of this information or reproduction of this material is  |
+    | strictly forbidden unless prior written permission is obtained from Facade   |
+    | Technologies Inc.                                                            |
+    |                                                                              |
+    \------------------------------------------------------------------------------/
+
+    This document contains the DocGenerator class
+"""
+
 import os
 import shutil
 
@@ -32,7 +55,7 @@ class DocGenerator(QObject):
         self.docType = docType
         self.sphinxFacileDir = os.path.join(os.path.split(__file__)[0], "sphinx_src")
     
-    def createDoc(self, debug:bool=False):
+    def createDoc(self, debug:bool=True):
         """
         Create the documentation(s).
 
@@ -77,7 +100,10 @@ class DocGenerator(QObject):
                 self.stepStarted.emit("Generating PDF documentation...")
                 if os.path.exists(os.path.abspath('../pdf')):
                     self.execCommand('cd ../ & RMDIR /Q/S pdf 1>nul 2>&1', printErrorCode=debug)
-                self.execCommand('make latex 1> ..\\build_pdf.log 2>&1 & cd _build\\latex & make 1>nul 2>&1 & cd ..\\..\\ & move _build\\latex ..\\ 1>nul 2>&1', printErrorCode=debug)
+                self.execCommand('make latex 1> ..\\build_pdf.log 2>&1', printErrorCode=debug)
+                self.execCommand('cd _build\\latex & make 1>nul 2>&1 ', printErrorCode=debug)
+                self.execCommand('mkdir ..\\pdf', printErrorCode=debug)
+                self.execCommand('xcopy _build\\latex\\*.pdf ..\\pdf 1>nul 2>&1', printErrorCode=debug)
             
             elif type is CompilationProfile.DocType.EPub:
                 self.stepStarted.emit("Generating EPUB documentation...")
