@@ -32,6 +32,10 @@ class PortException(Exception):
     def __init__(self, msg: str):
         Exception.__init__(self, msg)
 
+class InvalidDataTypeException(PortException):
+    def __init__(self, msg: str):
+        Exception.__init__(self, msg)
+
 
 class Port(Entity):
     """
@@ -166,22 +170,27 @@ class Port(Entity):
         """
         return self._dataType
 
-    def setDataType(self, newType: type) -> None:
+    def setDataType(self, newType: type, enforceType=True) -> None:
         """
         Sets the data type of the port. (A Python type [e.g. int, str, bool, etc.])
 
-        :raises: TypeError if newType is not a valid type
+        :raises: InvalidDataTypeError if newType is not a valid type
 
         :param newType: A Python type [e.g. int, str, bool, etc.].
         :type newType: type
+        :param enforceType: If true, a check will be performed to make sure that the type is valid.
+        :type enforceType: bool
         :return: None
         :rtype: NoneType
         """
         if type(newType) == type:
             self._dataType = newType
             self.getProperties().getProperty("Data Type")[1].setValue(newType.__name__)
+        elif not enforceType:
+            self._dataType = newType
+            self.getProperties().getProperty("Data Type")[1].setValue(newType)
         else:
-            raise TypeError("setDataType()'s input parameter must specify a Python type [e.g. int, str, bool].")
+            raise InvalidDataTypeException("setDataType()'s input parameter must specify a Python type [e.g. int, str, bool].")
         
         if self._action is not None:
             self._action.synchronizeWrappers()
