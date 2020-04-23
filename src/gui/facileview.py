@@ -24,9 +24,9 @@ Much of Facile is joined together here.
 import os
 from copy import deepcopy
 
-from PySide2.QtCore import Slot, QTimer, QItemSelection
+from PySide2.QtCore import Slot, QTimer, QItemSelection, QThread
 from PySide2.QtGui import Qt, QCloseEvent, QKeyEvent
-from PySide2.QtWidgets import QMainWindow, QFileDialog, QMessageBox, QLabel, QGraphicsOpacityEffect
+from PySide2.QtWidgets import QMainWindow, QFileDialog, QMessageBox, QLabel, QGraphicsOpacityEffect, QProgressDialog
 
 from data.project import Project
 from data.statemachine import StateMachine
@@ -199,7 +199,7 @@ class FacileView(QMainWindow):
 		:return: None
 		:rtype: NoneType
 		"""
-		self.setProject(Project.load(self.sender().text()))
+		self.loadProject(self.sender().text())
 	
 	@Slot()
 	def onOpenProjectTriggered(self) -> None:
@@ -216,9 +216,43 @@ class FacileView(QMainWindow):
 		fileDialog.setFileMode(QFileDialog.ExistingFile)
 		fileDialog.setDirectory(os.path.expanduser("~"))
 		fileDialog.setNameFilter("Facile Project File (*.fcl)")
-		fileDialog.fileSelected.connect(lambda url: self.setProject(Project.load(url)))
+		fileDialog.fileSelected.connect(lambda url: self.loadProject(url))
 		fileDialog.exec_()
-	
+
+	def loadProject(self, url:str) -> None:
+		"""
+		Loads an existing project into the GUI while displaying a progressbar.
+
+		:param url: The file path to the *.fcl file for the project to load.
+		:type url: str
+		:return: None
+		:rtype: NoneType
+		"""
+
+		self.thread = QThread()
+		self.thread.setTerminationEnabled(True)
+
+		numSteps = Project.getEntityCount(url)
+
+		self.progress = QProgressDialog("Loading Project ...", "Cancel Loading", 0, numSteps, parent=self.parent())
+		self.progress.setValue(0)
+		self.progress.setModal(True)
+
+		self.progress.moveToThread(self.thread)
+		self.thread.start()
+
+		def increment():
+			self.progress.setValue(self.progress.value() + 1)
+
+		def complete():
+			self.progress.setValue(numSteps)
+			self.thread.terminate()
+
+		proj = Project.load(url, onEntityCreation=increment, onCompletion=complete)
+		self.setProject(proj)
+
+		self.thread.deleteLater()
+
 	@Slot()
 	def onManageProjectTriggered(self) -> None:
 		"""

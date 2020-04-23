@@ -32,6 +32,7 @@ from PySide2.QtCore import Qt
 
 from data.tguim.targetguimodel import TargetGuiModel
 from data.apim.apimodel import ApiModel
+from data.entity import Entity
 from qt_models.projectexplorermodel import ProjectExplorerModel
 from tguiil.explorer import Explorer
 from tguiil.observer import Observer
@@ -379,12 +380,16 @@ class Project:
 		return ProjectExplorerModel(self, view)
 	
 	@staticmethod
-	def load(mainFile: str) -> 'Project':
+	def load(mainFile: str, onEntityCreation = None, onCompletion = None ) -> 'Project':
 		"""
 		Creates a Project object from a .fcl file.
 		
 		:param mainFile: The project's .fcl file
 		:type mainFile: str
+		:param onEntityCreation: The function to run when an entity is created (may be None)
+		:type onEntityCreation: callable
+		:param onCompletion: The function to run when loading is complete
+		:type onCompletion: callable
 		:return: The project object reconstructed from a .fcl file.
 		:rtype: Project
 		"""
@@ -402,7 +407,9 @@ class Project:
 		startupTimeout = projectJSON["Application Information"]["Startup Timeout"]
 		
 		loadedProject = Project(name, description, exe, backend, projectDir, startupTimeout)
-		
+
+		Entity.onCreation = onEntityCreation
+
 		try:
 			with open(loadedProject.getTargetGUIModelFile(), 'r') as tguimFile:
 				d = json.loads(tguimFile.read())
@@ -415,8 +422,26 @@ class Project:
 		
 		# TODO: Load the API Model
 		# loadedProject.setAPIModel(["Model Files"]["API Model"] = self._APIModel)
-		
+
+		Entity.onCreation = None
+		onCompletion()
 		return loadedProject
+
+	@staticmethod
+	def getEntityCount(mainFile:str) -> None:
+		"""
+		Gets the number of entities from a project.
+
+		:param mainFile: The url to the project file (*.fcl)
+		:type mainFile: str
+		:return:
+		"""
+		mainProjectFile = open(mainFile)
+		contents = mainProjectFile.read()
+		projectJSON = json.loads(contents)
+		mainProjectFile.close()
+
+		return projectJSON["Project Information"].get("Model Entities", 1_000_000)
 	
 	def save(self) -> None:
 		"""
@@ -430,6 +455,7 @@ class Project:
 		projectDict["Project Information"] = {}
 		projectDict["Project Information"]["Name"] = self._name
 		projectDict["Project Information"]["Description"] = self._description
+		projectDict["Project Information"]["Model Entities"] = Entity.count
 		projectDict["Application Information"] = {}
 		projectDict["Application Information"]["Target Application"] = self._executable
 		projectDict["Application Information"]["Backend"] = self._backend
