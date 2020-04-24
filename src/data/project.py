@@ -402,19 +402,28 @@ class Project:
 		startupTimeout = projectJSON["Application Information"]["Startup Timeout"]
 		
 		loadedProject = Project(name, description, exe, backend, projectDir, startupTimeout)
-		
+
+		# Load TGUIM
 		try:
 			with open(loadedProject.getTargetGUIModelFile(), 'r') as tguimFile:
 				d = json.loads(tguimFile.read())
 				tguim = TargetGuiModel.fromDict(d)
 		except:
-			print("Couldn't load from {}".format(loadedProject.getTargetGUIModelFile()))
+			print(f"Couldn't load from {loadedProject.getTargetGUIModelFile()}")
 			# traceback.print_exc()
 		else:
 			loadedProject._targetGUIModel = tguim
-		
-		# TODO: Load the API Model
-		# loadedProject.setAPIModel(["Model Files"]["API Model"] = self._APIModel)
+
+		# Load APIM
+		try:
+			with open(loadedProject.getAPIModelFile(), 'r') as apimFile:
+				d = json.loads(apimFile.read())
+				apim = ApiModel.fromDict()
+		except:
+			print(f"Couldn't load from {loadedProject.getAPIModelFile()}")
+			# traceback.print_exc()
+		else:
+			loadedProject._apiModel = apim
 		
 		return loadedProject
 	
@@ -434,12 +443,11 @@ class Project:
 		projectDict["Application Information"]["Target Application"] = self._executable
 		projectDict["Application Information"]["Backend"] = self._backend
 		projectDict["Application Information"]["Startup Timeout"] = self._startupTimeout
-		
-		tguimFileName = self._name + ".tguim"
 		projectDict["Model Files"] = {}
-		projectDict["Model Files"]["Target GUI Model"] = tguimFileName
-		# projectDict["Model Files"]["API Model"] = self._APIModel
-		
+		projectDict["Model Files"]["Target GUI Model"] = self.getTargetGUIModelFile()
+		projectDict["Model Files"]["API Model"] = self.getAPIModelFile()
+
+		# save the main project file
 		with open(self.getMainProjectFile(), "w") as file:
 			file.write(json.dumps(projectDict, indent=4))
 		
@@ -447,9 +455,12 @@ class Project:
 		with open(self.getTargetGUIModelFile(), 'w') as tguimFile:
 			d = self._targetGUIModel.asDict()
 			tguimFile.write(json.dumps(d, indent=4))
-			
-		# TODO: Save the API Model.
-	
+
+		# save API Model
+		with open(self.getAPIModelFile(), 'w') as apimFile:
+			d = self._apiModel.asDict()
+			apimFile.write(json.dumps(d, indent=4))
+
 	def addToRecents(self) -> None:
 		"""
 		Adds the project to the recents file.

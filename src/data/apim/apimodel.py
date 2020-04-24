@@ -26,6 +26,7 @@ from typing import List, Tuple
 
 from PySide2.QtCore import QObject, Signal
 
+from data.entity import Entity
 from data.apim.actionpipeline import ActionPipeline
 from data.apim.componentaction import ComponentAction
 from data.apim.actionwrapper import ActionWrapper
@@ -169,3 +170,38 @@ class ApiModel(QObject):
 				work.append(action.getActionReference())
 			
 		return self.getActionPipelines(), list(componentActions)
+
+	def asDict(self) -> dict:
+		"""
+		Get a dictionary representation of the API Model.
+
+		.. note::
+			This is not just a getter of the __dict__ attribute.
+
+		:return: The dictionary representation of the object.
+		:rtype: dict
+		"""
+		apimDict = {}
+
+		apimDict["action pipelines"] = [ap.asDict() for ap in self._actionPipelines]
+
+		# TODO: Store action specifications??? Maybe we don't need to since they're loaded from disk.
+		#  The downside to this is that we might change the action specs on disk in future updates.
+		apimDict["action specifications"] = []
+		return apimDict
+
+	@staticmethod
+	def fromDict(d: dict) -> 'TargetGui':
+		"""
+		Creates an API Model from the dictionary
+
+		:param d: The dictionary that represents the API model.
+		:type d: dict
+		:return: The ApiModel object that was constructed from the dictionary
+		:rtype: ApiModel
+		"""
+		apim = ApiModel()
+		apim._actionPipelines = [ApiModel.fromDict(dic) for dic in d["action pipelines"]]
+		# TODO: construct action specifications???
+		return apim
+
