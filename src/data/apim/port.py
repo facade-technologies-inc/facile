@@ -337,3 +337,52 @@ class Port(Entity):
             return self in self._action.getOutputPorts()
         
         return False
+
+    def asDict(self) -> dict:
+        """
+        Get a dictionary representation of the action.
+
+        .. note::
+            This is not just a getter of the __dict__ attribute.
+
+        :return: The dictionary representation of the object.
+        :rtype: dict
+        """
+
+        portDict = {}
+
+        portDict["ID"] = self.getId()
+        portDict["input"] = None # no need to store wires since the wires store port info
+        portDict["outputs"] = [] # no need to store wires since the wires store port info
+        portDict["optional"] = self.isOptional()
+        portDict["action"] = None # no need to store action since the action stores the port info
+        portDict["default"] = self._default
+        portDict["name"] = self.getName()
+
+        try:
+            portDict["data type"] = self.getDataType().__name__
+        except:
+            portDict["data type"] = self.getDataType
+
+        return portDict
+
+    @staticmethod
+    def fromDict(d: dict) -> 'Action':
+        """
+        Creates an Action from the dictionary
+
+        :param d: The dictionary that represents the API model.
+        :type d: dict
+        :return: The Action object that was constructed from the dictionary
+        :rtype: Action
+        """
+        port = Port()
+
+        try:
+            port._dataType = eval(d["data type"])
+        except:
+            port._dataType = d["data type"]
+
+
+
+        return ap

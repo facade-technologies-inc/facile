@@ -183,15 +183,36 @@ class ApiModel(QObject):
 		"""
 		apimDict = {}
 
+		# store all action pipelines
 		apimDict["action pipelines"] = [ap.asDict() for ap in self._actionPipelines]
 
-		# TODO: Store action specifications??? Maybe we don't need to since they're loaded from disk.
-		#  The downside to this is that we might change the action specs on disk in future updates.
-		apimDict["action specifications"] = []
+		# store all action wrappers and component actions
+		apimDict["action wrappers"] = []
+		apimDict["component actions"] = []
+		componentActions = set()
+		for ap in self._actionPipelines:
+			for aw in ap._actions:
+				apimDict["action wrappers"].append(aw.asDict())
+
+				action = aw.getActionReference()
+				if type(action) is ComponentAction and action not in componentActions:
+					componentActions.add(action)
+					apimDict["component actions"].append(action.asDict())
+
+		# store action specifications
+		apimDict["action specifications"] = [aSpec.asDict() for aSpec in self.getSpecifications()]
+
+		# NOTE: The ports will be stored in the action they belong to.
+		# NOTE: The wire sets will be stored in the action pipeline they belong to.
+		# NOTE: The wires will be stored in the wire sets they belong to.
+
+		# from pprint import pprint
+		# pprint(apimDict)
+
 		return apimDict
 
 	@staticmethod
-	def fromDict(d: dict) -> 'TargetGui':
+	def fromDict(d: dict) -> 'ApiModel':
 		"""
 		Creates an API Model from the dictionary
 
@@ -202,6 +223,7 @@ class ApiModel(QObject):
 		"""
 		apim = ApiModel()
 		apim._actionPipelines = [ApiModel.fromDict(dic) for dic in d["action pipelines"]]
-		# TODO: construct action specifications???
+
+
 		return apim
 

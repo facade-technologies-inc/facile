@@ -160,9 +160,9 @@ class ComponentAction(act.Action):
 		:return: The dictionary representation of the object.
 		:rtype: dict
 		"""
-		d = {}
-		d["target"] = self._target.getId()
-		d["spec"] = self._spec.asDict()
+		d = act.Action.asDict(self)
+		d["target component"] = self._target.getId()
+		d["action specification"] = self._spec.asDict()
 		
 		return d
 	
@@ -182,6 +182,6 @@ class ComponentAction(act.Action):
 		if d is None:
 			return None
 		
-		target = tguim.getComponent(int(d["target"]))
-		spec = ActionSpecification.fromDict(d["spec"])
+		target = tguim.getComponent(int(d["target component"]))
+		spec = ActionSpecification.fromDict(d["action specification"])
 		return ComponentAction(target, spec)

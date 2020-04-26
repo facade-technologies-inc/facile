@@ -457,3 +457,41 @@ class ActionPipeline(Action):
 		:rtype: str
 		"""
 		return chr(ord(var) + 1) if var != 'z' else 'a'
+
+	def asDict(self) -> dict:
+		"""
+		Get a dictionary representation of the action pipeline.
+
+		.. note::
+			This is not just a getter of the __dict__ attribute.
+
+		:return: The dictionary representation of the object.
+		:rtype: dict
+		"""
+		apDict = Action.asDict(self)
+
+		# just store the id of the action (wrappers) that are owned by the action pipeline
+		apDict["actions"] = [action.getId() for action in self._actions]
+
+		apDict["wire set"] = self._wireSet.asDict()
+
+		return apDict
+
+	@staticmethod
+	def fromDict(d: dict) -> 'ActionPipeline':
+		"""
+		Creates an Action Pipeline from the dictionary
+
+		:param d: The dictionary that represents the action pipeline.
+		:type d: dict
+		:return: The ActionPipeline object that was constructed from the dictionary
+		:rtype: ActionPipeline
+		"""
+		ap = ActionPipeline()
+		ap._actions = [Action.fromDict(dic) for dic in d["actions"]]
+
+		# TODO: restore these?
+		#  self._varName = 'a'
+		#  self._varMap = []  # This stores (varName, port) tuples
+
+		return ap

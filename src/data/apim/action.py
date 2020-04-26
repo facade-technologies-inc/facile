@@ -315,3 +315,41 @@ class Action(Entity):
 		code += '\n'
 
 		return code
+
+	def asDict(self) -> dict:
+		"""
+		Get a dictionary representation of the action.
+
+		.. note::
+			This is not just a getter of the __dict__ attribute.
+
+		:return: The dictionary representation of the object.
+		:rtype: dict
+		"""
+
+		actionDict = {}
+
+		actionDict["inputs"] = [port.asDict() for port in self._inputs]
+		actionDict["outputs"] = [port.asDict() for port in self._outputs]
+		actionDict["wrappers"] = [wrapper.getId() for wrapper in self._wrappers]
+
+		# TODO: store entity properties
+		return actionDict
+
+	@staticmethod
+	def fromDict(d: dict) -> 'Action':
+		"""
+		Creates an Action from the dictionary
+
+		:param d: The dictionary that represents the API model.
+		:type d: dict
+		:return: The Action object that was constructed from the dictionary
+		:rtype: Action
+		"""
+		ap = Action()
+		ap._inputs = [pt.Port.fromDict(dic) for dic in d["inputs"]]
+		ap._outputs = [pt.Port.fromDict(dic) for dic in d["outputs"]]
+
+		# TODO: Figure out how to get the wrapper objects given the ID.
+
+		return ap

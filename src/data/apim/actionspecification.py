@@ -56,8 +56,8 @@ class ActionSpecification:
 		d["name"] = self.name
 		d["description"] = self.description
 		d["viableTargets"] = self.viableTargets
-		d["inputs"] = self.inputs
-		d["outputs"] = self.outputs
+		d["inputs"] = [port.asDict() for port in self.inputs]
+		d["outputs"] = [port.asDict() for port in self.outputs]
 		d["code"] = self.code
 		
 		return d

@@ -186,6 +186,35 @@ class ActionWrapper(act.Action):
 		
 		return self._actionRef.getMethodCode()
 
+	def asDict(self) -> dict:
+		"""
+		Get a dictionary representation of the action wrapper.
 
+		.. note::
+			This is not just a getter of the __dict__ attribute.
 
+		:return: The dictionary representation of the object.
+		:rtype: dict
+		"""
 
+		actionDict = act.Action.asDict(self)
+
+		actionDict["reference action"] = self._actionRef.getId()
+		actionDict["parent"] = self._parent.getId()
+
+		# TODO: store entity properties
+		return actionDict
+
+	@staticmethod
+	def fromDict(d: dict) -> 'ActionWrapper':
+		"""
+		Creates an ActionWrapper from the dictionary
+
+		:param d: The dictionary that represents the ActionWrapper.
+		:type d: dict
+		:return: The ActionWrapper object that was constructed from the dictionary
+		:rtype: ActionWrapper
+		"""
+		ap = ActionWrapper()
+
+		return ap
