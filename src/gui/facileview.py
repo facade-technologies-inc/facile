@@ -360,6 +360,8 @@ class FacileView(QMainWindow):
 			for spec in specs:
 				action = ComponentAction(entity, spec)
 				self._componentActionMenu.addAction(action)
+
+			self.ui.targetGUIModelView.smoothFocus(self.ui.targetGUIModelView.scene().getGraphics(entity))
 			
 		elif type(entity) == VisibilityBehavior:
 			self.ui.projectExplorerView.model().selectBehavior(entity)

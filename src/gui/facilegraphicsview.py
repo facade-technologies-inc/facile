@@ -22,9 +22,9 @@ This module contains the FacileGraphicsView class which is just like a normal gr
 view, but can be zoomed.
 """
 
-from PySide2.QtCore import QPoint
+from PySide2.QtCore import QPoint, QTimer
 from PySide2.QtGui import QWheelEvent, Qt, QColor, QKeyEvent
-from PySide2.QtWidgets import QGraphicsView, QGraphicsScene, QGraphicsRectItem, QGraphicsTextItem
+from PySide2.QtWidgets import QGraphicsView, QGraphicsScene, QGraphicsRectItem, QGraphicsTextItem, QGraphicsItem
 from PySide2.QtWidgets import QWidget
 
 
@@ -60,6 +60,8 @@ class FacileGraphicsView(QGraphicsView):
 		scene.addItem(box)
 		
 		self.setScene(scene)
+
+		self.smoothFocusTimer = QTimer(self)
 
 	def wheelEvent(self, event: QWheelEvent) -> None:
 		"""
@@ -129,3 +131,47 @@ class FacileGraphicsView(QGraphicsView):
 		# Move scene to old position
 		delta = newPos - oldPos
 		self.translate(delta.x(), delta.y())
+
+	def smoothFocus(self, item:QGraphicsItem) -> None:
+		"""
+		If the item is in the current scene, fit the item in the view interpolating the distance moved over several
+		periods of a timer.
+
+		:param item: The item to zoom into.
+		:type item: QGraphicsItem
+		:return: None
+		:rtype: NoneType
+		"""
+		ticks = 100
+		self.curTick = 0
+		padding = 50
+		itemRect = item.mapToScene(item.boundingRect()).boundingRect()
+		itemRect.setWidth(itemRect.width() + 2*padding)
+		itemRect.setHeight(itemRect.height() + 2*padding)
+		itemRect.setX(itemRect.x() - padding)
+		itemRect.setY(itemRect.y() - padding)
+		visibleRect = self.mapToScene(self.rect()).boundingRect()
+
+		xDelta = (visibleRect.x() - itemRect.x()) / ticks
+		yDelta = (visibleRect.y() - itemRect.y()) / ticks
+		widthDelta = (visibleRect.width() - itemRect.width()) / ticks
+		heightDelta = (visibleRect.height() - itemRect.height()) / ticks
+
+		if self.smoothFocusTimer.isActive():
+			self.smoothFocusTimer.stop()
+
+		def tick():
+			self.curTick += 1
+
+			newX = visibleRect.x() - xDelta*self.curTick
+			newY = visibleRect.y() - yDelta * self.curTick
+			newWidth = visibleRect.width() - widthDelta * self.curTick
+			newHeight = visibleRect.height() - heightDelta * self.curTick
+
+			self.fitInView(newX, newY, newWidth, newHeight, aspectRadioMode=Qt.KeepAspectRatio)
+
+			if self.curTick == ticks:
+				self.smoothFocusTimer.stop()
+
+		self.smoothFocusTimer.timeout.connect(tick)
+		self.smoothFocusTimer.start(10)
