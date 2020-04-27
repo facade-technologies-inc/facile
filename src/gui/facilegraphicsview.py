@@ -142,7 +142,10 @@ class FacileGraphicsView(QGraphicsView):
 		:return: None
 		:rtype: NoneType
 		"""
-		ticks = 100
+		if item not in self.scene().items():
+			return
+
+		ticks = 30
 		self.curTick = 0
 		padding = 50
 		itemRect = item.mapToScene(item.boundingRect()).boundingRect()
@@ -174,4 +177,8 @@ class FacileGraphicsView(QGraphicsView):
 				self.smoothFocusTimer.stop()
 
 		self.smoothFocusTimer.timeout.connect(tick)
-		self.smoothFocusTimer.start(10)
+
+		if not hasattr(item, "_zoomable") or item._zoomable is True:
+			self.smoothFocusTimer.start(50)
+
+		item._zoomable = True

@@ -54,7 +54,22 @@ class ComponentMenu(QMenu):
 		blinkIcon = QIcon()
 		blinkIcon.addPixmap(QPixmap(":/icon/resources/icons/office/spotlight.png"), QIcon.Normal, QIcon.Off)
 		self.blinkAction.setIcon(blinkIcon)
-		
+
+		self.focusAction = self.addAction("Focus")
+		focusIcon = QIcon()
+		focusIcon.addPixmap(QPixmap(":/icon/resources/icons/office/reticle.png"), QIcon.Normal, QIcon.Off)
+		self.focusAction.setIcon(focusIcon)
+
+	def onFocus(self, func) -> None:
+		"""
+		Connect the **Focus** menu item to internal logic.
+
+		:param func: The function to execute when the **Focus** menu item is selected.
+		:type func: callable
+		:return: None
+		"""
+		self.focusAction.triggered.connect(func)
+
 	def onBlink(self, func) -> None:
 		"""
 		Connect the **Show in Target GUI** menu item to internal logic.
@@ -64,7 +79,7 @@ class ComponentMenu(QMenu):
 		:return: None
 		"""
 		self.blinkAction.triggered.connect(func)
-		
+
 	def prerequest(self) -> None:
 		"""
 		enables/disables the menu items appropriately before the context menu is requested. This

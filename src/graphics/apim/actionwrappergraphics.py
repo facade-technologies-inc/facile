@@ -65,8 +65,23 @@ class ActionWrapperGraphics(ActionGraphics):
 			action.getParent().removeAction(action)
 			sm.StateMachine.instance.view.ui.apiModelView.refresh()
 
+		def focusComponent():
+			# TODO: fix this!
+			view = sm.StateMachine.instance.view.ui.targetGUIModelView
+			action = self._action.getUnderlyingAction()
+
+			try:
+				component = action.getTargetComponent()
+			except: # shouldn't get here, but just in case.
+				return
+
+			compGraphics = view.scene().getGraphics(component)
+			compGraphics._zoomable = True
+			view.smoothFocus(compGraphics)
+
 		self.menu = ActionWrapperMenu()
 		self.menu.onDelete(delete)
+		self.menu.onFocusTargetComponent(focusComponent)
 		
 		# create buttons for moving action in sequence
 		self.upButton = MoveButton(MoveButton.Direction.Up, self)
@@ -148,6 +163,7 @@ class ActionWrapperGraphics(ActionGraphics):
 		:return: None
 		:rtype: NoneType
 		"""
+		self.menu.prerequest(self._action)
 		self.menu.exec_(event.screenPos())
 		
 	def updateMoveButtonVisibility(self) -> None:

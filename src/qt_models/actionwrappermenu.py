@@ -25,6 +25,9 @@ component is right-clicked.
 
 
 from PySide2.QtWidgets import QMenu
+from PySide2.QtGui import QIcon, QPixmap
+
+from data.apim.componentaction import ComponentAction
 
 
 class ActionWrapperMenu(QMenu):
@@ -41,6 +44,21 @@ class ActionWrapperMenu(QMenu):
 		self._delete = self.addAction("Delete Action")
 		
 		# TODO: set action icons
+
+		self.focusAction = self.addAction("Focus")
+		focusIcon = QIcon()
+		focusIcon.addPixmap(QPixmap(":/icon/resources/icons/office/reticle.png"), QIcon.Normal, QIcon.Off)
+		self.focusAction.setIcon(focusIcon)
+
+	def onFocusTargetComponent(self, func) -> None:
+		"""
+		Connect the **Focus** menu item to internal logic.
+
+		:param func: The function to execute when the **Focus** menu item is selected.
+		:type func: callable
+		:return: None
+		"""
+		self.focusAction.triggered.connect(func)
 
 	def onDelete(self, func) -> None:
 		"""
@@ -62,11 +80,16 @@ class ActionWrapperMenu(QMenu):
 		"""
 		self._delete.trigger()
 		
-	def prerequest(self) -> None:
+	def prerequest(self, wrapper) -> None:
 		"""
 		enables/disables the menu items appropriately before the context menu is requested. This
 		function should be called right before the exec_() method is called.
-		
+
+		:param wrapper: The Action wrapper for the graphics item this menu belongs to.
+		:type wrapper: ActionWrapper
 		:return: None
 		"""
-		pass
+		if isinstance(wrapper.getUnderlyingAction(), ComponentAction):
+			self.focusAction.setEnabled(True)
+		else:
+			self.focusAction.setDisabled(True)
