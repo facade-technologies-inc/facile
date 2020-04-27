@@ -45,7 +45,7 @@ class ActionWrapperMenu(QMenu):
 		
 		# TODO: set action icons
 
-		self.focusAction = self.addAction("Focus")
+		self.focusAction = self.addAction("Focus on target component")
 		focusIcon = QIcon()
 		focusIcon.addPixmap(QPixmap(":/icon/resources/icons/office/reticle.png"), QIcon.Normal, QIcon.Off)
 		self.focusAction.setIcon(focusIcon)
