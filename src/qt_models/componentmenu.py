@@ -24,7 +24,7 @@ component is right-clicked.
 """
 
 
-from PySide2.QtWidgets import QMenu
+from PySide2.QtWidgets import QMenu, QAction
 from PySide2.QtGui import QIcon, QPixmap
 import icons_rc
 import data.statemachine as sm
@@ -54,7 +54,52 @@ class ComponentMenu(QMenu):
 		blinkIcon = QIcon()
 		blinkIcon.addPixmap(QPixmap(":/icon/resources/icons/office/spotlight.png"), QIcon.Normal, QIcon.Off)
 		self.blinkAction.setIcon(blinkIcon)
-		
+
+		self.focusAction = self.addAction("Focus")
+		focusIcon = QIcon()
+		focusIcon.addPixmap(QPixmap(":/icon/resources/icons/office/reticle.png"), QIcon.Normal, QIcon.Off)
+		self.focusAction.setIcon(focusIcon)
+
+		self.undoFocusAction = QAction() #self.addAction("Undo Focus")
+		undofocusIcon = QIcon()
+		undofocusIcon.addPixmap(QPixmap(":/icon/resources/icons/office/undo-reticle.png"), QIcon.Normal, QIcon.Off) #TODO: Add icon path
+		self.undoFocusAction.setIcon(undofocusIcon)
+
+		self.resetViewAction = self.addAction("Reset view")
+		resetViewIcon = QIcon(":/icon/resources/icons/office/fit-to-width.png")
+		resetViewIcon.addPixmap(QPixmap(), QIcon.Normal, QIcon.Off) #TODO: Add icon path
+		self.resetViewAction.setIcon(resetViewIcon)
+
+	def onUndoFocus(self, func) -> None:
+		"""
+		Connect the **Undo Focus** menu item to internal logic.
+
+		:param func: The function to execute when the **Undo Focus** menu item is selected.
+		:type func: callable
+		:return: None
+		"""
+		self.undoFocusAction.triggered.connect(func)
+
+	def onResetView(self, func) -> None:
+		"""
+		Connect the **Focus** menu item to internal logic.
+
+		:param func: The function to execute when the **Focus** menu item is selected.
+		:type func: callable
+		:return: None
+		"""
+		self.resetViewAction.triggered.connect(func)
+
+	def onFocus(self, func) -> None:
+		"""
+		Connect the **Focus** menu item to internal logic.
+
+		:param func: The function to execute when the **Focus** menu item is selected.
+		:type func: callable
+		:return: None
+		"""
+		self.focusAction.triggered.connect(func)
+
 	def onBlink(self, func) -> None:
 		"""
 		Connect the **Show in Target GUI** menu item to internal logic.
@@ -64,7 +109,7 @@ class ComponentMenu(QMenu):
 		:return: None
 		"""
 		self.blinkAction.triggered.connect(func)
-		
+
 	def prerequest(self) -> None:
 		"""
 		enables/disables the menu items appropriately before the context menu is requested. This
@@ -84,3 +129,9 @@ class ComponentMenu(QMenu):
 			self.blinkAction.setEnabled(True)
 		else:
 			self.blinkAction.setEnabled(False)
+
+		if sm.StateMachine.instance.view.ui.targetGUIModelView.focusHistory:
+			self.undoFocusAction.setEnabled(True)
+		else:
+			self.undoFocusAction.setEnabled(False)
+

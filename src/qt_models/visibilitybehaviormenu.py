@@ -22,6 +22,7 @@ This module contains the VisibilityBehaviorMenu class
 """
 
 from PySide2.QtWidgets import QMenu
+from PySide2.QtGui import QIcon, QPixmap
 
 class VisibilityBehaviorMenu(QMenu):
     def __init__(self):
@@ -36,6 +37,21 @@ class VisibilityBehaviorMenu(QMenu):
         self._removeAction = self.addAction("Remove this behavior")
         self._setTriggerAction = self.addAction("Select trigger action")
         # TODO: set action icons
+
+        self.focusAction = self.addAction("Focus")
+        focusIcon = QIcon()
+        focusIcon.addPixmap(QPixmap(":/icon/resources/icons/office/reticle.png"), QIcon.Normal, QIcon.Off)
+        self.focusAction.setIcon(focusIcon)
+
+    def onFocus(self, func) -> None:
+        """
+        Connect the **Focus** menu item to internal logic.
+
+        :param func: The function to execute when the **Focus** menu item is selected.
+        :type func: callable
+        :return: None
+        """
+        self.focusAction.triggered.connect(func)
 
     def onRemove(self, func) -> None:
         """

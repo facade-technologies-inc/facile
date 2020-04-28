@@ -193,9 +193,22 @@ class ComponentGraphics(QGraphicsItem):
         # ***Important that this is after adjustPositioning***
         if self._parentIsScene:
             self.scene().addItem(TopLevelWrapperGraphics(self))
-        
+
+        def focus():
+            self._zoomable = True
+            self.scene().views()[0].smoothFocus(self)
+
+        def undoFocus():
+            self.scene().views()[0].undoFocus()
+
+        def resetView():
+            self.scene().views()[0].resetView()
+
         self.menu = ComponentMenu(dataComponent)
         self.menu.onBlink(lambda: self.scene().blinkComponent(self._dataComponent.getId()))
+        self.menu.onFocus(focus)
+        self.menu.onUndoFocus(undoFocus)
+        self.menu.onResetView(resetView)
         
         try:
             self.triggerSceneUpdate()
@@ -766,6 +779,7 @@ class ComponentGraphics(QGraphicsItem):
         :return: None
         :rtype: NoneType
         """
+        self._zoomable = False
         self.setSelected(True)
         self.scene().emitItemSelected(self._dataComponent.getId())
     

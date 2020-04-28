@@ -19,11 +19,15 @@
 	\------------------------------------------------------------------------------/
 """
 
-from PySide2.QtGui import QPainter, QColor, QFont, QFontMetricsF, Qt
+from PIL import Image
+
+from PySide2.QtGui import QPainter, QColor, QFont, QFontMetricsF, Qt, QImage, QPixmap
 from PySide2.QtCore import QRectF
-from PySide2.QtWidgets import QWidget, QStyleOptionGraphicsItem, QGraphicsSceneContextMenuEvent, QGraphicsSceneMouseEvent
+from PySide2.QtWidgets import QWidget, QStyleOptionGraphicsItem, QGraphicsSceneContextMenuEvent, QGraphicsPixmapItem, \
+	QGraphicsRectItem, QGraphicsTextItem
 
 import data.statemachine as sm
+from data.apim.componentaction import ComponentAction
 from graphics.apim.actiongraphics import ActionGraphics
 from graphics.apim.movebutton import MoveButton
 from qt_models.actionwrappermenu import ActionWrapperMenu
@@ -38,6 +42,9 @@ class ActionWrapperGraphics(ActionGraphics):
 	NAME_TEXT_COLOR = QColor(0, 0, 0)
 	
 	COLOR = QColor(188, 183, 255)
+
+	POPUP_ARROW_WIDTH = 40
+	POPUP_BUFFER = 10
 	
 	def __init__(self, action: 'ActionWrapper', parent=None) -> 'ActionGraphics':
 		"""
@@ -58,8 +65,23 @@ class ActionWrapperGraphics(ActionGraphics):
 			action.getParent().removeAction(action)
 			sm.StateMachine.instance.view.ui.apiModelView.refresh()
 
+		def focusComponent():
+			# TODO: fix this!
+			view = sm.StateMachine.instance.view.ui.targetGUIModelView
+			action = self._action.getUnderlyingAction()
+
+			try:
+				component = action.getTargetComponent()
+			except: # shouldn't get here, but just in case.
+				return
+
+			compGraphics = view.scene().getGraphics(component)
+			compGraphics._zoomable = True
+			view.smoothFocus(compGraphics)
+
 		self.menu = ActionWrapperMenu()
 		self.menu.onDelete(delete)
+		self.menu.onFocusTargetComponent(focusComponent)
 		
 		# create buttons for moving action in sequence
 		self.upButton = MoveButton(MoveButton.Direction.Up, self)
@@ -141,6 +163,7 @@ class ActionWrapperGraphics(ActionGraphics):
 		:return: None
 		:rtype: NoneType
 		"""
+		self.menu.prerequest(self._action)
 		self.menu.exec_(event.screenPos())
 		
 	def updateMoveButtonVisibility(self) -> None:
@@ -173,12 +196,51 @@ class ActionWrapperGraphics(ActionGraphics):
 		"""
 		show move buttons when hovered over.
 
+		Also show image or name of component IF the underlying action is a component action.
+
 		:param event: The hover event.
 		:type event: QGraphicsSceneHoverEvent
 		:return: None
 		:rtype: NoneType
 		"""
 		self.updateMoveButtonVisibility()
+		self._popUp = None
+
+		# If this is a wrapper for a ComponentAction, we'll show a pop-up.
+		action = self._action.getUnderlyingAction()
+		if type(action) is ComponentAction:
+
+			br = self.boundingRect()
+			self._popUp = QGraphicsRectItem(self)
+			self._popUp.setPos(br.x() + br.width(), 0)
+
+			self._arrowPixmap = QPixmap(":icon/resources/icons/office/arrow-right.png").scaledToWidth(ActionWrapperGraphics.POPUP_ARROW_WIDTH)
+			self._arrowItem = QGraphicsPixmapItem(self._popUp)
+			self._arrowItem.setPixmap(self._arrowPixmap)
+			self._arrowItem.setPos(ActionWrapperGraphics.POPUP_BUFFER, -self._arrowPixmap.height()/2)
+
+			component = action.getTargetComponent()
+			image = component.getFirstImage()
+
+			# If there is an image AND the detailed view is on, we'll show the image for the component.
+			if image is not None and sm.StateMachine.instance.configVars.showComponentImages:
+				r, g, b = image.split()
+				im = Image.merge("RGB", (b, g, r))
+				im2 = im.convert("RGBA")
+				data = im2.tobytes("raw", "RGBA")
+				qim = QImage(data, im.size[0], im.size[1], QImage.Format_ARGB32).scaledToHeight(ActionGraphics.TOTAL_RECT_HEIGHT * 3/4)
+				self._pix = QPixmap.fromImage(qim)
+				self._pixItem = QGraphicsPixmapItem(self._popUp)
+				self._pixItem.setPixmap(self._pix)
+				self._pixItem.setPos(ActionWrapperGraphics.POPUP_BUFFER*2 + ActionWrapperGraphics.POPUP_ARROW_WIDTH, -ActionGraphics.TOTAL_RECT_HEIGHT * 3/4/2)
+
+			# If there is no image for the component OR detailed view is off, we'll show text instead.
+			else:
+				name = component.getName()
+				self._nameItem = QGraphicsTextItem(self._popUp)
+				self._nameItem.setPlainText(name)
+				height = self._nameItem.boundingRect().height()
+				self._nameItem.setPos(ActionWrapperGraphics.POPUP_BUFFER*2 + ActionWrapperGraphics.POPUP_ARROW_WIDTH,-height/2)
 	
 	def hoverLeaveEvent(self, event) -> None:
 		"""
@@ -190,6 +252,10 @@ class ActionWrapperGraphics(ActionGraphics):
 		:rtype: NoneType
 		"""
 		self.updateMoveButtonVisibility()
+
+		if self._popUp:
+			self.scene().removeItem(self._popUp)
+			self._popUp = None
 		
 	def promote(self) -> None:
 		"""
@@ -236,19 +302,3 @@ class ActionWrapperGraphics(ActionGraphics):
 		
 		for view in self.scene().views():
 			view.refresh()
-
-	# def mousePressEvent(self, event: QGraphicsSceneMouseEvent):
-	# 	"""
-	# 	When a port is clicked, emit the entitySelected signal from the view.
-	# 	:param event: the mouse click event
-	# 	:type event: QGraphicsSceneMouseEvent
-	# 	:param emitSelected: Decide if we want to show the action's properties in the properties editor or not.
-	# 	:type emitSelected: bool
-	# 	:return: None
-	# 	"""
-	#
-	# 	if self.getPortGraphicsAtPos(event.scenePos().x(), event.scenePos().y()) is None:
-	# 		return ActionGraphics.mousePressEvent(self, event, emitSelected=True)
-	# 	else:
-	# 		event.accept()
-	# 		return ActionGraphics.mousePressEvent(self, event, emitSelected=False)
