@@ -16,6 +16,10 @@
 
         <file alias="../resources/splash_screen_02.png">resources/splash_screen_02.png</file>
 
+        <file alias="../resources/EC_Buttons/button_col.jpg">resources/EC_Buttons/button_col.jpg</file>
+
+        <file alias="../resources/EC_Buttons/button_exp.jpg">resources/EC_Buttons/button_exp.jpg</file>
+
         <file alias="../resources/icons/facade_logo.png">resources/icons/facade_logo.png</file>
 
         <file alias="../resources/icons/gradient/icons8-add-property-64.png">resources/icons/gradient/icons8-add-property-64.png</file>
@@ -78,6 +82,8 @@
 
         <file alias="../resources/icons/office/file.png">resources/icons/office/file.png</file>
 
+        <file alias="../resources/icons/office/fit-to-width.png">resources/icons/office/fit-to-width.png</file>
+
         <file alias="../resources/icons/office/flow.png">resources/icons/office/flow.png</file>
 
         <file alias="../resources/icons/office/gui.png">resources/icons/office/gui.png</file>
@@ -91,6 +97,8 @@
         <file alias="../resources/icons/office/lightning-arrow.png">resources/icons/office/lightning-arrow.png</file>
 
         <file alias="../resources/icons/office/manual-explore.png">resources/icons/office/manual-explore.png</file>
+
+        <file alias="../resources/icons/office/maximize-window.png">resources/icons/office/maximize-window.png</file>
 
         <file alias="../resources/icons/office/nested-component.png">resources/icons/office/nested-component.png</file>
 
@@ -139,6 +147,10 @@
         <file alias="../resources/icons/office/two-sided-arrow.png">resources/icons/office/two-sided-arrow.png</file>
 
         <file alias="../resources/icons/office/txt.png">resources/icons/office/txt.png</file>
+
+        <file alias="../resources/icons/office/undo-reticle.png">resources/icons/office/undo-reticle.png</file>
+
+        <file alias="../resources/icons/office/undo.png">resources/icons/office/undo.png</file>
 
         <file alias="../resources/icons/office/user.png">resources/icons/office/user.png</file>
 

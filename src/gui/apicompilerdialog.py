@@ -27,8 +27,8 @@ import data.statemachine as sm
 from PySide2.QtCore import Signal, Slot, Qt, QThread
 from PySide2.QtWidgets import QDialog, QFileDialog, QWidget, QProgressDialog, QApplication
 from data.compilationprofile import CompilationProfile
-from data.compiler.compiler import Compiler
-from data.compiler.documentationgenerator import DocGenerator
+from tools.api_compiler.compiler import Compiler
+from tools.doc_generator.documentationgenerator import DocGenerator
 from gui.ui.ui_apicompilerdialog import Ui_Dialog as Ui_ApiCompilerDialog
 from tguiil.matchoption import MatchOption
 from libs.bitness import getPythonBitness, isExecutable, appBitnessMatches, getExeBitness
@@ -204,8 +204,6 @@ class ApiCompilerDialog(QDialog):
 		# no error? compiler and run document generation
 		self._compile(theCompilationProfile)
 
-		return QDialog.accept(self)
-
 	def _compile(self, compProfile: CompilationProfile) -> None:
 		"""
 		Run the compiler and documentation generator while showing a progress bar
@@ -226,47 +224,40 @@ class ApiCompilerDialog(QDialog):
 		numSteps += len(compProfile.docTypes)
 
 		# create and show progressbar dialog
-		progress = QProgressDialog("Compiling API...", "Cancel API Generation", 0, numSteps * 2, parent=self.parent())
-		progress.setValue(0)
-		progress.setModal(True)
+		self.progress = QProgressDialog("Compiling API...", "Cancel API Generation", 0, numSteps * 2, parent=self.parent())
+		self.progress.setValue(0)
+		self.progress.setModal(True)
 
 		def stepStartedCatcher(message):
-			progress.setValue(progress.value() + 1)
-			progress.setLabelText(message + "...")
+			self.progress.setValue(self.progress.value() + 1)
+			self.progress.setLabelText(message + "...")
 
 		def stepCompleteCatcher():
-			progress.setValue(progress.value() + 1)
-			progress.setLabelText(progress.labelText() + " done.")
+			self.progress.setValue(self.progress.value() + 1)
+			self.progress.setLabelText(self.progress.labelText() + " done.")
 
 		# since compilation takes a long time, we do it in another thread to keep the GUI responsive.
-		thread = QThread()
-		thread.setTerminationEnabled(True)
-		compiler = Compiler(compProfile)
-		docGenerator = DocGenerator(compProfile.docTypes, projectName)
+		self.thread = QThread()
+		self.thread.setTerminationEnabled(True)
+		self.compiler = Compiler(compProfile)
+		self.docGenerator = DocGenerator(compProfile.docTypes, projectName)
 
-		compiler.moveToThread(thread)
-		docGenerator.moveToThread(thread)
+		self.compiler.moveToThread(self.thread)
+		self.docGenerator.moveToThread(self.thread)
 
-		compiler.stepStarted.connect(stepStartedCatcher)
-		compiler.stepComplete.connect(stepCompleteCatcher)
-		docGenerator.stepStarted.connect(stepStartedCatcher)
-		docGenerator.stepComplete.connect(stepCompleteCatcher)
+		self.compiler.stepStarted.connect(stepStartedCatcher)
+		self.compiler.stepComplete.connect(stepCompleteCatcher)
+		self.docGenerator.stepStarted.connect(stepStartedCatcher)
+		self.docGenerator.stepComplete.connect(stepCompleteCatcher)
 
-		thread.started.connect(progress.exec_, type=Qt.QueuedConnection)
-		thread.started.connect(compiler.compileAPI, type=Qt.QueuedConnection)
-		compiler.finished.connect(docGenerator.createDoc)
-		docGenerator.finished.connect(thread.terminate)
-		docGenerator.finished.connect(self.close)
-		docGenerator.finished.connect(thread.deleteLater)
-		docGenerator.finished.connect(docGenerator.deleteLater)
-		docGenerator.finished.connect(compiler.deleteLater)
-		progress.canceled.connect(thread.terminate)
-		progress.canceled.connect(thread.deleteLater)
-		progress.canceled.connect(docGenerator.deleteLater)
-		progress.canceled.connect(compiler.deleteLater)
+		self.thread.started.connect(self.progress.exec_, type=Qt.QueuedConnection)
+		self.thread.started.connect(self.compiler.compileAPI, type=Qt.QueuedConnection)
+		self.compiler.finished.connect(self.docGenerator.createDoc)
+		self.docGenerator.finished.connect(self.thread.terminate)
+		self.docGenerator.finished.connect(self.thread.deleteLater)
+		self.docGenerator.finished.connect(self.close)
+		self.docGenerator.finished.connect(lambda: QDialog.accept(self))
+		self.progress.canceled.connect(self.thread.terminate)
+		self.progress.canceled.connect(self.thread.deleteLater)
 
-		thread.start()
-
-		# spin, but keep the GUI responsive
-		while thread.isRunning:
-			QApplication.instance().processEvents()
+		self.thread.start()

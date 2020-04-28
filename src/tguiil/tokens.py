@@ -203,6 +203,15 @@ class Token:
         :return: The token that was created from the pywinauto control.
         :rtype: Token
         """
+
+        def flatten(myList):
+            tmp = []
+            for item in myList:
+                if isinstance(item, list):
+                    tmp.extend(flatten(item))
+                else:
+                    tmp.append(item)
+            return tmp
         
         try:
             parent = component.parent()
@@ -224,10 +233,11 @@ class Token:
             isVisible = component.is_visible()
             processID = component.process_id()
             rectangle = component.rectangle()
-            texts = component.texts()[1:]
             title = component.window_text()
             numControls = component.control_count()
             typeOf = component.friendly_class_name()
+
+            texts = flatten(component.texts()[1:])
 
             image = None
             if captureImage:
@@ -251,34 +261,10 @@ class Token:
                 # crop image
                 if image is not None:
                     width, height = image.size
-                    image = image.crop((leftAdjust, topAdjust, width+rightAdjust, height+bottomAdjust))
-            
-            image = None
-            if captureImage:
-                image = component.capture_as_image()
-            
-            # size of dialogs is a bit off, so we trim to adjust.
-            if isDialog:
-                
-                # Setting amounts to trim off dialog size
-                leftAdjust = 15
-                topAdjust = 0
-                rightAdjust = -17
-                bottomAdjust = -17
-                
-                # resize rectangle size
-                # rectangle.left += leftAdjust
-                # rectangle.top += topAdjust
-                # rectangle.right += rightAdjust
-                # rectangle.bottom += bottomAdjust
-                
-                # crop image
-                if image is not None:
-                    width, height = image.size
                     image = image.crop((leftAdjust, topAdjust, width + rightAdjust, height + bottomAdjust))
             
             # get text of all children that are not editable.
-            childrenTexts = []
+            cTextList = []
             for child in component.children():
                 if type(child) != pywinauto.controls.win32_controls.EditWrapper and type(child) != \
                         pywinauto.controls.uia_controls.EditWrapper:
@@ -287,7 +273,9 @@ class Token:
                         text = child.window_text()
                     if text is None:
                         text = ""
-                    childrenTexts.append(text)
+                    cTextList.append(text)
+                    
+            childrenTexts = flatten(cTextList)
             
             # additional information we can get about uia elements
             try:
@@ -425,12 +413,8 @@ class Token:
             
             # --- Children Texts --- #
             if self.childrenTexts and token2.childrenTexts:
-                try:
-                    t1 = [text for sublist in self.childrenTexts for text in sublist]
-                    t2 = [text for sublist in token2.childrenTexts for text in sublist]
-                except Exception as e:
-                    print('childrenTexts for window is deeper than 2, find another way to do this.')
-                    raise e
+                t1 = self.childrenTexts
+                t2 = token2.childrenTexts
                 
                 t1Str = ' '.join(t1)
                 t2Str = ' '.join(t2)
@@ -465,12 +449,8 @@ class Token:
                 total += titleSim * Token.Weight['TITLE']
             
             if self.childrenTexts and token2.childrenTexts:
-                try:
-                    t1 = [text for sublist in self.childrenTexts for text in sublist]
-                    t2 = [text for sublist in token2.childrenTexts for text in sublist]
-                except Exception as e:
-                    print('childrenTexts for menu is deeper than 2, find another way to do this.')
-                    raise e
+                t1 = self.childrenTexts
+                t2 = token2.childrenTexts
                 
                 t1Str = ' '.join(t1)
                 t2Str = ' '.join(t2)

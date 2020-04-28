@@ -69,9 +69,7 @@ class TopLevelWrapperGraphics(QGraphicsRectItem):
                 filename = 'button_exp.jpg'
                 
             ir = QImageReader()
-            curPath = os.path.abspath(__file__)
-            dir, tmp = os.path.split(curPath)
-            filename = os.path.join(dir, "images/" + filename)
+            filename = ":/icon/resources/EC_Buttons/" + filename
             ir.setFileName(filename)
             
             painter.drawImage(self.boundingRect(), ir.read())

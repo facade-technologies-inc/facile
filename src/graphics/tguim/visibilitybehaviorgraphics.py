@@ -64,9 +64,14 @@ class VBGraphics(QAbstractGraphicsShapeItem):
 			dlg = SetTriggerActionDialog(self._dataVB)
 			dlg.exec_()
 
+		def focus():
+			self._zoomable = True
+			self.scene().views()[0].smoothFocus(self)
+
 		self.menu = VisibilityBehaviorMenu()
 		self.menu.onRemove(onRemove)
 		self.menu.onSetTrigger(onSetTriggerAction)
+		self.menu.onFocus(focus)
 
 	def boundingRect(self):
 		"""
@@ -317,6 +322,7 @@ class VBGraphics(QAbstractGraphicsShapeItem):
 		:return: None
 		:rtype: NoneType
 		"""
+		self._zoomable = False
 		self.setSelected(True)
 		self.scene().emitItemSelected(self._dataVB.getId())
 

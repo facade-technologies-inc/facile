@@ -22,8 +22,7 @@ This module contains the Entity class.
 """
 
 
-# TODO: Import properties class for type hint purposes???
-
+import time
 from PySide2.QtCore import QObject, Signal
 
 class Entity(QObject):
@@ -33,8 +32,8 @@ class Entity(QObject):
 	"""
 	count: int = 0  # Class variable used to uniquely identify every entity created.
 	updated = Signal()
+	onCreation = None # If not None, this is a function that will be called when an entity is created.
 
-	# TODO: Take a Properties object as an input parameter???
 	def __init__(self):
 		"""
 		Constructs an Entity object.  Note: This is an abstract class, so this constructor is used
@@ -47,6 +46,9 @@ class Entity(QObject):
 		Entity.count += 1
 		self._id: int = Entity.count
 		self._properties = None
+
+		if Entity.onCreation:
+			Entity.onCreation()
 	
 	def getId(self) -> int:
 		"""
