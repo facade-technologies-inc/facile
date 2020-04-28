@@ -60,6 +60,36 @@ class ComponentMenu(QMenu):
 		focusIcon.addPixmap(QPixmap(":/icon/resources/icons/office/reticle.png"), QIcon.Normal, QIcon.Off)
 		self.focusAction.setIcon(focusIcon)
 
+		self.undoFocusAction = self.addAction("Undo Focus")
+		undofocusIcon = QIcon()
+		undofocusIcon.addPixmap(QPixmap(":/icon/resources/icons/office/undo-reticle.png"), QIcon.Normal, QIcon.Off) #TODO: Add icon path
+		self.undoFocusAction.setIcon(undofocusIcon)
+
+		self.resetViewAction = self.addAction("Reset view")
+		resetViewIcon = QIcon(":/icon/resources/icons/office/fit-to-width.png")
+		resetViewIcon.addPixmap(QPixmap(), QIcon.Normal, QIcon.Off) #TODO: Add icon path
+		self.resetViewAction.setIcon(resetViewIcon)
+
+	def onUndoFocus(self, func) -> None:
+		"""
+		Connect the **Undo Focus** menu item to internal logic.
+
+		:param func: The function to execute when the **Undo Focus** menu item is selected.
+		:type func: callable
+		:return: None
+		"""
+		self.undoFocusAction.triggered.connect(func)
+
+	def onResetView(self, func) -> None:
+		"""
+		Connect the **Focus** menu item to internal logic.
+
+		:param func: The function to execute when the **Focus** menu item is selected.
+		:type func: callable
+		:return: None
+		"""
+		self.resetViewAction.triggered.connect(func)
+
 	def onFocus(self, func) -> None:
 		"""
 		Connect the **Focus** menu item to internal logic.
@@ -99,3 +129,9 @@ class ComponentMenu(QMenu):
 			self.blinkAction.setEnabled(True)
 		else:
 			self.blinkAction.setEnabled(False)
+
+		if sm.StateMachine.instance.view.ui.targetGUIModelView.focusHistory:
+			self.undoFocusAction.setEnabled(True)
+		else:
+			self.undoFocusAction.setEnabled(False)
+

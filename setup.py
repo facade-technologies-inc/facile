@@ -17,6 +17,7 @@ buildOptions = {
                  "src.libs",
                  "src.tguiil",
                  "src.graphics",
+                 "src.tools",
                  ],
 
     "includes": ["scipy.sparse.csgraph._validation",

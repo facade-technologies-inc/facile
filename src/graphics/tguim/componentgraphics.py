@@ -198,9 +198,17 @@ class ComponentGraphics(QGraphicsItem):
             self._zoomable = True
             self.scene().views()[0].smoothFocus(self)
 
+        def undoFocus():
+            self.scene().views()[0].undoFocus()
+
+        def resetView():
+            self.scene().views()[0].resetView()
+
         self.menu = ComponentMenu(dataComponent)
         self.menu.onBlink(lambda: self.scene().blinkComponent(self._dataComponent.getId()))
         self.menu.onFocus(focus)
+        self.menu.onUndoFocus(undoFocus)
+        self.menu.onResetView(resetView)
         
         try:
             self.triggerSceneUpdate()
