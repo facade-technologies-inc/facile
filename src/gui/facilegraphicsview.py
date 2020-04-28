@@ -221,7 +221,7 @@ class FacileGraphicsView(QGraphicsView):
 				item._zoomable = True
 			else:
 				item._zoomable = True
-				return True
+				return False
 		else:
 			self.smoothFocusTimer.start(50)
 			self._addToHistory(rect)

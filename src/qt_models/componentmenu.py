@@ -24,7 +24,7 @@ component is right-clicked.
 """
 
 
-from PySide2.QtWidgets import QMenu
+from PySide2.QtWidgets import QMenu, QAction
 from PySide2.QtGui import QIcon, QPixmap
 import icons_rc
 import data.statemachine as sm
@@ -60,7 +60,7 @@ class ComponentMenu(QMenu):
 		focusIcon.addPixmap(QPixmap(":/icon/resources/icons/office/reticle.png"), QIcon.Normal, QIcon.Off)
 		self.focusAction.setIcon(focusIcon)
 
-		self.undoFocusAction = self.addAction("Undo Focus")
+		self.undoFocusAction = QAction() #self.addAction("Undo Focus")
 		undofocusIcon = QIcon()
 		undofocusIcon.addPixmap(QPixmap(":/icon/resources/icons/office/undo-reticle.png"), QIcon.Normal, QIcon.Off) #TODO: Add icon path
 		self.undoFocusAction.setIcon(undofocusIcon)
