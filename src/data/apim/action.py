@@ -254,14 +254,14 @@ class Action(Entity):
 			out = '('
 			work = []
 			for o in self._outputs:
-				work.insert(0, o.getDataType().__name__)
+				work.insert(0, o.getDataTypeStr())
 			out += work.pop()
 			for w in work:
 				out += ', ' + work.pop()
 			out += ')'
 			return out
 		elif len(self._outputs) == 1:
-			return self._outputs[0].getDataType().__name__
+			return self._outputs[0].getDataTypeStr()
 		else:
 			return 'None'
 
@@ -282,7 +282,7 @@ class Action(Entity):
 
 		out = ""
 		for p in self._inputs:
-			out += ", " + p.getName() + ": " + p.getDataType().__name__
+			out += ", " + p.getName() + ": " + p.getDataTypeStr()
 			# If we eventually provide functionality for defaulting values, use this:
 			# if p.hasDefault():
 			# 	out += " = " + p.getDefaultVal()

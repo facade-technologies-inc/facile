@@ -93,7 +93,7 @@ class PortGraphics(QGraphicsItem):
 			self.nameItem.setPos(PortGraphics.WIDTH/2 + 5,-PortGraphics.TOTAL_HEIGHT/2)
 			
 			fm = QFontMetricsF(PortGraphics.TYPE_FONT)
-			t = fm.elidedText(type(self._port.getDataType()).__name__, Qt.ElideRight, PortGraphics.SIDE_HEIGHT)
+			t = fm.elidedText(self._port.getDataTypeStr(), Qt.ElideRight, PortGraphics.SIDE_HEIGHT)
 			self.typeItem = QGraphicsTextItem(t, self)
 			self.typeItem.setFont(PortGraphics.TYPE_FONT)
 			self.typeItem.setRotation(90)
