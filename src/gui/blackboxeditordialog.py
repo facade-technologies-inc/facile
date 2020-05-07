@@ -172,9 +172,9 @@ class BlackBoxEditorDialog(QDialog):
 		# Make sure port types are valid
 		for port in inputPorts + outputPorts:
 			try: # is the port type valid?
-				assert type(eval(port.getDataType().__name__)) == type
+				assert type(eval(port.getDataTypeStr())) == type
 			except: # if not, is it at least a valid python identifier?
-				t = str(port.getDataType())
+				t = port.getDataTypeStr()
 				name = port.getName()
 				if t.isidentifier():
 					warnings.append(f"Port '{name}': the type '{t}' is not a known Python type.")
@@ -198,14 +198,14 @@ class BlackBoxEditorDialog(QDialog):
 				
 		# Make sure the type of the port is not NoneType
 		for port in inputPorts + outputPorts:
-			if port.getDataType() == type(None):
+			if port.getDataTypeStr() == 'NoneType':
 				errors.append("Data type of port cannot be NoneType.")
 				break
 				
 		# If type is simple, and port is optional, check the type of the default value.
 		checkable_types = [int, float, str, bool]
 		for port in inputPorts:
-			if port.isOptional() and port.getDataType() != type(None):
+			if port.isOptional() and port.getDataTypeStr() != 'NoneType':
 				default = port.getDefaultValue()
 				t = port.getDataType()
 				bad = False

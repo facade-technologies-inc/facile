@@ -94,12 +94,12 @@ class ComponentAction(act.Action):
 			
 			for p in self._inputs:
 				out += '\t\t:param ' + p.getName() + ': ' + p.getAnnotation() + '\n'
-				out += '\t\t:type ' + p.getName() + ': ' + p.getDataType().__name__ + '\n'
+				out += '\t\t:type ' + p.getName() + ': ' + p.getDataTypeStr() + '\n'
 			
 			# we can only have one return tag, so we just combine everything.
 			if self._outputs:
 				annotations = [p.getAnnotation() for p in self._outputs]
-				types = [p.getDataType().__name__ for p in self._outputs]
+				types = [p.getDataTypeStr() for p in self._outputs]
 				out += '\t\t:return: ({})\n'.format(", ".join(annotations))
 				out += '\t\t:rtype: ({})\n'.format(", ".join(types))
 			else:
