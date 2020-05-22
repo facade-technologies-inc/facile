@@ -40,6 +40,7 @@ from data.apim.actionpipeline import ActionPipeline
 from gui.apicompilerdialog import ApiCompilerDialog
 from graphics.tguim.tguimscene import TGUIMScene
 
+
 class StateMachine:
 	"""
 	This is an event-driven state machine. The state machine has a "tick" method
@@ -434,7 +435,6 @@ class StateMachine:
 		ui.actionShow_Token_Tags.setEnabled(False)
 		ui.actionAdd_Behavior.setEnabled(False)
 		ui.actionPower_App.setEnabled(False)
-		ui.actionManage_Project.setEnabled(False)
 		ui.actionAdd_Action_Pipeline.setEnabled(False)
 		ui.actionShow_API_Compiler.setEnabled(False)
 		ui.actionValidate.setEnabled(False)
@@ -480,7 +480,7 @@ class StateMachine:
 			ui.targetGUIModelView.scene().update()
 		
 		if event == StateMachine.Event.PROJECT_OPENED:
-			v.setWindowTitle("Facile - " + self._project.getMainProjectFile())
+			# v.setWindowTitle("Facile - " + self._project.getMainProjectFile())
 			p.save()
 			p.addToRecents()
 			scene = TGUIMScene(p.getTargetGUIModel())

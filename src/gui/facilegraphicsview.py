@@ -23,9 +23,10 @@ view, but can be zoomed.
 """
 
 from PySide2.QtCore import QPoint, QTimer, Slot, QRectF
-from PySide2.QtGui import QWheelEvent, Qt, QColor, QKeyEvent
+from PySide2.QtGui import QWheelEvent, Qt, QColor, QKeyEvent, QPainter
 from PySide2.QtWidgets import QGraphicsView, QGraphicsScene, QGraphicsRectItem, QGraphicsTextItem, QGraphicsItem
 from PySide2.QtWidgets import QWidget
+from time import sleep
 
 
 class FacileGraphicsView(QGraphicsView):
@@ -35,7 +36,9 @@ class FacileGraphicsView(QGraphicsView):
 	This is primarily used as the view that shows the target GUI model and API model
 	"""
 	
-	ZOOM_FACTOR = 1.05
+	ZOOM_FACTOR = 1.0005
+	ZOOM_ITER = 100
+	SLOW_TIME = 0.00001
 	
 	def __init__(self, parent: QWidget = None) -> None:
 		"""
@@ -50,6 +53,9 @@ class FacileGraphicsView(QGraphicsView):
 		# set flags
 		self.setDragMode(QGraphicsView.ScrollHandDrag)
 		self.setViewportUpdateMode(QGraphicsView.FullViewportUpdate)
+		self.setRenderHints(QPainter.Antialiasing | QPainter.TextAntialiasing)
+		self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+		self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 		
 		# show initial message
 		scene = QGraphicsScene()
@@ -63,7 +69,8 @@ class FacileGraphicsView(QGraphicsView):
 
 		self.smoothFocusTimer = QTimer(self)
 		self.smoothFocusTimer.timeout.connect(self.smoothFocusTick)
-		self.focusHistory = [] # holds mix of graphics items and rectangles
+		self.focusHistory = []  # holds mix of graphics items and rectangles
+		self._zoom = 0
 
 	def wheelEvent(self, event: QWheelEvent) -> None:
 		"""
@@ -85,9 +92,22 @@ class FacileGraphicsView(QGraphicsView):
 
 		# Zoom
 		if event.delta() > 0:
+			# for i in range(1, FacileGraphicsView.ZOOM_ITER):
 			self.zoomIn(event.pos())
 		else:
+			# for i in range(1, FacileGraphicsView.ZOOM_ITER):
 			self.zoomOut(event.pos())
+
+	def zoomIn2(self, pos: QPoint) -> None:
+		"""
+		Zoom in one ZOOM_FACTOR
+
+		:param pos: The position to zoom into
+		:type pos: QPoint
+		:return: None
+		:rtype: NoneType
+		"""
+		zoomFactor = FacileGraphicsView.ZOOM_FACTOR
 
 	
 	def zoomIn(self, pos: QPoint) -> None:
@@ -100,14 +120,15 @@ class FacileGraphicsView(QGraphicsView):
 		:rtype: NoneType
 		"""
 		zoomFactor = FacileGraphicsView.ZOOM_FACTOR
+
 		oldPos = self.mapToScene(pos)
 		self.scale(zoomFactor, zoomFactor)
 		newPos = self.mapToScene(pos)
-		
+
 		# Set Anchors
 		self.setTransformationAnchor(QGraphicsView.AnchorUnderMouse)
 		self.setResizeAnchor(QGraphicsView.AnchorUnderMouse)
-		
+
 		# Move scene to old position
 		delta = newPos - oldPos
 		self.translate(delta.x(), delta.y())
@@ -122,14 +143,15 @@ class FacileGraphicsView(QGraphicsView):
 		:rtype: NoneType
 		"""
 		zoomFactor = 1 / FacileGraphicsView.ZOOM_FACTOR
+
 		oldPos = self.mapToScene(pos)
 		self.scale(zoomFactor, zoomFactor)
 		newPos = self.mapToScene(pos)
-		
+
 		# Set Anchors
 		self.setTransformationAnchor(QGraphicsView.AnchorUnderMouse)
 		self.setResizeAnchor(QGraphicsView.AnchorUnderMouse)
-		
+
 		# Move scene to old position
 		delta = newPos - oldPos
 		self.translate(delta.x(), delta.y())

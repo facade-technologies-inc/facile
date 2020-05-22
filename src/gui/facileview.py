@@ -24,9 +24,10 @@ Much of Facile is joined together here.
 import os
 from copy import deepcopy
 
-from PySide2.QtCore import Slot, QTimer, QItemSelection, QThread
-from PySide2.QtGui import Qt, QCloseEvent, QKeyEvent
-from PySide2.QtWidgets import QMainWindow, QFileDialog, QMessageBox, QLabel, QGraphicsOpacityEffect, QProgressDialog
+from PySide2.QtCore import Slot, QTimer, QItemSelection, QThread, QSize
+from PySide2.QtGui import Qt, QCloseEvent, QKeyEvent, QPalette, QColor
+from PySide2.QtWidgets import (QMainWindow, QFileDialog, QMessageBox, QLabel, QWidget,
+							   QGraphicsOpacityEffect, QProgressDialog, QApplication)
 
 from data.project import Project
 from data.statemachine import StateMachine
@@ -46,12 +47,25 @@ from tguiil.blinker import Blinker
 from gui.actionmenu import ActionMenu
 
 import data.statemachine as sm
+import gui.frame.styles as styles
+import gui.frame.windows as windows
+import pyautogui
+import json
+from enum import Enum
 
 
 class FacileView(QMainWindow):
 	"""
 	FacileView is the main window for Facile.
 	"""
+
+	class Theme(Enum):
+		CLASSIC_DARK = 1
+		CLASSIC_LIGHT = 2
+		FLAT_DARK = 3
+		FLAT_LIGHT = 4
+		ULTRA_DARK = 5
+		ULTRA_LIGHT = 6
 	
 	def __init__(self) -> 'FacileView':
 		"""
@@ -65,33 +79,55 @@ class FacileView(QMainWindow):
 		# UI Initialization
 		self.ui = Ui_FacileView()
 		self.ui.setupUi(self)
+		self.theme = FacileView.Theme.CLASSIC_DARK
+
+		# Initialize variables
+		self.screenSize = pyautogui.size()
+
+		# Connect menu signals
+		self.connectMenuSignals()
 		
-		# add validator view
+		# Add validator view
 		self.ui.validatorView = ValidatorView()
 		self.ui.validatorDockWidget.setWidget(self.ui.validatorView)
+		self.ui.validatorDockWidget.hide()  # Hide until validator button is pressed
 		
 		self._blinker = None
 		
-		#State label in status bar
+		# State label in status bar
 		self.ui.stateLabel = QLabel("")
 		self.ui.statusBar.addPermanentWidget(self.ui.stateLabel)
 		
-		#Action Menu Initialization
+		# Action Menu Initialization
 		self._componentActionMenu = ActionMenu()
 		self._actionPipelinesMenu = ActionMenu()
 		
-		#Add labels for each tab on the Action Menu to the view
+		# Add labels for each tab on the Action Menu to the view
 		self._componentActionMenu.setLabelText("Actions for current selected component.")
 		self._actionPipelinesMenu.setLabelText("All user-defined actions.")
 		
-		#Add Action Menu Tabs to the view
+		# Add Action Menu Tabs to the view
 		self.ui.actionMenuTabWidget.addTab(self._componentActionMenu, "Component Actions")
 		self.ui.actionMenuTabWidget.addTab(self._actionPipelinesMenu, "Action Pipelines")
 		self.ui.actionMenuTabWidget.removeTab(0)
+
+		# Set sizes and alignments
+		self.ui.actionMenuTabWidget.setMinimumWidth(.135*self.screenSize.width)  # So that tabs don't get compressed
+		self.ui.toolBar.setIconSize(QSize(.048*self.screenSize.height, .055*self.screenSize.height))  # Fix big icons
+		# self.ui.toolBar.setMinimumHeight(self.ui.toolBar.height()+*self.screenSize.height)
+		# for action in self.ui.toolBar.children():
+		# 	if isinstance(action, QAction):
+		# 		icon = self.ui.toolBar.widgetForAction(action)
+		# 		icon.setStyleSheet('vertical-align:middle;')
+		#
+		# (Above doesn't work)
+		# TODO: toolbar items are not perfectly centered in shortest dimension. Find way to center them
 		
 		# State Machine Initialization
 		self._stateMachine = StateMachine(self)
 		self._stateMachine.facileOpened()
+
+		self.loadSettings()
 	
 	@Slot(Project)
 	def setProject(self, project: Project) -> None:
@@ -262,9 +298,11 @@ class FacileView(QMainWindow):
 		:rtype: NoneType
 		"""
 		
-		manageProjectDialog = ManageProjectDialog(self._project)
-		manageProjectDialog.projectCreated.connect(self.setProject)
-		manageProjectDialog.exec_()
+		manageProjectDialog = ManageProjectDialog(self._project, self)
+		window = windows.ModernWindow(manageProjectDialog)
+		window.move(self.screenSize.width/2-window.size().width()/2, self.screenSize.height/2-window.size().height()/2)
+		# manageProjectDialog.projectCreated.connect(self.setProject)
+		window.show()
 	
 	@Slot()
 	def onAddBehaviorTriggered(self) -> None:
@@ -277,8 +315,7 @@ class FacileView(QMainWindow):
 		self._stateMachine.addBehaviorClicked()
 	
 	@Slot()
-	def onProjectExplorerIndexSelected(self, selected: QItemSelection,
-	                                   deselected: QItemSelection) -> None:
+	def onProjectExplorerIndexSelected(self, selected: QItemSelection, deselected: QItemSelection) -> None:
 		"""
 		This slot is called when an item is selected in the project explorer.
 		
@@ -509,9 +546,25 @@ class FacileView(QMainWindow):
 		:return: None
 		:rtype: NoneType
 		"""
-		
-		title = "Cancel confirmation ..."
+
+		title = "Cancel confirmation..."
 		if self._project:
+			if self._project.autoCloseAppOnExit is None:
+				if self._project.getProcess():
+					message = "Your target application is still running. Close it automatically when Facile is closed?\n" \
+							  "(This can always be changed later in settings)"
+					options = QMessageBox.Yes | QMessageBox.No | QMessageBox.Cancel
+					box = QMessageBox(QMessageBox.Question, "App is running...", message, buttons=options)
+					window = windows.ModernWindow(box)
+					result = window.exec_()
+
+					if result == QMessageBox.Yes:
+						self._project.autoCloseAppOnExit = False
+					else:
+						self._project.autoCloseAppOnExit = True
+
+					self._project.acaWarningShown = True
+
 			message = "Would you like to save your project before exiting?"
 			options = QMessageBox.Yes | QMessageBox.No | QMessageBox.Cancel
 			result = QMessageBox.question(self, title, message, options)
@@ -521,16 +574,29 @@ class FacileView(QMainWindow):
 				self.onSaveProjectTriggered()
 				
 			if result != QMessageBox.Cancel:
+				if self._project.autoCloseAppOnExit:
+					self.onStopAppTriggered(confirm=False)
 				event.accept()
+				QApplication.instance().exit(0)
 		else:
 			message = "Are you sure you want to quit?"
 			options = QMessageBox.Yes | QMessageBox.No
-			result = QMessageBox.question(self, title, message, options)
+			box = QMessageBox(QMessageBox.Question, title, message, buttons=options)
+			window = windows.ModernWindow(box)
+			# size = box.minimumSizeHint()
+			# size.setHeight(size.height() + 30)
+			# window.setFixedSize(size)
+			# window.move(self.screenSize.width/2-window.width()/2, self.screenSize.height/2-window.height()/2)
+			# box.setParent(window)
+			# box.move(0, 30)
+			window.setModal(True)
+			result = window.exec_()
 			event.ignore()
 			
 			if result == QMessageBox.Yes:
 				self.onSaveProjectTriggered()
 				event.accept()
+				QApplication.instance().exit(0)
 	
 	def keyPressEvent(self, event: QKeyEvent) -> None:
 		"""
@@ -548,3 +614,102 @@ class FacileView(QMainWindow):
 			self.close()
 		event.accept()
 
+	def setTheme(self, theme: Theme) -> None:
+		"""
+		Sets theme to the one that is input, does nothing if not a valid theme.
+
+		:param theme: the theme to set
+		:type theme: Theme
+		"""
+		app = QApplication.instance()
+		if theme == FacileView.Theme.CLASSIC_DARK:
+			styles.darkClassic(app, self)
+		elif theme == FacileView.Theme.CLASSIC_LIGHT:
+			styles.lightClassic(app, self)
+		elif theme == FacileView.Theme.FLAT_DARK:
+			styles.darkModern(app, self)
+		elif theme == FacileView.Theme.FLAT_LIGHT:
+			styles.lightModern(app, self)
+		elif theme == FacileView.Theme.ULTRA_DARK:
+			styles.darkUltra(app, self)
+		elif theme == FacileView.Theme.ULTRA_LIGHT:
+			styles.lightUltra(app, self)
+		self.theme = theme
+
+	def saveSettings(self) -> None:
+		"""
+		Saves general settings for use between sessions.
+		"""
+
+		cwd = os.getcwd()
+		tempDir = os.path.join(cwd, "temp")
+		settingsFile = os.path.join(tempDir, "settings.json")
+		settingsList = [self.theme.value]
+
+		if not os.path.exists(tempDir):
+			os.mkdir(tempDir)
+
+		with open(settingsFile, "w") as f:
+			f.write(json.dumps(settingsList, indent=4))
+
+	def loadSettings(self) -> None:
+		"""
+		Loads and applies general settings from local file
+		"""
+
+		try:
+			with open(os.path.join(os.getcwd(), "temp/settings.json"), "r") as settings:
+				sList = json.loads(settings.read())
+
+			self.setTheme(FacileView.Theme(sList[0]))
+
+		except FileNotFoundError:
+			pass
+
+	def connectMenuSignals(self) -> None:
+		"""
+		Connects extra signals from the Facile Menu Bar
+		"""
+
+		# View Layout Presets
+		self.ui.actionSimple.toggled.connect(self.showSimple)
+		self.ui.actionClassic.toggled.connect(self.showClassic)
+		self.ui.actionAll.toggled.connect(self.showAll)
+
+	@Slot()
+	def showSimple(self):
+		"""
+		Shows only the tguim, apim, and action menu
+		"""
+		if self.ui.actionSimple.isChecked():
+			self.ui.actionClassic.setChecked(False)
+			self.ui.actionAll.setChecked(False)
+			self.ui.propertyDockWidget.hide()
+			self.ui.explorerDockWidget.hide()
+			self.ui.validatorDockWidget.hide()
+
+	@Slot()
+	def showClassic(self):
+		"""
+		Shows everything except the validator (unless called)
+		"""
+
+		if self.ui.actionClassic.isChecked():
+			self.ui.actionSimple.setChecked(False)
+			self.ui.actionAll.setChecked(False)
+			self.ui.propertyDockWidget.show()
+			self.ui.explorerDockWidget.show()
+			self.ui.validatorDockWidget.hide()
+
+	@Slot()
+	def showAll(self):
+		"""
+		Shows everything except the validator (unless called)
+		"""
+
+		if self.ui.actionAll.isChecked():
+			self.ui.actionSimple.setChecked(False)
+			self.ui.actionClassic.setChecked(False)
+			self.ui.propertyDockWidget.show()
+			self.ui.explorerDockWidget.show()
+			self.ui.validatorDockWidget.show()

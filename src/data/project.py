@@ -86,6 +86,8 @@ class Project:
 		self._process = None
 		self._observer = None
 		self._explorer = None
+		self.autoCloseAppOnExit = None
+		self.acaWarningShown = False
 		
 		# project information
 		self.setProjectDir(os.path.abspath(projectDir))
@@ -405,8 +407,12 @@ class Project:
 		exe = projectJSON["Application Information"]["Target Application"]
 		backend = projectJSON["Application Information"]["Backend"]
 		startupTimeout = projectJSON["Application Information"]["Startup Timeout"]
+		autoClose = projectJSON["Settings"]["Close App on Exit"]
+		warningShown = projectJSON["Settings"]["AutoClose Warning Shown"]
 		
 		loadedProject = Project(name, description, exe, backend, projectDir, startupTimeout)
+		loadedProject.autoCloseAppOnExit = autoClose
+		loadedProject.acaWarningShown = warningShown
 
 		Entity.onCreation = onEntityCreation
 
@@ -460,6 +466,9 @@ class Project:
 		projectDict["Application Information"]["Target Application"] = self._executable
 		projectDict["Application Information"]["Backend"] = self._backend
 		projectDict["Application Information"]["Startup Timeout"] = self._startupTimeout
+		projectDict["Settings"] = {}
+		projectDict["Settings"]["Close App on Exit"] = self.autoCloseAppOnExit
+		projectDict["Settings"]["AutoClose Warning Shown"] = self.acaWarningShown
 		
 		tguimFileName = self._name + ".tguim"
 		projectDict["Model Files"] = {}

@@ -18,43 +18,37 @@
     |                                                                              |
     \------------------------------------------------------------------------------/
 
-This is the main file that launches Facile. This module should only be run by the
-user and never imported.
-
+This module contains the code for the custom QMessageBox.
 """
 
-import sys
-import os
-import warnings
-
-sys.path.append(os.path.abspath("./gui/rc/"))
-
-# These lines are needed to integrate Qt and pywinauto
-warnings.simplefilter("ignore", UserWarning)
-sys.coinit_flags = 2
-
-from PySide2.QtWidgets import QApplication
-
-import gui.frame.windows as windows
-
-from gui.facileview import FacileView
-from gui.splashscreen import FacileSplashScreen
-import psutil
+from PySide2.QtWidgets import QMessageBox
 
 
-if __name__ == "__main__":
+class MessageBox(QMessageBox):
+    """
+    Subclass of QMessageBox in order to get normal behavior from it while still having the custom title bar.
+    Has only the close button in the top right. No need for other two buttons
+    """
 
-    # increases performance by hogging more processor time
-    p = psutil.Process()
-    p.nice(psutil.HIGH_PRIORITY_CLASS)
-    
-    app = QApplication([])
-    view = FacileView()
+    def __init__(self, icon, title: str, text: str, buttons=None, parent=None, flags=None):
+        normal = QMessageBox()
 
-    splash = FacileSplashScreen()
-    splash.show()
-    window = windows.ModernWindow(view)
-    splash.finish(window)
-    window.showMaximized()
-    
-    sys.exit(app.exec_())
+        if buttons:
+            tmpB = buttons
+        else:
+            tmpB = normal.buttons()
+
+        if parent:
+            tmpP = parent
+        else:
+            tmpP = normal.parent()
+
+        if flags:
+            tmpF = flags
+        else:
+            tmpF = normal.windowFlags()
+
+        QMessageBox.__init__(self, icon, title, text, buttons=tmpB, parent=tmpP, flags=tmpF)
+
+        # TODO
+

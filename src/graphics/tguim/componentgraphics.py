@@ -709,7 +709,7 @@ class ComponentGraphics(QGraphicsItem):
         else:
             if self.picChild:
                 self.scene().removeItem(self.picChild)
-            painter.setBrush(QColor(88, 183, 255))
+            painter.setBrush(QColor(0, 141, 222).lighter(f=70 + 10*self._depth))
             id = self._dataComponent.getId()
             painter.drawRoundedRect(boundingRect, 5, 5)
 
