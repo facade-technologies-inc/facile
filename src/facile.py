@@ -49,11 +49,11 @@ if __name__ == "__main__":
     p.nice(psutil.HIGH_PRIORITY_CLASS)
     
     app = QApplication([])
-    view = FacileView()
 
     splash = FacileSplashScreen()
     splash.show()
-    window = windows.ModernWindow(view)
+    view = FacileView()
+    window = windows.ModernWindow(view, modal=False)
     splash.finish(window)
     window.showMaximized()
     

@@ -27,7 +27,7 @@ from enum import Enum, auto
 
 from PySide2.QtCore import Slot, QTimer
 from PySide2.QtGui import QStandardItem, QStandardItemModel, Qt, QIcon, QPixmap
-from PySide2.QtWidgets import QGraphicsScene, QDialog, QMessageBox, QWidget, QSizePolicy
+from PySide2.QtWidgets import QGraphicsScene, QDialog, QWidget, QSizePolicy
 
 import data.tguim.visibilitybehavior as vb
 from gui.facilegraphicsview import FacileGraphicsView
@@ -39,6 +39,8 @@ from data.configvars import ConfigVars
 from data.apim.actionpipeline import ActionPipeline
 from gui.apicompilerdialog import ApiCompilerDialog
 from graphics.tguim.tguimscene import TGUIMScene
+from gui.messagebox import MessageBox
+from gui.frame.windows import ModernWindow
 
 
 class StateMachine:
@@ -243,7 +245,7 @@ class StateMachine:
 					destComp = self.vbComponents[1]
 					tguim = self._project.getTargetGUIModel()
 					newVB = vb.VisibilityBehavior(tguim, srcComp, destComp)
-					SetTriggerActionDialog(newVB).exec_()
+					ModernWindow(SetTriggerActionDialog(newVB)).exec_()
 					self.view._project.getTargetGUIModel().addVisibilityBehavior(newVB)
 					self.view.ui.projectExplorerView.update()
 					self.view.ui.projectExplorerView.model().selectBehavior(newVB)
@@ -391,9 +393,10 @@ class StateMachine:
 		
 		def onNewActionPipeline():
 			ap = ActionPipeline()
-			blackBoxEditor = BlackBoxEditorDialog(ap)
+			blackBoxEditor = ModernWindow(BlackBoxEditorDialog(ap))
 			result = blackBoxEditor.exec_()
-			if result == QDialog.Rejected:
+
+			if result != QDialog.Accepted:
 				return
 			else:
 				self._project.getAPIModel().addActionPipeline(ap)
@@ -409,10 +412,11 @@ class StateMachine:
 			def onVerificationComplete(success):
 				if success:
 					apicomp = ApiCompilerDialog()
-					apicomp.exec_()
+					win = ModernWindow(apicomp)
+					win.exec_()
 				else:
-					msg = QMessageBox()
-					msg.setIcon(QMessageBox.Critical)
+					msg = MessageBox()
+					msg.setIcon(MessageBox.Critical)
 					msg.setText("Error")
 					msg.setInformativeText("Please resolve all verification errors before compiling.")
 					msg.setWindowTitle("Error")

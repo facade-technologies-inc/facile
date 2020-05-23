@@ -28,6 +28,7 @@ from PySide2.QtWidgets import QGraphicsItem, QAbstractGraphicsShapeItem
 import data.statemachine as sm
 from qt_models.visibilitybehaviormenu import VisibilityBehaviorMenu
 from gui.settriggeractiondialog import SetTriggerActionDialog
+from gui.frame.windows import ModernWindow
 
 
 class VBGraphics(QAbstractGraphicsShapeItem):
@@ -61,7 +62,7 @@ class VBGraphics(QAbstractGraphicsShapeItem):
 			sm.StateMachine.instance.view.ui.propertyEditorView.setModel(None)
 
 		def onSetTriggerAction():
-			dlg = SetTriggerActionDialog(self._dataVB)
+			dlg = ModernWindow(SetTriggerActionDialog(self._dataVB))
 			dlg.exec_()
 
 		def focus():

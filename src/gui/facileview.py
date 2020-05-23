@@ -26,7 +26,7 @@ from copy import deepcopy
 
 from PySide2.QtCore import Slot, QTimer, QItemSelection, QThread, QSize
 from PySide2.QtGui import Qt, QCloseEvent, QKeyEvent, QPalette, QColor
-from PySide2.QtWidgets import (QMainWindow, QFileDialog, QMessageBox, QLabel, QWidget,
+from PySide2.QtWidgets import (QMainWindow, QFileDialog, QLabel, QWidget,
 							   QGraphicsOpacityEffect, QProgressDialog, QApplication)
 
 from data.project import Project
@@ -38,6 +38,7 @@ from data.apim.action import Action
 from data.apim.port import Port
 from gui.copyprojectdialog import CopyProjectDialog
 from gui.manageprojectdialog import ManageProjectDialog
+from gui.messagebox import MessageBox
 from gui.newprojectdialog import NewProjectDialog
 from gui.validatorview import ValidatorView
 from gui.ui.ui_facileview import Ui_MainWindow as Ui_FacileView
@@ -48,7 +49,7 @@ from gui.actionmenu import ActionMenu
 
 import data.statemachine as sm
 import gui.frame.styles as styles
-import gui.frame.windows as windows
+from gui.frame.windows import ModernWindow
 import pyautogui
 import json
 from enum import Enum
@@ -165,8 +166,8 @@ class FacileView(QMainWindow):
 			if os.path.normpath(url) != os.path.normpath(self._project.getProjectDir()):
 				for file in os.listdir(url):
 					if file[-4:] == ".fcl":
-						msg = QMessageBox()
-						msg.setIcon(QMessageBox.Critical)
+						msg = MessageBox()
+						msg.setIcon(MessageBox.Critical)
 						msg.setText("Error")
 						msg.setInformativeText(
 							"Please choose a directory that does not already contain a project.")
@@ -211,7 +212,7 @@ class FacileView(QMainWindow):
 		
 		newProjectDialog = NewProjectDialog()
 		newProjectDialog.projectCreated.connect(self.setProject)
-		newProjectDialog.exec_()
+		ModernWindow(newProjectDialog).exec_()
 	
 	@Slot()
 	def onNewProjectFromExistingTriggered(self) -> None:
@@ -225,7 +226,7 @@ class FacileView(QMainWindow):
 		
 		copyProjectDialog = CopyProjectDialog()
 		copyProjectDialog.projectCreated.connect(self.setProject)
-		copyProjectDialog.exec_()
+		ModernWindow(copyProjectDialog).exec_()
 	
 	@Slot()
 	def onOpenRecentProject(self) -> None:
@@ -299,10 +300,7 @@ class FacileView(QMainWindow):
 		"""
 		
 		manageProjectDialog = ManageProjectDialog(self._project, self)
-		window = windows.ModernWindow(manageProjectDialog)
-		window.move(self.screenSize.width/2-window.size().width()/2, self.screenSize.height/2-window.size().height()/2)
-		# manageProjectDialog.projectCreated.connect(self.setProject)
-		window.show()
+		ModernWindow(manageProjectDialog).exec_()
 	
 	@Slot()
 	def onAddBehaviorTriggered(self) -> None:
@@ -366,11 +364,11 @@ class FacileView(QMainWindow):
 		if confirm:
 			title = "Confirm Application Termination"
 			message = "Are you sure you'd like to terminate the target application?"
-			response = QMessageBox.question(self, title, message)
+			response = MessageBox.question(self, title, message)
 		else:
-			response = QMessageBox.StandardButton.Yes
+			response = MessageBox.StandardButton.Yes
 		
-		if response == QMessageBox.StandardButton.Yes:
+		if response == MessageBox.StandardButton.Yes:
 			self.ui.actionPower_App.setChecked(True)
 			self._project.stopTargetApplication()
 			self._stateMachine.stopApp()
@@ -477,7 +475,6 @@ class FacileView(QMainWindow):
 		:return: None
 		:rtype: NoneType
 		"""
-		# QMessageBox.information(self, title, message)
 		
 		label = QLabel(self)
 		windowWidth = self.width()
@@ -553,12 +550,12 @@ class FacileView(QMainWindow):
 				if self._project.getProcess():
 					message = "Your target application is still running. Close it automatically when Facile is closed?\n" \
 							  "(This can always be changed later in settings)"
-					options = QMessageBox.Yes | QMessageBox.No | QMessageBox.Cancel
-					box = QMessageBox(QMessageBox.Question, "App is running...", message, buttons=options)
-					window = windows.ModernWindow(box)
+					options = MessageBox.Yes | MessageBox.No | MessageBox.Cancel
+					box = MessageBox(MessageBox.Question, "App is running...", message, buttons=options)
+					window = ModernWindow(box)
 					result = window.exec_()
 
-					if result == QMessageBox.Yes:
+					if result == MessageBox.Yes:
 						self._project.autoCloseAppOnExit = False
 					else:
 						self._project.autoCloseAppOnExit = True
@@ -566,34 +563,25 @@ class FacileView(QMainWindow):
 					self._project.acaWarningShown = True
 
 			message = "Would you like to save your project before exiting?"
-			options = QMessageBox.Yes | QMessageBox.No | QMessageBox.Cancel
-			result = QMessageBox.question(self, title, message, options)
+			options = MessageBox.Yes | MessageBox.No | MessageBox.Cancel
+			result = MessageBox.question(self, title, message, options)
 			event.ignore()
 			
-			if result == QMessageBox.Yes:
+			if result == MessageBox.Yes:
 				self.onSaveProjectTriggered()
 				
-			if result != QMessageBox.Cancel:
+			if result != MessageBox.Cancel:
 				if self._project.autoCloseAppOnExit:
 					self.onStopAppTriggered(confirm=False)
 				event.accept()
 				QApplication.instance().exit(0)
 		else:
 			message = "Are you sure you want to quit?"
-			options = QMessageBox.Yes | QMessageBox.No
-			box = QMessageBox(QMessageBox.Question, title, message, buttons=options)
-			window = windows.ModernWindow(box)
-			# size = box.minimumSizeHint()
-			# size.setHeight(size.height() + 30)
-			# window.setFixedSize(size)
-			# window.move(self.screenSize.width/2-window.width()/2, self.screenSize.height/2-window.height()/2)
-			# box.setParent(window)
-			# box.move(0, 30)
-			window.setModal(True)
-			result = window.exec_()
+			options = MessageBox.Yes | MessageBox.No
+			result = MessageBox.question(self, title, message, options)
 			event.ignore()
 			
-			if result == QMessageBox.Yes:
+			if result == MessageBox.Yes:
 				self.onSaveProjectTriggered()
 				event.accept()
 				QApplication.instance().exit(0)
@@ -673,6 +661,7 @@ class FacileView(QMainWindow):
 
 		# View Layout Presets
 		self.ui.actionSimple.toggled.connect(self.showSimple)
+		self.ui.actionEssentials.toggled.connect(self.showEssentials)
 		self.ui.actionClassic.toggled.connect(self.showClassic)
 		self.ui.actionAll.toggled.connect(self.showAll)
 
@@ -683,7 +672,9 @@ class FacileView(QMainWindow):
 		"""
 		if self.ui.actionSimple.isChecked():
 			self.ui.actionClassic.setChecked(False)
+			self.ui.actionEssentials.setChecked(False)
 			self.ui.actionAll.setChecked(False)
+			self.ui.actionMenuDockWidget.hide()
 			self.ui.propertyDockWidget.hide()
 			self.ui.explorerDockWidget.hide()
 			self.ui.validatorDockWidget.hide()
@@ -696,9 +687,26 @@ class FacileView(QMainWindow):
 
 		if self.ui.actionClassic.isChecked():
 			self.ui.actionSimple.setChecked(False)
+			self.ui.actionEssentials.setChecked(False)
 			self.ui.actionAll.setChecked(False)
+			self.ui.actionMenuDockWidget.show()
 			self.ui.propertyDockWidget.show()
 			self.ui.explorerDockWidget.show()
+			self.ui.validatorDockWidget.hide()
+
+	@Slot()
+	def showEssentials(self):
+		"""
+		Shows everything except the validator (unless called)
+		"""
+
+		if self.ui.actionEssentials.isChecked():
+			self.ui.actionSimple.setChecked(False)
+			self.ui.actionClassic.setChecked(False)
+			self.ui.actionAll.setChecked(False)
+			self.ui.actionMenuDockWidget.show()
+			self.ui.propertyDockWidget.hide()
+			self.ui.explorerDockWidget.hide()
 			self.ui.validatorDockWidget.hide()
 
 	@Slot()
@@ -709,6 +717,7 @@ class FacileView(QMainWindow):
 
 		if self.ui.actionAll.isChecked():
 			self.ui.actionSimple.setChecked(False)
+			self.ui.actionEssentials.setChecked(False)
 			self.ui.actionClassic.setChecked(False)
 			self.ui.propertyDockWidget.show()
 			self.ui.explorerDockWidget.show()

@@ -141,7 +141,7 @@
     </layout>
    </widget>
   </widget>
-  <widget class="QDockWidget" name="dockWidget_6">
+  <widget class="QDockWidget" name="actionMenuDockWidget">
    <property name="font">
     <font>
      <family>MS Shell Dlg 2</family>
@@ -427,7 +427,7 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Only Models</string>
+    <string>Models Only</string>
    </property>
   </action>
   <action name="actionClassic">

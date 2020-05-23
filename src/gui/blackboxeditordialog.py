@@ -26,11 +26,13 @@ import os
 sys.path.append(os.path.abspath("./rc"))
 
 
-from PySide2.QtWidgets import QDialog, QWidget, QVBoxLayout, QMessageBox
+from PySide2.QtWidgets import QDialog, QWidget, QVBoxLayout
 from PySide2.QtCore import Qt
 from gui.ui.ui_blackboxeditordialog import Ui_Dialog as Ui_BlackBoxEditorDialog
 from gui.porteditorwidget import PortEditorWidget
 import data.statemachine as sm
+from gui.messagebox import MessageBox
+
 
 class BlackBoxEditorDialog(QDialog):
 	"""
@@ -245,12 +247,12 @@ class BlackBoxEditorDialog(QDialog):
 			title = "Port Type Warning"
 			message = "Warnings exist.\nWould you like to continue?"
 			detailedText = "\n".join([f"- {warning}" for warning in warnings])
-			buttons = QMessageBox.Yes | QMessageBox.No
-			message = QMessageBox(QMessageBox.Warning, title, message, buttons=buttons, flags=Qt.Dialog)
+			buttons = MessageBox.Yes | MessageBox.No
+			message = MessageBox(MessageBox.Warning, title, message, buttons=buttons, flags=Qt.Dialog)
 			message.setDetailedText(detailedText)
 			result = message.exec_()
 
-			if result == QMessageBox.No:
+			if result != MessageBox.Yes:  # Closing dialog otherwise continues
 				return
 
 		# If no errors exit, hide the error label.
@@ -261,6 +263,8 @@ class BlackBoxEditorDialog(QDialog):
 		# EDIT ACTION NAME AND PORTS
 		#################################
 		self._action.setName(name)
+		if self.ui.descriptionBox.text():
+			self._action.setAnnotation(self.ui.descriptionBox.text())
 		
 		# add new input ports to the action
 		il = self.ui.inputLayout

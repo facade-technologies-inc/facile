@@ -1,6 +1,7 @@
 from PySide2.QtCore import Qt, QMetaObject, Signal, Slot, QSize, QRect, QPoint
 from PySide2.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QToolButton,
-                            QLabel, QSizePolicy, QDialog, QApplication)
+                            QLabel, QSizePolicy, QDialog, QApplication, QGraphicsDropShadowEffect)
+from PySide2.QtGui import QRegion
 from ._utils import PLATFORM, resource_path
 import pyautogui
 
@@ -63,7 +64,7 @@ class ModernWindow(QDialog):
             parent (QWidget, optional): Parent widget.
     """
 
-    def __init__(self, w, parent=None):
+    def __init__(self, w, parent=None, modal=True):
         QDialog.__init__(self, parent)
 
         self._w = w
@@ -73,6 +74,7 @@ class ModernWindow(QDialog):
         self.screenSize = QSize(pyautogui.size().width, pyautogui.size().height - 1)
         self.usualSize = self.size()
         self.maximized = False
+        self._movedToCenter = 0
         self.showNormal()
 
         contentLayout = QHBoxLayout()
@@ -91,8 +93,13 @@ class ModernWindow(QDialog):
         self._w.setAttribute(Qt.WA_DeleteOnClose, True)
         self._w.destroyed.connect(self.__child_was_closed)
 
-        print(QApplication.instance().topLevelWidgets())
-        print(self)
+        effect = QGraphicsDropShadowEffect()
+        effect.setBlurRadius(5)
+        self.setGraphicsEffect(effect)
+
+        if modal:
+            self.setWindowModality(Qt.ApplicationModal)
+            self.setWindowFlag(Qt.WindowStaysOnTopHint)
 
     def setupUi(self):
         # create title bar, content
@@ -157,8 +164,8 @@ class ModernWindow(QDialog):
             self.hboxTitle.addWidget(self.btnClose)
 
         # set window flags
-        self.setWindowFlags(Qt.Window | Qt.FramelessWindowHint | Qt.WindowSystemMenuHint | Qt.WindowCloseButtonHint |
-                            Qt.WindowMinimizeButtonHint | Qt.WindowMaximizeButtonHint)
+        self.setWindowFlags(Qt.FramelessWindowHint | Qt.WindowSystemMenuHint |
+                            Qt.WindowCloseButtonHint | Qt.WindowMinimizeButtonHint | Qt.WindowMaximizeButtonHint)
 
         self.setAttribute(Qt.WA_TranslucentBackground)
 
@@ -278,3 +285,28 @@ class ModernWindow(QDialog):
         self.resize(self.usualSize)
         self.maximized = False
         QWidget.showNormal(self)
+
+    def exec_(self) -> int:
+        """
+        Overloads the original exec function to give expected behavior with custom title bar.
+        Returns button clicked if dialog.
+        :return: integer bit value of button clicked
+        :rtype: int
+        """
+        self._w.finished.connect(lambda state: self.done(state))
+        return QDialog.exec_(self)
+
+    def resizeEvent(self, event: 'QResizeEvent'):
+        """
+        Catches when self is resized, and makes sure
+
+        :param event: The resize event, storing the new size
+        :type event: QResizeEvent
+        """
+        newSize = event.size()
+        # self.setMask(QRegion(self.rect()))
+
+        if self._movedToCenter < 3:  # 2 size adjustments are done before self reaches its final assigned size.
+            self.move(self.screenSize.width() / 2 - newSize.width() / 2,
+                      self.screenSize.height() / 2 - newSize.height() / 2)
+            self._movedToCenter += 1
