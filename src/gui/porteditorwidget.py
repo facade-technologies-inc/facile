@@ -121,7 +121,7 @@ class PortEditorWidget(QWidget):
 		self.ui.nameEdit.setText(self._port.getName())
 
 		# get the pretty version of the type
-		typeStr = str(self._port.getDataType().__name__)
+		typeStr = str(self._port.getDataTypeStr())
 		for typeLabel, type in PortEditorWidget.PORT_TYPES:
 			if typeStr == type:
 				typeStr = typeLabel

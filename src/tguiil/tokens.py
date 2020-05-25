@@ -261,30 +261,6 @@ class Token:
                 # crop image
                 if image is not None:
                     width, height = image.size
-                    image = image.crop((leftAdjust, topAdjust, width+rightAdjust, height+bottomAdjust))
-            
-            image = None
-            if captureImage:
-                image = component.capture_as_image()
-            
-            # size of dialogs is a bit off, so we trim to adjust.
-            if isDialog:
-                
-                # Setting amounts to trim off dialog size
-                leftAdjust = 15
-                topAdjust = 0
-                rightAdjust = -17
-                bottomAdjust = -17
-                
-                # resize rectangle size
-                # rectangle.left += leftAdjust
-                # rectangle.top += topAdjust
-                # rectangle.right += rightAdjust
-                # rectangle.bottom += bottomAdjust
-                
-                # crop image
-                if image is not None:
-                    width, height = image.size
                     image = image.crop((leftAdjust, topAdjust, width + rightAdjust, height + bottomAdjust))
             
             # get text of all children that are not editable.

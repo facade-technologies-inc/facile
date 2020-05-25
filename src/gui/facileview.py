@@ -290,6 +290,10 @@ class FacileView(QMainWindow):
 		:rtype: NoneType
 		"""
 		selectedIndexes = selected.indexes()
+
+		if not selectedIndexes:
+			return
+
 		index = selectedIndexes[0]
 		entity = index.internalPointer()
 		if not isinstance(entity, (ProjectExplorerModel.LeafIndex, str)):
@@ -298,6 +302,9 @@ class FacileView(QMainWindow):
 			scene.getGraphics(entity).setSelected(True)
 			self.ui.propertyEditorView.setModel(entity.getProperties().getModel())
 			self.ui.propertyEditorView.expandAll()
+
+		if isinstance(entity, Component) or isinstance(entity, VisibilityBehavior):
+			self.ui.targetGUIModelView.smoothFocus(self.ui.targetGUIModelView.scene().getGraphics(entity))
 	
 	def onStartAppTriggered(self):
 		"""

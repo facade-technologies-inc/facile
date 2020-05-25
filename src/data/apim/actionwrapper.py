@@ -67,6 +67,22 @@ class ActionWrapper(act.Action):
 		self.setName(self._actionRef.getName())
 		self._actionRef.registerWrapper(self)
 		self.synchronizePorts()
+
+	def getUnderlyingAction(self) -> 'Action':
+		"""
+		Gets the action referenced by the possible chain of wrapper actions.
+
+		.. note::
+			This is different than getActionReference() which only gets the action referenced by this wrapper.
+			This function will recursively get the referenced action until we find an action that is not a wrapper.
+
+		:return: The underlying action of the possible chain of action wrappers.
+		:rtype: Action (but definitely not an ActionWrapper)
+		"""
+		if type(self.getActionReference()) is not ActionWrapper:
+			return self.getActionReference()
+
+		return self.getUnderlyingAction()
 		
 	def getActionReference(self) -> 'Action':
 		"""

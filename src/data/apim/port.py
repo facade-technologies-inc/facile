@@ -161,32 +161,45 @@ class Port(Entity):
         """
         return self._input
 
-    def getDataType(self) -> type:
+    def getDataType(self) -> type or str:
         """
         Returns the data type of this Port.
 
         :return: The data type as a Python type.
-        :rtype: type
+        :rtype: type or str
         """
         return self._dataType
 
-    def setDataType(self, newType: type, enforceType=True) -> None:
+    def getDataTypeStr(self) -> str:
+        """
+        returns the data type as a str.
+
+        :return: The name of the data type as a string.
+        :rtype: str
+        """
+        if type(self._dataType) is type:
+            return self._dataType.__name__
+        else:
+            assert(type(self._dataType) is str)
+            return self._dataType
+
+    def setDataType(self, newType: type or str, enforceType=True) -> None:
         """
         Sets the data type of the port. (A Python type [e.g. int, str, bool, etc.])
 
         :raises: InvalidDataTypeError if newType is not a valid type
 
-        :param newType: A Python type [e.g. int, str, bool, etc.].
-        :type newType: type
-        :param enforceType: If true, a check will be performed to make sure that the type is valid.
+        :param newType: A Python type [e.g. int, str, bool, etc.] or a string representing the name of a custom type
+        :type newType: type or str
+        :param enforceType: If true, a check will be performed to make sure that the type is actually a type (not a str).
         :type enforceType: bool
         :return: None
         :rtype: NoneType
         """
-        if type(newType) == type:
+        if type(newType) is type:
             self._dataType = newType
             self.getProperties().getProperty("Data Type")[1].setValue(newType.__name__)
-        elif not enforceType:
+        elif not enforceType and type(newType) is str:
             self._dataType = newType
             self.getProperties().getProperty("Data Type")[1].setValue(newType)
         else:
