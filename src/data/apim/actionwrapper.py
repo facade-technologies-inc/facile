@@ -76,6 +76,15 @@ class ActionWrapper(act.Action):
 		:rtype: Action
 		"""
 		return self._actionRef
+
+	def getChildActions(self) -> List['Action']:
+		"""
+		A replacement for self.getActionReference(), but returns a list with only one element.
+
+		:return: The referenced action in a 1-element list
+		:rtype: List[Action]
+		"""
+		return self.getActionReference()
 	
 	def forgetActionReference(self) -> None:
 		"""

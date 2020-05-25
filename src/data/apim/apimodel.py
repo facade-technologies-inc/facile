@@ -171,6 +171,20 @@ class ApiModel(QObject):
 			
 		return self.getActionPipelines(), list(componentActions)
 
+	def getAllActions(self) -> List['Action']:
+		'''
+		Get a list of all actions regardless of its type including action wrappers.
+		:return:
+		'''
+
+		actions = set()
+
+		work = self._actionPipelines[:] # start with the top-level actions (the action pipelines)
+		while work:
+			action = work.pop()
+			actions.add(action)
+			work.update(set(action.getChildActions()))
+
 	def asDict(self) -> dict:
 		"""
 		Get a dictionary representation of the API Model.
@@ -183,24 +197,32 @@ class ApiModel(QObject):
 		"""
 		apimDict = {}
 
-		# store all action pipelines
-		apimDict["action pipelines"] = [ap.asDict() for ap in self._actionPipelines]
+		apimDict["actions"] = [action.asDict() for action in self.getAllActions()]
 
-		# store all action wrappers and component actions
-		apimDict["action wrappers"] = []
-		apimDict["component actions"] = []
-		componentActions = set()
-		for ap in self._actionPipelines:
-			for aw in ap._actions:
-				apimDict["action wrappers"].append(aw.asDict())
 
-				action = aw.getActionReference()
-				if type(action) is ComponentAction and action not in componentActions:
-					componentActions.add(action)
-					apimDict["component actions"].append(action.asDict())
 
-		# store action specifications
-		apimDict["action specifications"] = [aSpec.asDict() for aSpec in self.getSpecifications()]
+		# # store all action pipelines
+		# apimDict["action pipelines"] = [ap.asDict() for ap in self._actionPipelines]
+		#
+		# # store all action wrappers and component actions
+		# apimDict["action wrappers"] = []
+		# apimDict["component actions"] = []
+		# componentActions = set()
+		# for ap in self._actionPipelines:
+		# 	for aw in ap._actions:
+		# 		apimDict["action wrappers"].append(aw.asDict())
+		#
+		# 		action = aw.getActionReference()
+		# 		if type(action) is ComponentAction and action not in componentActions:
+		# 			componentActions.add(action)
+		# 			apimDict["component actions"].append(action.asDict())
+		#
+		# # store action specifications
+		# apimDict["action specifications"] = [aSpec.asDict() for aSpec in self.getSpecifications()]
+
+
+
+
 
 		# NOTE: The ports will be stored in the action they belong to.
 		# NOTE: The wire sets will be stored in the action pipeline they belong to.

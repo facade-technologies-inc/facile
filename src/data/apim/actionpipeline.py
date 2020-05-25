@@ -281,6 +281,15 @@ class ActionPipeline(Action):
 		:rtype: List[Action]
 		"""
 		return self._actions[:]
+
+	def getChildActions(self) -> List['Action']:
+		"""
+		A replacement for self.getActions()
+
+		:return: All actions in this action pipeline.
+		:rtype: List[Action]
+		"""
+		return self.getActions()
 	
 	def getWireSet(self) -> WireSet:
 		"""
