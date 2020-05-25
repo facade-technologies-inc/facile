@@ -67,6 +67,13 @@ class FacileView(QMainWindow):
 		FLAT_LIGHT = 4
 		ULTRA_DARK = 5
 		ULTRA_LIGHT = 6
+
+	class Layout(Enum):
+		MODELS = 1
+		ESSENTIALS = 2
+		CLASSIC = 3
+		ALL = 4
+		CUSTOM = 5
 	
 	def __init__(self) -> 'FacileView':
 		"""
@@ -80,13 +87,17 @@ class FacileView(QMainWindow):
 		# UI Initialization
 		self.ui = Ui_FacileView()
 		self.ui.setupUi(self)
-		self.theme = FacileView.Theme.CLASSIC_DARK
+
+		# Set up variables
+		self._theme = FacileView.Theme.CLASSIC_DARK
+		self._layout = FacileView.Layout.CLASSIC
+		self._scrollBarsEnabled = False
 
 		# Initialize variables
 		self.screenSize = pyautogui.size()
 
-		# Connect menu signals
-		self.connectMenuSignals()
+		# Connect signals
+		self.connectSignals()
 		
 		# Add validator view
 		self.ui.validatorView = ValidatorView()
@@ -115,20 +126,31 @@ class FacileView(QMainWindow):
 		# Set sizes and alignments
 		self.ui.actionMenuTabWidget.setMinimumWidth(.135*self.screenSize.width)  # So that tabs don't get compressed
 		self.ui.toolBar.setIconSize(QSize(.048*self.screenSize.height, .055*self.screenSize.height))  # Fix big icons
-		# self.ui.toolBar.setMinimumHeight(self.ui.toolBar.height()+*self.screenSize.height)
-		# for action in self.ui.toolBar.children():
-		# 	if isinstance(action, QAction):
-		# 		icon = self.ui.toolBar.widgetForAction(action)
-		# 		icon.setStyleSheet('vertical-align:middle;')
-		#
-		# (Above doesn't work)
-		# TODO: toolbar items are not perfectly centered in shortest dimension. Find way to center them
 		
 		# State Machine Initialization
 		self._stateMachine = StateMachine(self)
 		self._stateMachine.facileOpened()
 
+		self._layout = FacileView.Layout.CLASSIC
 		self.loadSettings()
+
+	def getTheme(self) -> Theme:
+		"""
+		Returns the current Theme
+
+		:return: Current theme
+		:rtype: Theme
+		"""
+		return self._theme
+
+	def getLayout(self) -> Layout:
+		"""
+		Returns the current Theme
+
+		:return: Current layout
+		:rtype: Layout
+		"""
+		return self._layout
 	
 	@Slot(Project)
 	def setProject(self, project: Project) -> None:
@@ -622,7 +644,9 @@ class FacileView(QMainWindow):
 			styles.darkUltra(app, self)
 		elif theme == FacileView.Theme.ULTRA_LIGHT:
 			styles.lightUltra(app, self)
-		self.theme = theme
+		self.ui.targetGUIModelView.setTheme(theme)
+		# self.ui.apiModelView.setTheme(theme)
+		self._theme = theme
 
 	def saveSettings(self) -> None:
 		"""
@@ -632,7 +656,7 @@ class FacileView(QMainWindow):
 		cwd = os.getcwd()
 		tempDir = os.path.join(cwd, "temp")
 		settingsFile = os.path.join(tempDir, "settings.json")
-		settingsList = [self.theme.value]
+		settingsList = [self._theme.value, self._layout.value, self._scrollBarsEnabled]
 
 		if not os.path.exists(tempDir):
 			os.mkdir(tempDir)
@@ -650,34 +674,112 @@ class FacileView(QMainWindow):
 				sList = json.loads(settings.read())
 
 			self.setTheme(FacileView.Theme(sList[0]))
+			self.setLayout(FacileView.Layout(sList[1]))
+			self.enableScrollBars(sList[2])
 
 		except FileNotFoundError:
-			pass
+			self.setTheme(FacileView.Theme.CLASSIC_DARK)
+			self.setLayout(FacileView.Layout.CLASSIC)
+			self.enableScrollBars(False)
 
-	def connectMenuSignals(self) -> None:
+	def enableScrollBars(self, enabled: bool = True):
 		"""
-		Connects extra signals from the Facile Menu Bar
+		Enables or disables scrollbars in the graphicsViews
+
+		:param enabled: whether to enable or disable them
+		:type enabled: bool
+		"""
+		self._scrollBarsEnabled = enabled
+		if not enabled:
+			self.ui.targetGUIModelView.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+			self.ui.targetGUIModelView.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+			self.ui.apiModelView.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+			self.ui.apiModelView.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+		else:
+			self.ui.targetGUIModelView.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+			self.ui.targetGUIModelView.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+			self.ui.apiModelView.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+			self.ui.apiModelView.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+
+	def scrollBarsEnabled(self) -> bool:
+		"""
+		Returns whether or not the Model View scrollbars are enabled
+		"""
+		return self._scrollBarsEnabled
+
+	def connectSignals(self) -> None:
+		"""
+		Connects extra signals for Facile, from menu and other general signals
 		"""
 
-		# View Layout Presets
-		self.ui.actionSimple.toggled.connect(self.showSimple)
+		# View Menu - Layout Presets
+		self.ui.actionModelsOnly.toggled.connect(self.showModelsOnly)
 		self.ui.actionEssentials.toggled.connect(self.showEssentials)
 		self.ui.actionClassic.toggled.connect(self.showClassic)
 		self.ui.actionAll.toggled.connect(self.showAll)
 
-	@Slot()
-	def showSimple(self):
+		# General Layout
+		self.ui.toolBar.orientationChanged.connect(lambda: self.setLayout(FacileView.Layout.CUSTOM))
+		self.ui.toolBar.visibilityChanged.connect(lambda: self.setLayout(FacileView.Layout.CUSTOM))
+		self.ui.actionMenuDockWidget.dockLocationChanged.connect(lambda: self.setLayout(FacileView.Layout.CUSTOM))
+		self.ui.actionMenuDockWidget.visibilityChanged.connect(lambda: self.setLayout(FacileView.Layout.CUSTOM))
+		self.ui.propertyDockWidget.dockLocationChanged.connect(lambda: self.setLayout(FacileView.Layout.CUSTOM))
+		self.ui.propertyDockWidget.visibilityChanged.connect(lambda: self.setLayout(FacileView.Layout.CUSTOM))
+		self.ui.explorerDockWidget.dockLocationChanged.connect(lambda: self.setLayout(FacileView.Layout.CUSTOM))
+		self.ui.explorerDockWidget.visibilityChanged.connect(lambda: self.setLayout(FacileView.Layout.CUSTOM))
+		self.ui.validatorDockWidget.dockLocationChanged.connect(lambda: self.setLayout(FacileView.Layout.CUSTOM))
+		self.ui.validatorDockWidget.visibilityChanged.connect(lambda: self.setLayout(FacileView.Layout.CUSTOM))
+
+	def setLayout(self, layout: Layout):
 		"""
-		Shows only the tguim, apim, and action menu
+		Sets and applies the current layout
+
+		:param layout: Layout to set
+		:type layout: Layout
 		"""
-		if self.ui.actionSimple.isChecked():
+
+		if layout == FacileView.Layout.CLASSIC:
+			self.ui.actionClassic.setChecked(True)
+		elif layout == FacileView.Layout.MODELS:
+			self.ui.actionModelsOnly.setChecked(True)
+		elif layout == FacileView.Layout.ESSENTIALS:
+			self.ui.actionEssentials.setChecked(True)
+		elif layout == FacileView.Layout.ALL:
+			self.ui.actionAll.setChecked(True)
+		elif layout == FacileView.Layout.CUSTOM:
 			self.ui.actionClassic.setChecked(False)
 			self.ui.actionEssentials.setChecked(False)
 			self.ui.actionAll.setChecked(False)
+			self.ui.actionModelsOnly.setChecked(False)
+			self._layout = FacileView.Layout.CUSTOM  # TODO: Implement custom layout saving/applying
+
+	@Slot()
+	def showModelsOnly(self):
+		"""
+		Shows only the 2 models
+		"""
+		if self.ui.actionModelsOnly.isChecked():
+			# Move toolbar
+			self.moveTBToLeft()
+
+			# Uncheck other options
+			self.ui.actionClassic.setChecked(False)
+			self.ui.actionEssentials.setChecked(False)
+			self.ui.actionAll.setChecked(False)
+
+			# Perform Layout modifications
 			self.ui.actionMenuDockWidget.hide()
 			self.ui.propertyDockWidget.hide()
 			self.ui.explorerDockWidget.hide()
 			self.ui.validatorDockWidget.hide()
+
+			# Disable currently selected layout, re-enable others
+			self.ui.actionModelsOnly.setEnabled(False)
+			self.ui.actionClassic.setEnabled(True)
+			self.ui.actionAll.setEnabled(True)
+			self.ui.actionEssentials.setEnabled(True)
+
+			self._layout = FacileView.Layout.MODELS
 
 	@Slot()
 	def showClassic(self):
@@ -686,39 +788,102 @@ class FacileView(QMainWindow):
 		"""
 
 		if self.ui.actionClassic.isChecked():
-			self.ui.actionSimple.setChecked(False)
+			# Move toolbar
+			self.moveTBToTop()
+
+			# Uncheck other options
+			self.ui.actionModelsOnly.setChecked(False)
 			self.ui.actionEssentials.setChecked(False)
 			self.ui.actionAll.setChecked(False)
+
+			# Perform Layout modifications
 			self.ui.actionMenuDockWidget.show()
 			self.ui.propertyDockWidget.show()
 			self.ui.explorerDockWidget.show()
 			self.ui.validatorDockWidget.hide()
 
+			# Disable currently selected layout, re-enable others
+			self.ui.actionModelsOnly.setEnabled(True)
+			self.ui.actionClassic.setEnabled(False)
+			self.ui.actionAll.setEnabled(True)
+			self.ui.actionEssentials.setEnabled(True)
+
+			self._layout = FacileView.Layout.CLASSIC
+
 	@Slot()
 	def showEssentials(self):
 		"""
-		Shows everything except the validator (unless called)
+		Shows only the two models and the action menu
 		"""
 
 		if self.ui.actionEssentials.isChecked():
-			self.ui.actionSimple.setChecked(False)
+			# Move toolbar
+			self.moveTBToTop()
+
+			# Uncheck other options
+			self.ui.actionModelsOnly.setChecked(False)
 			self.ui.actionClassic.setChecked(False)
 			self.ui.actionAll.setChecked(False)
+
+			# Perform Layout modifications
 			self.ui.actionMenuDockWidget.show()
 			self.ui.propertyDockWidget.hide()
 			self.ui.explorerDockWidget.hide()
 			self.ui.validatorDockWidget.hide()
 
+			# Disable currently selected layout, re-enable others
+			self.ui.actionModelsOnly.setEnabled(True)
+			self.ui.actionClassic.setEnabled(True)
+			self.ui.actionAll.setEnabled(True)
+			self.ui.actionEssentials.setEnabled(False)
+
+			self._layout = FacileView.Layout.ESSENTIALS
+
 	@Slot()
 	def showAll(self):
 		"""
-		Shows everything except the validator (unless called)
+		Shows everything in GUI
 		"""
 
 		if self.ui.actionAll.isChecked():
-			self.ui.actionSimple.setChecked(False)
+			# Move toolbar
+			self.moveTBToTop()
+
+			# Uncheck other options
+			self.ui.actionModelsOnly.setChecked(False)
 			self.ui.actionEssentials.setChecked(False)
 			self.ui.actionClassic.setChecked(False)
+
+			# Perform Layout modifications
+			self.ui.actionMenuDockWidget.show()
 			self.ui.propertyDockWidget.show()
 			self.ui.explorerDockWidget.show()
 			self.ui.validatorDockWidget.show()
+
+			# Disable currently selected layout, re-enable others
+			self.ui.actionModelsOnly.setEnabled(True)
+			self.ui.actionClassic.setEnabled(True)
+			self.ui.actionAll.setEnabled(False)
+			self.ui.actionEssentials.setEnabled(True)
+
+			self._layout = FacileView.Layout.ALL
+
+	def moveTBToLeft(self):
+		"""
+		Moves toolbar to left of screen
+		"""
+		toolbar = self.ui.toolBar
+		self.removeToolBar(toolbar)
+		self.addToolBar(Qt.LeftToolBarArea, toolbar)
+		toolbar.show()
+		self.ui.toolBar = toolbar
+
+	def moveTBToTop(self):
+		"""
+		Moves toolbar to top of screen
+		"""
+		toolbar = self.ui.toolBar
+		self.removeToolBar(toolbar)
+		self.addToolBar(Qt.TopToolBarArea, toolbar)
+		toolbar.show()
+		self.ui.toolBar = toolbar

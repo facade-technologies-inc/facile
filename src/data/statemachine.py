@@ -489,6 +489,7 @@ class StateMachine:
 			p.addToRecents()
 			scene = TGUIMScene(p.getTargetGUIModel())
 			ui.targetGUIModelView.setScene(scene)
+			ui.targetGUIModelView.setTheme(v.getTheme())
 			scene.itemSelected.connect(v.onItemSelected)
 			scene.itemBlink.connect(v.onItemBlink)
 			p.getTargetGUIModel().dataChanged.connect(lambda: ui.projectExplorerView.update())

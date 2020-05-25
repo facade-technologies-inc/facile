@@ -22,24 +22,24 @@
   margin-right: 8px;
 }
 
-#btnRestore, #btnMaximize {
-  background-color: hsv(123, 204, 198);
+#btnMaximize {
+  border-image: url(:/icon/resources/titlebar_buttons/maximize.png);
 }
 
-#btnRestore::hover, #btnMaximize::hover {
-  background-color: hsv(123, 204, 148);
+#btnMaximize::hover {
+  border-image: url(:/icon/resources/titlebar_buttons/maximize-h.png);
 }
 
-#btnRestore::pressed, #btnMaximize::pressed {
+#btnMaximize::pressed {
   background-color: hsv(123, 204, 98);
 }
 
 #btnMinimize {
-  background-color: hsv(38, 218, 253);
+  border-image: url(:/icon/resources/titlebar_buttons/minimize.png);
 }
 
 #btnMinimize::hover {
-  background-color: hsv(38, 218, 203);
+  border-image: url(:/icon/resources/titlebar_buttons/minimize-h.png);
 }
 
 #btnMinimize::pressed {
@@ -47,11 +47,11 @@
 }
 
 #btnClose {
-  background-color: hsv(0, 182, 252);
+  border-image: url(:/icon/resources/titlebar_buttons/close.png);
 }
 
 #btnClose::hover {
-  background-color: hsv(0, 182, 202);
+  border-image: url(:/icon/resources/titlebar_buttons/close-h.png);
 }
 
 #btnClose::pressed {

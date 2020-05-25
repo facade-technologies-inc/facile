@@ -1,7 +1,7 @@
 from PySide2.QtCore import Qt, QMetaObject, Signal, Slot, QSize, QRect, QPoint
 from PySide2.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QToolButton,
                             QLabel, QSizePolicy, QDialog, QApplication, QGraphicsDropShadowEffect)
-from PySide2.QtGui import QRegion
+from PySide2.QtGui import QIcon
 from ._utils import PLATFORM, resource_path
 import pyautogui
 

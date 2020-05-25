@@ -71,6 +71,7 @@
      <string>Help</string>
     </property>
     <addaction name="actionTutorials"/>
+    <addaction name="actionUseful_Keybindings"/>
     <addaction name="separator"/>
     <addaction name="actionWebsite"/>
    </widget>
@@ -82,7 +83,7 @@
      <property name="title">
       <string>Layout</string>
      </property>
-     <addaction name="actionSimple"/>
+     <addaction name="actionModelsOnly"/>
      <addaction name="actionEssentials"/>
      <addaction name="actionClassic"/>
      <addaction name="actionAll"/>
@@ -422,7 +423,7 @@
     <string>Website</string>
    </property>
   </action>
-  <action name="actionSimple">
+  <action name="actionModelsOnly">
    <property name="checkable">
     <bool>true</bool>
    </property>
@@ -437,6 +438,9 @@
    <property name="checked">
     <bool>true</bool>
    </property>
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Classic</string>
    </property>
@@ -450,8 +454,16 @@
    </property>
   </action>
   <action name="actionEssentials">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>Essentials</string>
+   </property>
+  </action>
+  <action name="actionUseful_Keybindings">
+   <property name="text">
+    <string>Useful Keybindings</string>
    </property>
   </action>
  </widget>

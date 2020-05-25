@@ -56,11 +56,9 @@ class ManageProjectDialog(QDialog):
 		self.mainWindow: fv.FacileView = mainWindow
 		self._project = project
 
-		self.setInitTheme()
+		self.initializeValues()
 
 		self.ui.buttonBox.clicked.connect(lambda button: self.applySettings(button))
-
-		self.changeSize()
 
 		if project:
 			self.ui.project_tab.setEnabled(True)
@@ -79,17 +77,26 @@ class ManageProjectDialog(QDialog):
 			if project.autoCloseAppOnExit:
 				self.ui.closeAppConf.setChecked(project.autoCloseAppOnExit)
 
+	def initializeValues(self):
+		"""
+		Initializes all the user settings to be visible/selected
+		"""
+		self.ui.enableSBs.setChecked(self.mainWindow.scrollBarsEnabled())
+		self.setInitTheme()
+		self.setInitLayout()
+
 	def setInitTheme(self):
 		"""
 		Sets the theme box to have the current theme
 		"""
-		self.ui.themeBox.setCurrentIndex(self.mainWindow.theme.value - 1)
+		self.ui.themeBox.setCurrentIndex(self.mainWindow.getTheme().value - 1)
 
-	def changeSize(self):
+	def setInitLayout(self):
 		"""
-		The tab widgets change size when the theme changes, so this makes things look better
+		Sets the layout box to have the current layout
 		"""
-		self.setMinimumHeight(417)
+		self.ui.layoutBox.addItems(["Models Only", "Essentials", "Classic", "All", "Custom"])
+		self.ui.layoutBox.setCurrentIndex(self.mainWindow.getLayout().value - 1)
 
 	def applySettings(self, button: QAbstractButton = None, bypass=False):
 		"""
@@ -111,6 +118,11 @@ class ManageProjectDialog(QDialog):
 						self._project.autoCloseAppOnExit = False
 
 			self.mainWindow.setTheme(fv.FacileView.Theme(self.ui.themeBox.currentIndex() + 1))
+			if self.ui.layoutBox.currentIndex() < 4:
+				self.mainWindow.setLayout(fv.FacileView.Layout(self.ui.layoutBox.currentIndex() + 1))
+			else:
+				self.mainWindow.setLayout(fv.FacileView.Layout.CLASSIC)
+			self.mainWindow.enableScrollBars(self.ui.enableSBs.isChecked())
 			self.mainWindow.saveSettings()
 	
 	def accept(self) -> None:

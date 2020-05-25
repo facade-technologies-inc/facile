@@ -214,5 +214,21 @@
 
         <file alias="../resources/icons/pastel/trash_can.png">resources/icons/pastel/trash_can.png</file>
 
+        <file alias="../resources/titlebar_buttons/close-h.png">resources/titlebar_buttons/close-h.png</file>
+
+        <file alias="../resources/titlebar_buttons/close.png">resources/titlebar_buttons/close.png</file>
+
+        <file alias="../resources/titlebar_buttons/maximize-h.png">resources/titlebar_buttons/maximize-h.png</file>
+
+        <file alias="../resources/titlebar_buttons/maximize.png">resources/titlebar_buttons/maximize.png</file>
+
+        <file alias="../resources/titlebar_buttons/minimize-h.png">resources/titlebar_buttons/minimize-h.png</file>
+
+        <file alias="../resources/titlebar_buttons/minimize.png">resources/titlebar_buttons/minimize.png</file>
+
+        <file alias="../resources/titlebar_buttons/restore-h.png">resources/titlebar_buttons/restore-h.png</file>
+
+        <file alias="../resources/titlebar_buttons/restore.png">resources/titlebar_buttons/restore.png</file>
+
     </qresource>
 </RCC>

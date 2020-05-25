@@ -27,7 +27,7 @@ from PySide2.QtCore import QRectF
 from PySide2.QtGui import QPainterPath, QColor, QPen, Qt, QFont, QFontMetricsF, QImage, QPixmap
 from PySide2.QtWidgets import QGraphicsScene, QGraphicsItem, QGraphicsSceneContextMenuEvent, QGraphicsPixmapItem
 from PySide2.QtCore import QRectF
-from PySide2.QtGui import QPainterPath, QColor, QPen, Qt, QFont, QFontMetricsF
+from PySide2.QtGui import QPainterPath, QColor, QPen, Qt, QFont, QFontMetricsF, QBrush
 from PySide2.QtWidgets import QGraphicsScene, QGraphicsItem, QGraphicsSceneContextMenuEvent, QMenu, QGraphicsWidget
 import data.statemachine as sm
 from graphics.tguim.scrollablegraphicsitem import ScrollableGraphicsItem
@@ -94,6 +94,8 @@ class ComponentGraphics(QGraphicsItem):
         self._depth = dataComponent.depth  # Depth relative to top-level window (-1 if root)
         self.isMenu = False
         self.picChild = None
+        self._brush = QBrush(QColor(0, 141, 222).lighter(f=85))
+        self._pen = QPen(QColor(0, 0, 0))
         
         # --- MENUS --- #
         # Menus like to be special so this section puts them back in their place (both literally and figuratively)
@@ -649,7 +651,7 @@ class ComponentGraphics(QGraphicsItem):
         path = QPainterPath()
         path.addRect(self.boundingRect())
         return path
-    
+
     def paint(self, painter, option, widget):
         """
         Paints the contents of the component. Override the parent paint function
@@ -666,25 +668,27 @@ class ComponentGraphics(QGraphicsItem):
         showPics = sm.StateMachine.instance.configVars.showComponentImages
 
         boundingRect = self.boundingRect()
-        
+
         if self.isRoot or boundingRect.width() == 0 and boundingRect.height() == 0:
             painter.setPen(QPen(QColor(Qt.transparent)))
             painter.setBrush(QColor(Qt.transparent))
             return
 
         else:
-            pen = QPen(QColor(100, 200, 255))
             if self.isSelected():
+                pen = QPen(QColor(100, 200, 255))
                 pen.setStyle(Qt.DashDotLine)
                 pen.setColor(QColor(255, 0, 0))
             else:
+                pen = self._pen
                 pen.setStyle(Qt.SolidLine)
-                pen.setColor(QColor(0, 0, 0))
+                painter.setPen(pen)
+            penCol = self._pen.color()
             painter.setPen(pen)
 
         if showPics and self._dataComponent.getFirstImage() is not None:
             if self.isSelected():
-                pen.setColor(QColor(255,50,50))
+                pen.setColor(QColor(255, 50, 50))
                 painter.setBrush(QColor(255, 50, 50, 20))
             else:
                 pen.setColor(QColor(50, 50, 255))
@@ -709,8 +713,9 @@ class ComponentGraphics(QGraphicsItem):
         else:
             if self.picChild:
                 self.scene().removeItem(self.picChild)
-            painter.setBrush(QColor(0, 141, 222).lighter(f=70 + 10*self._depth))
-            id = self._dataComponent.getId()
+
+            painter.setBrush(self._brush)
+            painter.fillRect(boundingRect, self._brush)
             painter.drawRoundedRect(boundingRect, 5, 5)
 
             # draw name label
@@ -729,7 +734,7 @@ class ComponentGraphics(QGraphicsItem):
             fm = QFontMetricsF(nameFont)
             name = fm.elidedText(name, Qt.ElideRight, boundingRect.width() - ComponentGraphics.TITLEBAR_H)
 
-            painter.setBrush(QColor(100, 200, 255))
+            painter.setBrush(penCol)
             painter.drawText(self.boundingRect().x() + 5, 13, name)
 
         if sm.StateMachine.instance.configVars.showTokenTags:
@@ -749,7 +754,7 @@ class ComponentGraphics(QGraphicsItem):
         :rtype: NoneType
         """
         
-        # TODO: May want to rename TITLEBAR_H since titlebars are no longer used
+        # TODO: May want to rename or remove TITLEBAR_H since titlebars are no longer used
         if br.width() >= ComponentGraphics.TITLEBAR_H:
             token_count = str(self.getNumberOfTokens())
             
@@ -813,3 +818,23 @@ class ComponentGraphics(QGraphicsItem):
         :rtype: str
         """
         return "Component: {}".format(self._dataComponent.getId())
+
+    def setBrush(self, brush):
+        """
+        Sets the brush for this item
+
+        :param brush: the new background color for this item
+        :type brush: QBrush
+        """
+        self._brush = brush
+        self.update()
+
+    def setPen(self, pen):
+        """
+        Sets the pen for this item
+
+        :param pen: the new outline color for this item
+        :type pen: QPen
+        """
+        self._pen = pen
+        self.update()
