@@ -140,8 +140,10 @@ class Project:
 		if self._process is None or not self._process.is_running():
 			return None
 		else:
-			self._explorer = Explorer(self._process.pid, self._backend)
-			return self._explorer
+			# TODO: Uncomment when Explorer is done
+			# self._explorer = Explorer(self._process.pid, self._backend)
+			# return self._explorer
+			return None
 	
 	def getTargetGUIModel(self) -> 'TargetGuiModel':
 		"""
