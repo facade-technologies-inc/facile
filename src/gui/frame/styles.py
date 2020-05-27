@@ -216,11 +216,19 @@ def darkClassic(app, view):
     dark_palette.setColor(QPalette.Link, QColor(42, 130, 218))
     dark_palette.setColor(QPalette.Highlight, QColor(42, 130, 218))
     dark_palette.setColor(QPalette.HighlightedText, Qt.black)
+    # dark_palette.setColor(QPalette.Light, QColor(180, 180, 180))
+    # dark_palette.setColor(QPalette.Midlight, QColor(90, 90, 90))
+    # dark_palette.setColor(QPalette.Dark, QColor(53, 53, 53))
+    # dark_palette.setColor(QPalette.Shadow, QColor(20, 20, 20))
+
     dark_palette.setColor(QPalette.Disabled, QPalette.Text, Qt.darkGray)
     dark_palette.setColor(QPalette.Disabled, QPalette.ButtonText, Qt.darkGray)
+    dark_palette.setColor(QPalette.Disabled, QPalette.WindowText, QColor(115, 115, 115))
+    dark_palette.setColor(QPalette.Disabled, QPalette.Highlight, QColor(80, 80, 80))
+    dark_palette.setColor(QPalette.Disabled, QPalette.HighlightedText, QColor(115, 115, 115))
 
     app.setPalette(dark_palette)
-    app.setStyleSheet("QToolTip { color: #ffffff; background-color: #2a82da; border: 1px solid white; }")
+    # app.setStyleSheet("QScrollArea > QWidget > QWidget { background-color: palette(base); }")
     _apply_base_theme(app, False)
 
 
@@ -247,9 +255,16 @@ def lightClassic(app, view):
     palette.setColor(QPalette.Link, QColor(42, 130, 218))
     palette.setColor(QPalette.Highlight, QColor(42, 130, 218))
     palette.setColor(QPalette.HighlightedText, Qt.white)
+    palette.setColor(QPalette.Light, QColor(180, 180, 180).darker(f=110))
+    palette.setColor(QPalette.Midlight, QColor(200, 200, 200).darker(f=110))
+    palette.setColor(QPalette.Dark, QColor(225, 225, 225).darker(f=110))
+    palette.setColor(QPalette.Shadow, QColor(20, 20, 20))
+
     palette.setColor(QPalette.Disabled, QPalette.Text, QColor(60, 60, 60))
     palette.setColor(QPalette.Disabled, QPalette.ButtonText, Qt.darkGray)
+    palette.setColor(QPalette.Disabled, QPalette.WindowText, QColor(115, 115, 115))
+    palette.setColor(QPalette.Disabled, QPalette.Highlight, QColor(190, 190, 190).darker(f=110))
+    palette.setColor(QPalette.Disabled, QPalette.HighlightedText, QColor(115, 115, 115).darker(f=110))
 
     app.setPalette(palette)
-    app.setStyleSheet("QToolTip { color: #ffffff; background-color: #2a82da; border: 1px solid white; }")
     _apply_base_theme(app, False)

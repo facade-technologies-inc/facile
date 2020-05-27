@@ -718,17 +718,7 @@ class FacileView(QMainWindow):
 		self.ui.actionClassic.toggled.connect(self.showClassic)
 		self.ui.actionAll.toggled.connect(self.showAll)
 
-		# General Layout
-		self.ui.toolBar.orientationChanged.connect(lambda: self.setLayout(FacileView.Layout.CUSTOM))
-		self.ui.toolBar.visibilityChanged.connect(lambda: self.setLayout(FacileView.Layout.CUSTOM))
-		self.ui.actionMenuDockWidget.dockLocationChanged.connect(lambda: self.setLayout(FacileView.Layout.CUSTOM))
-		self.ui.actionMenuDockWidget.visibilityChanged.connect(lambda: self.setLayout(FacileView.Layout.CUSTOM))
-		self.ui.propertyDockWidget.dockLocationChanged.connect(lambda: self.setLayout(FacileView.Layout.CUSTOM))
-		self.ui.propertyDockWidget.visibilityChanged.connect(lambda: self.setLayout(FacileView.Layout.CUSTOM))
-		self.ui.explorerDockWidget.dockLocationChanged.connect(lambda: self.setLayout(FacileView.Layout.CUSTOM))
-		self.ui.explorerDockWidget.visibilityChanged.connect(lambda: self.setLayout(FacileView.Layout.CUSTOM))
-		self.ui.validatorDockWidget.dockLocationChanged.connect(lambda: self.setLayout(FacileView.Layout.CUSTOM))
-		self.ui.validatorDockWidget.visibilityChanged.connect(lambda: self.setLayout(FacileView.Layout.CUSTOM))
+		# TODO: Implement custom layout saving/applying
 
 	def setLayout(self, layout: Layout):
 		"""
@@ -747,11 +737,7 @@ class FacileView(QMainWindow):
 		elif layout == FacileView.Layout.ALL:
 			self.ui.actionAll.setChecked(True)
 		elif layout == FacileView.Layout.CUSTOM:
-			self.ui.actionClassic.setChecked(False)
-			self.ui.actionEssentials.setChecked(False)
-			self.ui.actionAll.setChecked(False)
-			self.ui.actionModelsOnly.setChecked(False)
-			self._layout = FacileView.Layout.CUSTOM  # TODO: Implement custom layout saving/applying
+			pass  # TODO: Implement custom layout saving/applying
 
 	@Slot()
 	def showModelsOnly(self):

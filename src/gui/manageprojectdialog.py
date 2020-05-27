@@ -57,13 +57,14 @@ class ManageProjectDialog(QDialog):
 		self._project = project
 
 		self.initializeValues()
+		self.connectSignals()
 
 		self.ui.buttonBox.clicked.connect(lambda button: self.applySettings(button))
 
 		if project:
 			self.ui.project_tab.setEnabled(True)
-			self.ui.target_gui_model_tab.setEnabled(True)
-			self.ui.api_model_tab.setEnabled(True)
+			# self.ui.target_gui_model_tab.setEnabled(True)  # TODO: Enable these when model theming is functional
+			# self.ui.api_model_tab.setEnabled(True)
 
 			self.ui.locationEdit.setText(project.getProjectDir())
 			self.ui.nameEdit.setText(project.getName())
@@ -76,6 +77,13 @@ class ManageProjectDialog(QDialog):
 			self.ui.backendEdit.setCurrentIndex(idx)
 			if project.autoCloseAppOnExit:
 				self.ui.closeAppConf.setChecked(project.autoCloseAppOnExit)
+
+	def connectSignals(self):
+		"""
+		Connects any signals needed for proper behavior of the dialog
+		"""
+		# TODO: Enable color choosing for component graphics, where this will be needed. Not a priority at the moment.
+		pass
 
 	def initializeValues(self):
 		"""
@@ -95,7 +103,7 @@ class ManageProjectDialog(QDialog):
 		"""
 		Sets the layout box to have the current layout
 		"""
-		self.ui.layoutBox.addItems(["Models Only", "Essentials", "Classic", "All", "Custom"])
+		self.ui.layoutBox.addItems(["Models Only", "Essentials", "Classic", "All"])
 		self.ui.layoutBox.setCurrentIndex(self.mainWindow.getLayout().value - 1)
 
 	def applySettings(self, button: QAbstractButton = None, bypass=False):
