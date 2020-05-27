@@ -576,10 +576,10 @@ class StateMachine:
 		observer = self._project.getObserver()
 		
 		if mode == StateMachine.ExplorationMode.AUTO:
-			explorer.play()
+			# explorer.play()  # TODO: Uncomment when explorer is fixed
 			observer.play()
 		elif mode == StateMachine.ExplorationMode.MANUAL:
-			explorer.pause()
+			# explorer.pause()
 			observer.play()
 		
 		self.view.ui.actionAutoExplore.setEnabled(True)
