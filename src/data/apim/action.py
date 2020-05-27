@@ -346,8 +346,11 @@ class Action(Entity):
 		actionDict["inputs"] = [port.asDict() for port in self._inputs]
 		actionDict["outputs"] = [port.asDict() for port in self._outputs]
 		actionDict["wrappers"] = [wrapper.getId() for wrapper in self._wrappers]
+		actionDict["type"] = str(self.__class__.__name__)
+		actionDict["id"] = self.getId()
+		actionDict["name"] = self.getName()
+		actionDict["wrappers"] = [wrapper.getId() for wrapper in self._wrappers]
 
-		# TODO: store entity properties
 		return actionDict
 
 	@staticmethod
@@ -360,10 +363,15 @@ class Action(Entity):
 		:return: The Action object that was constructed from the dictionary
 		:rtype: Action
 		"""
-		ap = Action()
-		ap._inputs = [pt.Port.fromDict(dic) for dic in d["inputs"]]
-		ap._outputs = [pt.Port.fromDict(dic) for dic in d["outputs"]]
+		a = Action()
+
+		def connectPort(port):
+			port.setAction(a)
+			return port
+
+		a._inputs = [connectPort(pt.Port.fromDict(dic)) for dic in d["inputs"]]
+		a._outputs = [connectPort(pt.Port.fromDict(dic)) for dic in d["outputs"]]
 
 		# TODO: Figure out how to get the wrapper objects given the ID.
 
-		return ap
+		return a

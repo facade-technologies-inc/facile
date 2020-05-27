@@ -178,12 +178,12 @@ class ApiModel(QObject):
 		'''
 
 		actions = set()
-
 		work = self._actionPipelines[:] # start with the top-level actions (the action pipelines)
 		while work:
 			action = work.pop()
 			actions.add(action)
-			work.update(set(action.getChildActions()))
+			work += action.getChildActions()
+		return actions
 
 	def asDict(self) -> dict:
 		"""
@@ -198,38 +198,7 @@ class ApiModel(QObject):
 		apimDict = {}
 
 		apimDict["actions"] = [action.asDict() for action in self.getAllActions()]
-
-
-
-		# # store all action pipelines
-		# apimDict["action pipelines"] = [ap.asDict() for ap in self._actionPipelines]
-		#
-		# # store all action wrappers and component actions
-		# apimDict["action wrappers"] = []
-		# apimDict["component actions"] = []
-		# componentActions = set()
-		# for ap in self._actionPipelines:
-		# 	for aw in ap._actions:
-		# 		apimDict["action wrappers"].append(aw.asDict())
-		#
-		# 		action = aw.getActionReference()
-		# 		if type(action) is ComponentAction and action not in componentActions:
-		# 			componentActions.add(action)
-		# 			apimDict["component actions"].append(action.asDict())
-		#
-		# # store action specifications
-		# apimDict["action specifications"] = [aSpec.asDict() for aSpec in self.getSpecifications()]
-
-
-
-
-
-		# NOTE: The ports will be stored in the action they belong to.
-		# NOTE: The wire sets will be stored in the action pipeline they belong to.
-		# NOTE: The wires will be stored in the wire sets they belong to.
-
-		# from pprint import pprint
-		# pprint(apimDict)
+		# TODO: store actions that are referenced by the visibility behaviors
 
 		return apimDict
 
@@ -244,8 +213,39 @@ class ApiModel(QObject):
 		:rtype: ApiModel
 		"""
 		apim = ApiModel()
-		apim._actionPipelines = [ApiModel.fromDict(dic) for dic in d["action pipelines"]]
 
+		entityIdMap = {} # ID -> (Entity, Dict)
+
+		# build and record all actions
+		actionLookup = {} # action_type -> [entity IDs]
+		for action in d["actions"]:
+			t = action['type']
+
+			if not actionLookup.get(t, None):
+				actionLookup[t] = []
+
+			actionLookup[t].append(action["id"])
+
+			actionObj = None
+			locals = {
+				"actionObj": actionObj,
+				"action"   : action,
+			}
+			exec(f'actionObj = {t}.fromDict(action)', globals(), locals)
+			actionObj = locals["actionObj"]
+			entityIdMap[action['id']] = (actionObj, action)
+
+		for ap, apDict in map(entityIdMap.get, actionLookup["ActionPipeline"]):
+			ap._actions = [entityIdMap[id][0] for id in apDict["actions"]]
+
+		for aw, awDict in map(entityIdMap.get, actionLookup["ActionWrapper"]):
+			aw._actionRef = entityIdMap[awDict["reference action"]][0]
+			aw._parent = entityIdMap[awDict["parent"]][0]
+			aw.initializeAfterLink()
+
+		for ca, caDict in map(entityIdMap.get, actionLookup["ComponentAction"]):
+			ca._target = None # TODO: link to proper component
+			ca.initializeAfterLink()
 
 		return apim
 

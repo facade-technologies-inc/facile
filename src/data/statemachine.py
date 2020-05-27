@@ -480,7 +480,7 @@ class StateMachine:
 			ui.targetGUIModelView.scene().update()
 		
 		if event == StateMachine.Event.PROJECT_OPENED:
-			v.setWindowTitle("Facile - " + self._project.getMainProjectFile())
+			v.setWindowTitle("Facile - " + self._project.getProjectFile())
 			#p.save() # TODO: BE SURE TO UNCOMMENT THIS ONCE APIM LOAD/SAVE IS WORKING!!!
 			p.addToRecents()
 			scene = TGUIMScene(p.getTargetGUIModel())

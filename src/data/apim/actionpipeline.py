@@ -41,6 +41,8 @@ class ActionPipeline(Action):
 		Action.__init__(self)
 		self._actions = []
 		self._wireSet = WireSet()
+
+		# these variables are just for api compilation purposes
 		self._varName = 'a'
 		self._varMap = []  # This stores (varName, port) tuples
 	
@@ -497,10 +499,8 @@ class ActionPipeline(Action):
 		:rtype: ActionPipeline
 		"""
 		ap = ActionPipeline()
-		ap._actions = [Action.fromDict(dic) for dic in d["actions"]]
 
-		# TODO: restore these?
-		#  self._varName = 'a'
-		#  self._varMap = []  # This stores (varName, port) tuples
+		# NOTE: Actions are linked in the ApiModel.fromDict() method
+
 
 		return ap
