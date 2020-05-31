@@ -104,6 +104,11 @@ class ScrollableGraphicsItem(QGraphicsRectItem):
         pen.setColor(QColor(Qt.transparent))
         painter.setPen(pen)
 
+    def getContents(self):
+        """
+        Returns the list of self's contents
+        """
+
 if __name__ == "__main__":
     app = QApplication()
 

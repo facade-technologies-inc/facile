@@ -31,6 +31,12 @@ from gui.settriggeractiondialog import SetTriggerActionDialog
 
 
 class VBGraphics(QAbstractGraphicsShapeItem):
+
+	MAX_LEFT_DIST = 140
+	MIN_LEFT_DIST = 20
+	ARROW_COL = QColor(230, 230, 230)
+	SEL_ARROW_COL = QColor(255, 200, 50)
+
 	def __init__(self, dataVisibilityBehavior: 'VisibilityBehavior', parent: 'TGUIMScene'):
 		"""
 		Construct the VBGraphics class.
@@ -49,10 +55,10 @@ class VBGraphics(QAbstractGraphicsShapeItem):
 		self._dataVB = dataVisibilityBehavior
 		self.setFlag(QGraphicsItem.ItemIsSelectable)
 
-		self._srcComponentCenterPoint = self.scene().getGraphics(self._dataVB.getSrcComponent()).boundingRect().center()
-		self._destComponentCenterPoint = self.scene().getGraphics(self._dataVB.getDestComponent()).boundingRect().center()
+		self._srcComp = self.scene().getGraphics(self._dataVB.getSrcComponent())
+		self._dstComp = self.scene().getGraphics(self._dataVB.getDestComponent())
 		self._boundingRect = None
-		self._x1, self._x2, self._y1, self._y2 = 0, 0, 0, 0
+		self._path = None
 
 		def onRemove():
 			tguim = sm.StateMachine.instance._project.getTargetGUIModel()
@@ -83,13 +89,13 @@ class VBGraphics(QAbstractGraphicsShapeItem):
 		if self._boundingRect:
 			return self._boundingRect
 
-		srcPos = self.scene().getGraphics(self._dataVB.getSrcComponent()).scenePos()
-		dstPos = self.scene().getGraphics(self._dataVB.getDestComponent()).scenePos()
+		srcPos = self._srcComp.scenePos()
+		dstPos = self._dstComp.scenePos()
 		
 		leftCornerX = min(srcPos.x(), dstPos.x())
 		leftCornerY = min(srcPos.y(), dstPos.y())
-		width =       abs(srcPos.x()- dstPos.x())
-		height =      abs(srcPos.y()- dstPos.y())
+		width = abs(srcPos.x() - dstPos.x())
+		height = abs(srcPos.y() - dstPos.y())
 		return QRectF(leftCornerX, leftCornerY, width, height)
 	
 	def paint(self, painter: QPainter, option, widget):
@@ -108,54 +114,27 @@ class VBGraphics(QAbstractGraphicsShapeItem):
 		"""
 		# Only draw visibility behaviors if "Show Visibility Behaviors" action is checked in the View drop down.
 		if sm.StateMachine.instance.configVars.showBehaviors:
-			arrowColor = QColor(255, 200, 50)
-
-			pen = QPen(arrowColor)
+			pen = QPen()
 			if self.isSelected():
+				arrowColor = VBGraphics.SEL_ARROW_COL
 				pen.setStyle(Qt.DashDotLine)
-				arrowColor = QColor(255, 0, 0)
+				pen.setColor(arrowColor)
 			else:
+				arrowColor = VBGraphics.ARROW_COL
 				pen.setStyle(Qt.SolidLine)
-				arrowColor = QColor(255, 200, 50)
+				pen.setColor(arrowColor)
 
-			pen.setWidth(10)
+			pen.setJoinStyle(Qt.RoundJoin)
+			pen.setCapStyle(Qt.RoundCap)
+			pen.setWidth(3)
 			painter.setPen(pen)
-
-			srcBR = self.scene().getGraphics(self._dataVB.getSrcComponent()).boundingRect()
-			dstBR = self.scene().getGraphics(self._dataVB.getDestComponent()).boundingRect()
-
-			lengthSrcNodeSrcEdgeList = len(self._dataVB.getSrcComponent().getSrcVisibilityBehaviors())
-			lengthDesNodeDesEdgeList = len(self._dataVB.getDestComponent().getDestVisibilityBehaviors())
-			heightSrcNode = srcBR.height()
-			heightDesNode = dstBR.height()
-			widthDesNode = dstBR.width()
-			# This is the index(+1 avoid 0 in calculation) of the edge at the SourceNode's edgeSrcList
-			srcNodeIndex = self._dataVB.getSrcComponent().getSrcVisibilityBehaviors().index(
-			self._dataVB) + 1
-			# This is the index of the edge at the DesNode's _edgeDesList
-			desNodeIndex = self._dataVB.getDestComponent().getDestVisibilityBehaviors().index(
-			self._dataVB) + 1
-
-			srcPos = self.scene().getGraphics(self._dataVB.getSrcComponent()).scenePos()
-			dstPos = self.scene().getGraphics(self._dataVB.getDestComponent()).scenePos()
-
-			# ComponentGraphics.MARGIN = 20
-			x1 = srcPos.x() + 20  # x does not change, stay at the left most of the node
-			y1 = srcPos.y() + (heightSrcNode / (lengthSrcNodeSrcEdgeList + 1)) * srcNodeIndex
-			x2 = dstPos.x() + widthDesNode + 20
-			y2 = dstPos.y() + (heightDesNode / (lengthDesNodeDesEdgeList + 1)) * desNodeIndex
-			self._x1 = x1
-			self._x2 = x2
-			self._y1 = y1
-			self._y2 = y2
 		
-			# build the path and arrowhead
-			path, leftInTrue, pathBoundingRect = self.buildPath(x1, x2, y1, y2)
-			arrowHead, arrowHeadBoundingRect = self.buildArrowHead(x1, x2, y1, y2, leftInTrue)
+			# Path and Arrowhead
+			path, arrival, direction, pathBoundingRect = self.buildPath()
+			arrowHead, arrowHeadBoundingRect = self.buildArrowHead(arrival, direction)
 			
 			brTLx = min(pathBoundingRect.topLeft().x(), arrowHeadBoundingRect.topLeft().x())
 			brTLy = min(pathBoundingRect.topLeft().y(), arrowHeadBoundingRect.topLeft().y())
-			brBLx = min(pathBoundingRect.bottomLeft().x(), arrowHeadBoundingRect.bottomLeft().x())
 			brBLy = max(pathBoundingRect.bottomLeft().y(), arrowHeadBoundingRect.bottomLeft().y())
 			brTRx = max(pathBoundingRect.topRight().x(), arrowHeadBoundingRect.topRight().x())
 			brHeight = brBLy - brTLy
@@ -163,127 +142,365 @@ class VBGraphics(QAbstractGraphicsShapeItem):
 			
 			margin = 100
 			
-			
 			self._boundingRect = QRectF(brTLx - margin, brTLy - margin, brWidth + margin * 2, brHeight + margin * 2)
 			
 			# Either of these lines will fix the drawing issue
-			#self.prepareGeometryChange()
-			self.scene().setSceneRect(self.scene().itemsBoundingRect())
-			
+			self.prepareGeometryChange()
+			# self.scene().setSceneRect(self.scene().itemsBoundingRect())
+
+			# Draw path
 			painter.drawPath(path)
+
+			# Draw Arrowhead
+			pen.setStyle(Qt.SolidLine)
+			painter.setPen(pen)
 			painter.drawPath(arrowHead)
 			painter.fillPath(arrowHead, QBrush(arrowColor))
-			
-			# pen.setStyle(Qt.SolidLine)
-			# pen.setColor(QColor(50, 255, 50))
-			# painter.setPen(pen)
-			# # painter.drawRect(self.boundingRect())
-			# painter.drawPath(self.shape())
-			# painter.drawRect(self.scene().sceneRect())
 
-	def buildArrowHead(self, x1, x2, y1, y2, leftInTrue):
+	def buildArrowHead(self, arrival, direction):
+		"""
+		Draws the path for the arrowhead.
+
+		:param arrival: x,y coordinate tuple of arrival point
+		:type arrival: tuple
+		:param direction: Direction of arrival - from top:0, left:1, right:2, bottom:3
+		:type direction: int
+		"""
+		x = arrival[0]
+		y = arrival[1]
+
 		# draw the arrow head
-		aSize = 20
-		if leftInTrue:
+		aSize = 4
+		if direction == 0:  # Top
 			arrowHead = QPainterPath()
-			arrowHead.moveTo(x2 + aSize, y2)
-			arrowHead.lineTo(x2 - aSize, y2 - aSize)
-			arrowHead.lineTo(x2 - aSize, y2 + aSize)
-			arrowHead.lineTo(x2 + aSize, y2)
-		else:
+			arrowHead.moveTo(x, y)
+			arrowHead.lineTo(x - aSize, y - aSize*2)
+			arrowHead.lineTo(x + aSize, y - aSize*2)
+			arrowHead.lineTo(x, y)
+		elif direction == 1:  # Left
 			arrowHead = QPainterPath()
-			arrowHead.moveTo(x2 - aSize, y2)
-			arrowHead.lineTo(x2 + aSize, y2 - aSize)
-			arrowHead.lineTo(x2 + aSize, y2 + aSize)
-			arrowHead.lineTo(x2 - aSize, y2)
+			arrowHead.moveTo(x, y)
+			arrowHead.lineTo(x - aSize*2, y - aSize)
+			arrowHead.lineTo(x - aSize*2, y + aSize)
+			arrowHead.lineTo(x, y)
+		elif direction == 2:  # Right
+			arrowHead = QPainterPath()
+			arrowHead.moveTo(x, y)
+			arrowHead.lineTo(x + aSize*2, y - aSize)
+			arrowHead.lineTo(x + aSize*2, y + aSize)
+			arrowHead.lineTo(x, y)
+		else:  # Bottom
+			arrowHead = QPainterPath()
+			arrowHead.moveTo(x, y)
+			arrowHead.lineTo(x - aSize, y + aSize*2)
+			arrowHead.lineTo(x + aSize, y + aSize*2)
+			arrowHead.lineTo(x, y)
 		
 		boundingRect = arrowHead.boundingRect()
 		
 		return arrowHead, boundingRect
 
-	
-	def buildPath(self, x1, x2, y1, y2):
+	def buildPath(self) -> tuple:
 		"""
-		This function is used to build the path for the visibility behavior.
-		It has some basic arrow routing algorithm:
-		
-		1. src is at right, dest is at left, just cubic to it
-		#. src is at left, dest is at right
-		
-			a. y is almost the same, cubic to it
-			#. distance is bigger than 1/3 * root.width, go around the root component
-			
-					i. src is higher than dest, go around from the top
-					#. bb src is lower than dest, go around from the bottom
-					
-			#. horizontal distance is smaller than 1/3 * root.width, zigzag to it
-			
-		.. todo::
-			Improve on the algorithm (add collision detector)
-		
-		:param x1: the x coordinate for the src component
-		:type x1: float
-		:param x2: the x coordinate for the dest component
-		:type x2: float
-		:param y1: the y coordinate for the src component
-		:type y1: float
-		:param y2: the x coordinate for the dest component
-		:type y2: float
-		:return path: return the path of the visibility behavior
-		:rtype path: QPainterPath
+		Makes a path from the source component to the destination component.
+		Follows the following general pattern, both for src and dst behavior:
+			- If not in extra components section:
+				- If in same window, just arc from one component to other
+				- If center is in left 6th of window route arrow directly out left
+				- Otherwise, if center is in top half of window, route out top of window, then parallel to window
+				until on left side of scene
+				- Otherwise, out bottom of window, then parallel to window until on left of scene
+			- If in extra components section:
+				- TODO: Describe
+
+		Note: When using points, the first index is what point on the component: top:0, left:1, right:2, bottom:3
+			and the second index is the coordinate: x:0, y:1.
+
+		:return: the path, arrival coordinates, direction of arrival, and path boundingrect
+		:rtype: (QPainterPath, tuple(int, int), int, rect)
 		"""
-		
-		baseComponent = self.getOneComponentDownRoot()
-		baseBR = self.scene().getGraphics(baseComponent).boundingRect()
-		basePos = self.scene().getGraphics(baseComponent).scenePos()
-		baseComponentWidth = baseBR.width()
-		baseComponentHeight = baseBR.height()
+
+		# --- INITIALIZATION --- #
+		# Instantiate path
 		path = QPainterPath()
-		
-		#TODO: If the component is the root component, VBGraphics may overlap with other components easily.FIX IT
-		if x1 > x2:
-			path.moveTo(x1, y1)
-			path.cubicTo(x1 + 100, y1 + 100, x2 - 200, y2 - 200, x2, y2)
-			leftInTrue = False
-		elif abs(y2 - y1) < 50:
-			path.moveTo(x1, y1)
-			path.cubicTo(x1 + 100, y1 + 100, x2 - 200, y2 - 200, x2, y2)
-			leftInTrue = True
-		elif (x2 - x1) < (1/3 * baseComponentWidth):
-			path.moveTo(x1, y1)
-			path.lineTo(x1 - 200, y1)
-			path.lineTo(x1 - 200, y2)
-			path.lineTo(x2, y2)
-			leftInTrue = True
-		elif (x2 - x1) > (1/3 * baseComponentWidth) and y1 <= y2:
-			path.moveTo(x1, y1)
-			path.lineTo(basePos.x() - x1/3, y1)
-			path.lineTo(basePos.x() - x1/3,
-			            basePos.y() - y1/3)
-			path.lineTo(baseComponentWidth + x1, basePos.y() - y1/3)
-			path.lineTo(baseComponentWidth + x1, y2)
-			path.lineTo(x2, y2)
-			leftInTrue = False
-		elif (x2 - x1) > (1/3 * baseComponentWidth) and y1 > y2:
-			path.moveTo(x1, y1)
-			path.lineTo(basePos.x() - x1/3, y1)
-			path.lineTo(basePos.x() - x1/3,
-			            baseComponentHeight + y1/3)
-			path.lineTo(baseComponentWidth + x1, baseComponentHeight + y1/3)
-			path.lineTo(baseComponentWidth + x1, y2)
-			path.lineTo(x2, y2)
-			leftInTrue = False
+
+		# Get the components
+		srcComp = self._srcComp
+		dstComp = self._dstComp
+
+		# Get the components' containing windows, their positional attributes as [x, y, width, height] list,
+		# and the EC Section width
+		srcWin = srcComp.getWindowGraphics()
+		dstWin = dstComp.getWindowGraphics()
+		srcWinRect = [srcWin.scenePos().x(), srcWin.scenePos().y(), srcWin.width(), srcWin.height()]
+		dstWinRect = [dstWin.scenePos().x(), dstWin.scenePos().y(), dstWin.width(), dstWin.height()]
+		if srcWin.getScrollableItem():
+			srcECSWidth = srcWin.getScrollableItem().rect().width()
 		else:
-			#exception, then fix it
-			path.moveTo(x1, y1)
-			path.lineTo(x1, 30)
-			path.lineTo(x2, 30)
-			path.lineTo(x2, y2)
-			leftInTrue = False
-		
+			srcECSWidth = 0
+		if dstWin.getScrollableItem():
+			dstECSWidth = dstWin.getScrollableItem().rect().width()
+		else:
+			dstECSWidth = 0
+
+		# Find points to stem from/arrive to as [top, left, right, bottom] list of x,y coordinate tuples
+		srcPoints = [(srcComp.scenePos().x() + srcComp.width()/2, srcComp.scenePos().y()),
+					 (srcComp.scenePos().x(), srcComp.scenePos().y() + srcComp.height()/2),
+					 (srcComp.scenePos().x() + srcComp.width(), srcComp.scenePos().y() + srcComp.height()/2),
+					 (srcComp.scenePos().x() + srcComp.width()/2, srcComp.scenePos().y() + srcComp.height())]
+		dstPoints = [(dstComp.scenePos().x() + dstComp.width()/2, dstComp.scenePos().y()),
+					 (dstComp.scenePos().x(), dstComp.scenePos().y() + dstComp.height()/2),
+					 (dstComp.scenePos().x() + dstComp.width(), dstComp.scenePos().y() + dstComp.height()/2),
+					 (dstComp.scenePos().x() + dstComp.width()/2, dstComp.scenePos().y() + dstComp.height())]
+
+		# Get both of their center points
+		# NOTE: If src/dstPoints is changed, this needs to be changed
+		srcCompCenter = (srcPoints[0][0], srcPoints[1][1])
+		dstCompCenter = (dstPoints[0][0], dstPoints[1][1])
+		# ---------------------- #
+
+		# Catch if in EC Section, along with the Extra Comp itself
+		srcInECSection, srcEC = srcComp.isInECSection()
+		dstInECSection, dstEC = dstComp.isInECSection()
+
+		# --- Calculate Distances --- #
+		numWin = abs(srcWinRect[1] - dstWinRect[1]) / 700 - 1  # Number of windows between the two windows
+
+		srcDistProp = abs(srcCompCenter[0] - srcWinRect[0]) / srcWinRect[2]  # distance from left of window as prop
+		dstDistProp = abs(dstCompCenter[0] - dstWinRect[0]) / dstWinRect[2]
+
+		vDistSrc = min(20 * (1 + srcDistProp*2/3), 49)  # Distance from top or bottom edges to make a turn to go to the left
+		vDistDst = min(20 * (1 + dstDistProp), 49)  # Distance from top or bottom edges to make a turn to go to the left
+
+		echDist = 20  # The x distance to pass before turning to go into EC Section
+		ecvDist = 50  # The height the VB goes to before going to hidden component
+
+		# Distance from left of window (its x pos) to make a right-angle turn
+		if dstWinRect[1] != srcWinRect[1]:  # Dst is below src
+			hDist = min(numWin * 15 + (srcDistProp + dstDistProp) * 10 + VBGraphics.MIN_LEFT_DIST,
+						VBGraphics.MAX_LEFT_DIST)
+		else:  # Same window
+			hDist = VBGraphics.MIN_LEFT_DIST  # Still assigned, but used in a different way
+
+		# --------------------------- #
+
+		# --- IN SAME WINDOW --- #
+		if srcWin is dstWin:
+			if not (srcInECSection or dstInECSection):  # same window
+				# Destination is on left
+				if dstCompCenter[0] + hDist <= srcPoints[1][0] and dstPoints[2][0] < srcPoints[1][0] - hDist:
+					xDist = srcPoints[1][0] - dstPoints[2][0]
+					path.moveTo(srcPoints[1][0], srcPoints[1][1])
+					path.lineTo(srcPoints[1][0] - xDist/2, srcPoints[1][1])
+					path.lineTo(srcPoints[1][0] - xDist/2, dstPoints[2][1])
+					path.lineTo(dstPoints[2][0], dstPoints[2][1])
+					arrival = (dstPoints[2][0], dstPoints[2][1])
+					direction = 2
+
+				# Destination is generally to the left but closer than last condition
+				elif dstCompCenter[0] + hDist <= srcCompCenter[0]:
+					path.moveTo(srcPoints[1][0], srcPoints[1][1])
+					if dstCompCenter[1] < srcCompCenter[1]:  # Dst above Src
+						if dstPoints[2][0] >= srcPoints[1][0] - hDist:
+							path.lineTo(dstPoints[3][0], srcPoints[1][1])
+							path.lineTo(dstPoints[3][0], dstPoints[3][1])
+						else:
+							path.lineTo(srcPoints[1][0] - hDist / 2, srcPoints[1][1])
+							path.lineTo(srcPoints[1][0] - hDist / 2, dstPoints[3][1] + hDist)
+							path.lineTo(dstPoints[3][0], dstPoints[3][1] + hDist)
+							path.lineTo(dstPoints[3][0], dstPoints[3][1])
+						arrival = (dstPoints[3][0], dstPoints[3][1])
+						direction = 3
+					else:
+						if dstPoints[2][0] >= srcPoints[1][0] - hDist:
+							path.lineTo(dstPoints[0][0], srcPoints[1][1])
+							path.lineTo(dstPoints[0][0], dstPoints[0][1])
+						else:
+							path.lineTo(srcPoints[1][0] - hDist / 2, srcPoints[1][1])
+							path.lineTo(srcPoints[1][0] - hDist / 2, dstPoints[0][1] - hDist)
+							path.lineTo(dstPoints[0][0], dstPoints[0][1] - hDist)
+							path.lineTo(dstPoints[0][0], dstPoints[0][1])
+						arrival = (dstPoints[0][0], dstPoints[0][1])
+						direction = 0
+
+				# Destination is pretty much vertically aligned
+				elif dstCompCenter[0] + hDist > srcCompCenter[0] > dstCompCenter[0] - hDist:
+					if dstCompCenter[1] < srcCompCenter[1]:  # Dst above Src
+						yDist = srcPoints[0][1] - dstPoints[3][1]
+						path.moveTo(srcPoints[0][0], srcPoints[0][1])
+						path.lineTo(srcPoints[0][0], srcPoints[0][1] - yDist/2)
+						path.lineTo(dstPoints[3][0], srcPoints[0][1] - yDist/2)
+						path.lineTo(dstPoints[3][0], dstPoints[3][1])
+						arrival = (dstPoints[3][0], dstPoints[3][1])
+						direction = 3
+					else:
+						yDist = dstPoints[0][1] - srcPoints[3][1]
+						path.moveTo(srcPoints[3][0], srcPoints[3][1])
+						path.lineTo(srcPoints[3][0], srcPoints[3][1] + yDist / 2)
+						path.lineTo(dstPoints[0][0], srcPoints[3][1] + yDist / 2)
+						path.lineTo(dstPoints[0][0], dstPoints[0][1])
+						arrival = (dstPoints[0][0], dstPoints[0][1])
+						direction = 0
+
+				# Destination is generally to the right but closer than next condition
+				elif srcCompCenter[0] <= dstCompCenter[0] - hDist <= srcPoints[2][0] or \
+						dstPoints[1][0] < srcPoints[2][0] + hDist:
+					path.moveTo(srcPoints[2][0], srcPoints[2][1])
+					if dstCompCenter[1] < srcCompCenter[1]:  # Dst above Src
+						if dstPoints[1][0] < srcPoints[2][0] + hDist:
+							path.lineTo(dstPoints[3][0], srcPoints[2][1])
+							path.lineTo(dstPoints[3][0], dstPoints[3][1])
+						else:
+							path.lineTo(srcPoints[2][0] + hDist / 2, srcPoints[2][1])
+							path.lineTo(srcPoints[2][0] + hDist / 2, dstPoints[3][1] + hDist)
+							path.lineTo(dstPoints[3][0], dstPoints[3][1] + hDist)
+							path.lineTo(dstPoints[3][0], dstPoints[3][1])
+						arrival = (dstPoints[3][0], dstPoints[3][1])
+						direction = 3
+					else:
+						if dstPoints[1][0] < srcPoints[2][0] + hDist:
+							path.lineTo(dstPoints[0][0], srcPoints[2][1])
+							path.lineTo(dstPoints[0][0], dstPoints[0][1])
+						else:
+							path.lineTo(srcPoints[2][0] + hDist / 2, srcPoints[2][1])
+							path.lineTo(srcPoints[2][0] + hDist / 2, dstPoints[0][1] - hDist)
+							path.lineTo(dstPoints[0][0], dstPoints[0][1] - hDist)
+							path.lineTo(dstPoints[0][0], dstPoints[0][1])
+						arrival = (dstPoints[0][0], dstPoints[0][1])
+						direction = 0
+
+				# Destination is on right
+				else:
+					xDist = dstPoints[1][0] - srcPoints[2][0]
+					path.moveTo(srcPoints[2][0], srcPoints[2][1])
+					path.lineTo(srcPoints[2][0] + xDist / 2, srcPoints[2][1])
+					path.lineTo(srcPoints[2][0] + xDist / 2, dstPoints[1][1])
+					path.lineTo(dstPoints[1][0], dstPoints[1][1])
+					arrival = (dstPoints[1][0], dstPoints[1][1])
+					direction = 1
+			elif srcInECSection and not dstInECSection:
+				arrival, direction = None, None
+				pass
+			elif dstInECSection and not srcInECSection:
+				arrival, direction = None, None
+				pass
+			else:  # both in EC Section
+				arrival, direction = None, None
+				pass  # TODO: Implement these 3
+
+			boundingRect = path.boundingRect()
+			return path, arrival, direction, boundingRect
+
+		# ---------------------- #
+
+		# --- LEAVING SOURCE --- #
+		if not srcInECSection:
+			# If in left 6th of containing window, exit through left
+			if srcCompCenter[0] <= srcWinRect[0] + srcWinRect[2] / 6:
+				left = srcPoints[1]  # x, y coordinate tuple
+				path.moveTo(left[0], left[1])
+				path.lineTo(srcWinRect[0] - hDist, left[1])
+
+			# Else if in top half of window, exit through top, and go left
+			elif srcCompCenter[1] <= srcWinRect[1] + srcWinRect[3] / 2:
+				top = srcPoints[0]
+				path.moveTo(top[0], top[1])
+				path.lineTo(top[0], srcWinRect[1] - vDistSrc)
+				path.lineTo(srcWinRect[0] - hDist, srcWinRect[1] - vDistSrc)
+
+			# Else in bottom half of window, exit through bottom, and go left
+			elif srcCompCenter[1] > srcWinRect[1] + srcWinRect[3] / 2:
+				bottom = srcPoints[3]
+				path.moveTo(bottom[0], bottom[1])
+				path.lineTo(bottom[0], srcWinRect[1] + srcWinRect[3] + vDistSrc)
+				path.lineTo(srcWinRect[0] - hDist, srcWinRect[1] + srcWinRect[3] + vDistSrc)
+
+			else:
+				raise Exception("Src: This shouldn't happen.")
+
+		# In Extra Components Section
+		else:
+			ecEnterDist = echDist  # The x distance to pass before turning to go into EC Section
+			ecHiddenHeight = ecvDist  # The height the VB goes to before going to hidden component
+			compHiddenOnLeft = srcPoints[1][0] - hDist < srcWinRect[0] + srcWinRect[2] + ecEnterDist
+			compHiddenOnRight = srcPoints[1][0] - hDist > srcWinRect[0] + srcWinRect[2] + srcECSWidth - ecEnterDist
+			if dstPoints[0][1] > srcPoints[0][1]:  # If destination is below source
+				if compHiddenOnLeft:
+					if srcPoints[1][0] > srcWinRect[0] + srcWinRect[2]:  # For smoother animation. Not hidden yet
+						left = srcPoints[1]
+						path.moveTo(left[0], left[1])
+						x = max(srcWinRect[0] + srcWinRect[2], left[0] - hDist)
+						path.lineTo(x, left[1])
+						path.lineTo(x, srcWinRect[1] + srcWinRect[3] - ecHiddenHeight)
+					else:
+						path.moveTo(srcWinRect[0] + srcWinRect[2], srcWinRect[1] + srcWinRect[3] - ecHiddenHeight)
+					path.lineTo(srcWinRect[0] + srcWinRect[2] + ecEnterDist,
+								srcWinRect[1] + srcWinRect[3] - ecHiddenHeight)
+					path.lineTo(srcWinRect[0] + srcWinRect[2] + ecEnterDist, srcWinRect[1] + srcWinRect[3] + vDistSrc)
+					path.lineTo(srcWinRect[0] - hDist, srcWinRect[1] + srcWinRect[3] + vDistSrc)
+				elif compHiddenOnRight:
+					if srcPoints[1][0] < srcWinRect[0] + srcWinRect[2] + srcECSWidth:  # Not hidden yet but close
+						left = srcPoints[1]
+						path.moveTo(left[0], left[1])
+						path.lineTo(left[0] - hDist, left[1])
+						path.lineTo(left[0] - hDist, srcWinRect[1] + srcWinRect[3] - ecHiddenHeight)
+					else:
+						path.moveTo(srcWinRect[0] + srcWinRect[2] + srcECSWidth,
+									srcWinRect[1] + srcWinRect[3] - ecHiddenHeight)
+					path.lineTo(srcWinRect[0] + srcWinRect[2] + srcECSWidth - ecEnterDist,
+								srcWinRect[1] + srcWinRect[3] - ecHiddenHeight)
+					path.lineTo(srcWinRect[0] + srcWinRect[2] + srcECSWidth - ecEnterDist,
+								srcWinRect[1] + srcWinRect[3] + vDistSrc)
+					path.lineTo(srcWinRect[0] - hDist, srcWinRect[1] + srcWinRect[3] + vDistSrc)
+				else:
+					left = srcPoints[1]
+					path.moveTo(left[0], left[1])
+					path.lineTo(left[0] - hDist, left[1])
+					path.lineTo(left[0] - hDist, srcWinRect[1] + srcWinRect[3] + vDistSrc)
+					path.lineTo(srcWinRect[0] - hDist, srcWinRect[1] + srcWinRect[3] + vDistSrc)
+
+		# ---------------------- #
+
+		# --- TO DESTINATION --- #
+		# Basically the same algorithm as leaving src, except all steps are reversed
+		if not dstInECSection:
+			# If in left 6th of containing window, enter through left
+			if dstCompCenter[0] <= dstWinRect[0] + dstWinRect[2] / 6:
+				direction = 1
+				left = dstPoints[direction]  # x, y coordinate tuple
+				path.lineTo(srcWinRect[0] - hDist, left[1])
+				path.lineTo(left[0], left[1])
+				arrival = (left[0], left[1])
+
+			# Else if in top half of window, enter through top, coming from the left
+			elif dstCompCenter[1] <= dstWinRect[1] + dstWinRect[3] / 2:
+				direction = 0
+				top = dstPoints[direction]
+				path.lineTo(srcWinRect[0] - hDist, dstWinRect[1] - vDistDst)
+				path.lineTo(top[0], dstWinRect[1] - vDistDst)
+				path.lineTo(top[0], top[1])
+				arrival = (top[0], top[1])
+
+			# Else in bottom half of window, enter through bottom, coming from the left
+			elif dstCompCenter[1] > dstWinRect[1] + dstWinRect[3] / 2:
+				direction = 3
+				bottom = dstPoints[direction]
+				path.lineTo(srcWinRect[0] - hDist, dstWinRect[1] + dstWinRect[3] + vDistDst)
+				path.lineTo(bottom[0], dstWinRect[1] + dstWinRect[3] + vDistDst)
+				path.lineTo(bottom[0], bottom[1])
+				arrival = (bottom[0], bottom[1])
+
+			else:
+				raise Exception("Dst: This shouldn't happen.")
+
+		# In Extra Components Section
+		else:
+			arrival = None
+			direction = None
+			pass  # TODO: Implement
+
 		boundingRect = path.boundingRect()
-		
-		return path, leftInTrue, boundingRect
+		return path, arrival, direction, boundingRect
 	
 	def getOneComponentDownRoot(self):
 		"""
@@ -306,7 +523,7 @@ class VBGraphics(QAbstractGraphicsShapeItem):
 		:return: the arrow path
 		:rtype: QPainterPathStroker
 		"""
-		path, buffer, buffer2 = self.buildPath(self._x1, self._x2, self._y1, self._y2)
+		path, tmp, tmp1, tmp2 = self.buildPath()
 		
 		stroker = QPainterPathStroker()
 		stroker.setWidth(50)

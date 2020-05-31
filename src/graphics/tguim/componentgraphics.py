@@ -815,3 +815,22 @@ class ComponentGraphics(QGraphicsItem):
         :rtype: str
         """
         return "Component: {}".format(self._dataComponent.getId())
+
+    def isInECSection(self) -> tuple:
+        """
+        Returns whether or not this item is in the extra components
+        section, regardless of if it is an extra component or not.
+
+        :return: presence in EC section, along with extra component itself
+        :rtype: (bool, ComponentGraphics)
+        """
+        if self._dataComponent.isExtraComponent:
+            return True, self
+
+        parent = self.parentItem()
+        while parent is not None and isinstance(parent, ComponentGraphics):
+            if parent._dataComponent.isExtraComponent:
+                return True, parent
+            parent = parent.parentItem()
+
+        return False, None
