@@ -356,13 +356,13 @@ class ActionPipeline(Action):
 		:rtype: str
 		"""
 
-		code = ""
+		code = "\t\ttry:  # The generated code. If it doesn't work, throws an error.\n"
 
 		for p in self.getInputPorts():  # Assumes unique input port names, which should be enforced in gui.
 			self._varMap.append((p.getName(), p))
 
-		for	a in self._actions: 
-			code += '\t\t' 
+		for a in self._actions:
+			code += '\t\t\t'
 			if a.getOutputPorts():  # Getting outputs named and written to code
 				o = a.getOutputPorts()[0]
 				code += self.getVarName(o)  # only one output
@@ -374,20 +374,35 @@ class ActionPipeline(Action):
 
 			if a.getInputPorts():
 				i = a.getInputPorts()[0]
-				code += self.getVarName(i)  # only one input
+				inType = i.getDataType()
+				if not isinstance(inType, str):
+					inType = inType.__name__
+				code += inType + '(' + self.getVarName(i) + ')'  # only one input, converts it to necessary type
 				if len(a.getInputPorts()) > 1:  # if multiple inputs
 					for i in a.getInputPorts()[1:]:
-						code += ", " + self.getVarName(i)
+						inType = i.getDataType()
+						if not isinstance(inType, str):
+							inType = inType.__name__
+						code += ", " + inType + '(' + self.getVarName(i) + ')'
 			code += ')\n'
 
 		if self.getOutputPorts():
-			code += '\n\t\treturn '
+			code += '\n\t\t\treturn '
 			o = self.getOutputPorts()[0]
-			code += self.getVarName(o)  # only one output
+			outType = o.getDataType()
+			if not isinstance(outType, str):
+				outType = outType.__name__
+			code += outType + '(' + self.getVarName(o) + ')'  # only one output
 			if len(self.getOutputPorts()) > 1:  # if several outputs
 				for o in self.getOutputPorts()[1:]:
-					code += ", " + self.getVarName(o)
+					outType = o.getDataType()
+					if not isinstance(outType, str):
+						outType = outType.__name__
+					code += ", " + outType + '(' + self.getVarName(o) + ')'
 			code += '\n'
+
+		code += '\t\texcept Exception as e:\n\t\t\tprint(e)\n\t\t\traise ActionException("The action could not be ' \
+				'performed successfully. Please look at the errors above, or message us for support.")\n'
 
 		return code
 
