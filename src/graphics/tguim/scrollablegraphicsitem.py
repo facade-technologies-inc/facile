@@ -33,7 +33,7 @@ class ScrollableGraphicsItem(QGraphicsRectItem):
         QGraphicsRectItem.__init__(self, parent)
         self.setFlag(QGraphicsItem.ItemClipsChildrenToShape)
 
-        self._leftTicks = 0
+        self._maxX = 0
 
         # create empty invisible child
         self._ghostContainer = QGraphicsRectItem(self)
@@ -58,6 +58,7 @@ class ScrollableGraphicsItem(QGraphicsRectItem):
             for i, curItem in enumerate(self.contents):
                 item.setPos(ScrollableGraphicsItem.MARGIN * (i+1) + cumulativeX, y)
                 cumulativeX += curItem.width()
+            self._maxX = cumulativeX + item.width() + ScrollableGraphicsItem.MARGIN*3
         else:
             self._ghostContainer.setPos(self.scenePos().x(), self.scenePos().y())
             item.setPos(ScrollableGraphicsItem.MARGIN, y)
@@ -85,13 +86,20 @@ class ScrollableGraphicsItem(QGraphicsRectItem):
         for item in items:
             self.addItemToContents(item)
 
+    def getMaxX(self):
+        """
+        Gets the max X value
+        """
+        return self._maxX
+
     def getGhost(self):
         return self._ghostContainer
 
-    def wheelEvent(self, event: QWheelEvent) -> None:
+    def ghostCanGoLeft(self):
         br = self.boundingRect()
         cbr = self.childrenBoundingRect()  # because of clipping, this doesn't go beyond the bounding rect
 
+<<<<<<< HEAD
         canGoLeft = cbr.x() + cbr.width() > br.x() + br.width() - ScrollableGraphicsItem.MARGIN
         canGoRight = self._leftTicks > 0
         # print(self.scenePos().y(), self._ghostContainer.scenePos().y())
@@ -107,6 +115,23 @@ class ScrollableGraphicsItem(QGraphicsRectItem):
                 self._leftTicks += 1
                 for i in range(1, 34):
                     self._ghostContainer.setPos(self._ghostContainer.x() - .5, y)
+=======
+        return cbr.x() + cbr.width() > br.x() + br.width() - ScrollableGraphicsItem.MARGIN
+
+    def ghostCanGoRight(self):
+        return self._ghostContainer.scenePos().x() <= self.scenePos().x()
+
+    def wheelEvent(self, event: QWheelEvent) -> None:
+        oldY = self._ghostContainer.pos().y()
+        if event.delta() > 0:
+            if self.ghostCanGoRight():
+                for i in range(1, 17):
+                    self._ghostContainer.setPos(self._ghostContainer.pos().x() + 1, oldY)
+        else:
+            if self.ghostCanGoLeft():
+                for i in range(1, 17):
+                    self._ghostContainer.setPos(self._ghostContainer.pos().x() - 1, oldY)
+>>>>>>> develop
 
     def paint(self, painter, option, widget):
         pen = QPen(Qt.transparent)
