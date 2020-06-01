@@ -99,23 +99,6 @@ class ScrollableGraphicsItem(QGraphicsRectItem):
         br = self.boundingRect()
         cbr = self.childrenBoundingRect()  # because of clipping, this doesn't go beyond the bounding rect
 
-<<<<<<< HEAD
-        canGoLeft = cbr.x() + cbr.width() > br.x() + br.width() - ScrollableGraphicsItem.MARGIN
-        canGoRight = self._leftTicks > 0
-        # print(self.scenePos().y(), self._ghostContainer.scenePos().y())
-
-        y = self._ghostContainer.y()
-        if event.delta() > 0:
-            if canGoRight:
-                self._leftTicks -= 1
-                for i in range(1, 34):
-                    self._ghostContainer.setPos(self._ghostContainer.x() + .5, y)
-        else:
-            if canGoLeft:
-                self._leftTicks += 1
-                for i in range(1, 34):
-                    self._ghostContainer.setPos(self._ghostContainer.x() - .5, y)
-=======
         return cbr.x() + cbr.width() > br.x() + br.width() - ScrollableGraphicsItem.MARGIN
 
     def ghostCanGoRight(self):
@@ -131,7 +114,6 @@ class ScrollableGraphicsItem(QGraphicsRectItem):
             if self.ghostCanGoLeft():
                 for i in range(1, 17):
                     self._ghostContainer.setPos(self._ghostContainer.pos().x() - 1, oldY)
->>>>>>> develop
 
     def paint(self, painter, option, widget):
         pen = QPen(Qt.transparent)
