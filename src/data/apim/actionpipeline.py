@@ -333,8 +333,12 @@ class ActionPipeline(Action):
 			if self._outputs:
 				annotations = [p.getAnnotation() for p in self._outputs]
 				types = [p.getDataTypeStr() for p in self._outputs]
-				out += '\t\t:return: ({})\n'.format(", ".join(annotations))
-				out += '\t\t:rtype: ({})\n'.format(", ".join(types))
+				if len(annotations) > 1:
+					out += '\t\t:return: ({})\n'.format(", ".join(annotations))
+					out += '\t\t:rtype: ({})\n'.format(", ".join(types))
+				else:
+					out += '\t\t:return: {}\n'.format(annotations[0])
+					out += '\t\t:rtype: {}\n'.format(types[0])
 			else:
 				out += '\t\t:return: None\n'
 				out += '\t\t:rtype: NoneType\n'
@@ -373,31 +377,31 @@ class ActionPipeline(Action):
 			code += 'self.' + a.getMethodName() + '('
 
 			if a.getInputPorts():
+				# First port
 				i = a.getInputPorts()[0]
-				inType = i.getDataType()
-				if not isinstance(inType, str):
-					inType = inType.__name__
+				if i.isOptional():  # For optional parameters
+					code += i.getName() + '='
+				inType = i.getDataTypeStr()  # Enforcing data type
 				code += inType + '(' + self.getVarName(i) + ')'  # only one input, converts it to necessary type
+
+				# Other ports
 				if len(a.getInputPorts()) > 1:  # if multiple inputs
 					for i in a.getInputPorts()[1:]:
-						inType = i.getDataType()
-						if not isinstance(inType, str):
-							inType = inType.__name__
-						code += ", " + inType + '(' + self.getVarName(i) + ')'
+						code += ", "
+						inType = i.getDataTypeStr()
+						if i.isOptional():  # For optional parameters
+							code += i.getName() + '='
+						code += inType + '(' + self.getVarName(i) + ')'
 			code += ')\n'
 
 		if self.getOutputPorts():
 			code += '\n\t\t\treturn '
 			o = self.getOutputPorts()[0]
-			outType = o.getDataType()
-			if not isinstance(outType, str):
-				outType = outType.__name__
+			outType = o.getDataTypeStr()
 			code += outType + '(' + self.getVarName(o) + ')'  # only one output
 			if len(self.getOutputPorts()) > 1:  # if several outputs
 				for o in self.getOutputPorts()[1:]:
-					outType = o.getDataType()
-					if not isinstance(outType, str):
-						outType = outType.__name__
+					outType = o.getDataTypeStr()
 					code += ", " + outType + '(' + self.getVarName(o) + ')'
 			code += '\n'
 
