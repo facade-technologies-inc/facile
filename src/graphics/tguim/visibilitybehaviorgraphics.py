@@ -203,15 +203,18 @@ class VBGraphics(QAbstractGraphicsShapeItem):
 	def buildPath(self) -> tuple:
 		"""
 		Makes a path from the source component to the destination component.
-		Follows the following general pattern, both for src and dst behavior:
+		Follows the following general pattern, both for src and dst behavior, which are then connected by a line:
 			- If not in extra components section:
-				- If in same window, just arc from one component to other
-				- If center is in left 6th of window route arrow directly out left
+				- If in same window, just follow rectangular path from one component to other.
+				- If center is in left 6th of window route arrow directly out left.
 				- Otherwise, if center is in top half of window, route out top of window, then parallel to window
-				until on left side of scene
-				- Otherwise, out bottom of window, then parallel to window until on left of scene
+				until on left side of scene.
+				- Otherwise, out bottom of window, then parallel to window until on left of scene.
 			- If in extra components section:
-				- TODO: Describe
+				- If hidden on the left, then the arrow is routed past a certain point, after which it turns to go
+				into EC section, then turns again going until the top-level window's end, seeming like it goes under.
+				- If hidden on right, same situation, mirrored.
+				- If in the middle, arrow follows parallel to left side of component, with a buffer
 
 		Note: When using points, the first index is what point on the component: top:0, left:1, right:2, bottom:3
 			and the second index is the coordinate: x:0, y:1.
@@ -264,7 +267,7 @@ class VBGraphics(QAbstractGraphicsShapeItem):
 		dstInECSection, dstEC = dstComp.isInECSection()
 
 		# --- Calculate Distances --- #
-		numWin = abs(srcWinRect[1] - dstWinRect[1]) / 700 - 1  # Number of windows between the two windows
+		numWin = round(abs(srcWinRect[1] - dstWinRect[1]) / 700 - 1)  # Number of windows between the two windows
 
 		srcDistProp = abs(srcCompCenter[0] - srcWinRect[0]) / srcWinRect[2]  # distance from left of window as prop
 		dstDistProp = abs(dstCompCenter[0] - dstWinRect[0]) / dstWinRect[2]
@@ -274,6 +277,8 @@ class VBGraphics(QAbstractGraphicsShapeItem):
 
 		echDist = 20  # The x distance to pass before turning to go into EC Section
 		ecvDist = 50  # The height the VB goes to before going to hidden component
+
+		padding = 20  # The x distance from the side of an extra component to turn towards/away from it
 
 		# Distance from left of window (its x pos) to make a right-angle turn
 		if dstWinRect[1] != srcWinRect[1]:  # Dst is below src
@@ -378,20 +383,429 @@ class VBGraphics(QAbstractGraphicsShapeItem):
 					path.lineTo(dstPoints[1][0], dstPoints[1][1])
 					arrival = (dstPoints[1][0], dstPoints[1][1])
 					direction = 1
+
 			elif srcInECSection and not dstInECSection:
-				arrival, direction = None, None
-				pass
+				ecEnterDist = echDist  # The x distance to pass before turning to go into EC Section
+				ecHiddenHeight = ecvDist  # The height the VB goes to before going to hidden component
+				compHiddenOnLeft = srcPoints[1][0] - padding < srcWinRect[0] + srcWinRect[2] + ecEnterDist
+				compHiddenOnRight = srcPoints[1][0] - padding > srcWinRect[0] + srcWinRect[2] + \
+									srcECSWidth - ecEnterDist
+				if compHiddenOnLeft:
+					if srcPoints[1][0] > srcWinRect[0] + srcWinRect[2]:  # For smoother animation. Not hidden yet
+						left = srcPoints[1]
+						path.moveTo(left[0], left[1])
+						x = max(srcWinRect[0] + srcWinRect[2], left[0] - padding)
+						path.lineTo(x, left[1])
+						path.lineTo(x, srcWinRect[1] + srcWinRect[3] - ecHiddenHeight)
+					else:
+						path.moveTo(srcWinRect[0] + srcWinRect[2],
+									srcWinRect[1] + srcWinRect[3] - ecHiddenHeight)
+					path.lineTo(srcWinRect[0] + srcWinRect[2] + ecEnterDist,
+								srcWinRect[1] + srcWinRect[3] - ecHiddenHeight)
+					path.lineTo(srcWinRect[0] + srcWinRect[2] + ecEnterDist,
+								srcWinRect[1] + srcWinRect[3] + vDistSrc)
+				elif compHiddenOnRight:
+					if srcPoints[1][0] < srcWinRect[0] + srcWinRect[
+						2] + srcECSWidth:  # Not hidden yet but close
+						left = srcPoints[1]
+						path.moveTo(left[0], left[1])
+						path.lineTo(left[0] - padding, left[1])
+						path.lineTo(left[0] - padding, srcWinRect[1] + srcWinRect[3] - ecHiddenHeight)
+					else:
+						path.moveTo(srcWinRect[0] + srcWinRect[2] + srcECSWidth,
+									srcWinRect[1] + srcWinRect[3] - ecHiddenHeight)
+					path.lineTo(srcWinRect[0] + srcWinRect[2] + srcECSWidth - ecEnterDist,
+								srcWinRect[1] + srcWinRect[3] - ecHiddenHeight)
+					path.lineTo(srcWinRect[0] + srcWinRect[2] + srcECSWidth - ecEnterDist,
+								srcWinRect[1] + srcWinRect[3] + vDistSrc)
+				else:
+					left = srcPoints[1]
+					path.moveTo(left[0], left[1])
+					path.lineTo(left[0] - padding, left[1])
+					path.lineTo(left[0] - padding, srcWinRect[1] + srcWinRect[3] + vDistSrc)
+
+				path.lineTo(dstPoints[3][0], srcWinRect[1] + srcWinRect[3] + vDistSrc)
+				path.lineTo(dstPoints[3][0], dstPoints[3][1])
+				arrival, direction = (dstPoints[3][0], dstPoints[3][1]), 3
+
 			elif dstInECSection and not srcInECSection:
-				arrival, direction = None, None
-				pass
+				path.moveTo(srcPoints[3][0], srcPoints[3][1])
+				path.lineTo(dstPoints[3][0], srcWinRect[1] + srcWinRect[3] + vDistSrc)
+
+				ecEnterDist = echDist  # The x distance to pass before turning to go into EC Section
+				ecHiddenHeight = ecvDist  # The height the VB goes to before going to hidden component
+				compHiddenOnLeft = dstPoints[1][0] - padding < dstWinRect[0] + dstWinRect[2] + ecEnterDist
+				compHiddenOnRight = dstPoints[1][0] - padding > dstWinRect[0] + dstWinRect[2] \
+									+ dstECSWidth - ecEnterDist
+				if compHiddenOnLeft:
+					path.lineTo(dstWinRect[0] + dstWinRect[2] + ecEnterDist,
+								dstWinRect[1] + dstWinRect[3] + vDistDst)
+					path.lineTo(dstWinRect[0] + dstWinRect[2] + ecEnterDist,
+								dstWinRect[1] + dstWinRect[3] - ecHiddenHeight)
+					if dstPoints[1][0] > dstWinRect[0] + dstWinRect[2]:  # For smoother animation
+						left = dstPoints[1]
+						x = max(dstWinRect[0] + dstWinRect[2], left[0] - padding)
+						path.lineTo(x, dstWinRect[1] + dstWinRect[3] - ecHiddenHeight)
+						path.lineTo(x, left[1])
+						path.lineTo(left[0], left[1])
+						arrival = (left[0], left[1])
+						direction = 1
+					else:
+						path.lineTo(dstWinRect[0] + dstWinRect[2],
+									dstWinRect[1] + dstWinRect[3] - ecHiddenHeight)
+						arrival = (
+							dstWinRect[0] + dstWinRect[2], dstWinRect[1] + dstWinRect[3] - ecHiddenHeight)
+						direction = 2
+
+				elif compHiddenOnRight:
+					path.lineTo(dstWinRect[0] + dstWinRect[2] + dstECSWidth - ecEnterDist,
+								dstWinRect[1] + dstWinRect[3] + vDistDst)
+					path.lineTo(dstWinRect[0] + dstWinRect[2] + dstECSWidth - ecEnterDist,
+								dstWinRect[1] + dstWinRect[3] - ecHiddenHeight)
+					if dstPoints[1][0] < dstWinRect[0] + dstWinRect[
+						2] + dstECSWidth:  # Not hidden yet but close
+						left = dstPoints[1]
+						path.lineTo(left[0] - padding, dstWinRect[1] + dstWinRect[3] - ecHiddenHeight)
+						path.lineTo(left[0] - padding, left[1])
+						path.lineTo(left[0], left[1])
+						arrival = (left[0], left[1])
+						direction = 1
+					else:
+						path.lineTo(dstWinRect[0] + dstWinRect[2] + dstECSWidth,
+									dstWinRect[1] + dstWinRect[3] - ecHiddenHeight)
+						arrival = (dstWinRect[0] + dstWinRect[2] + dstECSWidth,
+								   dstWinRect[1] + dstWinRect[3] - ecHiddenHeight)
+						direction = 1
+				else:
+					left = dstPoints[1]
+					path.lineTo(left[0] - padding, dstWinRect[1] + dstWinRect[3] + vDistDst)
+					path.lineTo(left[0] - padding, left[1])
+					path.lineTo(left[0], left[1])
+					arrival = (left[0], left[1])
+					direction = 1
+
 			else:  # both in EC Section
-				arrival, direction = None, None
-				pass  # TODO: Implement these 3
+				vDist = max(vDistDst, vDistSrc)
+
+				ecEnterDist = echDist  # The x distance to pass before turning to go into EC Section
+				ecHiddenHeight = ecvDist  # The height the VB goes to before going to hidden component
+				compHiddenOnLeft = srcPoints[1][0] - padding < srcWinRect[0] + srcWinRect[2] + ecEnterDist
+				compHiddenOnRight = srcPoints[1][0] - padding > srcWinRect[0] + srcWinRect[2] + \
+									srcECSWidth - ecEnterDist
+				if compHiddenOnLeft:
+					if srcPoints[1][0] > srcWinRect[0] + srcWinRect[2]:  # For smoother animation. Not hidden yet
+						left = srcPoints[1]
+						path.moveTo(left[0], left[1])
+						x = max(srcWinRect[0] + srcWinRect[2], left[0] - padding)
+						path.lineTo(x, left[1])
+						path.lineTo(x, srcWinRect[1] + srcWinRect[3] - ecHiddenHeight)
+					else:
+						path.moveTo(srcWinRect[0] + srcWinRect[2],
+									srcWinRect[1] + srcWinRect[3] - ecHiddenHeight)
+					path.lineTo(srcWinRect[0] + srcWinRect[2] + ecEnterDist,
+								srcWinRect[1] + srcWinRect[3] - ecHiddenHeight)
+					path.lineTo(srcWinRect[0] + srcWinRect[2] + ecEnterDist,
+								srcWinRect[1] + srcWinRect[3] + vDist)
+				elif compHiddenOnRight:
+					if srcPoints[1][0] < srcWinRect[0] + srcWinRect[
+						2] + srcECSWidth:  # Not hidden yet but close
+						left = srcPoints[1]
+						path.moveTo(left[0], left[1])
+						path.lineTo(left[0] - padding, left[1])
+						path.lineTo(left[0] - padding, srcWinRect[1] + srcWinRect[3] - ecHiddenHeight)
+					else:
+						path.moveTo(srcWinRect[0] + srcWinRect[2] + srcECSWidth,
+									srcWinRect[1] + srcWinRect[3] - ecHiddenHeight)
+					path.lineTo(srcWinRect[0] + srcWinRect[2] + srcECSWidth - ecEnterDist,
+								srcWinRect[1] + srcWinRect[3] - ecHiddenHeight)
+					path.lineTo(srcWinRect[0] + srcWinRect[2] + srcECSWidth - ecEnterDist,
+								srcWinRect[1] + srcWinRect[3] + vDist)
+				else:
+					left = srcPoints[1]
+					path.moveTo(left[0], left[1])
+					path.lineTo(left[0] - padding, left[1])
+					path.lineTo(left[0] - padding, srcWinRect[1] + srcWinRect[3] + vDist)
+
+				ecEnterDist = echDist  # The x distance to pass before turning to go into EC Section
+				ecHiddenHeight = ecvDist  # The height the VB goes to before going to hidden component
+				compHiddenOnLeft = dstPoints[1][0] - padding < dstWinRect[0] + dstWinRect[2] + ecEnterDist
+				compHiddenOnRight = dstPoints[1][0] - padding > dstWinRect[0] + dstWinRect[2] \
+									+ dstECSWidth - ecEnterDist
+				if compHiddenOnLeft:
+					path.lineTo(dstWinRect[0] + dstWinRect[2] + ecEnterDist,
+								dstWinRect[1] + dstWinRect[3] + vDist)
+					path.lineTo(dstWinRect[0] + dstWinRect[2] + ecEnterDist,
+								dstWinRect[1] + dstWinRect[3] - ecHiddenHeight)
+					if dstPoints[1][0] > dstWinRect[0] + dstWinRect[2]:  # For smoother animation
+						left = dstPoints[1]
+						x = max(dstWinRect[0] + dstWinRect[2], left[0] - padding)
+						path.lineTo(x, dstWinRect[1] + dstWinRect[3] - ecHiddenHeight)
+						path.lineTo(x, left[1])
+						path.lineTo(left[0], left[1])
+						arrival = (left[0], left[1])
+						direction = 1
+					else:
+						path.lineTo(dstWinRect[0] + dstWinRect[2],
+									dstWinRect[1] + dstWinRect[3] - ecHiddenHeight)
+						arrival = (
+							dstWinRect[0] + dstWinRect[2], dstWinRect[1] + dstWinRect[3] - ecHiddenHeight)
+						direction = 2
+
+				elif compHiddenOnRight:
+					path.lineTo(dstWinRect[0] + dstWinRect[2] + dstECSWidth - ecEnterDist,
+								dstWinRect[1] + dstWinRect[3] + vDist)
+					path.lineTo(dstWinRect[0] + dstWinRect[2] + dstECSWidth - ecEnterDist,
+								dstWinRect[1] + dstWinRect[3] - ecHiddenHeight)
+					if dstPoints[1][0] < dstWinRect[0] + dstWinRect[
+						2] + dstECSWidth:  # Not hidden yet but close
+						left = dstPoints[1]
+						path.lineTo(left[0] - padding, dstWinRect[1] + dstWinRect[3] - ecHiddenHeight)
+						path.lineTo(left[0] - padding, left[1])
+						path.lineTo(left[0], left[1])
+						arrival = (left[0], left[1])
+						direction = 1
+					else:
+						path.lineTo(dstWinRect[0] + dstWinRect[2] + dstECSWidth,
+									dstWinRect[1] + dstWinRect[3] - ecHiddenHeight)
+						arrival = (dstWinRect[0] + dstWinRect[2] + dstECSWidth,
+								   dstWinRect[1] + dstWinRect[3] - ecHiddenHeight)
+						direction = 1
+				else:
+					left = dstPoints[1]
+					path.lineTo(left[0] - padding, dstWinRect[1] + dstWinRect[3] + vDist)
+					path.lineTo(left[0] - padding, left[1])
+					path.lineTo(left[0], left[1])
+					arrival = (left[0], left[1])
+					direction = 1
 
 			boundingRect = path.boundingRect()
 			return path, arrival, direction, boundingRect
-
 		# ---------------------- #
+
+		# --- NEIGHBORING WINDOWS --- #
+		# We only have special cases when the components are on the inside halves of the neighboring windows
+		# or if they are extra components
+		elif numWin is 0:
+			if dstPoints[0][1] > srcPoints[0][1]:  # Dst is below src
+				if ((srcInECSection or srcCompCenter[1] > srcWinRect[1] + srcWinRect[3] / 2)
+						and (dstInECSection or dstCompCenter[1] < dstWinRect[1] + dstWinRect[3] / 2)):
+
+					if srcInECSection:
+						ecEnterDist = echDist  # The x distance to pass before turning to go into EC Section
+						ecHiddenHeight = ecvDist  # The height the VB goes to before going to hidden component
+						compHiddenOnLeft = srcPoints[1][0] - padding < srcWinRect[0] + srcWinRect[2] + ecEnterDist
+						compHiddenOnRight = srcPoints[1][0] - padding > srcWinRect[0] + srcWinRect[2] + \
+											srcECSWidth - ecEnterDist
+						if compHiddenOnLeft:
+							if srcPoints[1][0] > srcWinRect[0] + srcWinRect[
+								2]:  # For smoother animation. Not hidden yet
+								left = srcPoints[1]
+								path.moveTo(left[0], left[1])
+								x = max(srcWinRect[0] + srcWinRect[2], left[0] - padding)
+								path.lineTo(x, left[1])
+								path.lineTo(x, srcWinRect[1] + srcWinRect[3] - ecHiddenHeight)
+							else:
+								path.moveTo(srcWinRect[0] + srcWinRect[2],
+											srcWinRect[1] + srcWinRect[3] - ecHiddenHeight)
+							path.lineTo(srcWinRect[0] + srcWinRect[2] + ecEnterDist,
+										srcWinRect[1] + srcWinRect[3] - ecHiddenHeight)
+							path.lineTo(srcWinRect[0] + srcWinRect[2] + ecEnterDist,
+										dstWinRect[1] - vDistDst)
+						elif compHiddenOnRight:
+							if srcPoints[1][0] < srcWinRect[0] + srcWinRect[
+								2] + srcECSWidth:  # Not hidden yet but close
+								left = srcPoints[1]
+								path.moveTo(left[0], left[1])
+								path.lineTo(left[0] - padding, left[1])
+								path.lineTo(left[0] - padding, srcWinRect[1] + srcWinRect[3] - ecHiddenHeight)
+							else:
+								path.moveTo(srcWinRect[0] + srcWinRect[2] + srcECSWidth,
+											srcWinRect[1] + srcWinRect[3] - ecHiddenHeight)
+							path.lineTo(srcWinRect[0] + srcWinRect[2] + srcECSWidth - ecEnterDist,
+										srcWinRect[1] + srcWinRect[3] - ecHiddenHeight)
+							path.lineTo(srcWinRect[0] + srcWinRect[2] + srcECSWidth - ecEnterDist,
+										dstWinRect[1] - vDistDst)
+						else:
+							left = srcPoints[1]
+							path.moveTo(left[0], left[1])
+							path.lineTo(left[0] - padding, left[1])
+							path.lineTo(left[0] - padding, dstWinRect[1] - vDistDst)
+
+					else:  # Src Comp in bottom half of its win
+						path.moveTo(srcPoints[3][0], srcPoints[3][1])
+						path.lineTo(srcPoints[3][0], dstWinRect[1] - vDistDst)
+
+					# Destination
+					if dstInECSection:
+						ecEnterDist = echDist  # The x distance to pass before turning to go into EC Section
+						ecHiddenHeight = ecvDist  # The height the VB goes to before going to hidden component
+						compHiddenOnLeft = dstPoints[1][0] - padding < dstWinRect[0] + dstWinRect[2] + ecEnterDist
+						compHiddenOnRight = dstPoints[1][0] - padding > dstWinRect[0] + dstWinRect[2]\
+											+ dstECSWidth - ecEnterDist
+						if compHiddenOnLeft:
+							path.lineTo(dstWinRect[0] + dstWinRect[2] + ecEnterDist, dstWinRect[1] - vDistDst)
+							path.lineTo(dstWinRect[0] + dstWinRect[2] + ecEnterDist,
+										dstWinRect[1] + ecHiddenHeight)
+							if dstPoints[1][0] > dstWinRect[0] + dstWinRect[
+								2]:  # For smoother animation. Not hidden yet
+								left = dstPoints[1]
+								x = max(dstWinRect[0] + dstWinRect[2], left[0] - padding)
+								path.lineTo(x, dstWinRect[1] + ecHiddenHeight)
+								path.lineTo(x, left[1])
+								path.lineTo(left[0], left[1])
+								arrival = (left[0], left[1])
+								direction = 1
+							else:
+								path.lineTo(dstWinRect[0] + dstWinRect[2], dstWinRect[1] + ecHiddenHeight)
+								arrival = (dstWinRect[0] + dstWinRect[2], dstWinRect[1] + ecHiddenHeight)
+								direction = 2
+
+						elif compHiddenOnRight:
+							path.lineTo(dstWinRect[0] + dstWinRect[2] + dstECSWidth - ecEnterDist,
+										dstWinRect[1] - vDistDst)
+							path.lineTo(dstWinRect[0] + dstWinRect[2] + dstECSWidth - ecEnterDist,
+										dstWinRect[1] + ecHiddenHeight)
+							if dstPoints[1][0] < dstWinRect[0] + dstWinRect[
+								2] + dstECSWidth:  # Not hidden yet but close
+								left = dstPoints[1]
+								path.lineTo(left[0] - padding, dstWinRect[1] + ecHiddenHeight)
+								path.lineTo(left[0] - padding, left[1])
+								path.lineTo(left[0], left[1])
+								arrival = (left[0], left[1])
+								direction = 1
+							else:
+								path.lineTo(dstWinRect[0] + dstWinRect[2] + dstECSWidth,
+											dstWinRect[1] + ecHiddenHeight)
+								arrival = (dstWinRect[0] + dstWinRect[2] + dstECSWidth,
+										   dstWinRect[1] + ecHiddenHeight)
+								direction = 1
+						else:
+							left = dstPoints[1]
+							path.lineTo(left[0] - padding, dstWinRect[1] - vDistDst)
+							path.lineTo(left[0] - padding, left[1])
+							path.lineTo(left[0], left[1])
+							arrival = (left[0], left[1])
+							direction = 1
+
+					else:  # Dst Comp in top half of its win
+						path.lineTo(dstPoints[0][0], dstWinRect[1] - vDistDst)
+						path.lineTo(dstPoints[0][0], dstPoints[0][1])
+						arrival = (dstPoints[0][0], dstPoints[0][1])
+						direction = 0
+
+					boundingRect = path.boundingRect()
+					return path, arrival, direction, boundingRect
+
+			# Dst above src
+			else:
+				if ((srcInECSection or srcCompCenter[1] <= srcWinRect[1] + srcWinRect[3] / 2)
+						and (dstInECSection or dstCompCenter[1] >= dstWinRect[1] + dstWinRect[3] / 2)):
+
+					if srcInECSection:
+						ecEnterDist = echDist  # The x distance to pass before turning to go into EC Section
+						ecHiddenHeight = ecvDist  # The height the VB goes to before going to hidden component
+						compHiddenOnLeft = srcPoints[1][0] - padding < srcWinRect[0] + srcWinRect[2] + ecEnterDist
+						compHiddenOnRight = srcPoints[1][0] - padding > srcWinRect[0] + srcWinRect[2] + \
+											srcECSWidth - ecEnterDist
+						if compHiddenOnLeft:
+							if srcPoints[1][0] > srcWinRect[0] + srcWinRect[2]:  # For smoother animation
+								left = srcPoints[1]
+								path.moveTo(left[0], left[1])
+								x = max(srcWinRect[0] + srcWinRect[2], left[0] - padding)
+								path.lineTo(x, left[1])
+								path.lineTo(x, srcWinRect[1] + ecHiddenHeight)
+							else:
+								path.moveTo(srcWinRect[0] + srcWinRect[2], srcWinRect[1] + ecHiddenHeight)
+							path.lineTo(srcWinRect[0] + srcWinRect[2] + ecEnterDist, srcWinRect[1] + ecHiddenHeight)
+							path.lineTo(srcWinRect[0] + srcWinRect[2] + ecEnterDist,
+										dstWinRect[1] + dstWinRect[3] + vDistDst)
+						elif compHiddenOnRight:
+							if srcPoints[1][0] < srcWinRect[0] + srcWinRect[
+								2] + srcECSWidth:  # Not hidden yet but close
+								left = srcPoints[1]
+								path.moveTo(left[0], left[1])
+								path.lineTo(left[0] - padding, left[1])
+								path.lineTo(left[0] - padding, srcWinRect[1] + ecHiddenHeight)
+							else:
+								path.moveTo(srcWinRect[0] + srcWinRect[2] + srcECSWidth, srcWinRect[1] + ecHiddenHeight)
+							path.lineTo(srcWinRect[0] + srcWinRect[2] + srcECSWidth - ecEnterDist,
+										srcWinRect[1] + ecHiddenHeight)
+							path.lineTo(srcWinRect[0] + srcWinRect[2] + srcECSWidth - ecEnterDist,
+										dstWinRect[1] + dstWinRect[3] + vDistDst)
+						else:
+							left = srcPoints[1]
+							path.moveTo(left[0], left[1])
+							path.lineTo(left[0] - padding, left[1])
+							path.lineTo(left[0] - padding, dstWinRect[1] + dstWinRect[3] + vDistDst)
+
+					else:  # Src Comp in top half of its win
+						path.moveTo(srcPoints[3][0], srcPoints[3][1])
+						path.lineTo(srcPoints[3][0], dstWinRect[1] + dstWinRect[3] + vDistDst)
+
+					# Destination
+					if dstInECSection:
+						ecEnterDist = echDist  # The x distance to pass before turning to go into EC Section
+						ecHiddenHeight = ecvDist  # The height the VB goes to before going to hidden component
+						compHiddenOnLeft = dstPoints[1][0] - padding < dstWinRect[0] + dstWinRect[2] + ecEnterDist
+						compHiddenOnRight = dstPoints[1][0] - padding > dstWinRect[0] + dstWinRect[2] \
+											+ dstECSWidth - ecEnterDist
+						if compHiddenOnLeft:
+							path.lineTo(dstWinRect[0] + dstWinRect[2] + ecEnterDist,
+										dstWinRect[1] + dstWinRect[3] + vDistDst)
+							path.lineTo(dstWinRect[0] + dstWinRect[2] + ecEnterDist,
+										dstWinRect[1] + dstWinRect[3] - ecHiddenHeight)
+							if dstPoints[1][0] > dstWinRect[0] + dstWinRect[2]:  # For smoother animation
+								left = dstPoints[1]
+								x = max(dstWinRect[0] + dstWinRect[2], left[0] - padding)
+								path.lineTo(x, dstWinRect[1] + dstWinRect[3] - ecHiddenHeight)
+								path.lineTo(x, left[1])
+								path.lineTo(left[0], left[1])
+								arrival = (left[0], left[1])
+								direction = 1
+							else:
+								path.lineTo(dstWinRect[0] + dstWinRect[2],
+											dstWinRect[1] + dstWinRect[3] - ecHiddenHeight)
+								arrival = (
+								dstWinRect[0] + dstWinRect[2], dstWinRect[1] + dstWinRect[3] - ecHiddenHeight)
+								direction = 2
+
+						elif compHiddenOnRight:
+							path.lineTo(dstWinRect[0] + dstWinRect[2] + dstECSWidth - ecEnterDist,
+										dstWinRect[1] + dstWinRect[3] + vDistDst)
+							path.lineTo(dstWinRect[0] + dstWinRect[2] + dstECSWidth - ecEnterDist,
+										dstWinRect[1] + dstWinRect[3] - ecHiddenHeight)
+							if dstPoints[1][0] < dstWinRect[0] + dstWinRect[
+								2] + dstECSWidth:  # Not hidden yet but close
+								left = dstPoints[1]
+								path.lineTo(left[0] - padding, dstWinRect[1] + dstWinRect[3] - ecHiddenHeight)
+								path.lineTo(left[0] - padding, left[1])
+								path.lineTo(left[0], left[1])
+								arrival = (left[0], left[1])
+								direction = 1
+							else:
+								path.lineTo(dstWinRect[0] + dstWinRect[2] + dstECSWidth,
+											dstWinRect[1] + dstWinRect[3] - ecHiddenHeight)
+								arrival = (dstWinRect[0] + dstWinRect[2] + dstECSWidth,
+										   dstWinRect[1] + dstWinRect[3] - ecHiddenHeight)
+								direction = 1
+						else:
+							left = dstPoints[1]
+							path.lineTo(left[0] - padding, dstWinRect[1] + dstWinRect[3] + vDistDst)
+							path.lineTo(left[0] - padding, left[1])
+							path.lineTo(left[0], left[1])
+							arrival = (left[0], left[1])
+							direction = 1
+
+					else:  # Dst Comp in bottom half of its win
+						path.lineTo(dstPoints[0][0], dstWinRect[1] + dstWinRect[3] + vDistDst)
+						path.lineTo(dstPoints[0][0], dstPoints[0][1])
+						arrival = (dstPoints[0][0], dstPoints[0][1])
+						direction = 3
+
+					boundingRect = path.boundingRect()
+					return path, arrival, direction, boundingRect
+
+		# ------------------------ #
 
 		# --- LEAVING SOURCE --- #
 		if not srcInECSection:
@@ -422,14 +836,14 @@ class VBGraphics(QAbstractGraphicsShapeItem):
 		else:
 			ecEnterDist = echDist  # The x distance to pass before turning to go into EC Section
 			ecHiddenHeight = ecvDist  # The height the VB goes to before going to hidden component
-			compHiddenOnLeft = srcPoints[1][0] - hDist < srcWinRect[0] + srcWinRect[2] + ecEnterDist
-			compHiddenOnRight = srcPoints[1][0] - hDist > srcWinRect[0] + srcWinRect[2] + srcECSWidth - ecEnterDist
+			compHiddenOnLeft = srcPoints[1][0] - padding < srcWinRect[0] + srcWinRect[2] + ecEnterDist
+			compHiddenOnRight = srcPoints[1][0] - padding > srcWinRect[0] + srcWinRect[2] + srcECSWidth - ecEnterDist
 			if dstPoints[0][1] > srcPoints[0][1]:  # If destination is below source
 				if compHiddenOnLeft:
 					if srcPoints[1][0] > srcWinRect[0] + srcWinRect[2]:  # For smoother animation. Not hidden yet
 						left = srcPoints[1]
 						path.moveTo(left[0], left[1])
-						x = max(srcWinRect[0] + srcWinRect[2], left[0] - hDist)
+						x = max(srcWinRect[0] + srcWinRect[2], left[0] - padding)
 						path.lineTo(x, left[1])
 						path.lineTo(x, srcWinRect[1] + srcWinRect[3] - ecHiddenHeight)
 					else:
@@ -442,8 +856,8 @@ class VBGraphics(QAbstractGraphicsShapeItem):
 					if srcPoints[1][0] < srcWinRect[0] + srcWinRect[2] + srcECSWidth:  # Not hidden yet but close
 						left = srcPoints[1]
 						path.moveTo(left[0], left[1])
-						path.lineTo(left[0] - hDist, left[1])
-						path.lineTo(left[0] - hDist, srcWinRect[1] + srcWinRect[3] - ecHiddenHeight)
+						path.lineTo(left[0] - padding, left[1])
+						path.lineTo(left[0] - padding, srcWinRect[1] + srcWinRect[3] - ecHiddenHeight)
 					else:
 						path.moveTo(srcWinRect[0] + srcWinRect[2] + srcECSWidth,
 									srcWinRect[1] + srcWinRect[3] - ecHiddenHeight)
@@ -455,10 +869,42 @@ class VBGraphics(QAbstractGraphicsShapeItem):
 				else:
 					left = srcPoints[1]
 					path.moveTo(left[0], left[1])
-					path.lineTo(left[0] - hDist, left[1])
-					path.lineTo(left[0] - hDist, srcWinRect[1] + srcWinRect[3] + vDistSrc)
+					path.lineTo(left[0] - padding, left[1])
+					path.lineTo(left[0] - padding, srcWinRect[1] + srcWinRect[3] + vDistSrc)
 					path.lineTo(srcWinRect[0] - hDist, srcWinRect[1] + srcWinRect[3] + vDistSrc)
 
+			else:  # Destination is above source
+				if compHiddenOnLeft:
+					if srcPoints[1][0] > srcWinRect[0] + srcWinRect[2]:  # For smoother animation. Not hidden yet
+						left = srcPoints[1]
+						path.moveTo(left[0], left[1])
+						x = max(srcWinRect[0] + srcWinRect[2], left[0] - padding)
+						path.lineTo(x, left[1])
+						path.lineTo(x, srcWinRect[1] + ecHiddenHeight)
+					else:
+						path.moveTo(srcWinRect[0] + srcWinRect[2], srcWinRect[1] + ecHiddenHeight)
+					path.lineTo(srcWinRect[0] + srcWinRect[2] + ecEnterDist, srcWinRect[1] + ecHiddenHeight)
+					path.lineTo(srcWinRect[0] + srcWinRect[2] + ecEnterDist, srcWinRect[1] - vDistSrc)
+					path.lineTo(srcWinRect[0] - hDist, srcWinRect[1] - vDistSrc)
+				elif compHiddenOnRight:
+					if srcPoints[1][0] < srcWinRect[0] + srcWinRect[2] + srcECSWidth:  # Not hidden yet but close
+						left = srcPoints[1]
+						path.moveTo(left[0], left[1])
+						path.lineTo(left[0] - padding, left[1])
+						path.lineTo(left[0] - padding, srcWinRect[1] + ecHiddenHeight)
+					else:
+						path.moveTo(srcWinRect[0] + srcWinRect[2] + srcECSWidth, srcWinRect[1] + ecHiddenHeight)
+					path.lineTo(srcWinRect[0] + srcWinRect[2] + srcECSWidth - ecEnterDist,
+								srcWinRect[1] + ecHiddenHeight)
+					path.lineTo(srcWinRect[0] + srcWinRect[2] + srcECSWidth - ecEnterDist,
+								srcWinRect[1] - vDistSrc)
+					path.lineTo(srcWinRect[0] - hDist, srcWinRect[1] - vDistSrc)
+				else:
+					left = srcPoints[1]
+					path.moveTo(left[0], left[1])
+					path.lineTo(left[0] - padding, left[1])
+					path.lineTo(left[0] - padding, srcWinRect[1] - vDistSrc)
+					path.lineTo(srcWinRect[0] - hDist, srcWinRect[1] - vDistSrc)
 		# ---------------------- #
 
 		# --- TO DESTINATION --- #
@@ -495,9 +941,103 @@ class VBGraphics(QAbstractGraphicsShapeItem):
 
 		# In Extra Components Section
 		else:
-			arrival = None
-			direction = None
-			pass  # TODO: Implement
+			ecEnterDist = echDist  # The x distance to pass before turning to go into EC Section
+			ecHiddenHeight = ecvDist  # The height the VB goes to before going to hidden component
+			compHiddenOnLeft = dstPoints[1][0] - padding < dstWinRect[0] + dstWinRect[2] + ecEnterDist
+			compHiddenOnRight = dstPoints[1][0] - padding > dstWinRect[0] + dstWinRect[2] + dstECSWidth - ecEnterDist
+			if srcPoints[0][1] > dstPoints[0][1]:  # If destination is above source
+				if compHiddenOnLeft:
+					path.lineTo(dstWinRect[0] - hDist, dstWinRect[1] + dstWinRect[3] + vDistDst)
+					path.lineTo(dstWinRect[0] + dstWinRect[2] + ecEnterDist, dstWinRect[1] + dstWinRect[3] + vDistDst)
+					path.lineTo(dstWinRect[0] + dstWinRect[2] + ecEnterDist,
+								dstWinRect[1] + dstWinRect[3] - ecHiddenHeight)
+					if dstPoints[1][0] > dstWinRect[0] + dstWinRect[2]:  # For smoother animation. Not hidden yet
+						left = dstPoints[1]
+						x = max(dstWinRect[0] + dstWinRect[2], left[0] - padding)
+						path.lineTo(x, dstWinRect[1] + dstWinRect[3] - ecHiddenHeight)
+						path.lineTo(x, left[1])
+						path.lineTo(left[0], left[1])
+						arrival = (left[0], left[1])
+						direction = 1
+					else:
+						path.lineTo(dstWinRect[0] + dstWinRect[2], dstWinRect[1] + dstWinRect[3] - ecHiddenHeight)
+						arrival = (dstWinRect[0] + dstWinRect[2], dstWinRect[1] + dstWinRect[3] - ecHiddenHeight)
+						direction = 2
+
+				elif compHiddenOnRight:
+					path.lineTo(dstWinRect[0] - hDist, dstWinRect[1] + dstWinRect[3] + vDistDst)
+					path.lineTo(dstWinRect[0] + dstWinRect[2] + dstECSWidth - ecEnterDist,
+								dstWinRect[1] + dstWinRect[3] + vDistDst)
+					path.lineTo(dstWinRect[0] + dstWinRect[2] + dstECSWidth - ecEnterDist,
+								dstWinRect[1] + dstWinRect[3] - ecHiddenHeight)
+					if dstPoints[1][0] < dstWinRect[0] + dstWinRect[2] + dstECSWidth:  # Not hidden yet but close
+						left = dstPoints[1]
+						path.lineTo(left[0] - padding, dstWinRect[1] + dstWinRect[3] - ecHiddenHeight)
+						path.lineTo(left[0] - padding, left[1])
+						path.lineTo(left[0], left[1])
+						arrival = (left[0], left[1])
+						direction = 1
+					else:
+						path.lineTo(dstWinRect[0] + dstWinRect[2] + dstECSWidth,
+									dstWinRect[1] + dstWinRect[3] - ecHiddenHeight)
+						arrival = (dstWinRect[0] + dstWinRect[2] + dstECSWidth,
+									dstWinRect[1] + dstWinRect[3] - ecHiddenHeight)
+						direction = 1
+				else:
+					left = dstPoints[1]
+					path.lineTo(dstWinRect[0] - hDist, dstWinRect[1] + dstWinRect[3] + vDistDst)
+					path.lineTo(left[0] - padding, dstWinRect[1] + dstWinRect[3] + vDistDst)
+					path.lineTo(left[0] - padding, left[1])
+					path.lineTo(left[0], left[1])
+					arrival = (left[0], left[1])
+					direction = 1
+
+			else:  # Destination is below source
+				if compHiddenOnLeft:
+					path.lineTo(dstWinRect[0] - hDist, dstWinRect[1] - vDistDst)
+					path.lineTo(dstWinRect[0] + dstWinRect[2] + ecEnterDist, dstWinRect[1] - vDistDst)
+					path.lineTo(dstWinRect[0] + dstWinRect[2] + ecEnterDist,
+								dstWinRect[1] + ecHiddenHeight)
+					if dstPoints[1][0] > dstWinRect[0] + dstWinRect[2]:  # For smoother animation. Not hidden yet
+						left = dstPoints[1]
+						x = max(dstWinRect[0] + dstWinRect[2], left[0] - padding)
+						path.lineTo(x, dstWinRect[1] + ecHiddenHeight)
+						path.lineTo(x, left[1])
+						path.lineTo(left[0], left[1])
+						arrival = (left[0], left[1])
+						direction = 1
+					else:
+						path.lineTo(dstWinRect[0] + dstWinRect[2], dstWinRect[1] + ecHiddenHeight)
+						arrival = (dstWinRect[0] + dstWinRect[2], dstWinRect[1] + ecHiddenHeight)
+						direction = 2
+
+				elif compHiddenOnRight:
+					path.lineTo(dstWinRect[0] - hDist, dstWinRect[1] - vDistDst)
+					path.lineTo(dstWinRect[0] + dstWinRect[2] + dstECSWidth - ecEnterDist,
+								dstWinRect[1] - vDistDst)
+					path.lineTo(dstWinRect[0] + dstWinRect[2] + dstECSWidth - ecEnterDist,
+								dstWinRect[1] + ecHiddenHeight)
+					if dstPoints[1][0] < dstWinRect[0] + dstWinRect[2] + dstECSWidth:  # Not hidden yet but close
+						left = dstPoints[1]
+						path.lineTo(left[0] - padding, dstWinRect[1] + ecHiddenHeight)
+						path.lineTo(left[0] - padding, left[1])
+						path.lineTo(left[0], left[1])
+						arrival = (left[0], left[1])
+						direction = 1
+					else:
+						path.lineTo(dstWinRect[0] + dstWinRect[2] + dstECSWidth,
+									dstWinRect[1] + ecHiddenHeight)
+						arrival = (dstWinRect[0] + dstWinRect[2] + dstECSWidth,
+								   dstWinRect[1] + ecHiddenHeight)
+						direction = 1
+				else:
+					left = dstPoints[1]
+					path.lineTo(dstWinRect[0] - hDist, dstWinRect[1] - vDistDst)
+					path.lineTo(left[0] - padding, dstWinRect[1] - vDistDst)
+					path.lineTo(left[0] - padding, left[1])
+					path.lineTo(left[0], left[1])
+					arrival = (left[0], left[1])
+					direction = 1
 
 		boundingRect = path.boundingRect()
 		return path, arrival, direction, boundingRect

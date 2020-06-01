@@ -36,7 +36,7 @@ class TopLevelWrapperGraphics(QGraphicsRectItem):
     
     BUFFER = 1
     BUTTON_WIDTH = 60
-    BACKGROUND_COLOR = QColor(100, 100, 100, 60)
+    BACKGROUND_COLOR = QColor(255, 0, 0)  # 100, 100, 100, 60)
     # Scrollable Item
     SGI_MIN_WIDTH = 1000
     SGI_MAX_WIDTH = 2000
@@ -126,6 +126,7 @@ class TopLevelWrapperGraphics(QGraphicsRectItem):
 
         ecs.setParentItem(self)
         self._scrollableItem = ecs
+        ecs.prepareGeometryChange()
 
         # Define some variables
         b = TopLevelWrapperGraphics.BUFFER

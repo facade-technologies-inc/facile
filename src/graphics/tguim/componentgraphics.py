@@ -394,6 +394,7 @@ class ComponentGraphics(QGraphicsItem):
             self._ecSection.addItemToContents(component)
             component._dataComponent.isExtraComponent = True
             self._extraComponents.append(component)
+            # self._ecSection.refreshContents()
             
     def getScrollableItem(self) -> 'ScrollableGraphicsItem':
         """

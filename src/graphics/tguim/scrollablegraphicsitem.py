@@ -38,20 +38,23 @@ class ScrollableGraphicsItem(QGraphicsRectItem):
         # create empty invisible child
         self._ghostContainer = QGraphicsRectItem(self)
         self._ghostContainer.setFlag(QGraphicsItem.ItemHasNoContents)
+        self._ghostContainer.setPos(0, 0)
 
         self.contents = []  # all items that we can scroll between
 
     def addItemToContents(self, item):
-        assert(item not in self.contents)
+        # assert(item not in self.contents)
 
         # add the item
         self.contents.append(item)
         item.setParentItem(self._ghostContainer)
 
         # set the position of the item
-        cumulativeX = self.scenePos().x() + self.parentItem().getWindowGraphics().width()
-        y = self.boundingRect().height()/2 - item.height()/2
+        cumulativeX = self.parentItem().scenePos().x() + self.parentItem().getWindowGraphics().width()
+        y = self.parentItem().getWindowGraphics().scenePos().y() + self.boundingRect().height()/2 - item.height()/2
+
         if self.contents:
+            item.prepareGeometryChange()
             for i, curItem in enumerate(self.contents):
                 item.setPos(ScrollableGraphicsItem.MARGIN * (i+1) + cumulativeX, y)
                 cumulativeX += curItem.width()
@@ -66,6 +69,12 @@ class ScrollableGraphicsItem(QGraphicsRectItem):
         self.contents.remove(item)
         self.scene().removeItem(item)
 
+        self.refreshContents()
+
+    def refreshContents(self):
+        """
+        Updates the contents after a change
+        """
         # remove all other items temporarily
         items = self.contents[:]
         self.contents = []
@@ -81,33 +90,27 @@ class ScrollableGraphicsItem(QGraphicsRectItem):
 
     def wheelEvent(self, event: QWheelEvent) -> None:
         br = self.boundingRect()
-        cbr = self.childrenBoundingRect() # because of clipping, this doesn't go beyond the bounding rect
+        cbr = self.childrenBoundingRect()  # because of clipping, this doesn't go beyond the bounding rect
 
         canGoLeft = cbr.x() + cbr.width() > br.x() + br.width() - ScrollableGraphicsItem.MARGIN
         canGoRight = self._leftTicks > 0
+        # print(self.scenePos().y(), self._ghostContainer.scenePos().y())
 
-        oldY = self._ghostContainer.pos().y()
+        y = self._ghostContainer.y()
         if event.delta() > 0:
             if canGoRight:
                 self._leftTicks -= 1
-                for i in range(1, 17):
-                    self._ghostContainer.setPos(self._ghostContainer.pos().x() + 1, oldY)
+                for i in range(1, 34):
+                    self._ghostContainer.setPos(self._ghostContainer.x() + .5, y)
         else:
             if canGoLeft:
                 self._leftTicks += 1
-                for i in range(1, 17):
-                    self._ghostContainer.setPos(self._ghostContainer.pos().x() - 1, oldY)
+                for i in range(1, 34):
+                    self._ghostContainer.setPos(self._ghostContainer.x() - .5, y)
 
     def paint(self, painter, option, widget):
-        pen = QPen()
-        pen.setWidth(1)
-        pen.setColor(QColor(Qt.transparent))
+        pen = QPen(Qt.transparent)
         painter.setPen(pen)
-
-    def getContents(self):
-        """
-        Returns the list of self's contents
-        """
 
 if __name__ == "__main__":
     app = QApplication()
