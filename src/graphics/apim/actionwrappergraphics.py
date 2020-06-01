@@ -100,7 +100,8 @@ class ActionWrapperGraphics(ActionGraphics):
 		:return: None
 		:rtype: NoneType
 		"""
-		if self:
+
+		try:
 			ActionGraphics.updateGraphics(self)
 
 			self.updateActionRect()
@@ -110,6 +111,8 @@ class ActionWrapperGraphics(ActionGraphics):
 			vOffset = MoveButton.HEIGHT + 20
 			self.upButton.setPos(self._width/2 - hOffset, -self._height/2 + vOffset)
 			self.downButton.setPos(self._width/2 - hOffset, self._height/2 - vOffset)
+		except RuntimeError:
+			pass  # In case of Internal C++ object already deleted.
 
 	def paint(self, painter: QPainter, option: QStyleOptionGraphicsItem, index: QWidget) -> None:
 		"""
