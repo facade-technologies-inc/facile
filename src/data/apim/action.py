@@ -284,8 +284,9 @@ class Action(Entity):
 		for p in self._inputs:
 			out += ", " + p.getName() + ": " + p.getDataTypeStr()
 			# If we eventually provide functionality for defaulting values, use this:
-			# if p.hasDefault():
-			# 	out += " = " + p.getDefaultVal()
+			# Thank you, me of the past
+			if p.isOptional():
+				out += " = " + p.getDefaultValue()
 
 		return out
 
