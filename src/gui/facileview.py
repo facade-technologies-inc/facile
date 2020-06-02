@@ -296,8 +296,9 @@ class FacileView(QMainWindow):
 		self.progress = QProgressDialog("Loading Project ...", "Cancel Loading", 0, numSteps, parent=self.parent())
 		self.progress.setValue(0)
 		self.progress.setModal(True)
+		window = ModernWindow(self.progress)
 
-		self.progress.moveToThread(self.thread)
+		window.moveToThread(self.thread)
 		self.thread.start()
 
 		def increment():
@@ -386,7 +387,7 @@ class FacileView(QMainWindow):
 		if confirm:
 			title = "Confirm Application Termination"
 			message = "Are you sure you'd like to terminate the target application?"
-			response = MessageBox.question(self, title, message)
+			response = MessageBox.question(self, title, message, options=None)
 		else:
 			response = MessageBox.StandardButton.Yes
 		
@@ -573,9 +574,7 @@ class FacileView(QMainWindow):
 					message = "Your target application is still running. Close it automatically when Facile is closed?\n" \
 							  "(This can always be changed later in settings)"
 					options = MessageBox.Yes | MessageBox.No | MessageBox.Cancel
-					box = MessageBox(MessageBox.Question, "App is running...", message, buttons=options)
-					window = ModernWindow(box)
-					result = window.exec_()
+					result = MessageBox.question(self, "App is running...", message, options)
 
 					if result == MessageBox.Yes:
 						self._project.autoCloseAppOnExit = False
