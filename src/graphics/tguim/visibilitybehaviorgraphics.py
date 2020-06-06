@@ -21,6 +21,8 @@
 This module contains the VBGraphics class.
 """
 
+from copy import copy
+
 from PySide2.QtCore import QRectF
 from PySide2.QtGui import QPainterPath, QPainter, QPen, Qt, QColor, QBrush, QPainterPathStroker, QContextMenuEvent, \
     QMouseEvent
@@ -36,7 +38,8 @@ class VBGraphics(QAbstractGraphicsShapeItem):
     MIN_LEFT_DIST = 20
     ARROW_COL = QColor(230, 230, 230)
     SEL_ARROW_COL = QColor(255, 200, 50)
-    HIDDEN_ARROW_COL = QColor(230, 230, 230, 50)
+    HIDDEN_ARROW_COL = copy(ARROW_COL)
+    HIDDEN_ARROW_COL.setAlpha(round(ARROW_COL.alpha()/2))
 
     def __init__(self, dataVisibilityBehavior: 'VisibilityBehavior', parent: 'TGUIMScene'):
         """
