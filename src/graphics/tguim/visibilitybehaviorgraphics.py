@@ -36,6 +36,7 @@ class VBGraphics(QAbstractGraphicsShapeItem):
     MIN_LEFT_DIST = 20
     ARROW_COL = QColor(230, 230, 230)
     SEL_ARROW_COL = QColor(255, 200, 50)
+    HIDDEN_ARROW_COL = QColor(230, 230, 230, 50)
 
     def __init__(self, dataVisibilityBehavior: 'VisibilityBehavior', parent: 'TGUIMScene'):
         """
@@ -59,6 +60,8 @@ class VBGraphics(QAbstractGraphicsShapeItem):
         self._dstComp = self.scene().getGraphics(self._dataVB.getDestComponent())
         self._boundingRect = None
         self._path = None
+
+        self._compIsHidden = False # When path is built, if a connected component is hidden, this will be True
 
         def onRemove():
             tguim = sm.StateMachine.instance._project.getTargetGUIModel()
@@ -118,11 +121,13 @@ class VBGraphics(QAbstractGraphicsShapeItem):
             if self.isSelected():
                 arrowColor = VBGraphics.SEL_ARROW_COL
                 pen.setStyle(Qt.DashDotLine)
-                pen.setColor(arrowColor)
             else:
                 arrowColor = VBGraphics.ARROW_COL
+                if self._compIsHidden:
+                    arrowColor = VBGraphics.HIDDEN_ARROW_COL
                 pen.setStyle(Qt.SolidLine)
-                pen.setColor(arrowColor)
+
+            pen.setColor(arrowColor)
 
             pen.setJoinStyle(Qt.RoundJoin)
             pen.setCapStyle(Qt.RoundCap)
@@ -404,6 +409,9 @@ class VBGraphics(QAbstractGraphicsShapeItem):
                 compHiddenOnLeft = srcPoints[1][0] - srcPadding < leftPausePoint
                 compHiddenOnRight = srcPoints[1][0] - srcPadding > srcWinRect[0] + srcWinRect[2] + \
                                     srcECSWidth - ecEnterDist
+
+                self._compIsHidden = compHiddenOnLeft or compHiddenOnRight
+
                 if compHiddenOnLeft:
                     if srcPoints[2][0] + srcPadding >= srcWinRect[0] + srcWinRect[2]:
                         # For smoother animation. Not hidden yet
