@@ -1,8 +1,8 @@
 ---
 name: Bug report (developer)
-about: Create a report to help us improve
+about: As a developer, use this template to report a bug
 title: "[Bug]"
-labels: 'Type: Bug, Status: Available'
+labels: 'Status: Available, Type: Bug'
 assignees: Frenchman98
 
 ---

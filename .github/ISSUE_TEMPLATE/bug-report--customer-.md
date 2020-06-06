@@ -1,8 +1,8 @@
 ---
 name: Bug report (customer)
-about: Create a report to help us improve
+about: As a customer, use this template to report a bug
 title: "[BUG]"
-labels: 'Priority: High, Type: Bug, Status: Available'
+labels: 'Priority: High, Status: Available, Type: Bug'
 assignees: Frenchman98
 
 ---
