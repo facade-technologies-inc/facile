@@ -21,14 +21,10 @@
 This module contains the Observer class, which watches the target GUI for changes.
 """
 
-from datetime import datetime
 from threading import Lock
 
 import psutil
-import pywinauto
-from PySide2.QtCore import QThread, Signal, Qt
-from PySide2.QtWidgets import QProgressDialog, QMessageBox
-from pywinauto.controls.uiawrapper import UIAWrapper
+from PySide2.QtCore import QThread, Signal
 from time import time
 
 from tguiil.application import Application

@@ -27,8 +27,8 @@ import os
 from subprocess import PIPE
 
 import psutil
-from PySide2.QtWidgets import QTreeView, QMessageBox
-from PySide2.QtCore import Qt
+from PySide2.QtWidgets import QTreeView, QMessageBox, QProgressDialog
+from PySide2.QtCore import Qt, QTimer
 
 from data.tguim.targetguimodel import TargetGuiModel
 from data.apim.apimodel import ApiModel
@@ -86,8 +86,7 @@ class Project:
 		self._process = None
 		self._observer = None
 		self._explorer = None
-		self.mustDetectBackend = False  # Public because the observer will be accessing this
-		self._notif = None  # This temporarily holds a qmessagebox
+		self._notif = None  # This temporarily holds a dialog
 		
 		# project information
 		self.setProjectDir(os.path.abspath(projectDir))
@@ -217,6 +216,7 @@ class Project:
 	def setBackend(self, backend: str = "auto") -> None:
 		"""
 		Sets the accessibility technology (backend) used to control the target application.
+		The automatic selection is performed in the observer itself on first run.
 		Also handles the QMessageBoxes needed to notify the user, because they can't be spawned in the observer's
 		thread.
 		
@@ -229,18 +229,29 @@ class Project:
 		"""
 		if backend.lower() == 'detecting':
 			self._backend = backend.lower()
-			self._notif = QMessageBox(QMessageBox.Information, "Detecting Backend...", "We are currently detecting your "
-				   "application's backend technology.\n\nThis shouldn't take long...")
-			self._notif.showNormal()
-			self._notif.setStandardButtons(QMessageBox.NoButton)
+			interval = 50  # milliseconds
+			totTime = 5000  # milliseconds
+			steps = int(totTime/interval)
+			timer = QTimer()
+			timer.setInterval(interval)
+
+			prog = QProgressDialog("We are currently detecting your application's backend technology...",
+										  "Hide", 0, steps)
+			timer.timeout.connect(lambda: prog.setValue(prog.value() + 1))
+			timer.start()
+
+			self._notif = prog
+			self._notif.setValue(0)
+			self._notif.exec_()
+
 		else:
 			if self._backend == 'detecting':
 				self._notif.close()
 				self._notif = QMessageBox(QMessageBox.Information, "Backend Detected.",
-										  "The backend has been detected and set to " + backend + '.',
+										  "The backend has been successfully detected. (" + backend + ')',
 										  buttons=QMessageBox.Ok)
 				self._notif.show()
-			self._backend = backend.lower()  # The automatic selection is performed in the observer itself on first run
+			self._backend = backend.lower()
 	
 	def setStartupTimeout(self, timeout: int) -> None:
 		"""
