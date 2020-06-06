@@ -1,8 +1,8 @@
 ---
-name: Bug report (customer)
-about: As a customer, use this template to report a bug
-title: "[BUG]"
-labels: 'Priority: High, Status: Available, Type: Bug'
+name: Bug Report
+about: As a developer, use this template to report a bug
+title: "[Bug]"
+labels: 'Status: Available, Type: Bug'
 assignees: Frenchman98
 
 ---
@@ -44,7 +44,8 @@ If applicable, add screenshots to help explain your problem.
 ---
 
 ### Facile
-- **Version**: ---
+- **Branch Name**: ---
+- **Commit Hash**: ---
 
 ---
 
