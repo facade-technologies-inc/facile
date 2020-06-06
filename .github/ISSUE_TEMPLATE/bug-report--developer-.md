@@ -7,47 +7,59 @@ assignees: Frenchman98
 
 ---
 
-**Describe the bug**
+# Bug Description
 A clear and concise description of what the bug is.
 
-**To Reproduce**
+# To Reproduce
 Steps to reproduce the behavior:
 1. Go to '...'
 2. Click on '....'
 3. Scroll down to '....'
 4. See error
 
-**Expected behavior**
+# Expected behavior
 A clear and concise description of what you expected to happen.
 
-**Screenshots**
+# Screenshots
 If applicable, add screenshots to help explain your problem.
 
-<details open>
-<summary>Your Environment Details</summary>
-<br>
+# Environment Details
+<details>
 
-## Machine
+### Machine
 - **OS**: ---
 - **OS Version**: ---
 
-## Python
-- **Version**: ---
-- **Package Versions**:
-   - ...
-   - ...
-   - ...
-   - ...
+---
 
-## Facile
+### Python [VERSION]
+<details>
+   <summary>Packages</summary>
+
+   - numpy4.3.5
+   - matplotlib23.3
+
+</details>
+
+---
+
+### Facile
 - **Branch Name**: ---
 - **Commit Hash**: ---
 
-## Target Application
+---
+
+### Target Application
 - **Name**: ---
 - **Version**: --
 
-## Additional context
-Add any other context about the problem here.
+### Additional context
+Any additional info?
 
 </details>
+
+---
+
+**_If you have it..._**
+
+Please zip the entire folder that contains your *.fcl file and attach it to this issue.
