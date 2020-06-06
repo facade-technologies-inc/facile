@@ -1,8 +1,8 @@
 ---
-name: Bug report (developer)
+name: Bug report (customer)
 about: Create a report to help us improve
-title: "[Bug]"
-labels: 'Type: Bug, Status: Available'
+title: "[BUG]"
+labels: 'Priority: High, Type: Bug, Status: Available'
 assignees: Frenchman98
 
 ---
@@ -44,8 +44,7 @@ If applicable, add screenshots to help explain your problem.
 ---
 
 ### Facile
-- **Branch Name**: ---
-- **Commit Hash**: ---
+- **Version**: ---
 
 ---
 
