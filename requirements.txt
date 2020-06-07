@@ -20,7 +20,6 @@ future==0.18.2
 idna==2.9
 imageio==2.8.0
 imagesize==1.2.0
-IntelliWave-API==0.1.0
 jdcal==1.4.1
 Jinja2==2.11.2
 joblib==0.14.1
@@ -31,9 +30,6 @@ matplotlib==3.2.1
 MouseInfo==0.1.3
 networkx==2.4
 nltk==3.5
-Notepad==0.1.0
-Notepad-API==0.1.0
-NotepadAPI==0.1.0
 numpy==1.17.2
 openpyxl==3.0.2
 packaging==20.3
