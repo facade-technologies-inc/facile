@@ -38,20 +38,23 @@ class ScrollableGraphicsItem(QGraphicsRectItem):
         # create empty invisible child
         self._ghostContainer = QGraphicsRectItem(self)
         self._ghostContainer.setFlag(QGraphicsItem.ItemHasNoContents)
+        self._ghostContainer.setPos(0, 0)
 
         self.contents = []  # all items that we can scroll between
 
     def addItemToContents(self, item):
-        assert(item not in self.contents)
+        # assert(item not in self.contents)
 
         # add the item
         self.contents.append(item)
         item.setParentItem(self._ghostContainer)
 
         # set the position of the item
-        cumulativeX = self.scenePos().x() + self.parentItem().getWindowGraphics().width()
-        y = self.boundingRect().height()/2 - item.height()/2
+        cumulativeX = self.parentItem().scenePos().x() + self.parentItem().getWindowGraphics().width()
+        y = self.parentItem().getWindowGraphics().scenePos().y() + self.boundingRect().height()/2 - item.height()/2
+
         if self.contents:
+            item.prepareGeometryChange()
             for i, curItem in enumerate(self.contents):
                 item.setPos(ScrollableGraphicsItem.MARGIN * (i+1) + cumulativeX, y)
                 cumulativeX += curItem.width()
@@ -67,6 +70,12 @@ class ScrollableGraphicsItem(QGraphicsRectItem):
         self.contents.remove(item)
         self.scene().removeItem(item)
 
+        self.refreshContents()
+
+    def refreshContents(self):
+        """
+        Updates the contents after a change
+        """
         # remove all other items temporarily
         items = self.contents[:]
         self.contents = []
@@ -107,9 +116,7 @@ class ScrollableGraphicsItem(QGraphicsRectItem):
                     self._ghostContainer.setPos(self._ghostContainer.pos().x() - 1, oldY)
 
     def paint(self, painter, option, widget):
-        pen = QPen()
-        pen.setWidth(1)
-        pen.setColor(QColor(Qt.transparent))
+        pen = QPen(Qt.transparent)
         painter.setPen(pen)
 
 if __name__ == "__main__":
