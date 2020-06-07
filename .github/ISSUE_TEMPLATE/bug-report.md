@@ -24,4 +24,4 @@ A clear and concise description of what you expected to happen.
 Screenshots, gifs, files, etc. - anything to help us replicate or understand your issue.
 
 # Environment Details
-INSERT ENVIRONMENT INFO HERE
+INSERT ENVIRONMENT INFO HERE - run the environment_report.py script and copy the output here.

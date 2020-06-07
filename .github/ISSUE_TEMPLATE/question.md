@@ -2,7 +2,7 @@
 name: Question
 about: "“If you want the answer—ask the question.”"
 title: I have a question!
-labels: 'Type: Question, Status: Available'
+labels: 'Status: Available, Type: Question'
 assignees: ''
 
 ---
