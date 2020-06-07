@@ -1,8 +1,8 @@
 ---
 name: Feature Request
 about: Suggest an idea for this project
-title: ''
-labels: ''
+title: Let's make this thing...
+labels: 'Status: Available, Type: Feature'
 assignees: ''
 
 ---
