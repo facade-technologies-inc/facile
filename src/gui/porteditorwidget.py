@@ -125,6 +125,8 @@ class PortEditorWidget(QWidget):
 		for typeLabel, type in PortEditorWidget.PORT_TYPES:
 			if typeStr == type:
 				typeStr = typeLabel
+		if typeStr == 'NoneType':
+			typeStr = 'String'
 		self.ui.typeEdit.setCurrentText(typeStr)
 		
 		if self._port.isOptional():

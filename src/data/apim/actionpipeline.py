@@ -333,8 +333,12 @@ class ActionPipeline(Action):
 			if self._outputs:
 				annotations = [p.getAnnotation() for p in self._outputs]
 				types = [p.getDataTypeStr() for p in self._outputs]
-				out += '\t\t:return: ({})\n'.format(", ".join(annotations))
-				out += '\t\t:rtype: ({})\n'.format(", ".join(types))
+				if len(annotations) > 1:
+					out += '\t\t:return: ({})\n'.format(", ".join(annotations))
+					out += '\t\t:rtype: ({})\n'.format(", ".join(types))
+				else:
+					out += '\t\t:return: {}\n'.format(annotations[0])
+					out += '\t\t:rtype: {}\n'.format(types[0])
 			else:
 				out += '\t\t:return: None\n'
 				out += '\t\t:rtype: NoneType\n'
@@ -356,13 +360,13 @@ class ActionPipeline(Action):
 		:rtype: str
 		"""
 
-		code = ""
+		code = "\t\ttry:  # The generated code. If it doesn't work, throws an error.\n"
 
 		for p in self.getInputPorts():  # Assumes unique input port names, which should be enforced in gui.
 			self._varMap.append((p.getName(), p))
 
-		for	a in self._actions: 
-			code += '\t\t' 
+		for a in self._actions:
+			code += '\t\t\t'
 			if a.getOutputPorts():  # Getting outputs named and written to code
 				o = a.getOutputPorts()[0]
 				code += self.getVarName(o)  # only one output
@@ -373,21 +377,36 @@ class ActionPipeline(Action):
 			code += 'self.' + a.getMethodName() + '('
 
 			if a.getInputPorts():
+				# First port
 				i = a.getInputPorts()[0]
-				code += self.getVarName(i)  # only one input
+				if i.isOptional():  # For optional parameters
+					code += i.getName() + '='
+				inType = i.getDataTypeStr()  # Enforcing data type
+				code += inType + '(' + self.getVarName(i) + ')'  # only one input, converts it to necessary type
+
+				# Other ports
 				if len(a.getInputPorts()) > 1:  # if multiple inputs
 					for i in a.getInputPorts()[1:]:
-						code += ", " + self.getVarName(i)
+						code += ", "
+						inType = i.getDataTypeStr()
+						if i.isOptional():  # For optional parameters
+							code += i.getName() + '='
+						code += inType + '(' + self.getVarName(i) + ')'
 			code += ')\n'
 
 		if self.getOutputPorts():
-			code += '\n\t\treturn '
+			code += '\n\t\t\treturn '
 			o = self.getOutputPorts()[0]
-			code += self.getVarName(o)  # only one output
+			outType = o.getDataTypeStr()
+			code += outType + '(' + self.getVarName(o) + ')'  # only one output
 			if len(self.getOutputPorts()) > 1:  # if several outputs
 				for o in self.getOutputPorts()[1:]:
-					code += ", " + self.getVarName(o)
+					outType = o.getDataTypeStr()
+					code += ", " + outType + '(' + self.getVarName(o) + ')'
 			code += '\n'
+
+		code += '\t\texcept Exception as e:\n\t\t\tprint(e)\n\t\t\traise ActionException("The action could not be ' \
+				'performed successfully. Please look at the errors above, or message us for support.")\n'
 
 		return code
 

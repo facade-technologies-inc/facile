@@ -196,7 +196,7 @@ class Validator(QThread):
 				dstType = dstPort.getDataTypeStr()
 				srcAct = srcPort.getAction()
 				dstAct = srcPort.getAction()
-				if srcType is not dstType:
+				if srcType != dstType:
 					msgTemplate = "In action pipeline {}, the wire connecting port '{}' of action '{}' to port '{}' " \
 								  "of action '{}' have conflicting data types of '{}' and '{}'"
 					msg = msgTemplate.format(pipe.getName(), srcPort.getName(), srcAct.getName(), dstPort.getName(),

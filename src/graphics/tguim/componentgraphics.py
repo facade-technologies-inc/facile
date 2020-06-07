@@ -97,16 +97,18 @@ class ComponentGraphics(QGraphicsItem):
         
         # --- MENUS --- #
         # Menus like to be special so this section puts them back in their place (both literally and figuratively)
-        if self._depth >= 0:
+        if self._depth == 0:
             type = self._dataComponent.getSuperToken().getTokens()[0].type
             
             if type is 'Menu' and parent:
                 self.isMenu = True
                 self._depth = 0
                 nxtParent = parent
-                while not isinstance(nxtParent, TopLevelWrapperGraphics):
+                while not isinstance(nxtParent, TopLevelWrapperGraphics) and nxtParent:
                     self._depth += 1
                     nxtParent = nxtParent.parentItem()
+                if not nxtParent:
+                    self._depth = 1
 
             # Some menus are actually menuItems (who would've thought they would be even more annoying than
             # they already are?), so this resets those menuitems' depths back to normal, and adds them to the
