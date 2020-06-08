@@ -142,7 +142,6 @@ class Port(Entity):
         """
         self._input = None
 
-
     def getOutputWires(self) -> list:
         """
         Gets a list of the Port's output Wire's.

@@ -27,8 +27,8 @@ import os
 from subprocess import PIPE
 
 import psutil
-from PySide2.QtWidgets import QTreeView
-from PySide2.QtCore import Qt
+from PySide2.QtWidgets import QTreeView, QMessageBox, QProgressDialog
+from PySide2.QtCore import Qt, QTimer
 
 from data.tguim.targetguimodel import TargetGuiModel
 from data.apim.apimodel import ApiModel
@@ -88,6 +88,7 @@ class Project:
 		self._explorer = None
 		self.autoCloseAppOnExit = None
 		self.acaWarningShown = False
+		self._notif = None  # This temporarily holds a dialog
 		
 		# project information
 		self.setProjectDir(os.path.abspath(projectDir))
@@ -117,12 +118,14 @@ class Project:
 				self._observer = Observer(self._process.pid, captureImages, self._backend)
 				self._observer.newSuperToken.connect(self._targetGUIModel.createComponent,
 				                                     type=Qt.BlockingQueuedConnection)
+				self._observer.backendDetected.connect(lambda be: self.setBackend(be))
 				new = True
 			elif self._observer.getPID() != self._process.pid:
 				self._observer.pause()
 				self._observer = Observer(self._process.pid, captureImages, self._backend)
 				self._observer.newSuperToken.connect(self._targetGUIModel.createComponent,
 				                                     type=Qt.BlockingQueuedConnection)
+				self._observer.backendDetected.connect(lambda be: self.setBackend(be))
 				new = True
 			
 			if new:
@@ -142,8 +145,10 @@ class Project:
 		if self._process is None or not self._process.is_running():
 			return None
 		else:
-			self._explorer = Explorer(self._process.pid, self._backend)
-			return self._explorer
+			# TODO: Uncomment when Explorer is done
+			# self._explorer = Explorer(self._process.pid, self._backend)
+			# return self._explorer
+			return None
 	
 	def getTargetGUIModel(self) -> 'TargetGuiModel':
 		"""
@@ -210,20 +215,44 @@ class Project:
 		
 		self._executable = exe
 	
-	def setBackend(self, backend: str = "uia") -> None:
+	def setBackend(self, backend: str = "auto") -> None:
 		"""
 		Sets the accessibility technology (backend) used to control the target application.
+		The automatic selection is performed in the observer itself on first run.
+		Also handles the QMessageBoxes needed to notify the user, because they can't be spawned in the observer's
+		thread.
 		
-		Defaults to uia.
+		Defaults to auto, but the default should never be used: just a fail-safe.
 		
 		:param backend: The accessibility technology used to control the target application
 		:type backend: str
 		:return: None
 		:rtype: NoneType
 		"""
-		if backend.lower() != "win32" and backend.lower() != "uia":
-			self._backend = "uia"
+		if backend.lower() == 'detecting':
+			self._backend = backend.lower()
+			interval = 50  # milliseconds
+			totTime = 5000  # milliseconds
+			steps = int(totTime/interval)
+			timer = QTimer()
+			timer.setInterval(interval)
+
+			prog = QProgressDialog("We are currently detecting your application's backend technology...",
+										  "Hide", 0, steps)
+			timer.timeout.connect(lambda: prog.setValue(prog.value() + 1))
+			timer.start()
+
+			self._notif = prog
+			self._notif.setValue(0)
+			self._notif.exec_()
+
 		else:
+			if self._backend == 'detecting':
+				self._notif.close()
+				self._notif = QMessageBox(QMessageBox.Information, "Backend Detected.",
+										  "The backend has been successfully detected. (" + backend + ')',
+										  buttons=QMessageBox.Ok)
+				self._notif.show()
 			self._backend = backend.lower()
 	
 	def setStartupTimeout(self, timeout: int) -> None:

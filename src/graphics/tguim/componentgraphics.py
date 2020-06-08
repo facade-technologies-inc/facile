@@ -99,16 +99,18 @@ class ComponentGraphics(QGraphicsItem):
         
         # --- MENUS --- #
         # Menus like to be special so this section puts them back in their place (both literally and figuratively)
-        if self._depth >= 0:
+        if self._depth == 0:
             type = self._dataComponent.getSuperToken().getTokens()[0].type
             
             if type is 'Menu' and parent:
                 self.isMenu = True
                 self._depth = 0
                 nxtParent = parent
-                while not isinstance(nxtParent, TopLevelWrapperGraphics):
+                while not isinstance(nxtParent, TopLevelWrapperGraphics) and nxtParent:
                     self._depth += 1
                     nxtParent = nxtParent.parentItem()
+                if not nxtParent:
+                    self._depth = 1
 
             # Some menus are actually menuItems (who would've thought they would be even more annoying than
             # they already are?), so this resets those menuitems' depths back to normal, and adds them to the
@@ -394,6 +396,7 @@ class ComponentGraphics(QGraphicsItem):
             self._ecSection.addItemToContents(component)
             component._dataComponent.isExtraComponent = True
             self._extraComponents.append(component)
+            # self._ecSection.refreshContents()
             
     def getScrollableItem(self) -> 'ScrollableGraphicsItem':
         """
@@ -838,3 +841,22 @@ class ComponentGraphics(QGraphicsItem):
         """
         self._pen = pen
         self.update()
+
+    def isInECSection(self) -> tuple:
+        """
+        Returns whether or not this item is in the extra components
+        section, regardless of if it is an extra component or not.
+
+        :return: presence in EC section, along with extra component itself
+        :rtype: (bool, ComponentGraphics)
+        """
+        if self._dataComponent.isExtraComponent:
+            return True, self
+
+        parent = self.parentItem()
+        while parent is not None and isinstance(parent, ComponentGraphics):
+            if parent._dataComponent.isExtraComponent:
+                return True, parent
+            parent = parent.parentItem()
+
+        return False, None
