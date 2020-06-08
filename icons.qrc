@@ -226,9 +226,5 @@
 
         <file alias="../resources/titlebar_buttons/minimize.png">resources/titlebar_buttons/minimize.png</file>
 
-        <file alias="../resources/titlebar_buttons/restore-h.png">resources/titlebar_buttons/restore-h.png</file>
-
-        <file alias="../resources/titlebar_buttons/restore.png">resources/titlebar_buttons/restore.png</file>
-
     </qresource>
 </RCC>
