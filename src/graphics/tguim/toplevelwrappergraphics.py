@@ -240,6 +240,7 @@ class TopLevelWrapperGraphics(QGraphicsRectItem):
 
         ecs.setParentItem(self)
         self._scrollableItem = ecs
+        ecs.prepareGeometryChange()
 
         # Define some variables
         b = TopLevelWrapperGraphics.BUFFER

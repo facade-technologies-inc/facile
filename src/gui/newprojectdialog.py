@@ -228,12 +228,10 @@ class NewProjectDialog(QDialog):
 		
 		# check for valid backend
 		backendWidget = frameworkOption.parentWidget()
-		backend = ""
 		if isinstance(backendWidget, QGroupBox):
 			backend = backendWidget.title()
 		else:
-			# TODO: Get best backend for target application. (using function from TGUIIL)
-			pass
+			backend = "auto"  # Auto selection is used for both IDK and Other options
 		
 		# if there are any errors, show them, then return.
 		if len(errors) != 0:

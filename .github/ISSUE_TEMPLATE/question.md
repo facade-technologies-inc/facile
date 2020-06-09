@@ -2,8 +2,8 @@
 name: Question
 about: "“If you want the answer—ask the question.”"
 title: I have a question!
-labels: 'Priority: Medium, Status: Available, Type: Question'
-assignees: smalbadger
+labels: 'Status: Available, Type: Question'
+assignees: ''
 
 ---
 

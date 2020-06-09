@@ -1,9 +1,9 @@
 ---
 name: Bug Report
-about: As a developer, use this template to report a bug
+about: Use this template to report a bug
 title: "[Bug]"
 labels: 'Status: Available, Type: Bug'
-assignees: Frenchman98
+assignees: ''
 
 ---
 
@@ -20,46 +20,8 @@ Steps to reproduce the behavior:
 # Expected behavior
 A clear and concise description of what you expected to happen.
 
-# Screenshots
-If applicable, add screenshots to help explain your problem.
+# Artifacts
+Screenshots, gifs, files, etc. - anything to help us replicate or understand your issue.
 
 # Environment Details
-<details>
-
-### Machine
-- **OS**: ---
-- **OS Version**: ---
-
----
-
-### Python [VERSION]
-<details>
-   <summary>Packages</summary>
-
-   - numpy4.3.5
-   - matplotlib23.3
-
-</details>
-
----
-
-### Facile
-- **Branch Name**: ---
-- **Commit Hash**: ---
-
----
-
-### Target Application
-- **Name**: ---
-- **Version**: --
-
-### Additional context
-Any additional info?
-
-</details>
-
----
-
-**_If you have it..._**
-
-Please zip the entire folder that contains your *.fcl file and attach it to this issue.
+INSERT ENVIRONMENT INFO HERE - run the environment_report.py script and copy the output here.
