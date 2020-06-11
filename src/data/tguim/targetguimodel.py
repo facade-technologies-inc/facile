@@ -22,7 +22,6 @@ This module contains the TargetGuiModel class.
 """
 
 from collections import OrderedDict
-
 from PySide2.QtCore import QObject, Slot, Signal
 
 try: # Facile imports

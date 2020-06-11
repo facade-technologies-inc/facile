@@ -42,7 +42,7 @@ base = None
 
 # Uncomment for GUI applications to NOT show cmd window while running.
 #if sys.platform =='win32':
-#    base = 'Win32GUI'
+    #base = 'Win32GUI'
 
 executables = [
     Executable(script = 'src/facile.py', base=base, targetName = 'facile.exe', icon = 'resources/facade_logo_256.ico')
