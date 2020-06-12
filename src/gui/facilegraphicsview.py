@@ -111,9 +111,27 @@ class FacileGraphicsView(QGraphicsView):
 			penColor = QColor(0, 0, 0)
 			flat = True
 
-		self.updateColors(baseColor, penColor, flat)
+		self.updateColors(baseColor, flat, penColor=penColor)
 
-	def updateColors(self, baseColor: QColor, penColor: QColor, flat: bool):
+	def isFlat(self) -> bool:
+		"""
+		Whether the color scheme is flattened or not.
+
+		:return: If the color scheme is flattened or not
+		:rtype: bool
+		"""
+		return self._flat
+
+	def baseColor(self) -> QColor:
+		"""
+		Returns the current base color
+
+		:return: Current base color
+		:rtype: QColor
+		"""
+		return self._baseColor
+
+	def updateColors(self, baseColor: QColor, flat: bool, penColor: QColor = None):
 		"""
 		Updates all component colors to have a base color of baseColor and an outline color of penColor.
 		Flatness removes the dynamic color assignment.
@@ -125,6 +143,12 @@ class FacileGraphicsView(QGraphicsView):
 		:param flat: whether to lighten colors based on depth or not.
 		:type flat: bool
 		"""
+		if not penColor:
+			penColor = QColor(0, 0, 0)  # Defaulting done here to avoid compilation issues
+
+		self._baseColor = baseColor
+		self._penColor = penColor
+		self._flat = flat
 
 		scene = self.scene()
 		if isinstance(scene, tgs.TGUIMScene):

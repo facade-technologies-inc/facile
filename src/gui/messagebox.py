@@ -26,6 +26,7 @@ from PySide2.QtCore import Qt
 from PySide2.QtGui import QResizeEvent
 from gui.frame.windows import ModernWindow
 import pyautogui
+import data.statemachine as sm
 
 
 class MessageBox(QMessageBox):
@@ -35,21 +36,22 @@ class MessageBox(QMessageBox):
     """
 
     def __init__(self, *args, **kwargs):
+        self.origParent = kwargs.get('parent', sm.StateMachine.instance.view)
+
         if args:
             QMessageBox.__init__(self, args[0], args[1], args[2],
                                  buttons=kwargs.get('options', QMessageBox.StandardButton.NoButton),
-                                 parent=kwargs.get('parent', None),
+                                 parent=self.origParent,
                                  flags=kwargs.get('flags', Qt.Dialog | Qt.MSWindowsFixedSizeDialogHint))
         else:
             QMessageBox.__init__(self)
 
-        self.origParent = kwargs.get('parent', None)
         self.screenSize = pyautogui.size()
         self.movedToCenter = False
 
-        self._wrapper = ModernWindow(self)
+        self._wrapper = ModernWindow(self, parent=self.origParent)
         self._wrapper.btnMaximize.hide()
-        self._wrapper.btnMinimize.hide()
+        self._wrapper.btnMinimize.setEnabled(False)
         self._wrapper.setMinimumSize(self.minimumSizeHint())
         self.setParent(self._wrapper)
 
@@ -79,6 +81,11 @@ class MessageBox(QMessageBox):
         :param event: The resize event, storing the new size
         :type event: QResizeEvent
         """
-        newSize = event.size()
-        newSize.setHeight(newSize.height() + self._wrapper.titleBar.height())
-        self._wrapper.resize(newSize)
+        try:
+            newSize = event.size()
+            newSize.setHeight(newSize.height() + self._wrapper.titleBar.height())
+            self._wrapper.resize(newSize)
+        except:
+            # Sometimes there is no _wrapper for some reason, but it still works.
+            # Ignoring for now, but TODO: Find root of what causes this
+            pass

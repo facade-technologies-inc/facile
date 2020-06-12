@@ -1,7 +1,6 @@
 from PySide2.QtCore import Qt, QMetaObject, Signal, Slot, QSize, QRect, QPoint
-from PySide2.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QToolButton,
+from PySide2.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QToolButton, QMenu,
                             QLabel, QSizePolicy, QDialog, QApplication, QGraphicsDropShadowEffect)
-from PySide2.QtGui import QIcon
 from ._utils import PLATFORM, resource_path
 import pyautogui
 
@@ -64,9 +63,14 @@ class ModernWindow(QDialog):
             parent (QWidget, optional): Parent widget.
     """
 
+    # MODAL_WINDOWS = []
+    # INST = False
+
     def __init__(self, w, parent=None, modal=True):
+        # Since all parent windows will also have these wrappers, the parent is actually the modernwindow
         QDialog.__init__(self, parent)
 
+        # w.wrapper = self
         self._w = w
         self.setupUi()
 
@@ -84,6 +88,7 @@ class ModernWindow(QDialog):
         self.windowContent.setLayout(contentLayout)
 
         self.setWindowTitle(w.windowTitle())
+        # w.windowTitleChanged.connect(lambda title: self.setWindowTitle(title))
 
         rect = w.geometry()
         rect.setHeight(rect.height() + self.titleBar.size().height())
@@ -97,13 +102,33 @@ class ModernWindow(QDialog):
         effect.setBlurRadius(5)
         self.setGraphicsEffect(effect)
 
+        self.modal = modal
         if modal:
+            # Modality doesn't usually work, this fixes it, kind of.
+            # Kind of an overkill bc it stays over other windows too, but otherwise doesn't work.
             self.setWindowModality(Qt.ApplicationModal)
             self.setWindowFlag(Qt.WindowStaysOnTopHint)
+            # ModernWindow.MODAL_WINDOWS.append(self)
+
+            # if not ModernWindow.INST:  # Trying to get normal modal behavior
+            #     def modalityHandler(x, y):
+            #         wins = [win for win in QApplication.topLevelWidgets() if isinstance(win, ModernWindow)]
+            #         if x is None and y is not None:
+            #             if y.window() in ModernWindow.MODAL_WINDOWS:
+            #                 y.window().setWindowFlag(Qt.WindowStaysOnTopHint)
+            #         elif y is None and x is not None:
+            #             if x.window() in ModernWindow.MODAL_WINDOWS:
+            #                 x.window().setWindowFlag(Qt.WindowStaysOnTopHint, False)
+            #             for win in wins:
+            #                 win.show()
+            #
+            #     QApplication.instance().focusChanged.connect(lambda x, y: modalityHandler(x, y))
+            #     ModernWindow.INST = True
 
     def setupUi(self):
         # create title bar, content
         self.vboxWindow = QVBoxLayout(self)
+        self.vboxWindow.setObjectName('vboxWindow')
         self.vboxWindow.setContentsMargins(0, 0, 0, 0)
 
         self.windowFrame = QWidget(self)
@@ -164,7 +189,7 @@ class ModernWindow(QDialog):
             self.hboxTitle.addWidget(self.btnClose)
 
         # set window flags
-        self.setWindowFlags(Qt.FramelessWindowHint | Qt.WindowSystemMenuHint |
+        self.setWindowFlags(Qt.Dialog | Qt.FramelessWindowHint | Qt.WindowSystemMenuHint |
                             Qt.WindowCloseButtonHint | Qt.WindowMinimizeButtonHint | Qt.WindowMaximizeButtonHint)
 
         self.setAttribute(Qt.WA_TranslucentBackground)
@@ -181,6 +206,9 @@ class ModernWindow(QDialog):
         self.close()
 
     def closeEvent(self, event):
+        # if self.modal:
+        #     ModernWindow.MODAL_WINDOWS.remove(self)
+
         if not self._w:
             event.accept()
         else:
@@ -194,7 +222,7 @@ class ModernWindow(QDialog):
                 title (str): Title.
         """
 
-        super(ModernWindow, self).setWindowTitle("                " + title)
+        QDialog.setWindowTitle(self, "                " + title)
         self.lblTitle.setText("                " + title)
 
     def _setWindowButtonState(self, hint, state):

@@ -245,7 +245,7 @@ class StateMachine:
 					destComp = self.vbComponents[1]
 					tguim = self._project.getTargetGUIModel()
 					newVB = vb.VisibilityBehavior(tguim, srcComp, destComp)
-					ModernWindow(SetTriggerActionDialog(newVB)).exec_()
+					ModernWindow(SetTriggerActionDialog(newVB), parent=self.view).exec_()
 					self.view._project.getTargetGUIModel().addVisibilityBehavior(newVB)
 					self.view.ui.projectExplorerView.update()
 					self.view.ui.projectExplorerView.model().selectBehavior(newVB)
@@ -381,7 +381,13 @@ class StateMachine:
 		ui.actionShow_Behaviors.triggered.connect(self.configVars.setShowBehaviors)
 		ui.actionShow_Token_Tags.triggered.connect(self.configVars.setShowTokenTags)
 		ui.actionDetailed_View.triggered.connect(self.configVars.setShowComponentImages)
-		ui.actionValidate.triggered.connect(ui.validatorView.ran.emit)
+
+		def onValidate(checked):
+			if not ui.validatorDockWidget.isVisible():
+				ui.validatorDockWidget.show()
+			ui.validatorView.ran.emit()
+
+		ui.actionValidate.triggered.connect(onValidate)
 		
 		def onPowerApp(checked):
 			if checked == True:
@@ -393,7 +399,7 @@ class StateMachine:
 		
 		def onNewActionPipeline():
 			ap = ActionPipeline()
-			blackBoxEditor = ModernWindow(BlackBoxEditorDialog(ap))
+			blackBoxEditor = ModernWindow(BlackBoxEditorDialog(ap), parent=self.view)
 			result = blackBoxEditor.exec_()
 
 			if result != QDialog.Accepted:
@@ -412,7 +418,7 @@ class StateMachine:
 			def onVerificationComplete(success):
 				if success:
 					apicomp = ApiCompilerDialog()
-					win = ModernWindow(apicomp)
+					win = ModernWindow(apicomp, parent=self.view)
 					win.exec_()
 				else:
 					msg = MessageBox()
@@ -503,6 +509,7 @@ class StateMachine:
 			ui.propertyEditorView.setItemDelegate(propertyDelegate)
 			ui.actionPower_App.setChecked(False)
 			ui.actionManage_Project.setEnabled(True)
+			v.updateColors()
 		
 		if previousState == StateMachine.State.EXPLORATION:
 			o = self._project.getObserver()

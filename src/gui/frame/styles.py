@@ -21,6 +21,15 @@ def _apply_base_theme(app, withStyleSheet: bool = True):
     if withStyleSheet:
         with open(_STYLESHEET) as stylesheet:
             app.setStyleSheet(stylesheet.read())
+    else:
+        app.setStyleSheet("""
+QScrollArea > QWidget > QWidget {
+  background-color: palette(alternate-base);
+}
+
+#v_scrollArea > QWidget > QWidget {
+  background-color: palette(base);
+}""")
 
 
 def darkModern(app, view):
@@ -216,10 +225,11 @@ def darkClassic(app, view):
     dark_palette.setColor(QPalette.Link, QColor(42, 130, 218))
     dark_palette.setColor(QPalette.Highlight, QColor(42, 130, 218))
     dark_palette.setColor(QPalette.HighlightedText, Qt.black)
-    # dark_palette.setColor(QPalette.Light, QColor(180, 180, 180))
-    # dark_palette.setColor(QPalette.Midlight, QColor(90, 90, 90))
-    # dark_palette.setColor(QPalette.Dark, QColor(53, 53, 53))
-    # dark_palette.setColor(QPalette.Shadow, QColor(20, 20, 20))
+    dark_palette.setColor(QPalette.Light, QColor(180, 180, 180))
+    dark_palette.setColor(QPalette.Midlight, QColor(90, 90, 90))
+    dark_palette.setColor(QPalette.Dark, QColor(53, 53, 53))
+    dark_palette.setColor(QPalette.Shadow, QColor(20, 20, 20))
+    dark_palette.setColor(QPalette.LinkVisited, QColor(80, 80, 80))
 
     dark_palette.setColor(QPalette.Disabled, QPalette.Text, Qt.darkGray)
     dark_palette.setColor(QPalette.Disabled, QPalette.ButtonText, Qt.darkGray)

@@ -78,7 +78,7 @@ class ActionMenuItem(QWidget):
 				
 			def editExternals():
 				editInternals()
-				ModernWindow(BlackBoxEditorDialog(action)).exec_()
+				ModernWindow(BlackBoxEditorDialog(action), parent=sm.StateMachine.instance.view).exec_()
 				self.update()
 				apimView = sm.StateMachine.instance.view.ui.apiModelView
 				apimView.showAction(self._action)

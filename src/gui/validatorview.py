@@ -122,6 +122,10 @@ class ValidatorView(QWidget):
 		
 		self.ran.connect(self.onRun)
 		self.stopped.connect(self.onStop)
+
+		# # Fixes a graphical bug with validator
+		# self.onStop()
+		# self.clear()
 		
 	@Slot()
 	def onStop(self) -> None:

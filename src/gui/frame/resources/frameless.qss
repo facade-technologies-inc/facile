@@ -58,6 +58,10 @@
   background-color: hsv(0, 182, 152);
 }
 
-#btnClose::disabled, #btnRestore::disabled, #btnMaximize::disabled, #btnMinimize::disabled {
-  background-color: palette(midlight);
+#btnMaximize::disabled {
+  border-image: url(:/icon/resources/titlebar_buttons/maximize-d.png);
+}
+
+#btnMinimize::disabled {
+  border-image: url(:/icon/resources/titlebar_buttons/minimize-d.png);
 }

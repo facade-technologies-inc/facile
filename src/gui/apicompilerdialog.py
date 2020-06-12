@@ -227,7 +227,7 @@ class ApiCompilerDialog(QDialog):
 		self.progress = QProgressDialog("Compiling API...", "Cancel API Generation", 0, numSteps * 2, parent=self.parent())
 		self.progress.setValue(0)
 		self.progress.setModal(True)
-		self.progWin = ModernWindow(self.progress)
+		self.progWin = ModernWindow(self.progress, parent=sm.StateMachine.instance.view)
 		self.progWin.setMinimumSize(self.progress.minimumSizeHint())
 
 		def stepStartedCatcher(message):

@@ -53,6 +53,7 @@ class TopLevelWrapperGraphics(QGraphicsRectItem):
         """
         ARROW_COLOR = QColor(30, 30, 30)
         BACKGROUND_COLOR = QColor(56, 56, 56)
+        BUTTON_IMG_THM = 0  # 0 is dark, 1 is light
 
         def __init__(self, *args, left=True, onClicked=None, resizer=False):
             QGraphicsRectItem.__init__(self,*args)
@@ -67,12 +68,18 @@ class TopLevelWrapperGraphics(QGraphicsRectItem):
                 self.setCursor(QCursor(Qt.SizeHorCursor))
 
         def paint(self, painter: QPainter, option: QStyleOptionGraphicsItem, widget: QWidget):
-            # QGraphicsRectItem.paint(self, painter, option, widget)
+
             if not self._resizer:
                 if self._left:
-                    filename = 'button_col_dark.jpg'
+                    if TopLevelWrapperGraphics.Button.BUTTON_IMG_THM == 0:
+                        filename = 'button_col_dark.jpg'
+                    else:
+                        filename = 'button_col_light.jpg'
                 else:  # if right
-                    filename = 'button_exp_dark.jpg'
+                    if TopLevelWrapperGraphics.Button.BUTTON_IMG_THM == 0:
+                        filename = 'button_exp_dark.jpg'
+                    else:
+                        filename = 'button_exp_light.jpg'
 
                 ir = QImageReader()
                 filename = ":/icon/resources/EC_Buttons/" + filename

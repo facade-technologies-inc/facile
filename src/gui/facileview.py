@@ -24,7 +24,7 @@ Much of Facile is joined together here.
 import os
 from copy import deepcopy
 
-from PySide2.QtCore import Slot, QTimer, QItemSelection, QThread, QSize
+from PySide2.QtCore import Slot, QTimer, QItemSelection, QThread, QSize, Signal
 from PySide2.QtGui import Qt, QCloseEvent, QKeyEvent, QPalette, QColor
 from PySide2.QtWidgets import (QMainWindow, QFileDialog, QLabel, QWidget,
 							   QGraphicsOpacityEffect, QProgressDialog, QApplication)
@@ -46,6 +46,7 @@ from qt_models.projectexplorermodel import ProjectExplorerModel
 from qt_models.propeditormodel import PropModel
 from tguiil.blinker import Blinker
 from gui.actionmenu import ActionMenu
+from graphics.tguim.toplevelwrappergraphics import TopLevelWrapperGraphics
 
 import data.statemachine as sm
 import gui.frame.styles as styles
@@ -74,6 +75,10 @@ class FacileView(QMainWindow):
 		CLASSIC = 3
 		ALL = 4
 		CUSTOM = 5
+
+	themeChanged = Signal(Theme)
+
+	TGUIM_COL_SETTINGS = []
 	
 	def __init__(self) -> 'FacileView':
 		"""
@@ -234,7 +239,7 @@ class FacileView(QMainWindow):
 		
 		newProjectDialog = NewProjectDialog()
 		newProjectDialog.projectCreated.connect(self.setProject)
-		ModernWindow(newProjectDialog).exec_()
+		ModernWindow(newProjectDialog, parent=self).exec_()
 	
 	@Slot()
 	def onNewProjectFromExistingTriggered(self) -> None:
@@ -248,7 +253,7 @@ class FacileView(QMainWindow):
 		
 		copyProjectDialog = CopyProjectDialog()
 		copyProjectDialog.projectCreated.connect(self.setProject)
-		ModernWindow(copyProjectDialog).exec_()
+		ModernWindow(copyProjectDialog, parent=self).exec_()
 	
 	@Slot()
 	def onOpenRecentProject(self) -> None:
@@ -296,7 +301,7 @@ class FacileView(QMainWindow):
 		self.progress = QProgressDialog("Loading Project ...", "Cancel Loading", 0, numSteps, parent=self.parent())
 		self.progress.setValue(0)
 		self.progress.setModal(True)
-		window = ModernWindow(self.progress)
+		window = ModernWindow(self.progress, parent=self)
 
 		window.moveToThread(self.thread)
 		self.thread.start()
@@ -323,7 +328,7 @@ class FacileView(QMainWindow):
 		"""
 		
 		manageProjectDialog = ManageProjectDialog(self._project, self)
-		ModernWindow(manageProjectDialog).exec_()
+		ModernWindow(manageProjectDialog, parent=self).exec_()
 	
 	@Slot()
 	def onAddBehaviorTriggered(self) -> None:
@@ -631,6 +636,7 @@ class FacileView(QMainWindow):
 		:type theme: Theme
 		"""
 		app = QApplication.instance()
+
 		if theme == FacileView.Theme.CLASSIC_DARK:
 			styles.darkClassic(app, self)
 		elif theme == FacileView.Theme.CLASSIC_LIGHT:
@@ -643,9 +649,9 @@ class FacileView(QMainWindow):
 			styles.darkUltra(app, self)
 		elif theme == FacileView.Theme.ULTRA_LIGHT:
 			styles.lightUltra(app, self)
-		self.ui.targetGUIModelView.setTheme(theme)
-		# self.ui.apiModelView.setTheme(theme)
+
 		self._theme = theme
+		self.themeChanged.emit(theme)
 
 	def saveSettings(self) -> None:
 		"""
@@ -655,7 +661,13 @@ class FacileView(QMainWindow):
 		cwd = os.getcwd()
 		tempDir = os.path.join(cwd, "temp")
 		settingsFile = os.path.join(tempDir, "settings.json")
-		settingsList = [self._theme.value, self._layout.value, self._scrollBarsEnabled]
+
+		color = self.ui.targetGUIModelView.baseColor().getRgb()
+		settingsList = [self._theme.value,
+						self._layout.value,
+						self._scrollBarsEnabled,
+						color,
+						self.ui.targetGUIModelView.isFlat()]
 
 		if not os.path.exists(tempDir):
 			os.mkdir(tempDir)
@@ -676,7 +688,11 @@ class FacileView(QMainWindow):
 			self.setLayout(FacileView.Layout(sList[1]))
 			self.enableScrollBars(sList[2])
 
-		except FileNotFoundError:
+			# TGUIM Accent Color
+			tguimBaseCol = QColor(sList[3][0], sList[3][1], sList[3][2], sList[3][3])
+			FacileView.TGUIM_COL_SETTINGS = [tguimBaseCol, sList[4]]
+
+		except FileNotFoundError and IndexError:  # For older versions of Facile
 			self.setTheme(FacileView.Theme.CLASSIC_DARK)
 			self.setLayout(FacileView.Layout.CLASSIC)
 			self.enableScrollBars(False)
@@ -716,8 +732,19 @@ class FacileView(QMainWindow):
 		self.ui.actionEssentials.toggled.connect(self.showEssentials)
 		self.ui.actionClassic.toggled.connect(self.showClassic)
 		self.ui.actionAll.toggled.connect(self.showAll)
-
 		# TODO: Implement custom layout saving/applying
+
+		def changeTheme(theme):
+			thm = FacileView.Theme
+			if theme in (thm.CLASSIC_DARK, thm.ULTRA_DARK, thm.FLAT_DARK):
+				TopLevelWrapperGraphics.Button.BUTTON_IMG_THM = 0
+			else:
+				TopLevelWrapperGraphics.Button.BUTTON_IMG_THM = 1
+
+			self.ui.targetGUIModelView.setTheme(theme)
+			# self.ui.apiModelView.setTheme(theme)  # TODO: Uncomment when api theming is implemented
+
+		self.themeChanged.connect(changeTheme)
 
 	def setLayout(self, layout: Layout):
 		"""
@@ -872,3 +899,12 @@ class FacileView(QMainWindow):
 		self.addToolBar(Qt.TopToolBarArea, toolbar)
 		toolbar.show()
 		self.ui.toolBar = toolbar
+
+	def updateColors(self):
+		"""
+		Updates the accent colors. Necessary for colors to persist through loading projects and closing/opening Facile.
+		"""
+
+		stngs = FacileView.TGUIM_COL_SETTINGS
+		self.ui.targetGUIModelView.updateColors(stngs[0], stngs[1])
+		# TODO: Put command to update APIM colors here

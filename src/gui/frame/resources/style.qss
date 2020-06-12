@@ -120,6 +120,10 @@ QScrollArea > QWidget > QWidget {
   background-color: palette(alternate-base);
 }
 
+#v_scrollArea > QWidget > QWidget {
+  background-color: palette(base);
+}
+
 /*
  * QSlider
  */
