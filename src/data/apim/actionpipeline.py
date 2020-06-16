@@ -426,7 +426,6 @@ class ActionPipeline(Action):
 		"""
 
 		# Check if port already has name. if so, return immediately.
-		print(self._invVarMap)
 		allports = self._invVarMap
 		if p in self._invVarMap:
 			return self._invVarMap[p]

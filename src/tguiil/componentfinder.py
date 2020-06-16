@@ -98,7 +98,6 @@ class ComponentFinder:
             timestamp = self._app.getStartTime()
 
             if path:  # If the path is provided, no need to use the given ST as it is the last one in the path.
-                print('using path')
                 for depth in range(0, len(path)):
                     if depth is 0:  # Only on first run should we get the windows, otherwise the target comps' children
                         work = [win for win in self._app.windows()]

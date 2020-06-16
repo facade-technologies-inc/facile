@@ -157,7 +157,6 @@ class BaseApplication:
         for id in self._compIDs:
             tmpComp = self._getComponentObject(id)
             path = [comp.getSuperToken() for comp, pos in tmpComp.getPathFromRoot()][:-1]  # The last item is the root
-            print(path)
             path.reverse()  # 1st component is window, second is 1-level deep child, etc.
             self._pathMap[id] = (path, None)
     

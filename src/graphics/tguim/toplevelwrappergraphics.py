@@ -130,7 +130,7 @@ class TopLevelWrapperGraphics(QGraphicsRectItem):
                             canGoRight = sgi.ghostCanGoRight()
                             curMaxX = tlw.scenePos().x() + tlw.rect().width() - self.rect().width() - \
                                 TopLevelWrapperGraphics.BUTTON_WIDTH - TopLevelWrapperGraphics.BUFFER
-                            print(sgi.getGhost().x())
+
                             if diff > 0:  # Expanding self
                                 # We should move the ghost container with the expansion
                                 if canGoRight and not canGoLeft and sgi.getGhost().scenePos().x() < sgi.scenePos().x():
