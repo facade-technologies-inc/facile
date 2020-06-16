@@ -1,42 +1,46 @@
 """
 ..
-	/------------------------------------------------------------------------------\
-	|                 -- FACADE TECHNOLOGIES INC.  CONFIDENTIAL --                 |
-	|------------------------------------------------------------------------------|
-	|                                                                              |
-	|    Copyright [2019] Facade Technologies Inc.                                 |
-	|    All Rights Reserved.                                                      |
-	|                                                                              |
-	| NOTICE:  All information contained herein is, and remains the property of    |
-	| Facade Technologies Inc. and its suppliers if any.  The intellectual and     |
-	| and technical concepts contained herein are proprietary to Facade            |
-	| Technologies Inc. and its suppliers and may be covered by U.S. and Foreign   |
-	| Patents, patents in process, and are protected by trade secret or copyright  |
-	| law.  Dissemination of this information or reproduction of this material is  |
-	| strictly forbidden unless prior written permission is obtained from Facade   |
-	| Technologies Inc.                                                            |
-	|                                                                              |
-	\------------------------------------------------------------------------------/
+    /------------------------------------------------------------------------------\
+    |                 -- FACADE TECHNOLOGIES INC.  CONFIDENTIAL --                 |
+    |------------------------------------------------------------------------------|
+    |                                                                              |
+    |    Copyright [2019] Facade Technologies Inc.                                 |
+    |    All Rights Reserved.                                                      |
+    |                                                                              |
+    | NOTICE:  All information contained herein is, and remains the property of    |
+    | Facade Technologies Inc. and its suppliers if any.  The intellectual and     |
+    | and technical concepts contained herein are proprietary to Facade            |
+    | Technologies Inc. and its suppliers and may be covered by U.S. and Foreign   |
+    | Patents, patents in process, and are protected by trade secret or copyright  |
+    | law.  Dissemination of this information or reproduction of this material is  |
+    | strictly forbidden unless prior written permission is obtained from Facade   |
+    | Technologies Inc.                                                            |
+    |                                                                              |
+    \------------------------------------------------------------------------------/
+
+This file contains the component finder, a class that gets a PyWinAuto handle based on a SuperToken
 """
 from typing import Set
 
 import pywinauto
 from pywinauto import timings
 
-try: # Facile imports
+try:  # Facile imports
     from tguiil.tokens import Token
     from tguiil.matchoption import MatchOption
     from tguiil.application import Application
     from tguiil.supertokens import SuperToken
-except ImportError: # API imports
+except ImportError:  # API imports
     from .tokens import Token
     from .matchoption import MatchOption
     from .application import Application
     from .supertokens import SuperToken
 
+
 class ComponentNotFoundException(Exception):
     def __init__(self, msg):
         Exception.__init__(self, msg)
+
 
 class ComponentFinder:
     """
@@ -67,12 +71,14 @@ class ComponentFinder:
 
         timings.Timings.window_find_timeout = ComponentFinder.PYWINAUTO_TIMEOUT
 
-    def find(self, superToken: SuperToken):
+    def find(self, superToken: SuperToken, path: list = None):
         """
         Finds a superToken in the target GUI.
 
         :param superToken: The super token to find.
         :type superToken: SuperToken
+        :param path: The SuperToken path that leads to the provided SuperToken, starting with window's ST.
+        :type path: list
         :return: The component that matches the super token.
         :rtype: pywinauto.base_wrapper
         """
@@ -90,31 +96,80 @@ class ComponentFinder:
         # |  or we may return a match that's close enough.
         if MatchOption.CloseToken.value in self._matchOptions or MatchOption.ExactToken.value in self._matchOptions:
             timestamp = self._app.getStartTime()
-            bestCertainty = 0
-            closestComponent = None
 
-            work = [win for win in self._app.windows()]
-            while len(work) > 0:
-                checkAppIsRunning()
-                curComponent = work.pop()
+            if path:  # If the path is provided, no need to use the given ST as it is the last one in the path.
+                print('using path')
+                for depth in range(0, len(path)):
+                    if depth is 0:  # Only on first run should we get the windows, otherwise the target comps' children
+                        work = [win for win in self._app.windows()]
 
-                try:
-                    token = Token.createToken(timestamp, curComponent)
-                except Token.CreationException as e:
-                    print(str(e))
-                else:
-                    decision, certainty = superToken.shouldContain(token)
-                    if decision.value == Token.Match.EXACT.value:
-                        if MatchOption.ExactToken.value in self._matchOptions:
+                        # In special cases, new dialogs spawn as children of the main dialog.
+                        children = [child for win in work for child in win.children()]
+                        for child in children:
+                            if child.is_dialog():
+                                work.append(child)
+                    else:
+                        work = [child for child in bestComp.children()]
+
+                    currentST = path[depth]  # Current SuperToken from path
+                    exactFound = False
+                    closestComponent = None
+                    bestCertainty = 0
+
+                    while len(work) > 0:
+                        checkAppIsRunning()
+                        curComponent = work.pop()
+
+                        try:
+                            token = Token.createToken(timestamp, curComponent)
+                        except Token.CreationException as e:
+                            print(str(e))
+                        else:
+                            decision, certainty = currentST.shouldContain(token)
+                            if decision.value == Token.Match.EXACT.value:
+                                if MatchOption.ExactToken.value in self._matchOptions:
+                                    exactFound = True
+                                    break
+                            elif decision.value == Token.Match.CLOSE.value:
+                                if certainty > bestCertainty:
+                                    closestComponent = curComponent
+                                    bestCertainty = certainty
+
+                    if exactFound:
+                        if depth == len(path) - 1:
+                            # We have the droi... SuperToken we're looking for. If it's not exact, handled later.
                             return curComponent
-                    elif decision.value == Token.Match.CLOSE.value:
-                        if certainty > bestCertainty:
-                            closestComponent = curComponent
-                            bestCertainty = certainty
+                        bestComp = curComponent
+                    elif closestComponent:  # For the path, this is regardless of chosen search options
+                        bestComp = closestComponent
+                    else:
+                        # This means none of the children match, so we give up with this method and let PWA do the rest.
+                        break
 
-                children = curComponent.children()
-                for child in children:
-                    work.append(child)
+            else:
+                bestCertainty = 0
+                work = [win for win in self._app.windows()]
+                while len(work) > 0:
+                    checkAppIsRunning()
+                    curComponent = work.pop()
+
+                    try:
+                        token = Token.createToken(timestamp, curComponent)
+                    except Token.CreationException as e:
+                        print(str(e))
+                    else:
+                        decision, certainty = superToken.shouldContain(token)
+                        if decision.value == Token.Match.EXACT.value:
+                            if MatchOption.ExactToken.value in self._matchOptions:
+                                return curComponent
+                        elif decision.value == Token.Match.CLOSE.value:
+                            if certainty > bestCertainty:
+                                closestComponent = curComponent
+                                bestCertainty = certainty
+
+                    children = curComponent.children()
+                    for child in children:
+                        work.append(child)
 
             if closestComponent:
                 if MatchOption.CloseToken.value in self._matchOptions:

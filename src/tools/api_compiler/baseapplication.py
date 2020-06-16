@@ -62,7 +62,7 @@ class BaseApplication:
     custom generated Application class inherits from this.
     """
     
-    def __init__(self, exeLoc: str, options: Set['MatchOption'], name: str, backend: str = 'uia'):
+    def __init__(self, exeLoc: str, options: Set['MatchOption'], name: str, reqCompIds: list, backend: str = 'uia'):
         """
         Initializes a BaseApplication instance.
 
@@ -72,6 +72,8 @@ class BaseApplication:
         :type options: set
         :param name: project name (necessary for opening tguim file)
         :type name: str
+        :param reqCompIds: a list of required components' IDs
+        :type reqCompIds: list
         :param backend: backend type
         :type backend: str
         """
@@ -83,6 +85,8 @@ class BaseApplication:
         self._exeLoc = exeLoc
         self._name = name
         self._compFinder = ComponentFinder(self.app, self._options)
+        self._pathMap = {}
+        self._compIDs = reqCompIds
         
         try:
             with open(os.path.join(pathToThisFile, self._name + ".tguim"), 'r') as tguimFile:
@@ -92,6 +96,8 @@ class BaseApplication:
             print("Couldn't load from {}".format('./' + self._name + '.tguim'))
             self._tgm = None
             traceback.print_exc()
+
+        self._generatePathMap()
     
     def startApp(self):
         """
@@ -142,6 +148,18 @@ class BaseApplication:
         except Exception as e:
             raise WaitException('Not a valid wait time or state. Please use "x s" or "x m" for x seconds/minutes \
             respectively, or use one of "visible", "ready", "exists", "enabled", "active" as state to wait for.')
+
+    def _generatePathMap(self):
+        """
+        Creates a map of component ID to (supertoken path, handle) tuples, where handle is initialized to None
+        """
+
+        for id in self._compIDs:
+            tmpComp = self._getComponentObject(id)
+            path = [comp.getSuperToken() for comp, pos in tmpComp.getPathFromRoot()][:-1]  # The last item is the root
+            print(path)
+            path.reverse()  # 1st component is window, second is 1-level deep child, etc.
+            self._pathMap[id] = (path, None)
     
     def _findComponent(self, compID: int) -> 'pywinauto.base_wrapper.BaseWrapper':
         """
@@ -152,10 +170,20 @@ class BaseApplication:
         :return: handle to component
         :rtype: pywinauto.base_wrapper.BaseWrapper
         """
-        
+
+        path, tmpHandle = self._pathMap[compID]
+
+        if tmpHandle:
+            if tmpHandle.visible:
+                return tmpHandle
+
         comp = self._getComponentObject(compID)
         self._forceShow(comp)
-        return self._compFinder.find(comp.getSuperToken())
+
+        handle = self._compFinder.find(comp.getSuperToken(), path)
+
+        self._pathMap[compID] = (path, handle)
+        return handle
     
     def _getComponentObject(self, compID: int) -> 'Component':
         """
@@ -220,8 +248,6 @@ class BaseApplication:
                     bestMatch = matchVal
                     selectedComponent = comp
 
-        # return comps[257]
-        # print(bestMatch, selectedComponent)
         # returning no matter what: if selected Comp is none, we don't care, we just return none since this is only used
         # for getting the target windows that have already been defined in Facile
         if selectedComponent:
