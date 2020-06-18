@@ -42,7 +42,8 @@ class ActionPipeline(Action):
 		self._actions = []
 		self._wireSet = WireSet()
 		self._varName = 'a'
-		self._varMap = []  # This stores (varName, port) tuples
+		self._varMap = {}  # relates a variable name to a list of all ports that use it
+		self._invVarMap = {}  # relates all ports to a variable name
 	
 	def addAction(self, action: 'ActionWrapper') -> None:
 		"""
@@ -360,10 +361,16 @@ class ActionPipeline(Action):
 		:rtype: str
 		"""
 
+		# If a project is compiled twice in the same run, we need to reinitialize everything.
+		self._varMap = {}
+		self._invVarMap = {}
+		self._varName = 'a'
+
 		code = "\t\ttry:  # The generated code. If it doesn't work, throws an error.\n"
 
 		for p in self.getInputPorts():  # Assumes unique input port names, which should be enforced in gui.
-			self._varMap.append((p.getName(), p))
+			self._varMap[p.getName()] = [p]  # List of all ports to which the name is tied
+			self._invVarMap[p] = p.getName()
 
 		for a in self._actions:
 			code += '\t\t\t'
@@ -419,10 +426,9 @@ class ActionPipeline(Action):
 		"""
 
 		# Check if port already has name. if so, return immediately.
-		allports = [tmp[1] for tmp in self._varMap]
-		if p in allports:
-			# idk if this is very effective but should get the job done
-			return self._varMap[allports.index(p)][0]
+		allports = self._invVarMap
+		if p in self._invVarMap:
+			return self._invVarMap[p]
 		
 		# Check if port is connected by wire to other ports.
 		cnctdPorts = []
@@ -435,19 +441,25 @@ class ActionPipeline(Action):
 		newName = True
 		for lp in cnctdPorts:
 			if lp in allports:
-				name = self._varMap[allports.index(lp)][0]
+				name = self._invVarMap[lp]
 				newName = False
 				break
 
 		if newName:
 			name = self._varName
 			self.incrVarName()
+			self._varMap[name] = [p]
+		else:
+			self._varMap[name].append(p)
+
+		self._invVarMap[p] = name
 
 		# adds all connected ports to varMap with their shared variable name, if they aren't in there already.
-		self._varMap.append((name, p))
+
 		for tmp in cnctdPorts:
 			if tmp not in allports:
-				self._varMap.append((name, tmp))
+				self._varMap[name].append(tmp)
+				self._invVarMap[tmp] = name
 
 		return name
 

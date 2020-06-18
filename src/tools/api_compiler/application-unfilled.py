@@ -49,7 +49,11 @@ class Application(BaseApplication):
 		Initializes the Application class, then initializes its superclass with the necessary information.
 		"""
 		
-		BaseApplication.__init__(self, {exeLoc}, {options}, {name}, {backend})
+		BaseApplication.__init__(self, {exeLoc},
+								 {options},
+								 {name},
+								 {reqCompIDs},
+								 backend={backend})
 	
 	def start(self) -> 'Application':
 		"""
