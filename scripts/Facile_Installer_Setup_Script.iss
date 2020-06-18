@@ -10,7 +10,7 @@
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application. Do not use the same AppId value in installers for other applications.
 ; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
-AppId={{660D0161-451B-48A4-B6D2-5AFE26E23BB6}
+AppId={{F32A6434-43E6-485F-B766-BF56B4A1E9BA}
 AppName={#MyAppName}
 AppVersion={#MyAppVersion}
 ;AppVerName={#MyAppName} {#MyAppVersion}
@@ -23,7 +23,7 @@ DisableProgramGroupPage=yes
 ; Uncomment the following line to run in non administrative install mode (install for current user only.)
 ;PrivilegesRequired=lowest
 OutputDir=C:\Users\kirim\Documents\Facade Technologies\facile\dist
-OutputBaseFilename=Facile_Installer
+OutputBaseFilename=mysetup
 SetupIconFile=C:\Users\kirim\Documents\Facade Technologies\facile\resources\facade_logo_256.ico
 Compression=lzma
 SolidCompression=yes
@@ -66,6 +66,11 @@ Source: "C:\Users\kirim\Documents\Facade Technologies\facile\build\exe.win32-3.7
 Source: "C:\Users\kirim\Documents\Facade Technologies\facile\build\exe.win32-3.7\api-ms-win-crt-runtime-l1-1-0.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "C:\Users\kirim\Documents\Facade Technologies\facile\build\exe.win32-3.7\api-ms-win-crt-stdio-l1-1-0.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "C:\Users\kirim\Documents\Facade Technologies\facile\build\exe.win32-3.7\python37.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Users\kirim\Documents\Facade Technologies\facile\build\exe.win32-3.7\data\"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "C:\Users\kirim\Documents\Facade Technologies\facile\build\exe.win32-3.7\database\"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "C:\Users\kirim\Documents\Facade Technologies\facile\build\exe.win32-3.7\lib\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "C:\Users\kirim\Documents\Facade Technologies\facile\build\exe.win32-3.7\temp"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "C:\Users\kirim\Documents\Facade Technologies\facile\build\exe.win32-3.7\tguiil\"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
