@@ -135,7 +135,7 @@ class ActionPipeline(Action):
 
 		return newWire
 	
-	def disconnect(self, portA: 'Port', portB: 'Port') -> None:
+	def disconnect(self, portA: 'Port', portB: 'Port') -> None:  # TODO: Evaluate whether this overload is safe.
 		"""
 		Remove the wire spanning from portA to portB.
 		

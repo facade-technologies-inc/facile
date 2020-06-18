@@ -27,7 +27,7 @@ from enum import Enum, auto
 
 from PySide2.QtCore import Slot, QTimer
 from PySide2.QtGui import QStandardItem, QStandardItemModel, Qt, QIcon, QPixmap
-from PySide2.QtWidgets import QGraphicsScene, QDialog, QMessageBox, QWidget, QSizePolicy
+from PySide2.QtWidgets import QGraphicsScene, QDialog, QWidget, QSizePolicy
 
 import data.tguim.visibilitybehavior as vb
 from gui.facilegraphicsview import FacileGraphicsView
@@ -39,6 +39,9 @@ from data.configvars import ConfigVars
 from data.apim.actionpipeline import ActionPipeline
 from gui.apicompilerdialog import ApiCompilerDialog
 from graphics.tguim.tguimscene import TGUIMScene
+from gui.messagebox import MessageBox
+from gui.frame.windows import ModernWindow
+
 
 class StateMachine:
 	"""
@@ -242,7 +245,7 @@ class StateMachine:
 					destComp = self.vbComponents[1]
 					tguim = self._project.getTargetGUIModel()
 					newVB = vb.VisibilityBehavior(tguim, srcComp, destComp)
-					SetTriggerActionDialog(newVB).exec_()
+					ModernWindow(SetTriggerActionDialog(newVB), parent=self.view).exec_()
 					self.view._project.getTargetGUIModel().addVisibilityBehavior(newVB)
 					self.view.ui.projectExplorerView.update()
 					self.view.ui.projectExplorerView.model().selectBehavior(newVB)
@@ -378,7 +381,13 @@ class StateMachine:
 		ui.actionShow_Behaviors.triggered.connect(self.configVars.setShowBehaviors)
 		ui.actionShow_Token_Tags.triggered.connect(self.configVars.setShowTokenTags)
 		ui.actionDetailed_View.triggered.connect(self.configVars.setShowComponentImages)
-		ui.actionValidate.triggered.connect(ui.validatorView.ran.emit)
+
+		def onValidate(checked):
+			if not ui.validatorDockWidget.isVisible():
+				ui.validatorDockWidget.show()
+			ui.validatorView.ran.emit()
+
+		ui.actionValidate.triggered.connect(onValidate)
 		
 		def onPowerApp(checked):
 			if checked == True:
@@ -390,9 +399,10 @@ class StateMachine:
 		
 		def onNewActionPipeline():
 			ap = ActionPipeline()
-			blackBoxEditor = BlackBoxEditorDialog(ap)
+			blackBoxEditor = ModernWindow(BlackBoxEditorDialog(ap), parent=self.view)
 			result = blackBoxEditor.exec_()
-			if result == QDialog.Rejected:
+
+			if result != QDialog.Accepted:
 				return
 			else:
 				self._project.getAPIModel().addActionPipeline(ap)
@@ -408,10 +418,11 @@ class StateMachine:
 			def onVerificationComplete(success):
 				if success:
 					apicomp = ApiCompilerDialog()
-					apicomp.exec_()
+					win = ModernWindow(apicomp, parent=self.view)
+					win.exec_()
 				else:
-					msg = QMessageBox()
-					msg.setIcon(QMessageBox.Critical)
+					msg = MessageBox()
+					msg.setIcon(MessageBox.Critical)
 					msg.setText("Error")
 					msg.setInformativeText("Please resolve all verification errors before compiling.")
 					msg.setWindowTitle("Error")
@@ -434,7 +445,6 @@ class StateMachine:
 		ui.actionShow_Token_Tags.setEnabled(False)
 		ui.actionAdd_Behavior.setEnabled(False)
 		ui.actionPower_App.setEnabled(False)
-		ui.actionManage_Project.setEnabled(False)
 		ui.actionAdd_Action_Pipeline.setEnabled(False)
 		ui.actionShow_API_Compiler.setEnabled(False)
 		ui.actionValidate.setEnabled(False)
@@ -480,11 +490,12 @@ class StateMachine:
 			ui.targetGUIModelView.scene().update()
 		
 		if event == StateMachine.Event.PROJECT_OPENED:
-			v.setWindowTitle("Facile - " + self._project.getMainProjectFile())
+			# v.setWindowTitle("Facile - " + self._project.getMainProjectFile())
 			p.save()
 			p.addToRecents()
 			scene = TGUIMScene(p.getTargetGUIModel())
 			ui.targetGUIModelView.setScene(scene)
+			ui.targetGUIModelView.setTheme(v.getTheme())
 			scene.itemSelected.connect(v.onItemSelected)
 			scene.itemBlink.connect(v.onItemBlink)
 			p.getTargetGUIModel().dataChanged.connect(lambda: ui.projectExplorerView.update())
@@ -498,6 +509,7 @@ class StateMachine:
 			ui.propertyEditorView.setItemDelegate(propertyDelegate)
 			ui.actionPower_App.setChecked(False)
 			ui.actionManage_Project.setEnabled(True)
+			v.updateColors()
 		
 		if previousState == StateMachine.State.EXPLORATION:
 			o = self._project.getObserver()

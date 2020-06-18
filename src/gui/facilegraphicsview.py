@@ -23,9 +23,11 @@ view, but can be zoomed.
 """
 
 from PySide2.QtCore import QPoint, QTimer, Slot, QRectF
-from PySide2.QtGui import QWheelEvent, Qt, QColor, QKeyEvent
+from PySide2.QtGui import QWheelEvent, Qt, QColor, QKeyEvent, QPainter, QBrush, QPen
 from PySide2.QtWidgets import QGraphicsView, QGraphicsScene, QGraphicsRectItem, QGraphicsTextItem, QGraphicsItem
 from PySide2.QtWidgets import QWidget
+import gui.facileview as fv
+import graphics.tguim.tguimscene as tgs
 
 
 class FacileGraphicsView(QGraphicsView):
@@ -35,7 +37,8 @@ class FacileGraphicsView(QGraphicsView):
 	This is primarily used as the view that shows the target GUI model and API model
 	"""
 	
-	ZOOM_FACTOR = 1.05
+	ZOOM_FACTOR = 1.04
+	ZOOM_ITER = 100
 	
 	def __init__(self, parent: QWidget = None) -> None:
 		"""
@@ -50,6 +53,9 @@ class FacileGraphicsView(QGraphicsView):
 		# set flags
 		self.setDragMode(QGraphicsView.ScrollHandDrag)
 		self.setViewportUpdateMode(QGraphicsView.FullViewportUpdate)
+		self.setRenderHints(QPainter.Antialiasing | QPainter.TextAntialiasing)
+		self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+		self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 		
 		# show initial message
 		scene = QGraphicsScene()
@@ -63,7 +69,98 @@ class FacileGraphicsView(QGraphicsView):
 
 		self.smoothFocusTimer = QTimer(self)
 		self.smoothFocusTimer.timeout.connect(self.smoothFocusTick)
-		self.focusHistory = [] # holds mix of graphics items and rectangles
+		self.focusHistory = []  # holds mix of graphics items and rectangles
+		self._zoom = 0
+
+		# Theme settings
+		self._baseColor = None
+		self._penColor = None
+		self._flat = False
+
+	def setTheme(self, theme: 'fv.FacileView.Theme'):
+		"""
+		Sets the current theme in order to update the componentGraphics's colors
+
+		:param theme: the theme to apply
+		:type theme: Theme
+		"""
+
+		baseColor = None
+		penColor = None
+		flat = False
+		if theme == fv.FacileView.Theme.CLASSIC_DARK:
+			baseColor = QColor(0, 141, 222).lighter(f=75)
+			penColor = QColor(0, 0, 0)
+		elif theme == fv.FacileView.Theme.CLASSIC_LIGHT:
+			baseColor = QColor(0, 141, 222)
+			penColor = QColor(0, 0, 0)
+		elif theme == fv.FacileView.Theme.FLAT_DARK:
+			baseColor = QColor(0, 141, 222).lighter(f=85)
+			penColor = QColor(0, 0, 0)
+			flat = True
+		elif theme == fv.FacileView.Theme.FLAT_LIGHT:
+			baseColor = QColor(0, 141, 222).lighter(f=120)
+			penColor = QColor(0, 0, 0)
+			flat = True
+		elif theme == fv.FacileView.Theme.ULTRA_DARK:
+			baseColor = QColor(240, 95, 0).darker(f=180)
+			penColor = QColor(0, 0, 0)
+			flat = True
+		elif theme == fv.FacileView.Theme.ULTRA_LIGHT:
+			baseColor = QColor(0, 190, 230).lighter(f=110)
+			penColor = QColor(0, 0, 0)
+			flat = True
+
+		self.updateColors(baseColor, flat, penColor=penColor)
+
+	def isFlat(self) -> bool:
+		"""
+		Whether the color scheme is flattened or not.
+
+		:return: If the color scheme is flattened or not
+		:rtype: bool
+		"""
+		return self._flat
+
+	def baseColor(self) -> QColor:
+		"""
+		Returns the current base color
+
+		:return: Current base color
+		:rtype: QColor
+		"""
+		return self._baseColor
+
+	def updateColors(self, baseColor: QColor, flat: bool, penColor: QColor = None):
+		"""
+		Updates all component colors to have a base color of baseColor and an outline color of penColor.
+		Flatness removes the dynamic color assignment.
+
+		:param baseColor: the darkest color a component will take
+		:type baseColor: QColor
+		:param penColor: the outline and text color
+		:type penColor: QColor
+		:param flat: whether to lighten colors based on depth or not.
+		:type flat: bool
+		"""
+		if not penColor:
+			penColor = QColor(0, 0, 0)  # Defaulting done here to avoid compilation issues
+
+		self._baseColor = baseColor
+		self._penColor = penColor
+		self._flat = flat
+
+		scene = self.scene()
+		if isinstance(scene, tgs.TGUIMScene):
+			tguim = scene.getTargetGUIModel()
+			datacomps = tguim.getComponents()
+			for comp in datacomps:
+				graphic = scene.getGraphics(comp)
+				if flat:
+					graphic.setBrush(QBrush(baseColor))
+				else:
+					graphic.setBrush(QBrush(baseColor.lighter(f=100 + graphic.getDepth() * 12)))
+				graphic.setPen(QPen(penColor))
 
 	def wheelEvent(self, event: QWheelEvent) -> None:
 		"""
@@ -85,10 +182,11 @@ class FacileGraphicsView(QGraphicsView):
 
 		# Zoom
 		if event.delta() > 0:
+			# for i in range(1, FacileGraphicsView.ZOOM_ITER):
 			self.zoomIn(event.pos())
 		else:
+			# for i in range(1, FacileGraphicsView.ZOOM_ITER):
 			self.zoomOut(event.pos())
-
 	
 	def zoomIn(self, pos: QPoint) -> None:
 		"""
@@ -100,14 +198,15 @@ class FacileGraphicsView(QGraphicsView):
 		:rtype: NoneType
 		"""
 		zoomFactor = FacileGraphicsView.ZOOM_FACTOR
+
 		oldPos = self.mapToScene(pos)
 		self.scale(zoomFactor, zoomFactor)
 		newPos = self.mapToScene(pos)
-		
+
 		# Set Anchors
 		self.setTransformationAnchor(QGraphicsView.AnchorUnderMouse)
 		self.setResizeAnchor(QGraphicsView.AnchorUnderMouse)
-		
+
 		# Move scene to old position
 		delta = newPos - oldPos
 		self.translate(delta.x(), delta.y())
@@ -122,14 +221,15 @@ class FacileGraphicsView(QGraphicsView):
 		:rtype: NoneType
 		"""
 		zoomFactor = 1 / FacileGraphicsView.ZOOM_FACTOR
+
 		oldPos = self.mapToScene(pos)
 		self.scale(zoomFactor, zoomFactor)
 		newPos = self.mapToScene(pos)
-		
+
 		# Set Anchors
 		self.setTransformationAnchor(QGraphicsView.AnchorUnderMouse)
 		self.setResizeAnchor(QGraphicsView.AnchorUnderMouse)
-		
+
 		# Move scene to old position
 		delta = newPos - oldPos
 		self.translate(delta.x(), delta.y())

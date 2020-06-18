@@ -114,11 +114,14 @@
      </item>
      <item>
       <widget class="QCheckBox" name="checkBoxInstallAPI">
+       <property name="toolTip">
+        <string>Lets you easily access and use the API from anywhere on your computer.</string>
+       </property>
        <property name="text">
-        <string>Install API</string>
+        <string>Install API as package to Python PATH</string>
        </property>
        <property name="checked">
-        <bool>true</bool>
+        <bool>false</bool>
        </property>
       </widget>
      </item>
@@ -161,7 +164,7 @@
            </size>
           </property>
           <property name="checked">
-           <bool>true</bool>
+           <bool>false</bool>
           </property>
          </widget>
         </item>
@@ -221,7 +224,7 @@
            </size>
           </property>
           <property name="checked">
-           <bool>true</bool>
+           <bool>false</bool>
           </property>
          </widget>
         </item>

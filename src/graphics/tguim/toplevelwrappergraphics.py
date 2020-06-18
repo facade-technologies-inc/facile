@@ -38,7 +38,7 @@ class TopLevelWrapperGraphics(QGraphicsRectItem):
     
     BUFFER = 1
     BUTTON_WIDTH = 60
-    BACKGROUND_COLOR = QColor(120, 120, 120, 80)
+    BACKGROUND_COLOR = QColor(120, 120, 120, 120)
     RESIZE_AREA_WIDTH = 8
     # Scrollable Item
     SGI_MIN_WIDTH = 500
@@ -53,6 +53,7 @@ class TopLevelWrapperGraphics(QGraphicsRectItem):
         """
         ARROW_COLOR = QColor(30, 30, 30)
         BACKGROUND_COLOR = QColor(56, 56, 56)
+        BUTTON_IMG_THM = 0  # 0 is dark, 1 is light
 
         def __init__(self, *args, left=True, onClicked=None, resizer=False):
             QGraphicsRectItem.__init__(self,*args)
@@ -67,12 +68,18 @@ class TopLevelWrapperGraphics(QGraphicsRectItem):
                 self.setCursor(QCursor(Qt.SizeHorCursor))
 
         def paint(self, painter: QPainter, option: QStyleOptionGraphicsItem, widget: QWidget):
-            # QGraphicsRectItem.paint(self, painter, option, widget)
+
             if not self._resizer:
                 if self._left:
-                    filename = 'button_col.jpg'
+                    if TopLevelWrapperGraphics.Button.BUTTON_IMG_THM == 0:
+                        filename = 'button_col_dark.jpg'
+                    else:
+                        filename = 'button_col_light.jpg'
                 else:  # if right
-                    filename = 'button_exp.jpg'
+                    if TopLevelWrapperGraphics.Button.BUTTON_IMG_THM == 0:
+                        filename = 'button_exp_dark.jpg'
+                    else:
+                        filename = 'button_exp_light.jpg'
 
                 ir = QImageReader()
                 filename = ":/icon/resources/EC_Buttons/" + filename
@@ -81,7 +88,7 @@ class TopLevelWrapperGraphics(QGraphicsRectItem):
                 painter.drawImage(self.boundingRect(), ir.read())
             else:
                 painter.setPen(Qt.transparent)
-                painter.setBrush(QColor(200, 200, 200))
+                painter.setBrush(QColor(0, 0, 200))
                 painter.drawRoundedRect(self.boundingRect(), 5, 5)
 
         def mousePressEvent(self, event):
@@ -130,7 +137,7 @@ class TopLevelWrapperGraphics(QGraphicsRectItem):
                             canGoRight = sgi.ghostCanGoRight()
                             curMaxX = tlw.scenePos().x() + tlw.rect().width() - self.rect().width() - \
                                 TopLevelWrapperGraphics.BUTTON_WIDTH - TopLevelWrapperGraphics.BUFFER
-                            print(sgi.getGhost().x())
+
                             if diff > 0:  # Expanding self
                                 # We should move the ghost container with the expansion
                                 if canGoRight and not canGoLeft and sgi.getGhost().scenePos().x() < sgi.scenePos().x():
@@ -250,25 +257,25 @@ class TopLevelWrapperGraphics(QGraphicsRectItem):
         win = self._topLevelGraphics
         ecsWidth = min(TopLevelWrapperGraphics.SGI_MAX_ASSGND_WIDTH, max(TopLevelWrapperGraphics.SGI_MIN_ASSGND_WIDTH,
                                                                          win.width()))
-        ecs.setRect(win.scenePos().x() + win.width(), self._yG, ecsWidth, self._heightG)
+        ecs.setRect(win.scenePos().x() + win.width() + b, self._yG, ecsWidth, self._heightG)
 
         # Instantiate the Expand Button
         tlg = self._topLevelGraphics
         self._expandButton = TopLevelWrapperGraphics.Button(self, left=False, onClicked=self.onExpandClicked)
-        self._expandButton.setRect(tlg.scenePos().x() + tlg.width() + b, self._yG+2, bWidth-4, self._heightG-4)
+        self._expandButton.setRect(tlg.scenePos().x() + tlg.width() + b, self._yG, bWidth-4, self._heightG)
         self._expandButton.hide()
         
         # Instantiate the Collapse Button
         sig = self._scrollableItem
         self._collapseButton = TopLevelWrapperGraphics.Button(self, left=True, onClicked=self.onCollapseClicked)
-        self._collapseButton.setRect(tlg.scenePos().x() + tlg.width() + ecsWidth + b, self._yG+2, bWidth-4,
-                                     self._heightG-4)
+        self._collapseButton.setRect(tlg.scenePos().x() + tlg.width() + ecsWidth + b, self._yG, bWidth-4,
+                                     self._heightG)
 
         # Instantiate the resizing button
         resizeWidth = TopLevelWrapperGraphics.RESIZE_AREA_WIDTH
         self._resizer = TopLevelWrapperGraphics.Button(self, resizer=True)
-        self._resizer.setRect(tlg.scenePos().x() + tlg.width() + ecsWidth + bWidth + b*2,
-                                     self._yG + 2, resizeWidth, self._heightG - 4)
+        self._resizer.setRect(tlg.scenePos().x() + tlg.width() + ecsWidth + bWidth-b,
+                                     self._yG, resizeWidth, self._heightG)
 
         # Adjust the size once we know how big things are
         cbbr = self._collapseButton.boundingRect()
@@ -286,8 +293,7 @@ class TopLevelWrapperGraphics(QGraphicsRectItem):
         self._resizer.hide()
         self._expandButton.show()
         self._width = self._topLevelGraphics.width() + \
-                TopLevelWrapperGraphics.BUTTON_WIDTH + \
-                TopLevelWrapperGraphics.BUFFER * 3
+                TopLevelWrapperGraphics.BUTTON_WIDTH
         self.setRect(self._x, self._yG - TopLevelWrapperGraphics.BUFFER,
                      self._width, self._heightG + TopLevelWrapperGraphics.BUFFER*2)
         # self.boundingRect().setWidth(width)
@@ -306,7 +312,7 @@ class TopLevelWrapperGraphics(QGraphicsRectItem):
                 self._scrollableItem.boundingRect().width() + \
                 TopLevelWrapperGraphics.BUTTON_WIDTH + \
                 TopLevelWrapperGraphics.RESIZE_AREA_WIDTH + \
-                TopLevelWrapperGraphics.BUFFER * 4
+                TopLevelWrapperGraphics.BUFFER * 3
         self.setRect(self._x, self._yG - TopLevelWrapperGraphics.BUFFER,
                      self._width, self._heightG + TopLevelWrapperGraphics.BUFFER*2)
 
