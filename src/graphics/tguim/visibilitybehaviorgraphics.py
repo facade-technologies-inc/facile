@@ -31,9 +31,11 @@ from PySide2.QtWidgets import QGraphicsItem, QAbstractGraphicsShapeItem
 import data.statemachine as sm
 from qt_models.visibilitybehaviormenu import VisibilityBehaviorMenu
 from gui.settriggeractiondialog import SetTriggerActionDialog
+from gui.frame.windows import ModernWindow
 
 
 class VBGraphics(QAbstractGraphicsShapeItem):
+
     MAX_LEFT_DIST = 140
     MIN_LEFT_DIST = 20
     ARROW_COL = QColor(230, 230, 230)

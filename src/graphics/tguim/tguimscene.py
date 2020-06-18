@@ -73,7 +73,6 @@ class TGUIMScene(QGraphicsScene):
 			parentGraphics = self.getGraphics(newComponent.getParent())
 			graphics = self.createComponentGraphics(newComponent, parentGraphics)
 			if parentGraphics is None:
-				print("IS TOP LEVEL")
 				self.addItem(graphics)
 
 		def onNewBehavior(newBehavior):

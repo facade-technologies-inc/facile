@@ -94,17 +94,25 @@ class Compiler(QObject):
             
             with open(os.path.join(dir, 'application-unfilled.py'), 'r') as g:
                 appStr = g.read()
-            
+
+            # Generate options set
             optStr = '{'
             for opt in self._opts:
                 optStr += str(opt) + ', '
             optStr = optStr[:-2] + '}'
-            
-            appStr = appStr.format(exeLoc="'" + self._exeLoc + "'", options=optStr, name="'" + self._name + "'",
-                                   backend="'" + self._backend + "'")
-            f.write(appStr)
-            
+
+            # Generate str of required compIDs
             aps, cas = self._apim.getActionsByType()
+            compIDs = '['
+            for action in cas:
+                compIDs += str(action.getTargetComponent().getId()) + ', '
+            compIDs = compIDs[:-2] + ']'  # remove the final ", " and close bracket
+
+            # Format BaseApp superclass call with necessary info
+            appStr = appStr.format(exeLoc="'" + self._exeLoc + "'", options=optStr, name="'" + self._name + "'",
+                                   backend="'" + self._backend + "'", reqCompIDs=compIDs)
+            f.write(appStr)
+
             vbs = self._tguim.getVisibilityBehaviors()
             alreadyWritten = []
             
@@ -118,7 +126,29 @@ class Compiler(QObject):
                     f.write(vb.getTriggerAction().getMethod())  # TODO: Currently won't work if project is loaded
             for ap in aps:
                 f.write(ap.getMethod())
+
         self.stepComplete.emit()
+
+    def generatePathMapFile(self, reqComps: list):
+        """
+        Creates a mapping of the required SuperTokens to their paths from their top-level window.
+
+        Not written to the baseApp or application files directly for readability, as this file
+        can probably get very large.
+
+        :param reqComps: a list of required components
+        :type reqComps: list
+        """
+
+        # First create a dictionary
+        d = {}
+
+        # Iterate through the components
+        for comp in reqComps:
+
+            tmpList = [tmpComp.getSuperToken() for tmpComp, pos in comp.getPathFromRoot()]
+            tmpList = tmpList.reverse()[1:]  # we are getting rid of the 0th element: the root.
+            allPaths.append(tmpList)
     
     def copyNecessaryFiles(self) -> None:
         """

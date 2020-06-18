@@ -99,7 +99,7 @@ class Token:
     def __init__(self, appTimeStamp: int, identifier: int, isDialog: bool, isEnabled: bool,
                  isVisible: bool, processID: int, typeOf: str, rectangle: RECT, texts: list,
                  title: str, numControls: int, controlIDs: list, parentTitle: str,
-                 parentType: str, topLevelParentControlIDs: list, topLevelParentTitle: str, topLevelParentType: str,
+                 parentType: str, parentRect: RECT, topLevelParentControlIDs: list, topLevelParentTitle: str, topLevelParentType: str,
                  childrenTexts: list, picture: Image = None, autoID: int = None,
                  expandState: int = None, shownState: int = None):
         """
@@ -119,6 +119,8 @@ class Token:
         :type parentTitle: str
         :param parentType: stores the components parents type
         :type parentType: str
+        :param parentRect: The rectangular dimensions/position of the parent component
+        :type parentRect: RECT
         :param topLevelParentControlIDs: A list of control identifiers for the dialog that contains (or is) this component.
         :type topLevelParentControlIDs: List[str]
         :param topLevelParentTitle: stores the components top level parents title
@@ -160,6 +162,7 @@ class Token:
         self.isVisible = isVisible
         self.parentTitle = parentTitle
         self.parentType = parentType
+        self.parentRect = parentRect
         self.topLevelParentControlIDs = topLevelParentControlIDs
         self.topLevelParentTitle = topLevelParentTitle
         self.topLevelParentType = topLevelParentType
@@ -218,9 +221,13 @@ class Token:
             if parent:
                 parentTitle = parent.window_text()
                 parentType = parent.friendly_class_name()
+                parentRect = parent.rectangle()
+                rectangle = component.rectangle()  # This is here so that the rectangles will be the closest they can be
             else:
                 parentTitle = ""
                 parentType = ""
+                parentRect = None
+                rectangle = component.rectangle()
             
             topLevelParent = component.top_level_parent()
             topLevelParentTitle = topLevelParent.window_text()
@@ -232,7 +239,6 @@ class Token:
             isEnabled = component.is_enabled()
             isVisible = component.is_visible()
             processID = component.process_id()
-            rectangle = component.rectangle()
             title = component.window_text()
             numControls = component.control_count()
             typeOf = component.friendly_class_name()
@@ -305,8 +311,8 @@ class Token:
         # create a new token
         token = Token(timeStamp, id, isDialog, isEnabled, isVisible, processID, typeOf,
                       rectangle, texts, title, numControls, controlIDs, parentTitle,
-                      parentType, topLevelControlIDs, topLevelParentTitle, topLevelParentType, childrenTexts, image,
-                      autoID, expandState, shownState)
+                      parentType, parentRect, topLevelControlIDs, topLevelParentTitle, topLevelParentType,
+                      childrenTexts, image, autoID, expandState, shownState)
         
         return token
     

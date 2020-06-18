@@ -37,7 +37,7 @@
      <x>0</x>
      <y>0</y>
      <width>1017</width>
-     <height>21</height>
+     <height>26</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -53,11 +53,12 @@
     </widget>
     <widget class="QMenu" name="menuRecent_Projects_2">
      <property name="title">
-      <string>Recent Projects</string>
+      <string>Recent</string>
      </property>
     </widget>
     <addaction name="menuNew_Project_2"/>
     <addaction name="actionOpen_Project"/>
+    <addaction name="separator"/>
     <addaction name="menuRecent_Projects_2"/>
     <addaction name="separator"/>
     <addaction name="actionSave_Project"/>
@@ -69,11 +70,26 @@
     <property name="title">
      <string>Help</string>
     </property>
+    <addaction name="actionTutorials"/>
+    <addaction name="actionUseful_Keybindings"/>
+    <addaction name="separator"/>
+    <addaction name="actionWebsite"/>
    </widget>
    <widget class="QMenu" name="menuView">
     <property name="title">
      <string>View</string>
     </property>
+    <widget class="QMenu" name="menuPresets">
+     <property name="title">
+      <string>Layout</string>
+     </property>
+     <addaction name="actionModelsOnly"/>
+     <addaction name="actionEssentials"/>
+     <addaction name="actionClassic"/>
+     <addaction name="actionAll"/>
+    </widget>
+    <addaction name="menuPresets"/>
+    <addaction name="separator"/>
     <addaction name="actionShow_Behaviors"/>
     <addaction name="actionShow_Token_Tags"/>
     <addaction name="actionDetailed_View"/>
@@ -82,7 +98,7 @@
    <addaction name="menuView"/>
    <addaction name="menuHelp"/>
   </widget>
-  <widget class="QDockWidget" name="dockWidget_2">
+  <widget class="QDockWidget" name="explorerDockWidget">
    <property name="windowTitle">
     <string>Project Explorer</string>
    </property>
@@ -111,7 +127,7 @@
     <layout class="QVBoxLayout" name="verticalLayout_3"/>
    </widget>
   </widget>
-  <widget class="QDockWidget" name="dockWidget_5">
+  <widget class="QDockWidget" name="propertyDockWidget">
    <property name="windowTitle">
     <string>Property Editor</string>
    </property>
@@ -126,7 +142,7 @@
     </layout>
    </widget>
   </widget>
-  <widget class="QDockWidget" name="dockWidget_6">
+  <widget class="QDockWidget" name="actionMenuDockWidget">
    <property name="font">
     <font>
      <family>MS Shell Dlg 2</family>
@@ -157,7 +173,7 @@
   </widget>
   <widget class="QToolBar" name="toolBar">
    <property name="sizePolicy">
-    <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+    <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
      <horstretch>0</horstretch>
      <verstretch>0</verstretch>
     </sizepolicy>
@@ -172,7 +188,7 @@
     </size>
    </property>
    <attribute name="toolBarArea">
-    <enum>LeftToolBarArea</enum>
+    <enum>TopToolBarArea</enum>
    </attribute>
    <attribute name="toolBarBreak">
     <bool>false</bool>
@@ -312,7 +328,7 @@
      <normaloff>:/icon/resources/icons/office/settings.png</normaloff>:/icon/resources/icons/office/settings.png</iconset>
    </property>
    <property name="text">
-    <string>Project Settings</string>
+    <string>Settings</string>
    </property>
   </action>
   <action name="actionAdd_Behavior">
@@ -395,6 +411,59 @@
    </property>
    <property name="toolTip">
     <string>Validate the TGUIM and APIM</string>
+   </property>
+  </action>
+  <action name="actionTutorials">
+   <property name="text">
+    <string>Tutorials</string>
+   </property>
+  </action>
+  <action name="actionWebsite">
+   <property name="text">
+    <string>Website</string>
+   </property>
+  </action>
+  <action name="actionModelsOnly">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Models Only</string>
+   </property>
+  </action>
+  <action name="actionClassic">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Classic</string>
+   </property>
+  </action>
+  <action name="actionAll">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>All</string>
+   </property>
+  </action>
+  <action name="actionEssentials">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Essentials</string>
+   </property>
+  </action>
+  <action name="actionUseful_Keybindings">
+   <property name="text">
+    <string>Useful Keybindings</string>
    </property>
   </action>
  </widget>

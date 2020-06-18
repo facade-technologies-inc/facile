@@ -122,6 +122,10 @@ class ValidatorView(QWidget):
 		
 		self.ran.connect(self.onRun)
 		self.stopped.connect(self.onStop)
+
+		# # Fixes a graphical bug with validator
+		# self.onStop()
+		# self.clear()
 		
 	@Slot()
 	def onStop(self) -> None:
@@ -163,18 +167,18 @@ class ValidatorView(QWidget):
 		
 		# clear messages and create new infrastructure for displaying messages.
 		self.allMessages = []
-		self.ui.centralWidget = QWidget()
+		self.ui.v_centralWidget = QWidget()
 		self.ui.messageLayout = QVBoxLayout()
 		self.ui.messageLayout.addStretch()
-		self.ui.centralWidget.setLayout(self.ui.messageLayout)
-		self.ui.scrollArea.setWidget(self.ui.centralWidget)
+		self.ui.v_centralWidget.setLayout(self.ui.messageLayout)
+		self.ui.v_scrollArea.setWidget(self.ui.v_centralWidget)
 		
 		# Set color of the central widget to the application's base color
 		color = QCoreApplication.instance().palette().color(QPalette.ColorRole.Base)
-		palette = self.ui.centralWidget.palette()
+		palette = self.ui.v_centralWidget.palette()
 		palette.setColor(QPalette.ColorRole.Background, color)
-		self.ui.centralWidget.setAutoFillBackground(True)
-		self.ui.centralWidget.setPalette(palette)
+		self.ui.v_centralWidget.setAutoFillBackground(True)
+		self.ui.v_centralWidget.setPalette(palette)
 		
 		# reset progress bar and hide it.
 		if self.ui.algorithmProgressBar.value() == 100:
