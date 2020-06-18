@@ -16,9 +16,17 @@
 
         <file alias="../resources/splash_screen_02.png">resources/splash_screen_02.png</file>
 
-        <file alias="../resources/EC_Buttons/button_col.jpg">resources/EC_Buttons/button_col.jpg</file>
+        <file alias="../resources/EC_Buttons/button_col_dark.jpg">resources/EC_Buttons/button_col_dark.jpg</file>
 
-        <file alias="../resources/EC_Buttons/button_exp.jpg">resources/EC_Buttons/button_exp.jpg</file>
+        <file alias="../resources/EC_Buttons/button_col_light.jpg">resources/EC_Buttons/button_col_light.jpg</file>
+
+        <file alias="../resources/EC_Buttons/button_exp_dark.jpg">resources/EC_Buttons/button_exp_dark.jpg</file>
+
+        <file alias="../resources/EC_Buttons/button_exp_light.jpg">resources/EC_Buttons/button_exp_light.jpg</file>
+
+        <file alias="../resources/EC_Buttons/image (1).jpg">resources/EC_Buttons/image (1).jpg</file>
+
+        <file alias="../resources/EC_Buttons/image.jpg">resources/EC_Buttons/image.jpg</file>
 
         <file alias="../resources/icons/facade_logo.png">resources/icons/facade_logo.png</file>
 
@@ -213,6 +221,24 @@
         <file alias="../resources/icons/pastel/tag.png">resources/icons/pastel/tag.png</file>
 
         <file alias="../resources/icons/pastel/trash_can.png">resources/icons/pastel/trash_can.png</file>
+
+        <file alias="../resources/titlebar_buttons/close-h.png">resources/titlebar_buttons/close-h.png</file>
+
+        <file alias="../resources/titlebar_buttons/close.png">resources/titlebar_buttons/close.png</file>
+
+        <file alias="../resources/titlebar_buttons/maximize-d.png">resources/titlebar_buttons/maximize-d.png</file>
+
+        <file alias="../resources/titlebar_buttons/maximize-h.png">resources/titlebar_buttons/maximize-h.png</file>
+
+        <file alias="../resources/titlebar_buttons/maximize.png">resources/titlebar_buttons/maximize.png</file>
+
+        <file alias="../resources/titlebar_buttons/minimize-d.png">resources/titlebar_buttons/minimize-d.png</file>
+
+        <file alias="../resources/titlebar_buttons/minimize-h.png">resources/titlebar_buttons/minimize-h.png</file>
+
+        <file alias="../resources/titlebar_buttons/minimize.png">resources/titlebar_buttons/minimize.png</file>
+
+        <file alias="../resources/titlebar_buttons/README.md">resources/titlebar_buttons/README.md</file>
 
     </qresource>
 </RCC>

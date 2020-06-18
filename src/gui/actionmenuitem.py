@@ -34,6 +34,7 @@ from qt_models.componentactionitemmenu import ComponentActionItemMenu
 from qt_models.actionpipelineitemmenu import ActionPipelineItemMenu
 from gui.blackboxeditordialog import BlackBoxEditorDialog
 import data.statemachine as sm
+from gui.frame.windows import ModernWindow
 
 class ActionMenuItem(QWidget):
 	"""
@@ -77,7 +78,7 @@ class ActionMenuItem(QWidget):
 				
 			def editExternals():
 				editInternals()
-				BlackBoxEditorDialog(action).exec_()
+				ModernWindow(BlackBoxEditorDialog(action), parent=sm.StateMachine.instance.view).exec_()
 				self.update()
 				apimView = sm.StateMachine.instance.view.ui.apiModelView
 				apimView.showAction(self._action)

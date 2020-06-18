@@ -1,0 +1,67 @@
+#windowFrame {
+  border-radius: 5px 5px 5px 5px;
+  border-style: solid;
+  background-color: palette(Window);
+}
+
+#titleBar {
+  border: 0px none palette(base);
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+  background-color: palette(Window);
+  height: 24px;
+}
+
+#btnClose, #btnRestore, #btnMaximize, #btnMinimize {
+  min-width: 16px;
+  min-height: 16px;
+  max-width: 16px;
+  max-height: 16px;
+  border-radius: 8px;
+  margin-top: 8px;
+  margin-right: 8px;
+}
+
+#btnMaximize {
+  border-image: url(:/icon/resources/titlebar_buttons/maximize.png);
+}
+
+#btnMaximize::hover {
+  border-image: url(:/icon/resources/titlebar_buttons/maximize-h.png);
+}
+
+#btnMaximize::pressed {
+  background-color: hsv(123, 204, 98);
+}
+
+#btnMinimize {
+  border-image: url(:/icon/resources/titlebar_buttons/minimize.png);
+}
+
+#btnMinimize::hover {
+  border-image: url(:/icon/resources/titlebar_buttons/minimize-h.png);
+}
+
+#btnMinimize::pressed {
+  background-color: hsv(38, 218, 153);
+}
+
+#btnClose {
+  border-image: url(:/icon/resources/titlebar_buttons/close.png);
+}
+
+#btnClose::hover {
+  border-image: url(:/icon/resources/titlebar_buttons/close-h.png);
+}
+
+#btnClose::pressed {
+  background-color: hsv(0, 182, 152);
+}
+
+#btnMaximize::disabled {
+  border-image: url(:/icon/resources/titlebar_buttons/maximize-d.png);
+}
+
+#btnMinimize::disabled {
+  border-image: url(:/icon/resources/titlebar_buttons/minimize-d.png);
+}

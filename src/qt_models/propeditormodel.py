@@ -195,14 +195,7 @@ class PropModel(QAbstractItemModel):
 		work = [parent]
 		while len(work) > 0:
 			cur = work.pop()
-			
-			curRow = cur.row()
-			curCol = cur.column()
-			curData = self.data(cur, Qt.DisplayRole)
-			if cur.isValid():
-				print(curRow, curCol, curData)
-				pass
-			
+
 			rows = self.rowCount(cur)
 			cols = self.columnCount(cur)
 			for r in range(rows):

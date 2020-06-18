@@ -18,45 +18,7 @@
     |                                                                              |
     \------------------------------------------------------------------------------/
 
-This is the main file that launches Facile. This module should only be run by the
-user and never imported.
-
+This module contains the code for the color picking dialog.
 """
 
-import sys
-import os
-import warnings
-
-sys.path.append(os.path.abspath("./gui/rc/"))
-
-# These lines are needed to integrate Qt and pywinauto
-warnings.simplefilter("ignore", UserWarning)
-sys.coinit_flags = 2
-
-from PySide2.QtWidgets import QApplication
-
-from gui.frame.windows import ModernWindow
-
-from gui.facileview import FacileView
-from gui.splashscreen import FacileSplashScreen
-import psutil
-
-
-if __name__ == "__main__":
-
-    # increases performance by hogging more processor time
-    p = psutil.Process()
-    p.nice(psutil.HIGH_PRIORITY_CLASS)
-    
-    app = QApplication([])
-
-    splash = FacileSplashScreen()
-    splash.show()
-
-    view = FacileView()
-    window = ModernWindow(view, modal=False)
-
-    splash.finish(window)
-    window.showMaximized()
-
-    sys.exit(app.exec_())
+# TODO
