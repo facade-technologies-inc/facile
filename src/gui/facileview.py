@@ -392,7 +392,7 @@ class FacileView(QMainWindow):
 		if confirm:
 			title = "Confirm Application Termination"
 			message = "Are you sure you'd like to terminate the target application?"
-			response = MessageBox.question(self, title, message, options=None)
+			response = MessageBox.question(self, title, message, options=MessageBox.Yes | MessageBox.Cancel)
 		else:
 			response = MessageBox.StandardButton.Yes
 		
@@ -582,9 +582,9 @@ class FacileView(QMainWindow):
 					result = MessageBox.question(self, "App is running...", message, options)
 
 					if result == MessageBox.Yes:
-						self._project.autoCloseAppOnExit = False
-					else:
 						self._project.autoCloseAppOnExit = True
+					else:
+						self._project.autoCloseAppOnExit = False
 
 					self._project.acaWarningShown = True
 
@@ -692,10 +692,12 @@ class FacileView(QMainWindow):
 			tguimBaseCol = QColor(sList[3][0], sList[3][1], sList[3][2], sList[3][3])
 			FacileView.TGUIM_COL_SETTINGS = [tguimBaseCol, sList[4]]
 
-		except FileNotFoundError and IndexError:  # For older versions of Facile
+		except (FileNotFoundError, IndexError):  # For older versions of Facile
+			# Set the initial settings to classic theme, layout, and model colors
 			self.setTheme(FacileView.Theme.CLASSIC_DARK)
 			self.setLayout(FacileView.Layout.CLASSIC)
 			self.enableScrollBars(False)
+			FacileView.TGUIM_COL_SETTINGS = [QColor(0, 141, 222).lighter(f=75), False]
 
 	def enableScrollBars(self, enabled: bool = True):
 		"""
