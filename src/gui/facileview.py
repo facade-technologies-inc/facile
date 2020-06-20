@@ -599,6 +599,13 @@ class FacileView(QMainWindow):
 			if result != MessageBox.Cancel:
 				if self._project.autoCloseAppOnExit:
 					self.onStopAppTriggered(confirm=False)
+
+				for runner in [self._project.getObserver(), self._project.getExplorer()]:
+					if runner:
+						while runner.isPlaying(): # wait until the runner actually stops
+							runner.setPlaying(False) # tell the runner to stop
+						runner.terminate()
+
 				event.accept()
 				QApplication.instance().exit(0)
 		else:
