@@ -37,8 +37,6 @@ from qt_models.projectexplorermodel import ProjectExplorerModel
 from tguiil.explorer import Explorer
 from tguiil.observer import Observer
 import data.statemachine as sm
-from gui.frame.windows import ModernWindow
-from gui.messagebox import MessageBox
 
 
 class Project:
@@ -245,15 +243,13 @@ class Project:
 			timer.start()
 			prog.setValue(0)
 
-			self._notif = ModernWindow(prog, parent=sm.StateMachine.instance.view)
-			self._notif.btnMinimize.setEnabled(False)
-			self._notif.btnMaximize.setEnabled(False)
+			self._notif = prog
 			self._notif.exec_()
 
 		else:
 			if self._backend == 'detecting':
 				self._notif.close()
-				self._notif = MessageBox(QMessageBox.Information, "Backend Detected",
+				self._notif = QMessageBox(QMessageBox.Information, "Backend Detected",
 										  "The backend has been successfully detected: " + backend.upper() + '.',
 										  buttons=QMessageBox.Ok)
 				self._notif.exec_()
