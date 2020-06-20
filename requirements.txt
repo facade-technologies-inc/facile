@@ -65,7 +65,7 @@ scipy==1.4.1
 shiboken2==5.15.0
 six==1.15.0
 snowballstemmer==2.0.0
-Sphinx==2.3.1
+Sphinx==3.1.1
 sphinx-autoapi==1.2.1
 sphinx-numfig==0.1.1
 sphinx-rtd-theme==0.4.3
