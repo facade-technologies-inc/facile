@@ -55,7 +55,7 @@ pytz==2020.1
 PyWavelets==1.1.1
 pywin32==224
 pywin32-ctypes==0.2.0
-pywinauto==0.6.7
+pywinauto==0.6.8
 PyYAML==5.3.1
 regex==2020.4.4
 requests==2.23.0
