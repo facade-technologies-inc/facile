@@ -9,3 +9,12 @@ updates:
     directory: "/"
     schedule:
       interval: "daily"
+    assignees:
+      - "smalbadger"
+    # Include a list of updated dependencies
+    # with a prefix determined by the dependency group
+    commit-message:
+      prefix: "pip prod"
+      prefix-development: "pip dev"
+      include: "scope"
+    
