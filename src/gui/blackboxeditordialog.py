@@ -31,6 +31,7 @@ from PySide2.QtCore import Qt
 from gui.ui.ui_blackboxeditordialog import Ui_Dialog as Ui_BlackBoxEditorDialog
 from gui.porteditorwidget import PortEditorWidget
 import data.statemachine as sm
+import keyword
 
 
 class BlackBoxEditorDialog(QDialog):
@@ -145,16 +146,22 @@ class BlackBoxEditorDialog(QDialog):
 			errors.append("An action pipeline with the name '%s' already exists." % name)
 			
 		# Make sure name is a valid identifier
-		if not name.isidentifier():
-			msg = "The name of the action pipeline must:" \
-			      "		- Only contain alphanumeric characters and underscores." \
-			      " 	- Not contain any white space." \
-			      " 	- Not start with a number."
+		if not name.isidentifier() or name in keyword.kwlist:
+			msg = "The name of the action pipeline must:\n" \
+			      "\t- Only contain alphanumeric characters and underscores.\n" \
+			      "\t- Not contain any white space.\n" \
+			      "\t- Not start with a number.\n" \
+				  "\t- Not be a Python keyword."
 			errors.append(msg)
 			
 		# Name must start with a lower-case character
 		if name[0].isupper():
 			errors.append("The action name must start with a lower-case letter.")
+
+		for port in inputPorts + outputPorts:
+			if port.getName() in keyword.kwlist:
+				errors.append("Port name cannot be a reserved Python keyword (" + port.getName() + ')')
+				break
 		
 		# Make sure all inputs have unique names.
 		inputNames = set()
@@ -200,7 +207,7 @@ class BlackBoxEditorDialog(QDialog):
 		# Make sure the type of the port is not NoneType
 		for port in inputPorts + outputPorts:
 			if port.getDataTypeStr() == 'NoneType':
-				errors.append("Data type of port cannot be NoneType.")
+				errors.append("Data type of a port cannot be NoneType.")
 				break
 				
 		# If type is simple, and port is optional, check the type of the default value.
