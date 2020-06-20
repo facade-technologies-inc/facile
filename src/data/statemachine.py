@@ -27,7 +27,7 @@ from enum import Enum, auto
 
 from PySide2.QtCore import Slot, QTimer
 from PySide2.QtGui import QStandardItem, QStandardItemModel, Qt, QIcon, QPixmap
-from PySide2.QtWidgets import QGraphicsScene, QDialog, QWidget, QSizePolicy
+from PySide2.QtWidgets import QGraphicsScene, QDialog, QWidget, QSizePolicy, QMessageBox
 
 import data.tguim.visibilitybehavior as vb
 from gui.facilegraphicsview import FacileGraphicsView
@@ -39,8 +39,6 @@ from data.configvars import ConfigVars
 from data.apim.actionpipeline import ActionPipeline
 from gui.apicompilerdialog import ApiCompilerDialog
 from graphics.tguim.tguimscene import TGUIMScene
-from gui.messagebox import MessageBox
-from gui.frame.windows import ModernWindow
 
 
 class StateMachine:
@@ -245,7 +243,7 @@ class StateMachine:
 					destComp = self.vbComponents[1]
 					tguim = self._project.getTargetGUIModel()
 					newVB = vb.VisibilityBehavior(tguim, srcComp, destComp)
-					ModernWindow(SetTriggerActionDialog(newVB), parent=self.view).exec_()
+					SetTriggerActionDialog(newVB).exec_()
 					self.view._project.getTargetGUIModel().addVisibilityBehavior(newVB)
 					self.view.ui.projectExplorerView.update()
 					self.view.ui.projectExplorerView.model().selectBehavior(newVB)
@@ -399,7 +397,7 @@ class StateMachine:
 		
 		def onNewActionPipeline():
 			ap = ActionPipeline()
-			blackBoxEditor = ModernWindow(BlackBoxEditorDialog(ap), parent=self.view)
+			blackBoxEditor = BlackBoxEditorDialog(ap)
 			result = blackBoxEditor.exec_()
 
 			if result != QDialog.Accepted:
@@ -418,11 +416,10 @@ class StateMachine:
 			def onVerificationComplete(success):
 				if success:
 					apicomp = ApiCompilerDialog()
-					win = ModernWindow(apicomp, parent=self.view)
-					win.exec_()
+					apicomp.exec_()
 				else:
-					msg = MessageBox()
-					msg.setIcon(MessageBox.Critical)
+					msg = QMessageBox()
+					msg.setIcon(QMessageBox.Critical)
 					msg.setText("Error")
 					msg.setInformativeText("Please resolve all verification errors before compiling.")
 					msg.setWindowTitle("Error")
