@@ -16,6 +16,7 @@ env_stub_template = """
 {python_version}
 <details>
 <summary>Packages</summary>
+
 Package Name | Version
 ------------ | -------   
 {python_packages}

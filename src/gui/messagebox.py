@@ -24,9 +24,9 @@ This module contains the code for the custom QMessageBox.
 from PySide2.QtWidgets import QMessageBox
 from PySide2.QtCore import Qt
 from PySide2.QtGui import QResizeEvent
-from gui.frame.windows import ModernWindow
 import pyautogui
 import data.statemachine as sm
+from gui.frame.windows import ModernWindow
 
 
 class MessageBox(QMessageBox):
