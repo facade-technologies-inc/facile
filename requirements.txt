@@ -53,7 +53,7 @@ python-dateutil==2.8.1
 PyTweening==1.0.3
 pytz==2020.1
 PyWavelets==1.1.1
-pywin32==224
+pywin32==225
 pywin32-ctypes==0.2.0
 pywinauto==0.6.8
 PyYAML==5.3.1
