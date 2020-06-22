@@ -13,7 +13,7 @@ comtypes==1.1.7
 cx-Freeze==6.1
 cycler==0.10.0
 decorator==4.4.2
-docutils==0.15.2
+docutils==0.16
 et-xmlfile==1.0.1
 excel2img==1.4.0
 future==0.18.2
