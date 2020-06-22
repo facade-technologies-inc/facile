@@ -35,8 +35,6 @@ sys.coinit_flags = 2
 
 from PySide2.QtWidgets import QApplication
 
-from gui.frame.windows import ModernWindow
-
 from gui.facileview import FacileView
 from gui.splashscreen import FacileSplashScreen
 import psutil
@@ -54,9 +52,8 @@ if __name__ == "__main__":
     splash.show()
 
     view = FacileView()
-    window = ModernWindow(view, modal=False)
 
-    splash.finish(window)
-    window.showMaximized()
+    splash.finish(view)
+    view.showMaximized()
 
     sys.exit(app.exec_())

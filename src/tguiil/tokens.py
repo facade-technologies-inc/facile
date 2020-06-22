@@ -713,6 +713,11 @@ class Token:
         d = self.__dict__.copy()
         d['rectangle'] = [self.rectangle.left, self.rectangle.top, self.rectangle.width(),
                           self.rectangle.height()]
+
+        if self.parentRect:
+            d['parentRect'] = [self.parentRect.left, self.parentRect.top, self.parentRect.width(),
+                               self.parentRect.height()]
+
         if 'pic' in d and d['pic'] is not None:
             d['pic'] = np.array(self.pic).tolist()
         
@@ -744,6 +749,14 @@ class Token:
             r.right = d['rectangle'][0] + d['rectangle'][2]
             r.bottom = d['rectangle'][1] + d['rectangle'][3]
             d['rectangle'] = r
+
+        if d['parentRect']:
+            r = RECT()
+            r.left = d['parentRect'][0]
+            r.top = d['parentRect'][1]
+            r.right = d['parentRect'][0] + d['parentRect'][2]
+            r.bottom = d['parentRect'][1] + d['parentRect'][3]
+            d['parentRect'] = r
         
         t.__dict__ = d
         return t

@@ -32,7 +32,6 @@ from tools.doc_generator.documentationgenerator import DocGenerator
 from gui.ui.ui_apicompilerdialog import Ui_Dialog as Ui_ApiCompilerDialog
 from tguiil.matchoption import MatchOption
 from libs.bitness import getPythonBitness, isExecutable, appBitnessMatches, getExeBitness
-from gui.frame.windows import ModernWindow
 
 
 class ApiCompilerDialog(QDialog):
@@ -227,8 +226,6 @@ class ApiCompilerDialog(QDialog):
 		self.progress = QProgressDialog("Compiling API...", "Cancel API Generation", 0, numSteps * 2, parent=self.parent())
 		self.progress.setValue(0)
 		self.progress.setModal(True)
-		self.progWin = ModernWindow(self.progress, parent=sm.StateMachine.instance.view)
-		self.progWin.setMinimumSize(self.progress.minimumSizeHint())
 
 		def stepStartedCatcher(message):
 			self.progress.setValue(self.progress.value() + 1)
