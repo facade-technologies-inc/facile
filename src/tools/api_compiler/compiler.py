@@ -83,6 +83,7 @@ class Compiler(QObject):
         :return: None
         """
         self.stepStarted.emit("Generating custom application driver")
+
         with open(self._srcFolder + "application.py", "w+") as f:
             
             # TODO: The Facade Tech watermark thing is a little intense when the user needs
@@ -91,7 +92,7 @@ class Compiler(QObject):
 
             curPath = os.path.abspath(__file__)
             dir, filename = os.path.split(curPath)
-            
+
             with open(os.path.join(dir, 'application-unfilled.py'), 'r') as g:
                 appStr = g.read()
 
@@ -115,41 +116,23 @@ class Compiler(QObject):
 
             vbs = self._tguim.getVisibilityBehaviors()
             alreadyWritten = []
-            
+
             for action in cas:
                 alreadyWritten.append(action.getMethodName())
                 f.write(action.getMethod())
+
             for id in vbs:
                 vb = vbs[id]
                 name = vb.methodName
-                if name not in alreadyWritten:
-                    f.write(vb.getTriggerAction().getMethod())  # TODO: Currently won't work if project is loaded
+                triggerAction = vb.getTriggerAction()
+                if name not in alreadyWritten and triggerAction is not None:
+                    f.write(triggerAction.getMethod())
+
             for ap in aps:
                 f.write(ap.getMethod())
 
         self.stepComplete.emit()
 
-    def generatePathMapFile(self, reqComps: list):
-        """
-        Creates a mapping of the required SuperTokens to their paths from their top-level window.
-
-        Not written to the baseApp or application files directly for readability, as this file
-        can probably get very large.
-
-        :param reqComps: a list of required components
-        :type reqComps: list
-        """
-
-        # First create a dictionary
-        d = {}
-
-        # Iterate through the components
-        for comp in reqComps:
-
-            tmpList = [tmpComp.getSuperToken() for tmpComp, pos in comp.getPathFromRoot()]
-            tmpList = tmpList.reverse()[1:]  # we are getting rid of the 0th element: the root.
-            allPaths.append(tmpList)
-    
     def copyNecessaryFiles(self) -> None:
         """
         Adds all necessary files for compiler to work into created directory
