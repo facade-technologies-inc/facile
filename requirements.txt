@@ -7,7 +7,7 @@ cached-property==1.5.1
 certifi==2020.4.5.1
 cffi==1.14.0
 chardet==3.0.4
-click==7.1.1
+click==7.1.2
 colorama==0.4.3
 comtypes==1.1.7
 cx-Freeze==6.1
