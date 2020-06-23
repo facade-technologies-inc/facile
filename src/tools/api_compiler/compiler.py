@@ -83,6 +83,7 @@ class Compiler(QObject):
         :return: None
         """
         self.stepStarted.emit("Generating custom application driver")
+
         with open(self._srcFolder + "application.py", "w+") as f:
             
             # TODO: The Facade Tech watermark thing is a little intense when the user needs
@@ -91,7 +92,7 @@ class Compiler(QObject):
 
             curPath = os.path.abspath(__file__)
             dir, filename = os.path.split(curPath)
-            
+
             with open(os.path.join(dir, 'application-unfilled.py'), 'r') as g:
                 appStr = g.read()
 
@@ -115,15 +116,18 @@ class Compiler(QObject):
 
             vbs = self._tguim.getVisibilityBehaviors()
             alreadyWritten = []
-            
+
             for action in cas:
                 alreadyWritten.append(action.getMethodName())
                 f.write(action.getMethod())
+
             for id in vbs:
                 vb = vbs[id]
                 name = vb.methodName
-                if name not in alreadyWritten:
-                    f.write(vb.getTriggerAction().getMethod())  # TODO: Currently won't work if project is loaded
+                triggerAction = vb.getTriggerAction()
+                if name not in alreadyWritten and triggerAction is not None:
+                    f.write(triggerAction.getMethod())
+
             for ap in aps:
                 f.write(ap.getMethod())
 

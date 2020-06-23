@@ -37,8 +37,6 @@ from qt_models.projectexplorermodel import ProjectExplorerModel
 from tguiil.explorer import Explorer
 from tguiil.observer import Observer
 import data.statemachine as sm
-from gui.frame.windows import ModernWindow
-from gui.messagebox import MessageBox
 
 
 class Project:
@@ -91,6 +89,7 @@ class Project:
 		self.autoCloseAppOnExit = None
 		self.acaWarningShown = False
 		self._notif = None  # This temporarily holds a dialog
+		self._timer = None
 		
 		# project information
 		self.setProjectDir(os.path.abspath(projectDir))
@@ -233,30 +232,42 @@ class Project:
 		"""
 		if backend.lower() == 'detecting':
 			self._backend = backend.lower()
+
+			# Time calculations
 			interval = 50  # milliseconds
 			totTime = 4800  # milliseconds
 			steps = int(totTime/interval)
-			timer = QTimer()
-			timer.setInterval(interval)
 
+			# Initializations
+			timer = QTimer()
 			prog = QProgressDialog("We are currently detecting your application's backend technology...",
 										  "Hide", 0, steps)
+			self._notif = prog
+			self._timer = timer
+
+			# Set values and connect signals
+			timer.setInterval(interval)
 			timer.timeout.connect(lambda: prog.setValue(prog.value() + 1))
-			timer.start()
+			prog.setAutoClose(True)
 			prog.setValue(0)
 
-			self._notif = ModernWindow(prog, parent=sm.StateMachine.instance.view)
-			self._notif.btnMinimize.setEnabled(False)
-			self._notif.btnMaximize.setEnabled(False)
+			# Start timer and open progress dialog
+			timer.start()
 			self._notif.exec_()
 
 		else:
 			if self._backend == 'detecting':
+				# Stop timer and close progress dialog if not done already
+				self._timer.stop()
 				self._notif.close()
-				self._notif = MessageBox(QMessageBox.Information, "Backend Detected",
+
+				# Display message
+				self._notif = QMessageBox(QMessageBox.Information, "Backend Detected",
 										  "The backend has been successfully detected: " + backend.upper() + '.',
 										  buttons=QMessageBox.Ok)
 				self._notif.exec_()
+
+			# Set backend
 			self._backend = backend.lower()
 	
 	def setStartupTimeout(self, timeout: int) -> None:
