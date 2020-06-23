@@ -57,7 +57,7 @@ pywin32==224
 pywin32-ctypes==0.2.0
 pywinauto==0.6.8
 PyYAML==5.3.1
-regex==2020.4.4
+regex==2020.6.8
 requests==2.23.0
 scikit-image==0.16.2
 scikit-learn==0.22.2.post1
