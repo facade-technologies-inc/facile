@@ -249,7 +249,7 @@ class ApiCompilerDialog(QDialog):
 		self.docGenerator.stepStarted.connect(stepStartedCatcher)
 		self.docGenerator.stepComplete.connect(stepCompleteCatcher)
 
-		self.thread.started.connect(self.progWin.exec_, type=Qt.QueuedConnection)
+		self.thread.started.connect(self.progress.exec_, type=Qt.QueuedConnection)
 		self.thread.started.connect(self.compiler.compileAPI, type=Qt.QueuedConnection)
 		self.compiler.finished.connect(self.docGenerator.createDoc)
 		self.docGenerator.finished.connect(self.thread.terminate)
