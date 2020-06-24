@@ -24,7 +24,7 @@ jdcal==1.4.1
 Jinja2==2.11.2
 joblib==0.15.1
 kiwisolver==1.2.0
-lazy-object-proxy==1.4.3
+lazy-object-proxy==1.5.0
 MarkupSafe==1.1.1
 matplotlib==3.2.2
 MouseInfo==0.1.3
