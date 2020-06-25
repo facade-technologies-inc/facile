@@ -133,27 +133,6 @@ class Compiler(QObject):
 
         self.stepComplete.emit()
 
-    def generatePathMapFile(self, reqComps: list):
-        """
-        Creates a mapping of the required SuperTokens to their paths from their top-level window.
-
-        Not written to the baseApp or application files directly for readability, as this file
-        can probably get very large.
-
-        :param reqComps: a list of required components
-        :type reqComps: list
-        """
-
-        # First create a dictionary
-        d = {}
-
-        # Iterate through the components
-        for comp in reqComps:
-
-            tmpList = [tmpComp.getSuperToken() for tmpComp, pos in comp.getPathFromRoot()]
-            tmpList = tmpList.reverse()[1:]  # we are getting rid of the 0th element: the root.
-            allPaths.append(tmpList)
-    
     def copyNecessaryFiles(self) -> None:
         """
         Adds all necessary files for compiler to work into created directory
