@@ -81,6 +81,6 @@ typing==3.7.4.1
 Unidecode==1.1.1
 urllib3==1.25.9
 virtualenv==20.0.23
-wrapt==1.11.2
+wrapt==1.12.1
 xlrd==1.2.0
 XlsxWriter==1.2.9
