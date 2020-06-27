@@ -28,6 +28,7 @@ from PySide2.QtWidgets import QGraphicsView, QGraphicsScene, QGraphicsRectItem, 
 from PySide2.QtWidgets import QWidget
 import gui.facileview as fv
 import graphics.tguim.tguimscene as tgs
+import graphics.apim.actionpipelinegraphics as apg
 
 
 class FacileGraphicsView(QGraphicsView):
@@ -161,6 +162,9 @@ class FacileGraphicsView(QGraphicsView):
 				else:
 					graphic.setBrush(QBrush(baseColor.lighter(f=100 + graphic.getDepth() * 12)))
 				graphic.setPen(QPen(penColor))
+		
+		#TODO: to update the colors of the action pipeline
+		#TODO: to update the colors of the ports
 
 	def wheelEvent(self, event: QWheelEvent) -> None:
 		"""

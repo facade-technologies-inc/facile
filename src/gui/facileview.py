@@ -748,7 +748,7 @@ class FacileView(QMainWindow):
 				TopLevelWrapperGraphics.Button.BUTTON_IMG_THM = 1
 
 			self.ui.targetGUIModelView.setTheme(theme)
-			# self.ui.apiModelView.setTheme(theme)  # TODO: Uncomment when api theming is implemented
+			self.ui.apiModelView.setTheme(theme)
 
 		self.themeChanged.connect(changeTheme)
 
@@ -913,4 +913,4 @@ class FacileView(QMainWindow):
 
 		stngs = FacileView.TGUIM_COL_SETTINGS
 		self.ui.targetGUIModelView.updateColors(stngs[0], stngs[1])
-		# TODO: Put command to update APIM colors here
+		#TODO: add for apim themes to be saved

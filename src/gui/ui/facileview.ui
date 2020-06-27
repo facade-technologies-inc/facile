@@ -207,7 +207,7 @@
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionOpen_Project">
    <property name="icon">
-    <iconset resource="../../../icons.qrc">
+    <iconset>
      <normaloff>:/icon/resources/icons/office/open-door.png</normaloff>:/icon/resources/icons/office/open-door.png</iconset>
    </property>
    <property name="text">
@@ -216,7 +216,7 @@
   </action>
   <action name="actionSave_Project">
    <property name="icon">
-    <iconset resource="../../../icons.qrc">
+    <iconset>
      <normaloff>:/icon/resources/icons/office/save.png</normaloff>:/icon/resources/icons/office/save.png</iconset>
    </property>
    <property name="text">
@@ -225,7 +225,7 @@
   </action>
   <action name="actionSave_as">
    <property name="icon">
-    <iconset resource="../../../icons.qrc">
+    <iconset>
      <normaloff>:/icon/resources/icons/office/save-as.png</normaloff>:/icon/resources/icons/office/save-as.png</iconset>
    </property>
    <property name="text">
@@ -234,7 +234,7 @@
   </action>
   <action name="actionFrom_Scratch">
    <property name="icon">
-    <iconset resource="../../../icons.qrc">
+    <iconset>
      <normaloff>:/icon/resources/icons/office/edit-file.png</normaloff>:/icon/resources/icons/office/edit-file.png</iconset>
    </property>
    <property name="text">
@@ -243,7 +243,7 @@
   </action>
   <action name="actionFrom_Existing_Project">
    <property name="icon">
-    <iconset resource="../../../icons.qrc">
+    <iconset>
      <normaloff>:/icon/resources/icons/office/copy.png</normaloff>:/icon/resources/icons/office/copy.png</iconset>
    </property>
    <property name="text">
@@ -258,7 +258,7 @@
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset resource="../../../icons.qrc">
+    <iconset>
      <normaloff>:/icon/resources/icons/office/visibility-behavior-green.png</normaloff>:/icon/resources/icons/office/visibility-behavior-green.png</iconset>
    </property>
    <property name="text">
@@ -276,7 +276,7 @@
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset resource="../../../icons.qrc">
+    <iconset>
      <normaloff>:/icon/resources/icons/office/picture.png</normaloff>:/icon/resources/icons/office/picture.png</iconset>
    </property>
    <property name="text">
@@ -291,7 +291,7 @@
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset resource="../../../icons.qrc">
+    <iconset>
      <normaloff>:/icon/resources/icons/office/auto-explore.png</normaloff>:/icon/resources/icons/office/auto-explore.png</iconset>
    </property>
    <property name="text">
@@ -309,7 +309,7 @@
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset resource="../../../icons.qrc">
+    <iconset>
      <normaloff>:/icon/resources/icons/office/manual-explore.png</normaloff>:/icon/resources/icons/office/manual-explore.png</iconset>
    </property>
    <property name="text">
@@ -324,7 +324,7 @@
   </action>
   <action name="actionManage_Project">
    <property name="icon">
-    <iconset resource="../../../icons.qrc">
+    <iconset>
      <normaloff>:/icon/resources/icons/office/settings.png</normaloff>:/icon/resources/icons/office/settings.png</iconset>
    </property>
    <property name="text">
@@ -333,7 +333,7 @@
   </action>
   <action name="actionAdd_Behavior">
    <property name="icon">
-    <iconset resource="../../../icons.qrc">
+    <iconset>
      <normaloff>:/icon/resources/icons/office/add-visibility-behavior.png</normaloff>:/icon/resources/icons/office/add-visibility-behavior.png</iconset>
    </property>
    <property name="text">
@@ -348,7 +348,7 @@
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset resource="../../../icons.qrc">
+    <iconset>
      <normaloff>:/icon/resources/icons/office/turn-on.png</normaloff>
      <normalon>:/icon/resources/icons/office/shutdown.png</normalon>:/icon/resources/icons/office/turn-on.png</iconset>
    </property>
@@ -364,7 +364,7 @@
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset resource="../../../icons.qrc">
+    <iconset>
      <normaloff>:/icon/resources/icons/office/tags.png</normaloff>:/icon/resources/icons/office/tags.png</iconset>
    </property>
    <property name="text">
@@ -379,7 +379,7 @@
   </action>
   <action name="actionAdd_Action_Pipeline">
    <property name="icon">
-    <iconset resource="../../../icons.qrc">
+    <iconset>
      <normaloff>:/icon/resources/icons/office/new-flow.png</normaloff>:/icon/resources/icons/office/new-flow.png</iconset>
    </property>
    <property name="text">
@@ -391,7 +391,7 @@
   </action>
   <action name="actionShow_API_Compiler">
    <property name="icon">
-    <iconset resource="../../../icons.qrc">
+    <iconset>
      <normaloff>:/icon/resources/icons/office/compile-python.png</normaloff>:/icon/resources/icons/office/compile-python.png</iconset>
    </property>
    <property name="text">
@@ -403,7 +403,7 @@
   </action>
   <action name="actionValidate">
    <property name="icon">
-    <iconset resource="../../../icons.qrc">
+    <iconset>
      <normaloff>:/icon/resources/icons/office/verify.png</normaloff>:/icon/resources/icons/office/verify.png</iconset>
    </property>
    <property name="text">
