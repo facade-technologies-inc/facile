@@ -11,7 +11,6 @@ comtypes==1.1.7
 cx-Freeze==6.1
 cycler==0.10.0
 decorator==4.4.2
-distlib==0.3.0
 docutils==0.16
 idna==2.9
 imageio==2.8.0
@@ -38,7 +37,6 @@ pyparsing==2.4.7
 pyperclip==1.8.0
 PyRect==0.1.4
 PyScreeze==0.1.26
-pyside-material==1.11
 PySide2==5.15.0
 python-dateutil==2.8.1
 PyTweening==1.0.3
