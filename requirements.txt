@@ -63,6 +63,6 @@ sphinxcontrib-qthelp==1.0.3
 sphinxcontrib-serializinghtml==1.1.4
 threadpoolctl==2.1.0
 tifffile==2020.6.3
-tqdm==4.46.1
+tqdm==4.47.0
 typing==3.7.4.1
 urllib3==1.25.9
