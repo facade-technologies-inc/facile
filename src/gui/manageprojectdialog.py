@@ -75,7 +75,7 @@ class ManageProjectDialog(QDialog):
 			# APIM settings
 			self.ui.dynamicCol.setChecked(self.mainWindow.ui.apiModelView.isFlat())
 			self.setActionPipelineBaseCol(self.mainWindow.ui.apiModelView.baseColor())
-			#apply settings for ports
+			#TODO: apply settings for ports
 
 			# Project settings
 			self.ui.locationEdit.setText(project.getProjectDir())
