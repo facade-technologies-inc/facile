@@ -67,4 +67,3 @@ class FacileActionGraphicsView(FacileGraphicsView):
 		cap = sm.StateMachine.instance.getCurrentActionPipeline()
 		self.showAction(cap)
 		
-	#TODO: Add a method to Set them

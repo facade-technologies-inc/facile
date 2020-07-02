@@ -46,6 +46,9 @@ from qt_models.propeditormodel import PropModel
 from tguiil.blinker import Blinker
 from gui.actionmenu import ActionMenu
 from graphics.tguim.toplevelwrappergraphics import TopLevelWrapperGraphics
+from graphics.apim.actiongraphics import ActionGraphics
+from graphics.apim.actionwrappergraphics import ActionWrapperGraphics
+from graphics.apim.portgraphics import PortGraphics
 
 import data.statemachine as sm
 import gui.frame.styles as styles
@@ -77,6 +80,7 @@ class FacileView(QMainWindow):
 	themeChanged = Signal(Theme)
 
 	TGUIM_COL_SETTINGS = []
+	APIM_COLORS = []
 	
 	def __init__(self) -> 'FacileView':
 		"""
@@ -145,7 +149,36 @@ class FacileView(QMainWindow):
 		:rtype: Theme
 		"""
 		return self._theme
+	
+	def refreshAPIM(self) -> None:
+		"""
+		Clears the APIMGraphicsView scene and recreates it.
+		
+		:return: None
+		:rtype: NoneType
+		"""
+		self.ui.apiModelView.refresh()
+		
+	def updateAPIMColors(self, col1, col2, col3, col4, col5):
+		"""
+		Updates the colors for the APIM.
+		
+		#TODO: Complete docstring
+		:param col1:
+		:param col2:
+		:param col3:
+		:param col4:
+		:param col5:
+		:return:
+		"""
 
+		FacileView.APIM_COlORS = [col1, col2, col3, col4, col5]
+		
+		ActionGraphics.COLOR = col1
+		ActionWrapperGraphics.COLOR = col2
+		
+		self.refreshAPIM()
+	
 	def getLayout(self) -> Layout:
 		"""
 		Returns the current Theme

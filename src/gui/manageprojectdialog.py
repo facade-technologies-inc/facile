@@ -58,6 +58,7 @@ class ManageProjectDialog(QDialog):
 		self._project = project
 		self.tguimBaseCol = None
 		self.actionPipelineBaseCol = None
+		self.actionPipelineActionCol = None
 
 		self.initializeValues()
 		self.connectSignals()
@@ -75,7 +76,7 @@ class ManageProjectDialog(QDialog):
 			# APIM settings
 			self.ui.dynamicCol.setChecked(self.mainWindow.ui.apiModelView.isFlat())
 			self.setActionPipelineBaseCol(self.mainWindow.ui.apiModelView.baseColor())
-			#TODO: apply settings for ports
+			#self.setActionPipelineActionCol(self.mainWindow.ui.actionWrapperGraphicsView.COLOR)
 
 			# Project settings
 			self.ui.locationEdit.setText(project.getProjectDir())
@@ -103,7 +104,8 @@ class ManageProjectDialog(QDialog):
 
 		self.ui.buttonBox.clicked.connect(lambda button: self.applySettings(button))
 		self.ui.t_baseColButton.clicked.connect(lambda: self.colorPicker_tguim())
-		self.ui.a_baseColButton.clicked.connect(lambda: self.colorPicker_actionpipeline())
+		self.ui.a_baseColButton.clicked.connect(lambda: self.colorPicker_actionpipeline_base())
+		self.ui.a_actionColButton.clicked.connect(lambda: self.colorPicker_actionpipeline_action())
 
 	def setTGUIMBaseCol(self, color):
 		"""
@@ -130,9 +132,20 @@ class ManageProjectDialog(QDialog):
 		palette = QPalette()
 		palette.setColor(QPalette.Background, color)
 		self.ui.a_baseCol.setPalette(palette)
-		
-	#TODO: Set Port Bas Color
+	
+	def setActionPipelineActionCol(self, color):
+		"""
+		Opens the color picker, and once it is closed it shows a preview of the current color in a widget.
+		Keeps an internal record of the accent color picked as well.
 
+		:param color: The color to set
+		:type color: QColor
+		"""
+		self.actionPipelineActionCol = color
+		palette = QPalette()
+		palette.setColor(QPalette.Background, color)
+		self.ui.a_baseCol.setPalette(palette)
+		
 	def colorPicker_tguim(self):
 		"""
 		Opens a color picking dialog, then returns the color chosen
@@ -141,12 +154,20 @@ class ManageProjectDialog(QDialog):
 		colSelect.colorSelected.connect(lambda col: self.setTGUIMBaseCol(col))
 		colSelect.exec_()
 	
-	def colorPicker_actionpipeline(self):
+	def colorPicker_actionpipeline_base(self):
 		"""
 		Opens a color picking dialog, then returns the color chosen
 		"""
 		colSelect = QColorDialog(self.actionPipelineBaseCol)
 		colSelect.colorSelected.connect(lambda col: self.setActionPipelineBaseCol(col))
+		colSelect.exec_()
+		
+	def colorPicker_actionpipeline_action(self):
+		"""
+		Opens a color picking dialog, then returns the color chosen
+		"""
+		colSelect = QColorDialog(self.actionPipelineActionCol)
+		colSelect.colorSelected.connect(lambda col: self.setActionPipelineActionCol(col))
 		colSelect.exec_()
 		
 	#TODO: add color picker for Ports
@@ -210,6 +231,7 @@ class ManageProjectDialog(QDialog):
 			# Save accent colors
 			fv.FacileView.TGUIM_COL_SETTINGS = [self.tguimBaseCol, self.ui.dynamicCol.isChecked()]
 			fv.FacileView.APIM_SETTINGS = [self.actionPipelineBaseCol, self.ui.dynamicCol.isChecked()]
+			fv.FacileView.APIM_SETTINGS = [self.actionPipelineActionCol, self.ui.dynamicCol.isChecked()]
 			self.mainWindow.updateColors()
 
 			# Save settings once applied
@@ -217,6 +239,7 @@ class ManageProjectDialog(QDialog):
 
 			# Called to fix weird bug with color getting reset.
 			self.setTGUIMBaseCol(self.tguimBaseCol)
+			self.mainWindow.updateAPIMColors(self.actionPipelineBaseCol, self.actionPipelineActionCol, None, None, None)
 	
 	def accept(self) -> None:
 		"""
