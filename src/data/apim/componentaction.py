@@ -30,7 +30,7 @@ import data.properties as ppts
 
 class ComponentAction(act.Action):
 	
-	def __init__(self, targetComponent: 'Component', actionSpec: 'ActionSpecification'):
+	def __init__(self, targetComponent: 'Component' = None, actionSpec: 'ActionSpecification' = None):
 		"""
 		The ComponentAction class is used to describe an action on a specific component
 		
@@ -42,16 +42,27 @@ class ComponentAction(act.Action):
 		act.Action.__init__(self)
 		self._target = targetComponent
 		self._spec = actionSpec
-		
-		for input in actionSpec.inputs:
+
+		if targetComponent and actionSpec:
+			self.initializeAfterLink()
+
+	def initializeAfterLink(self) -> None:
+		"""
+		Once the target component and action specification have both been set, this function can be called to complete
+		initialization.
+
+		:return: None
+		:rtype: NoneType
+		"""
+		for input in self._spec.inputs:
 			p = pt.Port.copy(input)
 			self.addInputPort(p)
 			
-		for output in actionSpec.outputs:
+		for output in self._spec.outputs:
 			p = pt.Port.copy(output)
 			self.addOutputPort(p)
 			
-		self.setName(actionSpec.name)
+		self.setName(self._spec.name)
 		self.setAnnotation(self._spec.description)
 	
 	def getActionSpec(self) -> ActionSpecification:

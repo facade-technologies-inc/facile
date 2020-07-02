@@ -38,7 +38,7 @@ class ActionWrapper(act.Action):
 	
 	The ActionWrapper can be thought of as a black-box for any other action.
 	"""
-	
+
 	def __init__(self, actionRef: 'act.Action', parent: 'ap.ActionPipeline' = None) -> 'ActionWrapper':
 		"""
 		Constructs a WrapperAction that stores a reference to an action.
@@ -47,6 +47,9 @@ class ActionWrapper(act.Action):
 		we can store the parent as well.
 		
 		The wrapper is added to the parent action pipeline.
+
+		Both actionRef and parent are optional, but if they are not given, the initializeAfterLink() function must be
+		called after they are set manually.
 		
 		:param actionRef: The action to be referenced.
 		:type actionRef: Action
@@ -65,10 +68,11 @@ class ActionWrapper(act.Action):
 		if parent:
 			if self not in parent.getActions():
 				parent.addAction(self)
-		
+
 		self.setName(self._actionRef.getName())
 		self._actionRef.registerWrapper(self)
 		self.synchronizePorts()
+
 
 	def getUnderlyingAction(self) -> 'Action':
 		"""
@@ -94,6 +98,15 @@ class ActionWrapper(act.Action):
 		:rtype: Action
 		"""
 		return self._actionRef
+
+	def getChildActions(self) -> List['Action']:
+		"""
+		A replacement for self.getActionReference(), but returns a list with only one element.
+
+		:return: The referenced action in a 1-element list
+		:rtype: List[Action]
+		"""
+		return [self.getActionReference()]
 	
 	def forgetActionReference(self) -> None:
 		"""
@@ -218,6 +231,7 @@ class ActionWrapper(act.Action):
 
 		actionDict = act.Action.asDict(self)
 		actionDict["reference action"] = self._actionRef.getId()
+
 		return actionDict
 
 	@staticmethod

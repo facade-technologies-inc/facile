@@ -161,10 +161,10 @@ class Compiler(QObject):
         """
         self.stepStarted.emit("Saving target GUI model")
         self.statem._project.save()
-        path = self.statem._project.getTargetGUIModelFile()
+        path = self.statem._project.getProjectFile()
         name = self.statem._project.getName()
 
-        copyfile(path, os.path.join(self._srcFolder, name + '.tguim'))
+        copyfile(path, os.path.join(self._srcFolder, name + '.fcl'))
         self.stepComplete.emit()
     
     def compileAPI(self) -> None:

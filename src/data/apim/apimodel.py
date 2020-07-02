@@ -174,6 +174,20 @@ class ApiModel(QObject):
 			
 		return self.getActionPipelines(), list(componentActions)
 
+	def getAllActions(self) -> List['Action']:
+		'''
+		Get a list of all actions regardless of its type including action wrappers.
+		:return:
+		'''
+
+		actions = set()
+		work = self._actionPipelines[:] # start with the top-level actions (the action pipelines)
+		while work:
+			action = work.pop()
+			actions.add(action)
+			work += action.getChildActions()
+		return actions
+
 	def asDict(self) -> dict:
 		"""
 		Get a dictionary representation of the API Model.
@@ -220,6 +234,7 @@ class ApiModel(QObject):
 		:return: The ApiModel object that was constructed from the dictionary
 		:rtype: ApiModel
 		"""
+
 		apim = ApiModel(initSpecs=False)
 
 		# Create temporary dictionaries and lists

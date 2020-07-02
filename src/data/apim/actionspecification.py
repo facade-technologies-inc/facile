@@ -55,7 +55,7 @@ class ActionSpecification:
 		d = {}
 		d["name"] = self.name
 		d["description"] = self.description
-		d["viableTargets"] = self.viableTargets
+		d["targets"] = self.viableTargets
 		d["inputs"] = [port.asDict() for port in self.inputs]
 		d["outputs"] = [port.asDict() for port in self.outputs]
 		d["code"] = self.code
@@ -79,12 +79,27 @@ class ActionSpecification:
 		actS = ActionSpecification()
 		actS.name = d["name"]
 		actS.description = d["description"]
+
 		actS.viableTargets = d["viableTargets"]
 		for inPDict in d["inputs"]:
 			actS.inputs.append(pt.Port.fromDict(inPDict))
 		for outPDict in d["outputs"]:
 			actS.outputs.append(pt.Port.fromDict(outPDict))
+
 		actS.code = d["code"]
+
+		if d["targets"]:
+			actS.viableTargets = d["targets"]
+		else:
+			actS.viableTargets = None
+
+		for inputDict in d["inputs"]:
+			p = pt.Port.fromDict(inputDict)
+			actS.inputs.append(p)
+
+		for outputDict in d["outputs"]:
+			p = pt.Port.fromDict(outputDict)
+			actS.outputs.append(p)
 		
 		return actS
 	
@@ -131,33 +146,8 @@ class ActionSpecification:
 			assert(code != None)
 		except:
 			raise ActionSpecificationException("Required variable not set in specification!")
-		
-		spec = ActionSpecification()
-		spec.name = name
-		spec.description = description
-		spec.code = code
-		
-		if not targets:
-			spec.viableTargets = None
-		else:
-			spec.viableTargets = targets
-		
-		for input in inputs:
-			p = pt.Port()
-			p.setName(input["name"])
-			p.setDataType(input["type"])
-			p.setAnnotation(input["description"])
-			p.setOptional(input.get("optional", False))
-			spec.inputs.append(p)
-		
-		for output in outputs:
-			p = pt.Port()
-			p.setName(output["name"])
-			p.setDataType(output["type"])
-			p.setAnnotation(output["description"])
-			spec.outputs.append(p)
-			
-		return spec
+
+		return ActionSpecification.fromDict(locals)
 	
 if __name__ == "__main__":
 	file = "../../../database/component_actions/click.action"

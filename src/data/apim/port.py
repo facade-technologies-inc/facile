@@ -314,7 +314,6 @@ class Port(Entity):
         :return: A copy of the port (without wires)
         :rtype: Port
         """
-        
         newPort = Port(self._dataType, self._optional)
         newPort.setName(self.getName())
         newPort.setAnnotation(self.getAnnotation())
@@ -378,7 +377,7 @@ class Port(Entity):
         portDict["optional"] = self.isOptional()
         portDict["action"] = None  # no need to store action since the action stores the port info
         portDict["default"] = self._default
-        portDict["name"] = self.getName()
+        portDict['properties'] = self.getProperties().asDict()
 
         try:
             portDict["data type"] = self.getDataType().__name__

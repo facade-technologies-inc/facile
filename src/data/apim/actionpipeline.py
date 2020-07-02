@@ -42,6 +42,8 @@ class ActionPipeline(Action):
 		Action.__init__(self)
 		self._actions = []
 		self._wireSet = WireSet()
+
+		# these variables are just for api compilation purposes
 		self._varName = 'a'
 		self._varMap = {}  # relates a variable name to a list of all ports that use it
 		self._invVarMap = {}  # relates all ports to a variable name
@@ -283,6 +285,15 @@ class ActionPipeline(Action):
 		:rtype: List[Action]
 		"""
 		return self._actions[:]
+
+	def getChildActions(self) -> List['Action']:
+		"""
+		A replacement for self.getActions()
+
+		:return: All actions in this action pipeline.
+		:rtype: List[Action]
+		"""
+		return self.getActions()
 	
 	def getWireSet(self) -> WireSet:
 		"""
