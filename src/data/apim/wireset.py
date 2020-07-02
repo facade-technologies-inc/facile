@@ -181,18 +181,22 @@ class WireSet:
         return wsDict
 
     @staticmethod
-    def fromDict(d: dict) -> 'WireSet':
+    def fromDict(d: dict, parent: 'ActionPipeline') -> 'WireSet':
         """
         Creates a WireSet from the dictionary
 
         :param d: The dictionary that represents the WireSet.
         :type d: dict
+        :param parent: The WireSet's parent ActionPipeline
+        :type parent: ActionPipeline
         :return: The WireSet object that was constructed from the dictionary
         :rtype: WireSet
         """
         ws = WireSet()
 
-        # TODO: figure out how to rebuild wires
+        for wireDict in d['wires']:
+
+            ws.addWire(Wire.fromDict(wireDict, parent))
 
         return ws
 

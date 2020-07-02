@@ -80,8 +80,10 @@ class ActionSpecification:
 		actS.name = d["name"]
 		actS.description = d["description"]
 		actS.viableTargets = d["viableTargets"]
-		actS.inputs = d["inputs"]
-		actS.outputs = d["outputs"]
+		for inPDict in d["inputs"]:
+			actS.inputs.append(pt.Port.fromDict(inPDict))
+		for outPDict in d["outputs"]:
+			actS.outputs.append(pt.Port.fromDict(outPDict))
 		actS.code = d["code"]
 		
 		return actS

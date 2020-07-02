@@ -97,23 +97,7 @@ class Wire:
         wDict = {}
 
         # We only store the IDs of the ports the wires connect to because the actions own the ports.
-        wDict['source'] = self._src.getId()
-        wDict['destination'] = self._dest.getId()
+        wDict['source'] = [self._src.getAction().getId(), self._src.getName()]
+        wDict['destination'] = [self._dest.getAction().getId(), self._dest.getName()]
 
         return wDict
-
-    @staticmethod
-    def fromDict(d: dict) -> 'Wire':
-        """
-        Creates a Wire from the dictionary
-
-        :param d: The dictionary that represents the Wire.
-        :type d: dict
-        :return: The Wire object that was constructed from the dictionary
-        :rtype: Wire
-        """
-        w = Wire()
-
-        # TODO: figure out how to rebuild wires
-
-        return w

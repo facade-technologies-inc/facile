@@ -142,7 +142,6 @@ class Port(Entity):
         """
         self._input = None
 
-
     def getOutputWires(self) -> list:
         """
         Gets a list of the Port's output Wire's.
@@ -360,11 +359,11 @@ class Port(Entity):
 
         portDict = {}
 
-        portDict["ID"] = self.getId()
-        portDict["input"] = None # no need to store wires since the wires store port info
-        portDict["outputs"] = [] # no need to store wires since the wires store port info
+        portDict["id"] = self.getId()
+        portDict["input"] = None
+        portDict["outputs"] = None  # Wires take care of these
         portDict["optional"] = self.isOptional()
-        portDict["action"] = None # no need to store action since the action stores the port info
+        portDict["action"] = None  # no need to store action since the action stores the port info
         portDict["default"] = self._default
         portDict["name"] = self.getName()
 
@@ -376,22 +375,32 @@ class Port(Entity):
         return portDict
 
     @staticmethod
-    def fromDict(d: dict) -> 'Action':
+    def fromDict(d: dict, action: 'Action' = None) -> 'Port':
         """
-        Creates an Action from the dictionary
+        Creates a Port from the dictionary
 
-        :param d: The dictionary that represents the API model.
+        :param d: The dictionary that represents the Port.
         :type d: dict
-        :return: The Action object that was constructed from the dictionary
-        :rtype: Action
+        :param action: The port's parent Action
+        :type action: Action
+        :return: The Port object that was constructed from the dictionary
+        :rtype: Port
         """
         port = Port()
+
+        port.setOptional(d['optional'])
+
+        if d['optional']:
+            port.setDefaultValue(d['default'])
+
+        port.setName(d['name'])
+
+        if action:
+            port.setAction(action)
 
         try:
             port._dataType = eval(d["data type"])
         except:
             port._dataType = d["data type"]
 
-
-
-        return ap
+        return port

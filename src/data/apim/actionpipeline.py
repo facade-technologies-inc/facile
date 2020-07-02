@@ -29,6 +29,7 @@ import data.apim.port as pt
 from data.apim.wireset import WireSet
 from data.apim.wire import WireException
 from data.apim.action import Action, ActionException
+from data.properties import Properties
 
 class ActionPipeline(Action):
 	
@@ -68,7 +69,7 @@ class ActionPipeline(Action):
 			raise ActionException("The ActionWrapper already has a different parent.")
 		
 		if action in self._actions:
-			raise ActionException("The action wrapper can only be added once.")
+			return
 		
 		self._actions.append(action)
 		
@@ -458,6 +459,12 @@ class ActionPipeline(Action):
 		"""
 		return chr(ord(var) + 1) if var != 'z' else 'a'
 
+	def getActionWrappers(self):
+		"""
+		Returns the action wrappers that this pipeline uses
+		"""
+		return self._actions
+
 	def asDict(self) -> dict:
 		"""
 		Get a dictionary representation of the action pipeline.
@@ -471,7 +478,7 @@ class ActionPipeline(Action):
 		apDict = Action.asDict(self)
 
 		# just store the id of the action (wrappers) that are owned by the action pipeline
-		apDict["actions"] = [action.getId() for action in self._actions]
+		apDict["actions"] = [action.asDict() for action in self._actions]
 
 		apDict["wire set"] = self._wireSet.asDict()
 
@@ -488,10 +495,15 @@ class ActionPipeline(Action):
 		:rtype: ActionPipeline
 		"""
 		ap = ActionPipeline()
-		ap._actions = [Action.fromDict(dic) for dic in d["actions"]]
 
-		# TODO: restore these?
-		#  self._varName = 'a'
-		#  self._varMap = []  # This stores (varName, port) tuples
+		ap.actionsDict = d['actions']  # These will be constructed later
+
+		ap._inputs = [pt.Port.fromDict(dic, ap) for dic in d["inputs"]]
+		ap._outputs = [pt.Port.fromDict(dic, ap) for dic in d["outputs"]]
+
+		ap.wiresetDict = d['wire set']  # so will these
+
+		if d['properties']:
+			ap.setProperties(Properties.fromDict(d['properties']))
 
 		return ap

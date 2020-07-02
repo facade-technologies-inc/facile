@@ -25,6 +25,7 @@ component from the TGUIM.
 import data.apim.port as pt
 import data.apim.action as act
 from data.apim.actionspecification import ActionSpecification
+import data.properties as ppts
 
 
 class ComponentAction(act.Action):
@@ -162,12 +163,12 @@ class ComponentAction(act.Action):
 		"""
 		d = act.Action.asDict(self)
 		d["target component"] = self._target.getId()
-		d["action specification"] = self._spec.asDict()
+		d["action specification"] = self._spec.name
 		
 		return d
 	
 	@staticmethod
-	def fromDict(d: dict, tguim: 'TargetGuiModel') -> 'ComponentAction':
+	def fromDict(d: dict, tguim: 'TargetGuiModel', actSpecs: dict) -> 'ComponentAction':
 		"""
 		Creates object from a dictionary.
 
@@ -175,6 +176,8 @@ class ComponentAction(act.Action):
 		:type d: dict
 		:param tguim: The target GUI model to add the component to
 		:type tguim: TargetGuiModel
+		:param actSpecs: The dictionary of all action specifications
+		:type actSpecs: dict
 		:return: The ComponentAction object that was constructed from the dictionary
 		:rtype: ComponentAction
 		"""
@@ -183,5 +186,9 @@ class ComponentAction(act.Action):
 			return None
 		
 		target = tguim.getComponent(int(d["target component"]))
-		spec = ActionSpecification.fromDict(d["action specification"])
-		return ComponentAction(target, spec)
+		spec = actSpecs[d["action specification"]]  # The port stuff is handled in the CA constructor
+		ca = ComponentAction(target, spec)
+		if d['properties']:
+			ca.setProperties(ppts.Properties.fromDict(d['properties']))
+
+		return ca

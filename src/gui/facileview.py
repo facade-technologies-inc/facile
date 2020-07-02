@@ -251,6 +251,10 @@ class FacileView(QMainWindow):
 		proj = Project.load(url, onEntityCreation=increment, onCompletion=complete)
 		self.setProject(proj)
 
+		# add action pipelines to the menu/view
+		for ap in proj.getAPIModel().getActionPipelines():
+			self.addActionPipelineToMenu(ap)
+
 		self.thread.deleteLater()
 
 	@Slot()
@@ -540,4 +544,15 @@ class FacileView(QMainWindow):
 		if event.key() == Qt.Key_Escape:
 			self.close()
 		event.accept()
+
+	def addActionPipelineToMenu(self, ap: 'ActionPipeline'):
+		"""
+		Adds an action pipeline to the action pipeline menu, and sets it as the current one.
+
+		:param ap: The action pipeline to add
+		:type ap: ActionPipeline
+		"""
+
+		self._actionPipelinesMenu.addAction(ap)
+		self.ui.actionMenuTabWidget.setCurrentWidget(self._actionPipelinesMenu)
 

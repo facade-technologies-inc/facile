@@ -416,8 +416,8 @@ class Project:
 				d = json.loads(tguimFile.read())
 				tguim = TargetGuiModel.fromDict(d)
 		except:
-			print(f"Couldn't load from {loadedProject.getTargetGUIModelFile()}")
-			# traceback.print_exc()
+			print(f"Couldn't load TGUIM from {loadedProject.getTargetGUIModelFile()}. \n"
+				  f"*This will also cause the APIM loading to fail.*\n")
 		else:
 			loadedProject._targetGUIModel = tguim
 
@@ -425,10 +425,10 @@ class Project:
 		try:
 			with open(loadedProject.getAPIModelFile(), 'r') as apimFile:
 				d = json.loads(apimFile.read())
-				apim = ApiModel.fromDict()
+				apim = ApiModel.fromDict(d, tguim)
 		except:
-			print(f"Couldn't load from {loadedProject.getAPIModelFile()}")
-			# traceback.print_exc()
+			# print(f"Couldn't load APIM from {loadedProject.getAPIModelFile()}\n")
+			traceback.print_exc()
 		else:
 			loadedProject._apiModel = apim
 
