@@ -192,15 +192,15 @@ class Validator(QThread):
 			for wire in pipe.getWireSet().getWires():
 				srcPort = wire.getSourcePort()
 				dstPort = wire.getDestPort()
-				srcType = srcPort.getDataType()
-				dstType = dstPort.getDataType()
+				srcType = srcPort.getDataTypeStr()
+				dstType = dstPort.getDataTypeStr()
 				srcAct = srcPort.getAction()
 				dstAct = srcPort.getAction()
-				if srcType is not dstType:
+				if srcType != dstType:
 					msgTemplate = "In action pipeline {}, the wire connecting port '{}' of action '{}' to port '{}' " \
 								  "of action '{}' have conflicting data types of '{}' and '{}'"
 					msg = msgTemplate.format(pipe.getName(), srcPort.getName(), srcAct.getName(), dstPort.getName(),
-											 dstAct.getName(), srcType.__name__, dstType.__name__)
+											 dstAct.getName(), srcType, dstType)
 					message = ValidatorMessage(msg, ValidatorMessage.Level.Warning)
 					self.sentMessage.emit(message)
 					

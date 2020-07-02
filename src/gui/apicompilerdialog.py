@@ -76,7 +76,6 @@ class ApiCompilerDialog(QDialog):
 		self.ui.checkBoxTokenCloseMatch.setChecked(True)
 		self.ui.checkBoxPywinautoBestMatch.setChecked(True)
 
-	
 	# TODO: make it un-selectable before a project is open
 	
 	@Slot()

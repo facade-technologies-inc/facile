@@ -83,6 +83,7 @@ class Compiler(QObject):
         :return: None
         """
         self.stepStarted.emit("Generating custom application driver")
+
         with open(self._srcFolder + "application.py", "w+") as f:
             
             # TODO: The Facade Tech watermark thing is a little intense when the user needs
@@ -91,35 +92,47 @@ class Compiler(QObject):
 
             curPath = os.path.abspath(__file__)
             dir, filename = os.path.split(curPath)
-            
+
             with open(os.path.join(dir, 'application-unfilled.py'), 'r') as g:
                 appStr = g.read()
-            
+
+            # Generate options set
             optStr = '{'
             for opt in self._opts:
                 optStr += str(opt) + ', '
             optStr = optStr[:-2] + '}'
-            
-            appStr = appStr.format(exeLoc="'" + self._exeLoc + "'", options=optStr, name="'" + self._name + "'",
-                                   backend="'" + self._backend + "'")
-            f.write(appStr)
-            
+
+            # Generate str of required compIDs
             aps, cas = self._apim.getActionsByType()
+            compIDs = '['
+            for action in cas:
+                compIDs += str(action.getTargetComponent().getId()) + ', '
+            compIDs = compIDs[:-2] + ']'  # remove the final ", " and close bracket
+
+            # Format BaseApp superclass call with necessary info
+            appStr = appStr.format(exeLoc="'" + self._exeLoc + "'", options=optStr, name="'" + self._name + "'",
+                                   backend="'" + self._backend + "'", reqCompIDs=compIDs)
+            f.write(appStr)
+
             vbs = self._tguim.getVisibilityBehaviors()
             alreadyWritten = []
-            
+
             for action in cas:
                 alreadyWritten.append(action.getMethodName())
                 f.write(action.getMethod())
+
             for id in vbs:
                 vb = vbs[id]
                 name = vb.methodName
-                if name not in alreadyWritten:
-                    f.write(vb.getTriggerAction().getMethod())  # TODO: Currently won't work if project is loaded
+                triggerAction = vb.getTriggerAction()
+                if name not in alreadyWritten and triggerAction is not None:
+                    f.write(triggerAction.getMethod())
+
             for ap in aps:
                 f.write(ap.getMethod())
+
         self.stepComplete.emit()
-    
+
     def copyNecessaryFiles(self) -> None:
         """
         Adds all necessary files for compiler to work into created directory

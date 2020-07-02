@@ -21,13 +21,11 @@
 This module contains the Observer class, which watches the target GUI for changes.
 """
 
-from datetime import datetime
 from threading import Lock
 
 import psutil
-import pywinauto
 from PySide2.QtCore import QThread, Signal
-from pywinauto.controls.uiawrapper import UIAWrapper
+from time import time
 
 from tguiil.application import Application
 from tguiil.supertokens import SuperToken
@@ -47,8 +45,10 @@ class Observer(QThread):
 	"""
 	
 	# This signal is emitted when a new component is detected.
-	newSuperToken = Signal(SuperToken,
-	                       SuperToken)  # (new SuperToken, new SuperToken's parent SuperToken)
+	newSuperToken = Signal(SuperToken, SuperToken)  # (new SuperToken, new SuperToken's parent SuperToken)
+
+	# This signal is emitted when the backend has been detected.
+	backendDetected = Signal(str)
 	
 	ignoreTypes = set()
 	ignoreTypes.add("SysShadow")
@@ -70,7 +70,7 @@ class Observer(QThread):
 		:type processID: int
 		:param captureImages: If True, capture images of components. If false, don't.
 		:type captureImages: bool
-		:param backend: "win32" or "uia"
+		:param backend: "win32", "uia", or "auto"
 		:type backend: str
 		:return: None
 		:rtype: NoneType
@@ -125,6 +125,133 @@ class Observer(QThread):
 			for child in component.getChildren():
 				self._childMapping[super].append(child.getSuperToken())
 				componentWork.append(child)
+
+	def detectBackend(self):
+		"""
+		This function automatically detects the backend of the target app using a time-based approach.
+		Whichever backend detects the largest number of unique components in the same number of seconds is selected.
+		"""
+		# Let the user know we are detecting the backend
+		self.backendDetected.emit('detecting')
+
+		# Time to wait to collect components
+		waitTime = 3
+
+		# ---- UIA ---- #
+		app = Application(backend="uia")
+		app.setProcess(self._process)
+		appTimeStamp = app.getStartTime()
+		self._iteration = 0
+
+		endTime = time() + waitTime  # In waitTime seconds, stop the loop
+		while self._process.is_running():
+			if time() > endTime:
+				break
+
+			self._iteration += 1
+
+			if not self.isPlaying(): return 0
+
+			componentCount = 0
+			# work acts as a stack. Each element is a 2-tuple where the first element
+			# is a GUI component and the second element is the parent super token.
+			work = [(win, None) for win in app.windows()]
+			while len(work) > 0:
+				if time() > endTime:
+					break
+
+				if not self.isPlaying(): return 0
+
+				curComponent, parentSuperToken = work.pop()
+				if curComponent.friendly_class_name() not in Observer.ignoreTypes:
+					try:
+						token = Token.createToken(appTimeStamp, curComponent, captureImage=self.capturing)
+
+					# List boxes have a ton of children that we probably don't care about.
+					# There are probably other types like it where we just want to ignore the
+					# children. We can make this type of
+					# if token.type == "ListBox":
+					#     continue
+
+					except Token.CreationException as e:
+						continue
+
+					nextParentSuperToken = self.matchToSuperToken(token, parentSuperToken, detecting=True)
+					self._lastSuperTokenIterations[nextParentSuperToken] = self._iteration
+				else:
+					nextParentSuperToken = parentSuperToken
+
+				children = curComponent.children()
+				for child in children:
+					work.append((child, nextParentSuperToken))
+
+		uiaComps = len(self._childMapping)  # Number of unique components found
+		self._childMapping = {None: []}
+		self._lastSuperTokenIterations = {}
+
+		# ---- WIN32 ---- #
+		app = Application(backend="win32")
+		app.setProcess(self._process)
+		appTimeStamp = app.getStartTime()
+		self._iteration = 0
+
+		endTime = time() + waitTime  # In waitTime seconds, stop the loop
+		while self._process.is_running():
+			if time() > endTime:
+				break
+
+			self._iteration += 1
+
+			if not self.isPlaying(): return 0
+
+			componentCount = 0
+			# work acts as a stack. Each element is a 2-tuple where the first element
+			# is a GUI component and the second element is the parent super token.
+			work = [(win, None) for win in app.windows()]
+			while len(work) > 0:
+				if time() > endTime:
+					break
+
+				if not self.isPlaying(): return 0
+
+				curComponent, parentSuperToken = work.pop()
+				if curComponent.friendly_class_name() not in Observer.ignoreTypes:
+					try:
+						token = Token.createToken(appTimeStamp, curComponent, captureImage=self.capturing)
+
+					# List boxes have a ton of children that we probably don't care about.
+					# There are probably other types like it where we just want to ignore the
+					# children. We can make this type of
+					# if token.type == "ListBox":
+					#     continue
+
+					except Token.CreationException as e:
+						continue
+
+					nextParentSuperToken = self.matchToSuperToken(token, parentSuperToken, detecting=True)
+					self._lastSuperTokenIterations[nextParentSuperToken] = self._iteration
+				else:
+					nextParentSuperToken = parentSuperToken
+
+				children = curComponent.children()
+				for child in children:
+					work.append((child, nextParentSuperToken))
+
+		w32Comps = len(self._childMapping)
+		self._childMapping = {None: []}
+		self._lastSuperTokenIterations = {}
+
+		if uiaComps > w32Comps:
+			self._backend = 'uia'
+			self.backendDetected.emit('uia')
+		elif uiaComps < w32Comps:
+			self._backend = 'win32'
+			self.backendDetected.emit('win32')
+		else:
+			# If they detect the same amount, should probably rerun the test longer, but I doubt this will ever happen.
+			# Leaving to default as uia for now
+			self._backend = 'uia'
+			self.backendDetected.emit('uia')
 	
 	def run(self) -> int:
 		"""
@@ -133,6 +260,9 @@ class Observer(QThread):
 		:return: the exit code of the thread which should be 0.
 		:rtype: int
 		"""
+		if self._backend == "auto":
+			self.detectBackend()
+
 		self._iteration = 0
 		app = Application(backend=self._backend)
 		app.setProcess(self._process)
@@ -174,7 +304,7 @@ class Observer(QThread):
 				for child in children:
 					work.append((child, nextParentSuperToken))
 	
-	def matchToSuperToken(self, token: Token, parentSuperToken: SuperToken) -> SuperToken:
+	def matchToSuperToken(self, token: Token, parentSuperToken: SuperToken, detecting=False) -> SuperToken:
 		"""
 		Gets the SuperToken that best matches the given token.
 		
@@ -189,6 +319,8 @@ class Observer(QThread):
 		:type token: Token
 		:param parentSuperToken: The parent of the SuperToken that will be matched with the token.
 		:type parentSuperToken: SuperToken
+		:param detecting: If the function is called while detecting the backend. Default is False.
+		:type detecting: bool
 		:return: The SuperToken that gets matched to the provided token.
 		:rtype: SuperToken
 		"""
@@ -226,12 +358,13 @@ class Observer(QThread):
 		token.registerAsAccepted()
 
 		# No match was found
-		if selectedSuperToken == None:
+		if selectedSuperToken is None:
 			newSuperToken = SuperToken(token, parentSuperToken)
-			
+
 			self._childMapping[parentSuperToken].append(newSuperToken)
 			self._childMapping[newSuperToken] = []
-			self.newSuperToken.emit(newSuperToken, parentSuperToken)
+			if not detecting:  # this statement is satisfyingly clean
+				self.newSuperToken.emit(newSuperToken, parentSuperToken)
 			return newSuperToken
 		
 		# a close match was found

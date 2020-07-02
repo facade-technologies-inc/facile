@@ -27,7 +27,7 @@ from PySide2.QtCore import QRectF
 from PySide2.QtGui import QPainterPath, QColor, QPen, Qt, QFont, QFontMetricsF, QImage, QPixmap
 from PySide2.QtWidgets import QGraphicsScene, QGraphicsItem, QGraphicsSceneContextMenuEvent, QGraphicsPixmapItem
 from PySide2.QtCore import QRectF
-from PySide2.QtGui import QPainterPath, QColor, QPen, Qt, QFont, QFontMetricsF
+from PySide2.QtGui import QPainterPath, QColor, QPen, Qt, QFont, QFontMetricsF, QBrush
 from PySide2.QtWidgets import QGraphicsScene, QGraphicsItem, QGraphicsSceneContextMenuEvent, QMenu, QGraphicsWidget
 import data.statemachine as sm
 from graphics.tguim.scrollablegraphicsitem import ScrollableGraphicsItem
@@ -94,19 +94,23 @@ class ComponentGraphics(QGraphicsItem):
         self._depth = dataComponent.depth  # Depth relative to top-level window (-1 if root)
         self.isMenu = False
         self.picChild = None
+        self._brush = QBrush(QColor(0, 141, 222).lighter(f=85))
+        self._pen = QPen(QColor(0, 0, 0))
         
         # --- MENUS --- #
         # Menus like to be special so this section puts them back in their place (both literally and figuratively)
-        if self._depth >= 0:
+        if self._depth == 0:
             type = self._dataComponent.getSuperToken().getTokens()[0].type
             
             if type is 'Menu' and parent:
                 self.isMenu = True
                 self._depth = 0
                 nxtParent = parent
-                while not isinstance(nxtParent, TopLevelWrapperGraphics):
+                while not isinstance(nxtParent, TopLevelWrapperGraphics) and nxtParent:
                     self._depth += 1
                     nxtParent = nxtParent.parentItem()
+                if not nxtParent:
+                    self._depth = 1
 
             # Some menus are actually menuItems (who would've thought they would be even more annoying than
             # they already are?), so this resets those menuitems' depths back to normal, and adds them to the
@@ -193,9 +197,22 @@ class ComponentGraphics(QGraphicsItem):
         # ***Important that this is after adjustPositioning***
         if self._parentIsScene:
             self.scene().addItem(TopLevelWrapperGraphics(self))
-        
+
+        def focus():
+            self._zoomable = True
+            self.scene().views()[0].smoothFocus(self)
+
+        def undoFocus():
+            self.scene().views()[0].undoFocus()
+
+        def resetView():
+            self.scene().views()[0].resetView()
+
         self.menu = ComponentMenu(dataComponent)
         self.menu.onBlink(lambda: self.scene().blinkComponent(self._dataComponent.getId()))
+        self.menu.onFocus(focus)
+        self.menu.onUndoFocus(undoFocus)
+        self.menu.onResetView(resetView)
         
         try:
             self.triggerSceneUpdate()
@@ -379,6 +396,7 @@ class ComponentGraphics(QGraphicsItem):
             self._ecSection.addItemToContents(component)
             component._dataComponent.isExtraComponent = True
             self._extraComponents.append(component)
+            # self._ecSection.refreshContents()
             
     def getScrollableItem(self) -> 'ScrollableGraphicsItem':
         """
@@ -636,7 +654,7 @@ class ComponentGraphics(QGraphicsItem):
         path = QPainterPath()
         path.addRect(self.boundingRect())
         return path
-    
+
     def paint(self, painter, option, widget):
         """
         Paints the contents of the component. Override the parent paint function
@@ -653,25 +671,27 @@ class ComponentGraphics(QGraphicsItem):
         showPics = sm.StateMachine.instance.configVars.showComponentImages
 
         boundingRect = self.boundingRect()
-        
+
         if self.isRoot or boundingRect.width() == 0 and boundingRect.height() == 0:
             painter.setPen(QPen(QColor(Qt.transparent)))
             painter.setBrush(QColor(Qt.transparent))
             return
 
         else:
-            pen = QPen(QColor(100, 200, 255))
             if self.isSelected():
+                pen = QPen(QColor(100, 200, 255))
                 pen.setStyle(Qt.DashDotLine)
                 pen.setColor(QColor(255, 0, 0))
             else:
+                pen = self._pen
                 pen.setStyle(Qt.SolidLine)
-                pen.setColor(QColor(0, 0, 0))
+                painter.setPen(pen)
+            penCol = self._pen.color()
             painter.setPen(pen)
 
         if showPics and self._dataComponent.getFirstImage() is not None:
             if self.isSelected():
-                pen.setColor(QColor(255,50,50))
+                pen.setColor(QColor(255, 50, 50))
                 painter.setBrush(QColor(255, 50, 50, 20))
             else:
                 pen.setColor(QColor(50, 50, 255))
@@ -696,8 +716,9 @@ class ComponentGraphics(QGraphicsItem):
         else:
             if self.picChild:
                 self.scene().removeItem(self.picChild)
-            painter.setBrush(QColor(88, 183, 255))
-            id = self._dataComponent.getId()
+
+            painter.setBrush(self._brush)
+            painter.fillRect(boundingRect, self._brush)
             painter.drawRoundedRect(boundingRect, 5, 5)
 
             # draw name label
@@ -716,7 +737,7 @@ class ComponentGraphics(QGraphicsItem):
             fm = QFontMetricsF(nameFont)
             name = fm.elidedText(name, Qt.ElideRight, boundingRect.width() - ComponentGraphics.TITLEBAR_H)
 
-            painter.setBrush(QColor(100, 200, 255))
+            painter.setBrush(penCol)
             painter.drawText(self.boundingRect().x() + 5, 13, name)
 
         if sm.StateMachine.instance.configVars.showTokenTags:
@@ -736,7 +757,7 @@ class ComponentGraphics(QGraphicsItem):
         :rtype: NoneType
         """
         
-        # TODO: May want to rename TITLEBAR_H since titlebars are no longer used
+        # TODO: May want to rename or remove TITLEBAR_H since titlebars are no longer used
         if br.width() >= ComponentGraphics.TITLEBAR_H:
             token_count = str(self.getNumberOfTokens())
             
@@ -766,6 +787,7 @@ class ComponentGraphics(QGraphicsItem):
         :return: None
         :rtype: NoneType
         """
+        self._zoomable = False
         self.setSelected(True)
         self.scene().emitItemSelected(self._dataComponent.getId())
     
@@ -799,3 +821,42 @@ class ComponentGraphics(QGraphicsItem):
         :rtype: str
         """
         return "Component: {}".format(self._dataComponent.getId())
+
+    def setBrush(self, brush):
+        """
+        Sets the brush for this item
+
+        :param brush: the new background color for this item
+        :type brush: QBrush
+        """
+        self._brush = brush
+        self.update()
+
+    def setPen(self, pen):
+        """
+        Sets the pen for this item
+
+        :param pen: the new outline color for this item
+        :type pen: QPen
+        """
+        self._pen = pen
+        self.update()
+
+    def isInECSection(self) -> tuple:
+        """
+        Returns whether or not this item is in the extra components
+        section, regardless of if it is an extra component or not.
+
+        :return: presence in EC section, along with extra component itself
+        :rtype: (bool, ComponentGraphics)
+        """
+        if self._dataComponent.isExtraComponent:
+            return True, self
+
+        parent = self.parentItem()
+        while parent is not None and isinstance(parent, ComponentGraphics):
+            if parent._dataComponent.isExtraComponent:
+                return True, parent
+            parent = parent.parentItem()
+
+        return False, None

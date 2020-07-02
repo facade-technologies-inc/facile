@@ -24,10 +24,11 @@ iterates through the tokens in the token list.
 
 from threading import Lock
 
-try: # Facile imports
+try:  # Facile imports
 	from tguiil.tokens import Token
-except ImportError: # API imports
+except ImportError:  # API imports
 	from .tokens import Token
+
 
 class SuperToken:
 	"""
@@ -55,10 +56,14 @@ class SuperToken:
 		
 		width = token.rectangle.width()
 		height = token.rectangle.height()
+
 		if parent is None:
 			px = 0
 			py = 0
-		else:
+		elif token.parentRect:
+			px = token.parentRect.left
+			py = token.parentRect.top
+		else:  # Sometimes parentRect is still none for some reason so we have to deal with it
 			px = parent.tokens[0].rectangle.left
 			py = parent.tokens[0].rectangle.top
 		self.posRelativeToParent = (

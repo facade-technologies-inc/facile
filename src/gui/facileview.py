@@ -24,9 +24,10 @@ Much of Facile is joined together here.
 import os
 from copy import deepcopy
 
-from PySide2.QtCore import Slot, QTimer, QItemSelection, QThread
-from PySide2.QtGui import Qt, QCloseEvent, QKeyEvent
-from PySide2.QtWidgets import QMainWindow, QFileDialog, QMessageBox, QLabel, QGraphicsOpacityEffect, QProgressDialog
+from PySide2.QtCore import Slot, QTimer, QItemSelection, QThread, QSize, Signal
+from PySide2.QtGui import Qt, QCloseEvent, QKeyEvent, QPalette, QColor
+from PySide2.QtWidgets import (QMainWindow, QFileDialog, QLabel, QWidget, QMessageBox,
+							   QGraphicsOpacityEffect, QProgressDialog, QApplication)
 
 from data.project import Project
 from data.statemachine import StateMachine
@@ -44,14 +45,38 @@ from qt_models.projectexplorermodel import ProjectExplorerModel
 from qt_models.propeditormodel import PropModel
 from tguiil.blinker import Blinker
 from gui.actionmenu import ActionMenu
+from graphics.tguim.toplevelwrappergraphics import TopLevelWrapperGraphics
 
 import data.statemachine as sm
+import gui.frame.styles as styles
+import pyautogui
+import json
+from enum import Enum
 
 
 class FacileView(QMainWindow):
 	"""
 	FacileView is the main window for Facile.
 	"""
+
+	class Theme(Enum):
+		CLASSIC_DARK = 1
+		CLASSIC_LIGHT = 2
+		FLAT_DARK = 3
+		FLAT_LIGHT = 4
+		ULTRA_DARK = 5
+		ULTRA_LIGHT = 6
+
+	class Layout(Enum):
+		MODELS = 1
+		ESSENTIALS = 2
+		CLASSIC = 3
+		ALL = 4
+		CUSTOM = 5
+
+	themeChanged = Signal(Theme)
+
+	TGUIM_COL_SETTINGS = []
 	
 	def __init__(self) -> 'FacileView':
 		"""
@@ -65,33 +90,70 @@ class FacileView(QMainWindow):
 		# UI Initialization
 		self.ui = Ui_FacileView()
 		self.ui.setupUi(self)
+
+		# Set up variables
+		self._theme = FacileView.Theme.CLASSIC_DARK
+		self._layout = FacileView.Layout.CLASSIC
+		self._scrollBarsEnabled = False
+
+		# Initialize variables
+		self.screenSize = pyautogui.size()
+
+		# Connect signals
+		self.connectSignals()
 		
-		# add validator view
+		# Add validator view
 		self.ui.validatorView = ValidatorView()
 		self.ui.validatorDockWidget.setWidget(self.ui.validatorView)
+		self.ui.validatorDockWidget.hide()  # Hide until validator button is pressed
 		
 		self._blinker = None
 		
-		#State label in status bar
+		# State label in status bar
 		self.ui.stateLabel = QLabel("")
 		self.ui.statusBar.addPermanentWidget(self.ui.stateLabel)
 		
-		#Action Menu Initialization
+		# Action Menu Initialization
 		self._componentActionMenu = ActionMenu()
 		self._actionPipelinesMenu = ActionMenu()
 		
-		#Add labels for each tab on the Action Menu to the view
+		# Add labels for each tab on the Action Menu to the view
 		self._componentActionMenu.setLabelText("Actions for current selected component.")
 		self._actionPipelinesMenu.setLabelText("All user-defined actions.")
 		
-		#Add Action Menu Tabs to the view
+		# Add Action Menu Tabs to the view
 		self.ui.actionMenuTabWidget.addTab(self._componentActionMenu, "Component Actions")
 		self.ui.actionMenuTabWidget.addTab(self._actionPipelinesMenu, "Action Pipelines")
 		self.ui.actionMenuTabWidget.removeTab(0)
+
+		# Set sizes and alignments
+		self.ui.actionMenuTabWidget.setMinimumWidth(.135*self.screenSize.width)  # So that tabs don't get compressed
+		self.ui.toolBar.setIconSize(QSize(.048*self.screenSize.height, .055*self.screenSize.height))  # Fix big icons
 		
 		# State Machine Initialization
 		self._stateMachine = StateMachine(self)
 		self._stateMachine.facileOpened()
+
+		self._layout = FacileView.Layout.CLASSIC
+		self.loadSettings()
+
+	def getTheme(self) -> Theme:
+		"""
+		Returns the current Theme
+
+		:return: Current theme
+		:rtype: Theme
+		"""
+		return self._theme
+
+	def getLayout(self) -> Layout:
+		"""
+		Returns the current Theme
+
+		:return: Current layout
+		:rtype: Layout
+		"""
+		return self._layout
 	
 	@Slot(Project)
 	def setProject(self, project: Project) -> None:
@@ -266,8 +328,7 @@ class FacileView(QMainWindow):
 		:rtype: NoneType
 		"""
 		
-		manageProjectDialog = ManageProjectDialog(self._project)
-		manageProjectDialog.projectCreated.connect(self.setProject)
+		manageProjectDialog = ManageProjectDialog(self._project, self)
 		manageProjectDialog.exec_()
 	
 	@Slot()
@@ -281,8 +342,7 @@ class FacileView(QMainWindow):
 		self._stateMachine.addBehaviorClicked()
 	
 	@Slot()
-	def onProjectExplorerIndexSelected(self, selected: QItemSelection,
-	                                   deselected: QItemSelection) -> None:
+	def onProjectExplorerIndexSelected(self, selected: QItemSelection, deselected: QItemSelection) -> None:
 		"""
 		This slot is called when an item is selected in the project explorer.
 		
@@ -294,6 +354,10 @@ class FacileView(QMainWindow):
 		:rtype: NoneType
 		"""
 		selectedIndexes = selected.indexes()
+
+		if not selectedIndexes:
+			return
+
 		index = selectedIndexes[0]
 		entity = index.internalPointer()
 		if not isinstance(entity, (ProjectExplorerModel.LeafIndex, str)):
@@ -302,6 +366,9 @@ class FacileView(QMainWindow):
 			scene.getGraphics(entity).setSelected(True)
 			self.ui.propertyEditorView.setModel(entity.getProperties().getModel())
 			self.ui.propertyEditorView.expandAll()
+
+		if isinstance(entity, Component) or isinstance(entity, VisibilityBehavior):
+			self.ui.targetGUIModelView.smoothFocus(self.ui.targetGUIModelView.scene().getGraphics(entity))
 	
 	def onStartAppTriggered(self):
 		"""
@@ -326,7 +393,7 @@ class FacileView(QMainWindow):
 		if confirm:
 			title = "Confirm Application Termination"
 			message = "Are you sure you'd like to terminate the target application?"
-			response = QMessageBox.question(self, title, message)
+			response = QMessageBox.question(self, title, message, buttons=QMessageBox.Yes | QMessageBox.Cancel)
 		else:
 			response = QMessageBox.StandardButton.Yes
 		
@@ -437,7 +504,6 @@ class FacileView(QMainWindow):
 		:return: None
 		:rtype: NoneType
 		"""
-		# QMessageBox.information(self, title, message)
 		
 		label = QLabel(self)
 		windowWidth = self.width()
@@ -506,9 +572,23 @@ class FacileView(QMainWindow):
 		:return: None
 		:rtype: NoneType
 		"""
-		
-		title = "Cancel confirmation ..."
+
+		title = "Cancel confirmation..."
 		if self._project:
+			if self._project.autoCloseAppOnExit is None:
+				if self._project.getProcess():
+					message = "Your target application is still running. Close it automatically when Facile is closed?\n" \
+							  "(This can always be changed later in settings)"
+					options = QMessageBox.Yes | QMessageBox.No | QMessageBox.Cancel
+					result = QMessageBox.question(self, "App is running...", message, options)
+
+					if result == QMessageBox.Yes:
+						self._project.autoCloseAppOnExit = True
+					else:
+						self._project.autoCloseAppOnExit = False
+
+					self._project.acaWarningShown = True
+
 			message = "Would you like to save your project before exiting?"
 			options = QMessageBox.Yes | QMessageBox.No | QMessageBox.Cancel
 			result = QMessageBox.question(self, title, message, options)
@@ -518,7 +598,17 @@ class FacileView(QMainWindow):
 				self.onSaveProjectTriggered()
 				
 			if result != QMessageBox.Cancel:
+				if self._project.autoCloseAppOnExit:
+					self.onStopAppTriggered(confirm=False)
+
+				for runner in [self._project.getObserver(), self._project.getExplorer()]:
+					if runner:
+						while runner.isPlaying(): # wait until the runner actually stops
+							runner.setPlaying(False) # tell the runner to stop
+						runner.terminate()
+
 				event.accept()
+				QApplication.instance().exit(0)
 		else:
 			message = "Are you sure you want to quit?"
 			options = QMessageBox.Yes | QMessageBox.No
@@ -528,6 +618,7 @@ class FacileView(QMainWindow):
 			if result == QMessageBox.Yes:
 				self.onSaveProjectTriggered()
 				event.accept()
+				QApplication.instance().exit(0)
 	
 	def keyPressEvent(self, event: QKeyEvent) -> None:
 		"""
@@ -555,4 +646,287 @@ class FacileView(QMainWindow):
 
 		self._actionPipelinesMenu.addAction(ap)
 		self.ui.actionMenuTabWidget.setCurrentWidget(self._actionPipelinesMenu)
+
+	def setTheme(self, theme: Theme) -> None:
+		"""
+		Sets theme to the one that is input, does nothing if not a valid theme.
+
+		:param theme: the theme to set
+		:type theme: Theme
+		"""
+		app = QApplication.instance()
+
+		if theme == FacileView.Theme.CLASSIC_DARK:
+			styles.darkClassic(app, self)
+		elif theme == FacileView.Theme.CLASSIC_LIGHT:
+			styles.lightClassic(app, self)
+		elif theme == FacileView.Theme.FLAT_DARK:
+			styles.darkModern(app, self)
+		elif theme == FacileView.Theme.FLAT_LIGHT:
+			styles.lightModern(app, self)
+		elif theme == FacileView.Theme.ULTRA_DARK:
+			styles.darkUltra(app, self)
+		elif theme == FacileView.Theme.ULTRA_LIGHT:
+			styles.lightUltra(app, self)
+
+		self._theme = theme
+		self.themeChanged.emit(theme)
+
+	def saveSettings(self) -> None:
+		"""
+		Saves general settings for use between sessions.
+		"""
+
+		cwd = os.getcwd()
+		tempDir = os.path.join(cwd, "temp")
+		settingsFile = os.path.join(tempDir, "settings.json")
+
+		color = self.ui.targetGUIModelView.baseColor().getRgb()
+		settingsList = [self._theme.value,
+						self._layout.value,
+						self._scrollBarsEnabled,
+						color,
+						self.ui.targetGUIModelView.isFlat()]
+
+		if not os.path.exists(tempDir):
+			os.mkdir(tempDir)
+
+		with open(settingsFile, "w") as f:
+			f.write(json.dumps(settingsList, indent=4))
+
+	def loadSettings(self) -> None:
+		"""
+		Loads and applies general settings from local file
+		"""
+
+		try:
+			with open(os.path.join(os.getcwd(), "temp/settings.json"), "r") as settings:
+				sList = json.loads(settings.read())
+
+			self.setTheme(FacileView.Theme(sList[0]))
+			self.setLayout(FacileView.Layout(sList[1]))
+			self.enableScrollBars(sList[2])
+
+			# TGUIM Accent Color
+			tguimBaseCol = QColor(sList[3][0], sList[3][1], sList[3][2], sList[3][3])
+			FacileView.TGUIM_COL_SETTINGS = [tguimBaseCol, sList[4]]
+
+		except (FileNotFoundError, IndexError):  # For older versions of Facile
+			# Set the initial settings to classic theme, layout, and model colors
+			self.setTheme(FacileView.Theme.CLASSIC_DARK)
+			self.setLayout(FacileView.Layout.CLASSIC)
+			self.enableScrollBars(False)
+			FacileView.TGUIM_COL_SETTINGS = [QColor(0, 141, 222).lighter(f=75), False]
+
+	def enableScrollBars(self, enabled: bool = True):
+		"""
+		Enables or disables scrollbars in the graphicsViews
+
+		:param enabled: whether to enable or disable them
+		:type enabled: bool
+		"""
+		self._scrollBarsEnabled = enabled
+		if not enabled:
+			self.ui.targetGUIModelView.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+			self.ui.targetGUIModelView.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+			self.ui.apiModelView.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+			self.ui.apiModelView.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+		else:
+			self.ui.targetGUIModelView.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+			self.ui.targetGUIModelView.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+			self.ui.apiModelView.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+			self.ui.apiModelView.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+
+	def scrollBarsEnabled(self) -> bool:
+		"""
+		Returns whether or not the Model View scrollbars are enabled
+		"""
+		return self._scrollBarsEnabled
+
+	def connectSignals(self) -> None:
+		"""
+		Connects extra signals for Facile, from menu and other general signals
+		"""
+
+		# View Menu - Layout Presets
+		self.ui.actionModelsOnly.toggled.connect(self.showModelsOnly)
+		self.ui.actionEssentials.toggled.connect(self.showEssentials)
+		self.ui.actionClassic.toggled.connect(self.showClassic)
+		self.ui.actionAll.toggled.connect(self.showAll)
+		# TODO: Implement custom layout saving/applying
+
+		def changeTheme(theme):
+			thm = FacileView.Theme
+			if theme in (thm.CLASSIC_DARK, thm.ULTRA_DARK, thm.FLAT_DARK):
+				TopLevelWrapperGraphics.Button.BUTTON_IMG_THM = 0
+			else:
+				TopLevelWrapperGraphics.Button.BUTTON_IMG_THM = 1
+
+			self.ui.targetGUIModelView.setTheme(theme)
+			# self.ui.apiModelView.setTheme(theme)  # TODO: Uncomment when api theming is implemented
+
+		self.themeChanged.connect(changeTheme)
+
+	def setLayout(self, layout: Layout):
+		"""
+		Sets and applies the current layout
+
+		:param layout: Layout to set
+		:type layout: Layout
+		"""
+
+		if layout == FacileView.Layout.CLASSIC:
+			self.ui.actionClassic.setChecked(True)
+		elif layout == FacileView.Layout.MODELS:
+			self.ui.actionModelsOnly.setChecked(True)
+		elif layout == FacileView.Layout.ESSENTIALS:
+			self.ui.actionEssentials.setChecked(True)
+		elif layout == FacileView.Layout.ALL:
+			self.ui.actionAll.setChecked(True)
+		elif layout == FacileView.Layout.CUSTOM:
+			pass  # TODO: Implement custom layout saving/applying
+
+	@Slot()
+	def showModelsOnly(self):
+		"""
+		Shows only the 2 models
+		"""
+		if self.ui.actionModelsOnly.isChecked():
+			# Move toolbar
+			self.moveTBToLeft()
+
+			# Uncheck other options
+			self.ui.actionClassic.setChecked(False)
+			self.ui.actionEssentials.setChecked(False)
+			self.ui.actionAll.setChecked(False)
+
+			# Perform Layout modifications
+			self.ui.actionMenuDockWidget.hide()
+			self.ui.propertyDockWidget.hide()
+			self.ui.explorerDockWidget.hide()
+			self.ui.validatorDockWidget.hide()
+
+			# Disable currently selected layout, re-enable others
+			self.ui.actionModelsOnly.setEnabled(False)
+			self.ui.actionClassic.setEnabled(True)
+			self.ui.actionAll.setEnabled(True)
+			self.ui.actionEssentials.setEnabled(True)
+
+			self._layout = FacileView.Layout.MODELS
+
+	@Slot()
+	def showClassic(self):
+		"""
+		Shows everything except the validator (unless called)
+		"""
+
+		if self.ui.actionClassic.isChecked():
+			# Move toolbar
+			self.moveTBToTop()
+
+			# Uncheck other options
+			self.ui.actionModelsOnly.setChecked(False)
+			self.ui.actionEssentials.setChecked(False)
+			self.ui.actionAll.setChecked(False)
+
+			# Perform Layout modifications
+			self.ui.actionMenuDockWidget.show()
+			self.ui.propertyDockWidget.show()
+			self.ui.explorerDockWidget.show()
+			self.ui.validatorDockWidget.hide()
+
+			# Disable currently selected layout, re-enable others
+			self.ui.actionModelsOnly.setEnabled(True)
+			self.ui.actionClassic.setEnabled(False)
+			self.ui.actionAll.setEnabled(True)
+			self.ui.actionEssentials.setEnabled(True)
+
+			self._layout = FacileView.Layout.CLASSIC
+
+	@Slot()
+	def showEssentials(self):
+		"""
+		Shows only the two models and the action menu
+		"""
+
+		if self.ui.actionEssentials.isChecked():
+			# Move toolbar
+			self.moveTBToTop()
+
+			# Uncheck other options
+			self.ui.actionModelsOnly.setChecked(False)
+			self.ui.actionClassic.setChecked(False)
+			self.ui.actionAll.setChecked(False)
+
+			# Perform Layout modifications
+			self.ui.actionMenuDockWidget.show()
+			self.ui.propertyDockWidget.hide()
+			self.ui.explorerDockWidget.hide()
+			self.ui.validatorDockWidget.hide()
+
+			# Disable currently selected layout, re-enable others
+			self.ui.actionModelsOnly.setEnabled(True)
+			self.ui.actionClassic.setEnabled(True)
+			self.ui.actionAll.setEnabled(True)
+			self.ui.actionEssentials.setEnabled(False)
+
+			self._layout = FacileView.Layout.ESSENTIALS
+
+	@Slot()
+	def showAll(self):
+		"""
+		Shows everything in GUI
+		"""
+
+		if self.ui.actionAll.isChecked():
+			# Move toolbar
+			self.moveTBToTop()
+
+			# Uncheck other options
+			self.ui.actionModelsOnly.setChecked(False)
+			self.ui.actionEssentials.setChecked(False)
+			self.ui.actionClassic.setChecked(False)
+
+			# Perform Layout modifications
+			self.ui.actionMenuDockWidget.show()
+			self.ui.propertyDockWidget.show()
+			self.ui.explorerDockWidget.show()
+			self.ui.validatorDockWidget.show()
+
+			# Disable currently selected layout, re-enable others
+			self.ui.actionModelsOnly.setEnabled(True)
+			self.ui.actionClassic.setEnabled(True)
+			self.ui.actionAll.setEnabled(False)
+			self.ui.actionEssentials.setEnabled(True)
+
+			self._layout = FacileView.Layout.ALL
+
+	def moveTBToLeft(self):
+		"""
+		Moves toolbar to left of screen
+		"""
+		toolbar = self.ui.toolBar
+		self.removeToolBar(toolbar)
+		self.addToolBar(Qt.LeftToolBarArea, toolbar)
+		toolbar.show()
+		self.ui.toolBar = toolbar
+
+	def moveTBToTop(self):
+		"""
+		Moves toolbar to top of screen
+		"""
+		toolbar = self.ui.toolBar
+		self.removeToolBar(toolbar)
+		self.addToolBar(Qt.TopToolBarArea, toolbar)
+		toolbar.show()
+		self.ui.toolBar = toolbar
+
+	def updateColors(self):
+		"""
+		Updates the accent colors. Necessary for colors to persist through loading projects and closing/opening Facile.
+		"""
+
+		stngs = FacileView.TGUIM_COL_SETTINGS
+		self.ui.targetGUIModelView.updateColors(stngs[0], stngs[1])
+		# TODO: Put command to update APIM colors here
 

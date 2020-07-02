@@ -16,9 +16,13 @@
 
         <file alias="../resources/splash_screen_02.png">resources/splash_screen_02.png</file>
 
-        <file alias="../resources/EC_Buttons/button_col.jpg">resources/EC_Buttons/button_col.jpg</file>
+        <file alias="../resources/EC_Buttons/button_col_dark.jpg">resources/EC_Buttons/button_col_dark.jpg</file>
 
-        <file alias="../resources/EC_Buttons/button_exp.jpg">resources/EC_Buttons/button_exp.jpg</file>
+        <file alias="../resources/EC_Buttons/button_col_light.jpg">resources/EC_Buttons/button_col_light.jpg</file>
+
+        <file alias="../resources/EC_Buttons/button_exp_dark.jpg">resources/EC_Buttons/button_exp_dark.jpg</file>
+
+        <file alias="../resources/EC_Buttons/button_exp_light.jpg">resources/EC_Buttons/button_exp_light.jpg</file>
 
         <file alias="../resources/icons/facade_logo.png">resources/icons/facade_logo.png</file>
 
@@ -82,6 +86,8 @@
 
         <file alias="../resources/icons/office/file.png">resources/icons/office/file.png</file>
 
+        <file alias="../resources/icons/office/fit-to-width.png">resources/icons/office/fit-to-width.png</file>
+
         <file alias="../resources/icons/office/flow.png">resources/icons/office/flow.png</file>
 
         <file alias="../resources/icons/office/gui.png">resources/icons/office/gui.png</file>
@@ -95,6 +101,8 @@
         <file alias="../resources/icons/office/lightning-arrow.png">resources/icons/office/lightning-arrow.png</file>
 
         <file alias="../resources/icons/office/manual-explore.png">resources/icons/office/manual-explore.png</file>
+
+        <file alias="../resources/icons/office/maximize-window.png">resources/icons/office/maximize-window.png</file>
 
         <file alias="../resources/icons/office/nested-component.png">resources/icons/office/nested-component.png</file>
 
@@ -143,6 +151,10 @@
         <file alias="../resources/icons/office/two-sided-arrow.png">resources/icons/office/two-sided-arrow.png</file>
 
         <file alias="../resources/icons/office/txt.png">resources/icons/office/txt.png</file>
+
+        <file alias="../resources/icons/office/undo-reticle.png">resources/icons/office/undo-reticle.png</file>
+
+        <file alias="../resources/icons/office/undo.png">resources/icons/office/undo.png</file>
 
         <file alias="../resources/icons/office/user.png">resources/icons/office/user.png</file>
 
@@ -205,6 +217,24 @@
         <file alias="../resources/icons/pastel/tag.png">resources/icons/pastel/tag.png</file>
 
         <file alias="../resources/icons/pastel/trash_can.png">resources/icons/pastel/trash_can.png</file>
+
+        <file alias="../resources/titlebar_buttons/close-h.png">resources/titlebar_buttons/close-h.png</file>
+
+        <file alias="../resources/titlebar_buttons/close.png">resources/titlebar_buttons/close.png</file>
+
+        <file alias="../resources/titlebar_buttons/maximize-d.png">resources/titlebar_buttons/maximize-d.png</file>
+
+        <file alias="../resources/titlebar_buttons/maximize-h.png">resources/titlebar_buttons/maximize-h.png</file>
+
+        <file alias="../resources/titlebar_buttons/maximize.png">resources/titlebar_buttons/maximize.png</file>
+
+        <file alias="../resources/titlebar_buttons/minimize-d.png">resources/titlebar_buttons/minimize-d.png</file>
+
+        <file alias="../resources/titlebar_buttons/minimize-h.png">resources/titlebar_buttons/minimize-h.png</file>
+
+        <file alias="../resources/titlebar_buttons/minimize.png">resources/titlebar_buttons/minimize.png</file>
+
+        <file alias="../resources/titlebar_buttons/README.md">resources/titlebar_buttons/README.md</file>
 
     </qresource>
 </RCC>

@@ -43,7 +43,8 @@ class ActionPipeline(Action):
 		self._actions = []
 		self._wireSet = WireSet()
 		self._varName = 'a'
-		self._varMap = []  # This stores (varName, port) tuples
+		self._varMap = {}  # relates a variable name to a list of all ports that use it
+		self._invVarMap = {}  # relates all ports to a variable name
 	
 	def addAction(self, action: 'ActionWrapper') -> None:
 		"""
@@ -136,7 +137,7 @@ class ActionPipeline(Action):
 
 		return newWire
 	
-	def disconnect(self, portA: 'Port', portB: 'Port') -> None:
+	def disconnect(self, portA: 'Port', portB: 'Port') -> None:  # TODO: Evaluate whether this overload is safe.
 		"""
 		Remove the wire spanning from portA to portB.
 		
@@ -328,14 +329,18 @@ class ActionPipeline(Action):
 			
 			for p in self._inputs:
 				out += '\t\t:param ' + p.getName() + ': ' + p.getAnnotation() + '\n'
-				out += '\t\t:type ' + p.getName() + ': ' + p.getDataType().__name__ + '\n'
+				out += '\t\t:type ' + p.getName() + ': ' + p.getDataTypeStr() + '\n'
 			
 			# we can only have one return tag, so we just combine everything.
 			if self._outputs:
 				annotations = [p.getAnnotation() for p in self._outputs]
-				types = [p.getDataType().__name__ for p in self._outputs]
-				out += '\t\t:return: ({})\n'.format(", ".join(annotations))
-				out += '\t\t:rtype: ({})\n'.format(", ".join(types))
+				types = [p.getDataTypeStr() for p in self._outputs]
+				if len(annotations) > 1:
+					out += '\t\t:return: ({})\n'.format(", ".join(annotations))
+					out += '\t\t:rtype: ({})\n'.format(", ".join(types))
+				else:
+					out += '\t\t:return: {}\n'.format(annotations[0])
+					out += '\t\t:rtype: {}\n'.format(types[0])
 			else:
 				out += '\t\t:return: None\n'
 				out += '\t\t:rtype: NoneType\n'
@@ -357,13 +362,19 @@ class ActionPipeline(Action):
 		:rtype: str
 		"""
 
-		code = ""
+		# If a project is compiled twice in the same run, we need to reinitialize everything.
+		self._varMap = {}
+		self._invVarMap = {}
+		self._varName = 'a'
+
+		code = "\t\ttry:  # The generated code. If it doesn't work, throws an error.\n"
 
 		for p in self.getInputPorts():  # Assumes unique input port names, which should be enforced in gui.
-			self._varMap.append((p.getName(), p))
+			self._varMap[p.getName()] = [p]  # List of all ports to which the name is tied
+			self._invVarMap[p] = p.getName()
 
-		for	a in self._actions: 
-			code += '\t\t' 
+		for a in self._actions:
+			code += '\t\t\t'
 			if a.getOutputPorts():  # Getting outputs named and written to code
 				o = a.getOutputPorts()[0]
 				code += self.getVarName(o)  # only one output
@@ -374,21 +385,36 @@ class ActionPipeline(Action):
 			code += 'self.' + a.getMethodName() + '('
 
 			if a.getInputPorts():
+				# First port
 				i = a.getInputPorts()[0]
-				code += self.getVarName(i)  # only one input
+				if i.isOptional():  # For optional parameters
+					code += i.getName() + '='
+				inType = i.getDataTypeStr()  # Enforcing data type
+				code += inType + '(' + self.getVarName(i) + ')'  # only one input, converts it to necessary type
+
+				# Other ports
 				if len(a.getInputPorts()) > 1:  # if multiple inputs
 					for i in a.getInputPorts()[1:]:
-						code += ", " + self.getVarName(i)
+						code += ", "
+						inType = i.getDataTypeStr()
+						if i.isOptional():  # For optional parameters
+							code += i.getName() + '='
+						code += inType + '(' + self.getVarName(i) + ')'
 			code += ')\n'
 
 		if self.getOutputPorts():
-			code += '\n\t\treturn '
+			code += '\n\t\t\treturn '
 			o = self.getOutputPorts()[0]
-			code += self.getVarName(o)  # only one output
+			outType = o.getDataTypeStr()
+			code += outType + '(' + self.getVarName(o) + ')'  # only one output
 			if len(self.getOutputPorts()) > 1:  # if several outputs
 				for o in self.getOutputPorts()[1:]:
-					code += ", " + self.getVarName(o)
+					outType = o.getDataTypeStr()
+					code += ", " + outType + '(' + self.getVarName(o) + ')'
 			code += '\n'
+
+		code += '\t\texcept Exception as e:\n\t\t\tprint(e)\n\t\t\traise ActionException("The action could not be ' \
+				'performed successfully. Please look at the errors above, or message us for support.")\n'
 
 		return code
 
@@ -401,10 +427,9 @@ class ActionPipeline(Action):
 		"""
 
 		# Check if port already has name. if so, return immediately.
-		allports = [tmp[1] for tmp in self._varMap]
-		if p in allports:
-			# idk if this is very effective but should get the job done
-			return self._varMap[allports.index(p)][0]
+		allports = self._invVarMap
+		if p in self._invVarMap:
+			return self._invVarMap[p]
 		
 		# Check if port is connected by wire to other ports.
 		cnctdPorts = []
@@ -417,19 +442,25 @@ class ActionPipeline(Action):
 		newName = True
 		for lp in cnctdPorts:
 			if lp in allports:
-				name = self._varMap[allports.index(lp)][0]
+				name = self._invVarMap[lp]
 				newName = False
 				break
 
 		if newName:
 			name = self._varName
 			self.incrVarName()
+			self._varMap[name] = [p]
+		else:
+			self._varMap[name].append(p)
+
+		self._invVarMap[p] = name
 
 		# adds all connected ports to varMap with their shared variable name, if they aren't in there already.
-		self._varMap.append((name, p))
+
 		for tmp in cnctdPorts:
 			if tmp not in allports:
-				self._varMap.append((name, tmp))
+				self._varMap[name].append(tmp)
+				self._invVarMap[tmp] = name
 
 		return name
 

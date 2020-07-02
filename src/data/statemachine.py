@@ -27,7 +27,7 @@ from enum import Enum, auto
 
 from PySide2.QtCore import Slot, QTimer
 from PySide2.QtGui import QStandardItem, QStandardItemModel, Qt, QIcon, QPixmap
-from PySide2.QtWidgets import QGraphicsScene, QDialog, QMessageBox, QWidget, QSizePolicy
+from PySide2.QtWidgets import QGraphicsScene, QDialog, QWidget, QSizePolicy, QMessageBox
 
 import data.tguim.visibilitybehavior as vb
 from gui.facilegraphicsview import FacileGraphicsView
@@ -39,6 +39,7 @@ from data.configvars import ConfigVars
 from data.apim.actionpipeline import ActionPipeline
 from gui.apicompilerdialog import ApiCompilerDialog
 from graphics.tguim.tguimscene import TGUIMScene
+
 
 class StateMachine:
 	"""
@@ -378,7 +379,13 @@ class StateMachine:
 		ui.actionShow_Behaviors.triggered.connect(self.configVars.setShowBehaviors)
 		ui.actionShow_Token_Tags.triggered.connect(self.configVars.setShowTokenTags)
 		ui.actionDetailed_View.triggered.connect(self.configVars.setShowComponentImages)
-		ui.actionValidate.triggered.connect(ui.validatorView.ran.emit)
+
+		def onValidate(checked):
+			if not ui.validatorDockWidget.isVisible():
+				ui.validatorDockWidget.show()
+			ui.validatorView.ran.emit()
+
+		ui.actionValidate.triggered.connect(onValidate)
 		
 		def onPowerApp(checked):
 			if checked == True:
@@ -392,7 +399,8 @@ class StateMachine:
 			ap = ActionPipeline()
 			blackBoxEditor = BlackBoxEditorDialog(ap)
 			result = blackBoxEditor.exec_()
-			if result == QDialog.Rejected:
+
+			if result != QDialog.Accepted:
 				return
 			else:
 				self._project.getAPIModel().addActionPipeline(ap)
@@ -433,7 +441,6 @@ class StateMachine:
 		ui.actionShow_Token_Tags.setEnabled(False)
 		ui.actionAdd_Behavior.setEnabled(False)
 		ui.actionPower_App.setEnabled(False)
-		ui.actionManage_Project.setEnabled(False)
 		ui.actionAdd_Action_Pipeline.setEnabled(False)
 		ui.actionShow_API_Compiler.setEnabled(False)
 		ui.actionValidate.setEnabled(False)
@@ -480,10 +487,11 @@ class StateMachine:
 		
 		if event == StateMachine.Event.PROJECT_OPENED:
 			v.setWindowTitle("Facile - " + self._project.getMainProjectFile())
-			#p.save() # TODO: BE SURE TO UNCOMMENT THIS ONCE APIM LOAD/SAVE IS WORKING!!!
+			p.save()
 			p.addToRecents()
 			scene = TGUIMScene(p.getTargetGUIModel())
 			ui.targetGUIModelView.setScene(scene)
+			ui.targetGUIModelView.setTheme(v.getTheme())
 			scene.itemSelected.connect(v.onItemSelected)
 			scene.itemBlink.connect(v.onItemBlink)
 			p.getTargetGUIModel().dataChanged.connect(lambda: ui.projectExplorerView.update())
@@ -497,6 +505,7 @@ class StateMachine:
 			ui.propertyEditorView.setItemDelegate(propertyDelegate)
 			ui.actionPower_App.setChecked(False)
 			ui.actionManage_Project.setEnabled(True)
+			v.updateColors()
 		
 		if previousState == StateMachine.State.EXPLORATION:
 			o = self._project.getObserver()
@@ -575,10 +584,10 @@ class StateMachine:
 		observer = self._project.getObserver()
 		
 		if mode == StateMachine.ExplorationMode.AUTO:
-			explorer.play()
+			# explorer.play()  # TODO: Uncomment when explorer is fixed
 			observer.play()
 		elif mode == StateMachine.ExplorationMode.MANUAL:
-			explorer.pause()
+			# explorer.pause()
 			observer.play()
 		
 		self.view.ui.actionAutoExplore.setEnabled(True)
