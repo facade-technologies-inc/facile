@@ -65,15 +65,15 @@ class DocGenerator(QObject):
 		:rtype: NoneType
         """
         restorePoint = os.getcwd()
-        docDir = os.path.join(self.projectDir, self.apiName, "Documentation")
+        docDir = os.path.join(self.projectDir, self.apiName + "_API_Files", self.apiName, "Documentation")
 
         if not os.path.exists(docDir):
             os.mkdir(docDir)
 
         os.chdir(docDir)
-        self.execCommand('xcopy "{0}" /e 1>nul 2>&1'.format(self.sphinxFacileDir), printErrorCode=debug)
+        self.execCommand(f'xcopy "{self.sphinxFacileDir}" /e 1>nul 2>&1', printErrorCode=debug)
 
-        srcDir = os.path.join(self.projectDir, self.apiName, "Documentation", "src")
+        srcDir = os.path.join(docDir, "src")
 
         # wait until src dir exists.
         while not os.path.exists(srcDir):
@@ -117,7 +117,7 @@ class DocGenerator(QObject):
         os.chdir(restorePoint)
 
         # remove the src directory.
-        self.execCommand(f'RMDIR /S/Q {srcDir} 1>nul 2>&1', printErrorCode=debug)
+        self.execCommand(f'RMDIR /S/Q "{srcDir}" 1>nul 2>&1', printErrorCode=debug)
 
         self.finished.emit()
             

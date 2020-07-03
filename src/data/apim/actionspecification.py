@@ -79,27 +79,14 @@ class ActionSpecification:
 		actS = ActionSpecification()
 		actS.name = d["name"]
 		actS.description = d["description"]
+		actS.viableTargets = d["targets"]
 
-		actS.viableTargets = d["viableTargets"]
 		for inPDict in d["inputs"]:
 			actS.inputs.append(pt.Port.fromDict(inPDict))
 		for outPDict in d["outputs"]:
 			actS.outputs.append(pt.Port.fromDict(outPDict))
 
 		actS.code = d["code"]
-
-		if d["targets"]:
-			actS.viableTargets = d["targets"]
-		else:
-			actS.viableTargets = None
-
-		for inputDict in d["inputs"]:
-			p = pt.Port.fromDict(inputDict)
-			actS.inputs.append(p)
-
-		for outputDict in d["outputs"]:
-			p = pt.Port.fromDict(outputDict)
-			actS.outputs.append(p)
 		
 		return actS
 	
@@ -147,7 +134,22 @@ class ActionSpecification:
 		except:
 			raise ActionSpecificationException("Required variable not set in specification!")
 
-		return ActionSpecification.fromDict(locals)
+		actSpec = ActionSpecification()
+		actSpec.name = name
+		actSpec.description = description
+		actSpec.viableTargets = targets
+
+		for inputDict in inputs:
+			p = pt.Port.fromDict(inputDict)
+			actSpec.inputs.append(p)
+
+		for outputDict in outputs:
+			p = pt.Port.fromDict(outputDict)
+			actSpec.outputs.append(p)
+
+		actSpec.code = code
+
+		return actSpec
 	
 if __name__ == "__main__":
 	file = "../../../database/component_actions/click.action"

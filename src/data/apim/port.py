@@ -372,6 +372,7 @@ class Port(Entity):
         portDict = {}
 
         portDict["id"] = self.getId()
+        portDict['name'] = self.getName()
         portDict["input"] = None
         portDict["outputs"] = None  # Wires take care of these
         portDict["optional"] = self.isOptional()
@@ -414,5 +415,10 @@ class Port(Entity):
             port._dataType = eval(d["data type"])
         except:
             port._dataType = d["data type"]
+
+        try:
+            port.setProperties(Properties.fromDict(d['properties']))
+        except:
+            pass
 
         return port

@@ -258,9 +258,19 @@ class ApiModel(QObject):
 		# Remake all ComponentActions and ActionPipelines, and add them to dict with key being their old ids.
 		# Add action pipelines to their own list too, just so they can be reiterated over later
 
-		for compActDict in d['component actions']:  # ComponentActions are fully rebuilt
+		for compActDict in d['component actions']:  # All ComponentActions are fully rebuilt
 			allActions[compActDict['id']] = ComponentAction.fromDict(compActDict, tguim, actSpecs)
 
+		# First, relink visibilitybehaviors' actions to real actions
+		for vb in tguim._visibilityBehaviors.values():
+			compActDict = vb.triggerActionDict
+
+			if compActDict['id'] not in allActions.keys():
+				allActions[compActDict['id']] = ComponentAction.fromDict(compActDict, tguim, actSpecs)
+
+			vb.setTriggerAction(allActions[vb.triggerActionDict['id']])
+
+		# Remake empty action pipelines
 		for apDict in d["action pipelines"]:  # ActionPipelines are empty and only have their ports
 			ap = ActionPipeline.fromDict(apDict)
 			allActions[apDict['id']] = ap
@@ -318,7 +328,6 @@ class ApiModel(QObject):
 				if not dstPort:
 					raise Exception('rip')
 
-				print(srcAction.getName(), dstAction.getName())
 				# now, CONNECT!
 				ws.addWire(srcPort, dstPort)
 

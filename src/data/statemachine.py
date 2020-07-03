@@ -486,7 +486,7 @@ class StateMachine:
 			ui.targetGUIModelView.scene().update()
 		
 		if event == StateMachine.Event.PROJECT_OPENED:
-			v.setWindowTitle("Facile - " + self._project.getMainProjectFile())
+			# v.setWindowTitle("Facile - " + self._project.getMainProjectFile())
 			p.save()
 			p.addToRecents()
 			scene = TGUIMScene(p.getTargetGUIModel())
