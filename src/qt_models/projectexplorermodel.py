@@ -24,6 +24,7 @@ This module contains the Qt model for the project explorer.
 
 from PySide2.QtCore import QAbstractItemModel, QModelIndex, Qt, Signal, Slot, QItemSelection
 from PySide2.QtCore import QItemSelectionModel, QPoint
+from PySide2.QtGui import QIcon, QColor, QPixmap
 from PySide2.QtWidgets import QTreeView
 
 from data.apim.actionpipeline import ActionPipeline
@@ -453,19 +454,24 @@ class ProjectExplorerModel(QAbstractItemModel):
 		if not index.isValid():
 			return None
 		
-		elif role != Qt.DisplayRole:
+		elif role != Qt.DisplayRole and role != Qt.DecorationRole:
 			return None
+
+		if role == Qt.DecorationRole:
+			focusIcon = QIcon()
+			focusIcon.addPixmap(QPixmap(":/icon/resources/icons/office/reticle.png"), QIcon.Normal, QIcon.Off)
+			return focusIcon
 		
 		data = index.internalPointer()
 		col = index.column()
 		row = index.row()
-		
+
 		if isinstance(data, str):
 			if col == 0:
 				return data
 			else:
 				return None
-		
+
 		elif isinstance(data, Component):
 			category, name = data.getProperties().getProperty("Name")
 			category, typeOf = data.getProperties().getProperty("Class Name")
@@ -475,7 +481,7 @@ class ProjectExplorerModel(QAbstractItemModel):
 				return typeOf.getValue()
 			else:
 				return None
-		
+
 		elif isinstance(data, VisibilityBehavior):
 			if col == 0:
 				return data.getProperties().getProperty("Name")[1].getValue()
@@ -485,7 +491,7 @@ class ProjectExplorerModel(QAbstractItemModel):
 				return description
 			else:
 				return None
-		
+
 		elif isinstance(data, ActionPipeline):
 			if col == 0:
 				return data.getName()
@@ -493,7 +499,7 @@ class ProjectExplorerModel(QAbstractItemModel):
 				return data.getType()
 			else:
 				return None
-		
+
 		elif isinstance(data, ProjectExplorerModel.LeafIndex):
 			innerData = data.getData()
 			if isinstance(innerData, str):
@@ -501,7 +507,7 @@ class ProjectExplorerModel(QAbstractItemModel):
 					return innerData
 				else:
 					return None
-			
+
 			if isinstance(innerData, Component):
 				if row == 0:
 					if col == 0:
@@ -510,7 +516,7 @@ class ProjectExplorerModel(QAbstractItemModel):
 						return innerData.getProperties().getProperty("Name")[1].getValue()
 					else:
 						return None
-				
+
 				if row == 1:
 					if col == 0:
 						return "To"
