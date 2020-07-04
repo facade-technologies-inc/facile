@@ -52,9 +52,9 @@ def archive_logs():
 
         full_file = os.path.join(LOG_FILES_DIR, file)
         if os.path.isfile(full_file):
-            suffix = file.split("_")[0]
+            prefix = file.split("_")[0]
             curFile = os.path.join(LOG_FILES_DIR, file)
-            newLogDir = os.path.join(LOG_FILES_DIR, f"{suffix}_logs")
+            newLogDir = os.path.join(LOG_FILES_DIR, f"{prefix}_logs")
             newFile = os.path.join(newLogDir, file)
 
             if not os.path.exists(newLogDir):
@@ -112,7 +112,7 @@ loggers:
   facile:
     level: DEBUG
     handlers: [main]
-    propagate: yes
+    propagate: no
   facile.compiler:
     level: DEBUG
     handlers: [compilerFile]
