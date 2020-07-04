@@ -99,7 +99,7 @@ class BaseApplication:
 
         self._generatePathMap()
     
-    def startApp(self):
+    def _startApp(self):
         """
         Starts the target application, then waits for all processes' active window to be ready.
         """
@@ -129,7 +129,7 @@ class BaseApplication:
         if not demo:
             pyautogui.alert('Execution paused. Press "OK" when ready to continue.')
         else:
-            pyautogui.alert('If this is your first time running a script with your API, open automation.py '
+            pyautogui.alert('If this is your first time running a script with your API, open automate.py '
                             'to check out how you can get the most out of your application.\n\n'
                             'Press "OK" to close this and your application.')
     
