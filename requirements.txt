@@ -1,6 +1,7 @@
 alabaster==0.7.12
 autoapi==2.0.1
 Babel==2.8.0
+BeneDict==0.3.2
 cached-property==1.5.1
 certifi==2020.6.20
 cffi==1.14.0
@@ -12,6 +13,7 @@ cx-Freeze==6.1
 cycler==0.10.0
 decorator==4.4.2
 docutils==0.16
+idna==2.10
 imageio==2.8.0
 imagesize==1.2.0
 Jinja2==2.11.2
@@ -43,6 +45,7 @@ pytz==2020.1
 PyWavelets==1.1.1
 pywin32==228
 pywinauto==0.6.8
+PyYAML==5.3.1
 regex==2020.6.8
 requests==2.24.0
 scikit-image==0.17.2
@@ -62,5 +65,6 @@ sphinxcontrib-qthelp==1.0.3
 sphinxcontrib-serializinghtml==1.1.4
 threadpoolctl==2.1.0
 tifffile==2020.6.3
+tqdm==4.47.0
 typing==3.7.4.1
 urllib3==1.25.9
