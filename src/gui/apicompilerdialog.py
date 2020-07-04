@@ -217,9 +217,9 @@ class ApiCompilerDialog(QDialog):
 
 		# determine number of steps in compilation and documentation generation.
 		numSteps = 0
-		numSteps += 6  # number of required compile steps (you have to go count)
+		numSteps += 4  # number of required compile steps (you have to go count)
 		if compProfile.installApi:
-			numSteps += 1 # optional if installing API.
+			numSteps += 1  # optional if installing API.
 		numSteps += len(compProfile.docTypes)
 
 		# create and show progressbar dialog
