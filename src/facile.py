@@ -41,6 +41,10 @@ import psutil
 
 from libs.logging import archive_logs, root_logger
 
+from libs.env import getContext
+
+getContext(os.path.abspath(__file__))
+
 if __name__ == "__main__":
 
     archive_logs()

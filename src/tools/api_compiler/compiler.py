@@ -28,7 +28,7 @@ from PySide2.QtCore import QObject, Signal
 
 import data.statemachine as sm
 from data.compilationprofile import CompilationProfile
-
+from libs.logging import compiler_logger as logger
 
 class Compiler(QObject):
     stepStarted = Signal(str)
@@ -41,6 +41,7 @@ class Compiler(QObject):
 
         :return: None
         """
+        logger.debug("Instantiating compiler")
         QObject.__init__(self)
         self.statem = sm.StateMachine.instance
         self._compProf = compProf
@@ -70,7 +71,8 @@ class Compiler(QObject):
                                 "../../tguiil/matchoption.py", "../../data/entity.py",
                                 "../../data/tguim/component.py", "../../data/tguim/visibilitybehavior.py",
                                 "../../data/properties.py", "../../data/tguim/condition.py",
-                                "../../data/tguim/targetguimodel.py", "../../data/property.py"]
+                                "../../data/tguim/targetguimodel.py", "../../data/property.py",
+                                "../../libs/env.py"]
                                 # "../../data/apim/componentaction.py", "../../data/apim/action.py",
                                 # "../../data/apim/actionspecification.py", "../../data/apim/port.py",
                                 # "../../data/apim/wire.py", "../../data/apim/actionpipeline.py",
@@ -141,7 +143,7 @@ class Compiler(QObject):
         """
         self.stepStarted.emit("Copying necessary files")
         # make necessary directories before copying files
-        targetDirs = ['data', 'data/tguim', 'tguiil']  # 'data/apim',
+        targetDirs = ['data', 'data/tguim', 'tguiil', 'libs']  # 'data/apim',
         for dir in targetDirs:
             dir = os.path.join(self._srcFolder, dir)
             if not os.path.exists(dir):
@@ -150,7 +152,14 @@ class Compiler(QObject):
         curPath = os.path.abspath(__file__)
         dir, filename = os.path.split(curPath)
         for path in self._necessaryFiles:
-            copyfile(os.path.join(dir, path), os.path.join(self._srcFolder, path[6:]))
+            src = os.path.normpath(os.path.join(dir, path))
+            dest = os.path.join(self._srcFolder, path[6:])
+            logger.info(f"Copying file: {src} -> {dest}")
+            try:
+                copyfile(src, dest)
+            except Exception as e:
+                logger.critical("Unable to copy file.")
+                logger.exception(e)
         self.stepComplete.emit()
     
     def saveTGUIM(self):

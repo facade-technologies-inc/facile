@@ -20,17 +20,20 @@
 
 This file contains the component finder, a class that gets a PyWinAuto handle based on a SuperToken
 """
+import os
 from typing import Set
 
 import pywinauto
 from pywinauto import timings
+from libs.env import getContext
 
-try:  # Facile imports
+context = getContext(os.path.abspath(__file__))
+if context == "Facile":
     from tguiil.tokens import Token
     from tguiil.matchoption import MatchOption
     from tguiil.application import Application
     from tguiil.supertokens import SuperToken
-except ImportError:  # API imports
+elif context == "API":
     from .tokens import Token
     from .matchoption import MatchOption
     from .application import Application

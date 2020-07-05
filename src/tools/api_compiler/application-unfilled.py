@@ -22,12 +22,15 @@
 """
 
 import sys, os
-try:
-    from .baseapplication import BaseApplication
-except:
-    # When importing from sphinx
-    from baseapplication import BaseApplication
+
 from tguiil.matchoption import MatchOption
+from libs.env import getContext
+
+context = getContext(os.path.abspath(__file__))
+if context == "API":
+	from .baseapplication import BaseApplication
+elif context == "Sphinx":
+	from baseapplication import BaseApplication
 
 pathToThisFile, thisFile = os.path.split(os.path.abspath(__file__))
 sys.path.insert(0, pathToThisFile)

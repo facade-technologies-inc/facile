@@ -20,17 +20,18 @@
 
 This module contains the TargetGuiModel class.
 """
-
+import os
 from collections import OrderedDict
-
 from PySide2.QtCore import QObject, Slot, Signal
+from libs.env import getContext
 
-try: # Facile imports
+context = getContext(os.path.abspath(__file__))
+if context == "Facile":
 	from data.entity import Entity
 	from tguiil.supertokens import SuperToken
 	from data.tguim.component import Component
 	from data.tguim.visibilitybehavior import VisibilityBehavior
-except ImportError: # API imports
+elif context == "API":
 	from ..entity import Entity
 	from ...tguiil.supertokens import SuperToken
 	from .component import Component

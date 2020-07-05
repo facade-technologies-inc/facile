@@ -21,12 +21,14 @@
 This file contains the super tokens class that initializes tokens as a list and a function that
 iterates through the tokens in the token list.
 """
-
+import os
 from threading import Lock
+from libs.env import getContext
 
-try:  # Facile imports
+context = getContext(os.path.abspath(__file__))
+if context == "Facile":
 	from tguiil.tokens import Token
-except ImportError:  # API imports
+elif context == "API":
 	from .tokens import Token
 
 

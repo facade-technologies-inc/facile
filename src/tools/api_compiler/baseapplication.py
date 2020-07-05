@@ -31,15 +31,17 @@ import pyautogui
 import traceback
 from datetime import datetime
 from typing import Set
+from libs.env import getContext
 
-try: # API
+context = getContext(os.path.abspath(__file__))
+if context == "API":
     from .tguiil.tokens import Token
     from .tguiil.application import Application
     from .tguiil.matchoption import MatchOption
     from .tguiil.componentfinder import ComponentFinder
     from .data.tguim.targetguimodel import TargetGuiModel
     from .data.tguim.visibilitybehavior import VisibilityBehavior
-except: # SPHINX
+elif context == "Sphinx":
     from tguiil.tokens import Token
     from tguiil.application import Application
     from tguiil.matchoption import MatchOption

@@ -20,23 +20,21 @@
 
 This module contains the Component class.
 """
-from PIL.Image import Image
+import os
 from datetime import datetime
+from libs.env import getContext
 
-from datetime import datetime
-
-try: # Facile imports
+context = getContext(os.path.abspath(__file__))
+if context == "Facile":
 	from data.entity import Entity
 	from data.properties import Properties
 	from data.tguim.visibilitybehavior import VisibilityBehavior
 	from tguiil.supertokens import SuperToken
-except ImportError: # API imports
+elif context == "API":
 	from ..entity import Entity
 	from ..properties import Properties
 	from .visibilitybehavior import VisibilityBehavior
 	from ...tguiil.supertokens import SuperToken
-
-
 
 
 class Component(Entity):
