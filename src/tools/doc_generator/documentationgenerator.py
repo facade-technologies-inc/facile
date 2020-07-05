@@ -80,6 +80,10 @@ class DocGenerator(QObject):
         while not os.path.exists(srcDir):
             pass
 
+        # copy the contents of the API directory into the sphinx src directory
+        apiDir = os.path.join(self.projectDir, self.apiName)
+        shutil.copytree(apiDir, srcDir)
+
         os.chdir(srcDir)
         self.modifyConf()
 

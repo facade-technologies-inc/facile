@@ -20,20 +20,22 @@
 
 This module contains the VisibilityBehavior class.
 """
-import os
-from enum import Enum, auto
-from libs.env import getContext
 
-context = getContext(os.path.abspath(__file__))
-if context == "Facile":
+from enum import Enum, auto
+import libs.env as env
+from libs.env import InvalidContextException
+
+if env.CONTEXT in ("Facile", "Sphinx"):
 	from data.entity import Entity
 	from data.properties import Properties
 	from data.tguim.condition import Condition
 	from data.apim.componentaction import ComponentAction
-elif context == "API":
+elif env.CONTEXT in ("API"):
 	from ..entity import Entity
 	from ..properties import Properties
 	from .condition import Condition
+else:
+	raise InvalidContextException(env.CONTEXT)
 
 class VisibilityBehavior(Entity):
 	"""

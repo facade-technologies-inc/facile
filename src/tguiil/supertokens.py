@@ -21,16 +21,17 @@
 This file contains the super tokens class that initializes tokens as a list and a function that
 iterates through the tokens in the token list.
 """
-import os
+
 from threading import Lock
-from libs.env import getContext
+import libs.env as env
+from libs.env import InvalidContextException
 
-context = getContext(os.path.abspath(__file__))
-if context == "Facile":
+if env.CONTEXT in ("Facile", "Sphinx"):
 	from tguiil.tokens import Token
-elif context == "API":
+elif env.CONTEXT in ("API"):
 	from .tokens import Token
-
+else:
+	raise Exception(f"Invalid context: {env.CONTEXT}")
 
 class SuperToken:
 	"""

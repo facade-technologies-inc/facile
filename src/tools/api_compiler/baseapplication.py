@@ -31,23 +31,24 @@ import pyautogui
 import traceback
 from datetime import datetime
 from typing import Set
-from libs.env import getContext
+import libs.env as env
 
-context = getContext(os.path.abspath(__file__))
-if context == "API":
+if env.CONTEXT in ("API"):
     from .tguiil.tokens import Token
     from .tguiil.application import Application
     from .tguiil.matchoption import MatchOption
     from .tguiil.componentfinder import ComponentFinder
     from .data.tguim.targetguimodel import TargetGuiModel
     from .data.tguim.visibilitybehavior import VisibilityBehavior
-elif context == "Sphinx":
+elif env.CONTEXT in ("Sphinx"):
     from tguiil.tokens import Token
     from tguiil.application import Application
     from tguiil.matchoption import MatchOption
     from tguiil.componentfinder import ComponentFinder
     from data.tguim.targetguimodel import TargetGuiModel
     from data.tguim.visibilitybehavior import VisibilityBehavior
+else:
+    raise Exception(f"Invalid context: {env.CONTEXT}")
 
 pathToThisFile, thisFile = os.path.split(os.path.abspath(__file__))
 sys.path.insert(0, pathToThisFile)

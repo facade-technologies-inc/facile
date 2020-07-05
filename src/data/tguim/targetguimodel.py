@@ -20,22 +20,24 @@
 
 This module contains the TargetGuiModel class.
 """
-import os
+
 from collections import OrderedDict
 from PySide2.QtCore import QObject, Slot, Signal
-from libs.env import getContext
+import libs.env as env
+from libs.env import InvalidContextException
 
-context = getContext(os.path.abspath(__file__))
-if context == "Facile":
+if env.CONTEXT in ("Facile", "Sphinx"):
 	from data.entity import Entity
 	from tguiil.supertokens import SuperToken
 	from data.tguim.component import Component
 	from data.tguim.visibilitybehavior import VisibilityBehavior
-elif context == "API":
+elif env.CONTEXT in ("API"):
 	from ..entity import Entity
 	from ...tguiil.supertokens import SuperToken
 	from .component import Component
 	from .visibilitybehavior import VisibilityBehavior
+else:
+	raise InvalidContextException(env.CONTEXT)
 
 class TargetGuiModel(QObject):
 	"""

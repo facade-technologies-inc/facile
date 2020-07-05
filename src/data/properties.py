@@ -20,17 +20,18 @@
 
 This module contains the Properties() class.
 """
-import os
 from collections import OrderedDict
 from enum import Enum
-from libs.env import getContext
+import libs.env as env
+from libs.env import InvalidContextException
 
-context = getContext(os.path.abspath(__file__))
-if context == "Facile":
+if env.CONTEXT in ("Facile", "Sphinx"):
 	from data.property import Property
 	from qt_models.propeditormodel import PropModel
-elif context == "API":
+elif env.CONTEXT in ("API"):
 	from .property import Property
+else:
+	raise InvalidContextException(env.CONTEXT)
 
 
 class Properties:

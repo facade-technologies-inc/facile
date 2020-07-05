@@ -84,7 +84,9 @@ class Compiler(QObject):
 
         :return: None
         """
-        self.stepStarted.emit("Generating custom application driver")
+        msg = "Generating custom application driver"
+        logger.info(msg)
+        self.stepStarted.emit(msg)
 
         with open(self._srcFolder + "application.py", "w+") as f:
             
@@ -95,34 +97,42 @@ class Compiler(QObject):
             curPath = os.path.abspath(__file__)
             dir, filename = os.path.split(curPath)
 
+            logger.debug("Reading application-unfilled.py")
             with open(os.path.join(dir, 'application-unfilled.py'), 'r') as g:
                 appStr = g.read()
 
-            # Generate options set
+            logger.debug("Generating options set")
             optStr = '{'
             for opt in self._opts:
                 optStr += str(opt) + ', '
             optStr = optStr[:-2] + '}'
 
-            # Generate str of required compIDs
+            logger.debug("Generating str of required compIDs")
             aps, cas = self._apim.getActionsByType()
             compIDs = '['
             for action in cas:
                 compIDs += str(action.getTargetComponent().getId()) + ', '
             compIDs = compIDs[:-2] + ']'  # remove the final ", " and close bracket
 
-            # Format BaseApp superclass call with necessary info
-            appStr = appStr.format(exeLoc="'" + self._exeLoc + "'", options=optStr, name="'" + self._name + "'",
-                                   backend="'" + self._backend + "'", reqCompIDs=compIDs)
+            logger.debug("Format BaseApp superclass call with necessary info")
+            try:
+                appStr = appStr.format(exeLoc="'" + self._exeLoc + "'", options=optStr, name="'" + self._name + "'",
+                                       backend="'" + self._backend + "'", reqCompIDs=compIDs)
+            except Exception as e:
+                logger.exception(e)
+            logger.debug("Writing BaseApp")
             f.write(appStr)
 
+            logger.debug("Getting visibility behaviors")
             vbs = self._tguim.getVisibilityBehaviors()
             alreadyWritten = []
 
+            logger.debug("Writing methods generated from actions that are used in action pipelines.")
             for action in cas:
                 alreadyWritten.append(action.getMethodName())
                 f.write(action.getMethod())
 
+            logger.debug("Writing methods generated from actions that are used by visibility behaviors.")
             for id in vbs:
                 vb = vbs[id]
                 name = vb.methodName
@@ -130,9 +140,11 @@ class Compiler(QObject):
                 if name not in alreadyWritten and triggerAction is not None:
                     f.write(triggerAction.getMethod())
 
+            logger.debug("Writing methods generated from action pipelines.")
             for ap in aps:
                 f.write(ap.getMethod())
 
+        logger.info("Finished generating custom application driver.")
         self.stepComplete.emit()
 
     def copyNecessaryFiles(self) -> None:

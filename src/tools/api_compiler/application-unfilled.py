@@ -24,13 +24,15 @@
 import sys, os
 
 from tguiil.matchoption import MatchOption
-from libs.env import getContext
+import libs.env as env
+from libs.env import InvalidContextException
 
-context = getContext(os.path.abspath(__file__))
-if context == "API":
+if env.CONTEXT in ("API"):
 	from .baseapplication import BaseApplication
-elif context == "Sphinx":
+elif env.CONTEXT in ("Sphinx"):
 	from baseapplication import BaseApplication
+else:
+	raise Exception(f"Invalid context: {{env.CONTEXT}}")
 
 pathToThisFile, thisFile = os.path.split(os.path.abspath(__file__))
 sys.path.insert(0, pathToThisFile)
