@@ -96,7 +96,7 @@ know what type it is, click on it and look in the property editor.
 Inputs and outputs to the action will be specified as ports. 
 Each port has:
 - **name**: A valid python variable name.
-- **datatype**: a valid python type (str, int, float, etc.).
+- **data type**: a valid python type (str, int, float, etc.).
 
 Input ports also have the following:
 - **optional**: a boolean value specifying whether the input 
