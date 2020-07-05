@@ -278,7 +278,6 @@ class ApiModel(QObject):
 
 		# Now go through each action pipeline and recreate action wrappers
 		for ap in aps:
-			# First add action wrappers
 			for actionDict in ap.actionsDict:
 				aw = ActionWrapper.fromDict(actionDict, allActions, ap)
 				ap.addAction(aw)
@@ -288,20 +287,19 @@ class ApiModel(QObject):
 		# Then reiterate through them and connect the wires
 		for ap in aps:
 			# Then connect all ports with wires
-			ws = WireSet()
 			for wireDict in ap.wiresetDict['wires']:
 				# --- Source --- #
 				srcID, srcPortName = wireDict['source']
 				srcAction = allActions[srcID]
 				srcPort = None
 
-				for port in srcAction._outputs:  # accessing _outputs directly since getOutputs generates copies
-					if port.getName() == srcPortName:
-						srcPort = port
-						break
-
-				if not srcPort:  # Only time this should happen is if the src is one of the AP's input ports
+				if srcAction is ap:
 					for port in ap._inputs:
+						if port.getName() == srcPortName:
+							srcPort = port
+							break
+				else:
+					for port in srcAction._outputs:  # accessing _outputs directly since getOutputs generates copies
 						if port.getName() == srcPortName:
 							srcPort = port
 							break
@@ -314,13 +312,13 @@ class ApiModel(QObject):
 				dstAction = allActions[dstID]
 				dstPort = None
 
-				for port in dstAction._inputs:  # accessing _outputs directly since getOutputs generates copies
-					if port.getName() == dstPortName:
-						dstPort = port
-						break
-
-				if not dstPort:  # Only time this should happen is if the src is one of the AP's input ports
+				if dstAction is ap:
 					for port in ap._outputs:
+						if port.getName() == dstPortName:
+							dstPort = port
+							break
+				else:
+					for port in dstAction._inputs:  # accessing _outputs directly since getOutputs generates copies
 						if port.getName() == dstPortName:
 							dstPort = port
 							break
@@ -329,9 +327,7 @@ class ApiModel(QObject):
 					raise Exception('rip')
 
 				# now, CONNECT!
-				ws.addWire(srcPort, dstPort)
-
-			ap._wireSet = ws
+				ap.connect(srcPort, dstPort)
 
 		# Then add them to the APIM
 		for ap in aps:
