@@ -58,7 +58,7 @@ def getContext(modulepath: str):
     if not os.path.exists(modulepath):
         raise NotAModuleException(f"{modulepath} does not exist")
 
-    elif not modulepath.endswith(".py"):
+    if not modulepath.endswith(".py"):
         raise NotAModuleException(f"{modulepath} is not a python module")
 
     context = None
