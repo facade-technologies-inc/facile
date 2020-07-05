@@ -76,8 +76,12 @@ def getContext(modulepath: str):
     if not context:
         context = "API"
 
-    print(modulepath)
-    print(context)
+    # Note: If there is a problem with detecting the context correctly, the following lines help with debugging:
+    # print(f"\n{100*'='}")
+    # print(f"Module Path: {modulepath}")
+    # print(f"Context:     {context}")
+    # print(f"{100 * '='}")
+
     if not context:
         raise ContextNotAvailableException(f"Can't detect context of module: {modulepath}")
 

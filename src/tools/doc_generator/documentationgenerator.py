@@ -89,28 +89,28 @@ class DocGenerator(QObject):
                 self.stepStarted.emit("Generating HTML documentation...")
                 if os.path.exists(os.path.abspath('../html')):
                     self.execCommand('cd ../ & RMDIR /Q/S html 1>nul 2>&1', printErrorCode=debug)
-                self.execCommand('make html 1> ..\\build_html.log 2>&1 & move _build\\html ..\\ 2>&1', printErrorCode=debug)
+                self.execCommand('make html 1> ..\\build_html.log 2>&1 & move _build\\html ..\\ 1>nul 2>&1', printErrorCode=debug)
 
             elif type is CompilationProfile.DocType.Txt:
                 self.stepStarted.emit("Generating TXT documentation...")
                 if os.path.exists(os.path.abspath('../text')):
                     self.execCommand('cd ../ & RMDIR /Q/S text 1>nul 2>&1', printErrorCode=debug)
-                self.execCommand('make text 1> ..\\build_text.log 2>&1 & move _build\\text ..\\ 2>&1', printErrorCode=debug)
+                self.execCommand('make text 1> ..\\build_text.log 2>&1 & move _build\\text ..\\ 1>nul 2>&1', printErrorCode=debug)
 
             elif type is CompilationProfile.DocType.Pdf:
                 self.stepStarted.emit("Generating PDF documentation...")
                 if os.path.exists(os.path.abspath('../pdf')):
-                    self.execCommand('cd ../ & RMDIR /Q/S pdf 2>&1', printErrorCode=debug)
+                    self.execCommand('cd ../ & RMDIR /Q/S pdf 1>nul 2>&1', printErrorCode=debug)
                 self.execCommand('make latex 1> ..\\build_pdf.log 2>&1', printErrorCode=debug)
-                self.execCommand('cd _build\\latex & make 2>&1 ', printErrorCode=debug)
+                self.execCommand('cd _build\\latex & make 1>nul 2>&1 ', printErrorCode=debug)
                 self.execCommand('mkdir ..\\pdf', printErrorCode=debug)
-                self.execCommand('xcopy _build\\latex\\*.pdf ..\\pdf 2>&1', printErrorCode=debug)
+                self.execCommand('xcopy _build\\latex\\*.pdf ..\\pdf 1>nul 2>&1', printErrorCode=debug)
             
             elif type is CompilationProfile.DocType.EPub:
                 self.stepStarted.emit("Generating EPUB documentation...")
                 if os.path.exists(os.path.abspath('../epub')):
-                    self.execCommand('cd ../ & RMDIR /Q/S epub 2>&1', printErrorCode=debug)
-                self.execCommand('make epub 1> ..\\build_epub.log 2>&1 & move _build\\epub ..\\ 2>&1', printErrorCode=debug)
+                    self.execCommand('cd ../ & RMDIR /Q/S epub 1>nul 2>&1', printErrorCode=debug)
+                self.execCommand('make epub 1> ..\\build_epub.log 2>&1 & move _build\\epub ..\\ 1>nul 2>&1', printErrorCode=debug)
 
             self.stepComplete.emit()
 
@@ -118,7 +118,7 @@ class DocGenerator(QObject):
         os.chdir(restorePoint)
 
         # remove the src directory.
-        exit_code = self.execCommand(f'RMDIR /S/Q {srcDir} 2>&1', printErrorCode=debug)
+        exit_code = self.execCommand(f'RMDIR /S/Q {srcDir} 1>nul 2>&1', printErrorCode=debug)
         if exit_code:
             logger.critical(f"Unable to remove the {srcDir}. This may cause import issues when the API is run.")
 
