@@ -273,7 +273,7 @@ class TargetGuiModel(QObject):
 		return tguimDict
 	
 	@staticmethod
-	def fromDict(d: dict) -> 'TargetGui':
+	def fromDict(d: dict) -> 'TargetGuiModel':
 		"""
 		Creates a target GUI model from a dictionary.
 		

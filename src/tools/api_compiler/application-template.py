@@ -66,6 +66,6 @@ class Application(BaseApplication):
 		Returns self, that way the user can just call Application().start() when initializing their app.
 		"""
 		
-		self.startApp()
+		self._startApp()
 		return self
 

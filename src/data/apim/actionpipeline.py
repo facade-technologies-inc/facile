@@ -29,6 +29,7 @@ import data.apim.port as pt
 from data.apim.wireset import WireSet
 from data.apim.wire import WireException
 from data.apim.action import Action, ActionException
+from data.properties import Properties
 
 class ActionPipeline(Action):
 	
@@ -41,6 +42,8 @@ class ActionPipeline(Action):
 		Action.__init__(self)
 		self._actions = []
 		self._wireSet = WireSet()
+
+		# these variables are just for api compilation purposes
 		self._varName = 'a'
 		self._varMap = {}  # relates a variable name to a list of all ports that use it
 		self._invVarMap = {}  # relates all ports to a variable name
@@ -69,7 +72,7 @@ class ActionPipeline(Action):
 			raise ActionException("The ActionWrapper already has a different parent.")
 		
 		if action in self._actions:
-			raise ActionException("The action wrapper can only be added once.")
+			return
 		
 		self._actions.append(action)
 		
@@ -282,6 +285,15 @@ class ActionPipeline(Action):
 		:rtype: List[Action]
 		"""
 		return self._actions[:]
+
+	def getChildActions(self) -> List['Action']:
+		"""
+		A replacement for self.getActions()
+
+		:return: All actions in this action pipeline.
+		:rtype: List[Action]
+		"""
+		return self.getActions()
 	
 	def getWireSet(self) -> WireSet:
 		"""
@@ -488,3 +500,52 @@ class ActionPipeline(Action):
 		:rtype: str
 		"""
 		return chr(ord(var) + 1) if var != 'z' else 'a'
+
+	def getActionWrappers(self):
+		"""
+		Returns the action wrappers that this pipeline uses
+		"""
+		return self._actions
+
+	def asDict(self) -> dict:
+		"""
+		Get a dictionary representation of the action pipeline.
+
+		.. note::
+			This is not just a getter of the __dict__ attribute.
+
+		:return: The dictionary representation of the object.
+		:rtype: dict
+		"""
+		apDict = Action.asDict(self)
+
+		# just store the id of the action (wrappers) that are owned by the action pipeline
+		apDict["actions"] = [action.asDict() for action in self._actions]
+
+		apDict["wire set"] = self._wireSet.asDict()
+
+		return apDict
+
+	@staticmethod
+	def fromDict(d: dict) -> 'ActionPipeline':
+		"""
+		Creates an Action Pipeline from the dictionary
+
+		:param d: The dictionary that represents the action pipeline.
+		:type d: dict
+		:return: The ActionPipeline object that was constructed from the dictionary
+		:rtype: ActionPipeline
+		"""
+		ap = ActionPipeline()
+
+		ap.actionsDict = d['actions']  # These will be constructed later
+
+		ap._inputs = [pt.Port.fromDict(dic, ap) for dic in d["inputs"]]
+		ap._outputs = [pt.Port.fromDict(dic, ap) for dic in d["outputs"]]
+
+		ap.wiresetDict = d['wire set']  # so will these
+
+		if d['properties']:
+			ap.setProperties(Properties.fromDict(d['properties']))
+
+		return ap

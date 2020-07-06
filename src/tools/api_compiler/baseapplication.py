@@ -92,17 +92,17 @@ class BaseApplication:
         self._compIDs = reqCompIds
         
         try:
-            with open(os.path.join(pathToThisFile, self._name + ".tguim"), 'r') as tguimFile:
+            with open(os.path.join(pathToThisFile, "tguim.json"), 'r') as tguimFile:
                 d = json.loads(tguimFile.read())
                 self._tgm = TargetGuiModel.fromDict(d)
         except Exception as e:
-            print("Couldn't load from {}".format('./' + self._name + '.tguim'))
+            print("Couldn't load from ./tguim.json")
             self._tgm = None
             traceback.print_exc()
 
         self._generatePathMap()
     
-    def startApp(self):
+    def _startApp(self):
         """
         Starts the target application, then waits for all processes' active window to be ready.
         """
@@ -110,24 +110,31 @@ class BaseApplication:
             self.app.start(self._exeLoc)
             self._isRunning = True
         else:
-            print('Your app is already running. If you want more instances, '
-                  'import the API again under a different name and start it.\n(i.e. from myAPI import myApp as myApp2)')
+            print('Your app is already running. If you want more instances, make another application instance '
+                  '(myApp1 = Application(), myApp2 = Application())')
     
     def stop(self):
         """
         Stops the target application and the processes spawned by it
         """
         if self._isRunning:
-            self.app.kill()
+            try:
+                self.app.kill()
+            except psutil.NoSuchProcess:
+                pass
         else:
             print('Your app should not be running. If it is, please report this as a bug on our website.')
             
-    def pause(self):
+    def pause(self, demo=False):
         """
         Pauses execution while the user interacts with their app.
         """
-        
-        pyautogui.alert('Execution paused. Press "OK" when ready to continue.')
+        if not demo:
+            pyautogui.alert('Execution paused. Press "OK" when ready to continue.')
+        else:
+            pyautogui.alert('If this is your first time running a script with your API, open automate.py '
+                            'to check out how you can get the most out of your application.\n\n'
+                            'Press "OK" to close this and your application.')
     
     def wait(self, state: str, timeout: int = 10):
         """
@@ -176,7 +183,7 @@ class BaseApplication:
         path, tmpHandle = self._pathMap[compID]
 
         if tmpHandle:
-            if tmpHandle.visible:
+            if tmpHandle.is_visible():
                 return tmpHandle
 
         comp = self._getComponentObject(compID)
@@ -340,31 +347,34 @@ class BaseApplication:
         :type component: Component
         :return: None
         """
-        
-        curComp = component
-        nxtParent = curComp.getParent()
-        compPath = [curComp]
+
+        path, handle = self._pathMap[component.getId()]
+
         # Getting the lowest level component containing the menu/menuitem that can be force-shown
-        while nxtParent.getSuperToken().getTokens()[0].type in ['Menu', 'MenuItem']:
-            curComp = nxtParent
-            nxtParent = curComp.getParent()
-            compPath.append(curComp)
-        # Now compPath has the list of components, including the component itself, in the reverse order that component
+        index = 0
+        for st in path:
+            if st.getTokens()[0].type in ['Menu', 'MenuItem']:
+                index = path.index(st)
+                break
+
+        compPath = path[index:]
+
+        # Now compPath has the list of components, including the component itself, in the order that component
         # can be found with.
         
         # Create the string that can be input into the menu_select function of pywinauto
         pathStr = ''
         while compPath:
-            comp = compPath.pop()
-            pathStr += comp.getSuperToken().getTokens()[0].title + '->'
+            comp = compPath.pop(0)
+            pathStr += comp.getTokens()[0].title + '->'
         pathStr = pathStr[:-2]
         
         # Then get the containing top-level window
-        windowComp, pos = nxtParent.getPathFromRoot()[-2]  # -1 position is root, -2 is window
+        windowComp, pos = component.getPathFromRoot()[-2]  # -1 position is root, -2 is window
         
         # Now force show the window, and get its handle
         self._forceShow(windowComp)
-        window = self._compFinder.find(windowComp.getSuperToken())
+        window = self._compFinder.find(windowComp.getSuperToken(), [windowComp.getSuperToken()])
         
         # Then finally select the menuItem
         window.menu_select(pathStr)

@@ -163,4 +163,40 @@ class WireSet:
         :rtype: Wire
         """
         return destPort.getInputWire()
-    
+
+    def asDict(self) -> dict:
+        """
+        Get a dictionary representation of the wire set.
+
+        .. note::
+            This is not just a getter of the __dict__ attribute.
+
+        :return: The dictionary representation of the object.
+        :rtype: dict
+        """
+        wsDict = {}
+
+        wsDict["wires"] = [wire.asDict() for wire in self._wires]
+
+        return wsDict
+
+    @staticmethod
+    def fromDict(d: dict, parent: 'ActionPipeline') -> 'WireSet':
+        """
+        Creates a WireSet from the dictionary
+
+        :param d: The dictionary that represents the WireSet.
+        :type d: dict
+        :param parent: The WireSet's parent ActionPipeline
+        :type parent: ActionPipeline
+        :return: The WireSet object that was constructed from the dictionary
+        :rtype: WireSet
+        """
+        ws = WireSet()
+
+        for wireDict in d['wires']:
+
+            ws.addWire(Wire.fromDict(wireDict, parent))
+
+        return ws
+
