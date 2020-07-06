@@ -79,7 +79,7 @@ class DocGenerator(QObject):
         logger.info("Copying the sphinx directory")
         try:
             shutil.copytree(os.path.join(self.sphinxFacileDir, "src"), srcDir)
-        except Exception as e:
+        except FileExistsError as e:
             logger.exception(e)
 
         logger.info("Copying the contents of the API directory into the sphinx src directory")
