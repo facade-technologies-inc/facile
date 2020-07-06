@@ -4,7 +4,7 @@ targets = ['Edit']
 inputs = [
 	{
 		"name": "value",
-		"type": str,
+		"data type": str,
 		"description": "Text to be written.",
 		"optional": False
 	}

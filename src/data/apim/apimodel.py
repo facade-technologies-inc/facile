@@ -26,10 +26,13 @@ from typing import List, Tuple
 
 from PySide2.QtCore import QObject, Signal
 
+from data.entity import Entity
 from data.apim.actionpipeline import ActionPipeline
 from data.apim.componentaction import ComponentAction
 from data.apim.actionwrapper import ActionWrapper
 from data.apim.actionspecification import ActionSpecification
+from data.apim.wireset import WireSet
+
 
 class ApiModel(QObject):
 	"""
@@ -43,7 +46,7 @@ class ApiModel(QObject):
 	
 	newActionPipeline = Signal(ActionPipeline)
 	
-	def __init__(self):
+	def __init__(self, initSpecs: bool = True):
 		"""
 		Constructs an ApiModel.
 		
@@ -53,8 +56,9 @@ class ApiModel(QObject):
 		
 		self._actionPipelines = []
 		self._specifications = {}
-		
-		self.initializeSpecifications()
+
+		if initSpecs:  # When an API Model is loaded instead of created, the action specs are already preserved
+			self.initializeSpecifications()
 		
 	def initializeSpecifications(self) -> None:
 		"""
@@ -169,3 +173,166 @@ class ApiModel(QObject):
 				work.append(action.getActionReference())
 			
 		return self.getActionPipelines(), list(componentActions)
+
+	def getAllActions(self) -> List['Action']:
+		'''
+		Get a list of all actions regardless of its type including action wrappers.
+		:return:
+		'''
+
+		actions = set()
+		work = self._actionPipelines[:] # start with the top-level actions (the action pipelines)
+		while work:
+			action = work.pop()
+			actions.add(action)
+			work += action.getChildActions()
+		return actions
+
+	def asDict(self) -> dict:
+		"""
+		Get a dictionary representation of the API Model.
+
+		.. note::
+			This is not just a getter of the __dict__ attribute.
+
+		:return: The dictionary representation of the object.
+		:rtype: dict
+		"""
+
+		# store all action pipelines, initialize lists of componentactions and actionspecs
+		apimDict = {"action pipelines": [ap.asDict() for ap in self._actionPipelines],
+					"component actions": [],
+					'action specifications': []}
+
+		# store all action wrappers and component actions, and store all ports
+		componentActions = set()
+		for ap in self._actionPipelines:
+			for aw in ap._actions:
+				action = aw.getActionReference()
+				if isinstance(action, ComponentAction) and action not in componentActions:
+					componentActions.add(action)
+					apimDict["component actions"].append(action.asDict())
+
+		# store action specifications
+		apimDict["action specifications"] = [aSpec.asDict() for aSpec in self.getSpecifications()]
+
+		# NOTE: The ports will be stored in the action they belong to.
+		# NOTE: The wire sets and action wrappers will be stored in the action pipeline they belong to.
+		# NOTE: The wires will be stored in the wire sets they belong to.
+
+		return apimDict
+
+	@staticmethod
+	def fromDict(d: dict, tguim: 'TargetGUIModel') -> 'ApiModel':
+		"""
+		Creates an API Model from the dictionary
+
+		:param d: The dictionary that represents the API model.
+		:type d: dict
+		:param tguim: The target gui model
+		:type tguim: TargetGUIModel
+		:return: The ApiModel object that was constructed from the dictionary
+		:rtype: ApiModel
+		"""
+
+		apim = ApiModel(initSpecs=False)
+
+		# Create temporary dictionaries and lists
+		actSpecs, allActions, aps, aws = {}, {}, [], {}
+
+		# Remake Action Specifications, add them to API Model. Done this way in anticipation of custom specs in future
+		for actSpecDict in d['action specifications']:
+			actSpec = ActionSpecification.fromDict(actSpecDict)
+			actSpecs[actSpec.name] = actSpec
+
+			if actSpec.viableTargets is None:
+				continue
+
+			# Map all targets to the specification for easy lookup later.
+			for target in actSpec.viableTargets:
+				if target in apim._specifications:
+					apim._specifications[target].append(actSpec)
+				else:
+					apim._specifications[target] = [actSpec]
+
+		# Remake all ComponentActions and ActionPipelines, and add them to dict with key being their old ids.
+		# Add action pipelines to their own list too, just so they can be reiterated over later
+
+		for compActDict in d['component actions']:  # All ComponentActions are fully rebuilt
+			allActions[compActDict['id']] = ComponentAction.fromDict(compActDict, tguim, actSpecs)
+
+		# First, relink visibilitybehaviors' actions to real actions
+		for vb in tguim._visibilityBehaviors.values():
+			compActDict = vb.triggerActionDict
+
+			if compActDict['id'] not in allActions.keys():
+				allActions[compActDict['id']] = ComponentAction.fromDict(compActDict, tguim, actSpecs)
+
+			vb.setTriggerAction(allActions[vb.triggerActionDict['id']])
+
+		# Remake empty action pipelines
+		for apDict in d["action pipelines"]:  # ActionPipelines are empty and only have their ports
+			ap = ActionPipeline.fromDict(apDict)
+			allActions[apDict['id']] = ap
+			aps.append(ap)
+
+		# Now go through each action pipeline and recreate action wrappers
+		for ap in aps:
+			for actionDict in ap.actionsDict:
+				aw = ActionWrapper.fromDict(actionDict, allActions, ap)
+				ap.addAction(aw)
+				aws[actionDict['id']] = aw
+				allActions[actionDict['id']] = aw
+
+		# Then reiterate through them and connect the wires
+		for ap in aps:
+			# Then connect all ports with wires
+			for wireDict in ap.wiresetDict['wires']:
+				# --- Source --- #
+				srcID, srcPortName = wireDict['source']
+				srcAction = allActions[srcID]
+				srcPort = None
+
+				if srcAction is ap:
+					for port in ap._inputs:
+						if port.getName() == srcPortName:
+							srcPort = port
+							break
+				else:
+					for port in srcAction._outputs:  # accessing _outputs directly since getOutputs generates copies
+						if port.getName() == srcPortName:
+							srcPort = port
+							break
+
+				if not srcPort:
+					raise Exception('F')
+
+				# --- Destination --- #
+				dstID, dstPortName = wireDict['destination']
+				dstAction = allActions[dstID]
+				dstPort = None
+
+				if dstAction is ap:
+					for port in ap._outputs:
+						if port.getName() == dstPortName:
+							dstPort = port
+							break
+				else:
+					for port in dstAction._inputs:  # accessing _outputs directly since getOutputs generates copies
+						if port.getName() == dstPortName:
+							dstPort = port
+							break
+
+				if not dstPort:
+					raise Exception('rip')
+
+				# now, CONNECT!
+				ap.connect(srcPort, dstPort)
+
+		# Then add them to the APIM
+		for ap in aps:
+			apim._actionPipelines.append(ap)
+
+		# bam
+		return apim
+

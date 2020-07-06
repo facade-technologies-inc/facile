@@ -55,9 +55,9 @@ class ActionSpecification:
 		d = {}
 		d["name"] = self.name
 		d["description"] = self.description
-		d["viableTargets"] = self.viableTargets
-		d["inputs"] = self.inputs
-		d["outputs"] = self.outputs
+		d["targets"] = self.viableTargets
+		d["inputs"] = [port.asDict() for port in self.inputs]
+		d["outputs"] = [port.asDict() for port in self.outputs]
 		d["code"] = self.code
 		
 		return d
@@ -79,9 +79,13 @@ class ActionSpecification:
 		actS = ActionSpecification()
 		actS.name = d["name"]
 		actS.description = d["description"]
-		actS.viableTargets = d["viableTargets"]
-		actS.inputs = d["inputs"]
-		actS.outputs = d["outputs"]
+		actS.viableTargets = d["targets"]
+
+		for inPDict in d["inputs"]:
+			actS.inputs.append(pt.Port.fromDict(inPDict))
+		for outPDict in d["outputs"]:
+			actS.outputs.append(pt.Port.fromDict(outPDict))
+
 		actS.code = d["code"]
 		
 		return actS
@@ -129,33 +133,23 @@ class ActionSpecification:
 			assert(code != None)
 		except:
 			raise ActionSpecificationException("Required variable not set in specification!")
-		
-		spec = ActionSpecification()
-		spec.name = name
-		spec.description = description
-		spec.code = code
-		
-		if not targets:
-			spec.viableTargets = None
-		else:
-			spec.viableTargets = targets
-		
-		for input in inputs:
-			p = pt.Port()
-			p.setName(input["name"])
-			p.setDataType(input["type"])
-			p.setAnnotation(input["description"])
-			p.setOptional(input.get("optional", False))
-			spec.inputs.append(p)
-		
-		for output in outputs:
-			p = pt.Port()
-			p.setName(output["name"])
-			p.setDataType(output["type"])
-			p.setAnnotation(output["description"])
-			spec.outputs.append(p)
-			
-		return spec
+
+		actSpec = ActionSpecification()
+		actSpec.name = name
+		actSpec.description = description
+		actSpec.viableTargets = targets
+
+		for inputDict in inputs:
+			p = pt.Port.fromDict(inputDict)
+			actSpec.inputs.append(p)
+
+		for outputDict in outputs:
+			p = pt.Port.fromDict(outputDict)
+			actSpec.outputs.append(p)
+
+		actSpec.code = code
+
+		return actSpec
 	
 if __name__ == "__main__":
 	file = "../../../database/component_actions/click.action"

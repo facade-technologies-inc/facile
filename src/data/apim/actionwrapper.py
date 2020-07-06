@@ -25,6 +25,7 @@ from typing import List, Dict
 
 import data.apim.actionpipeline as ap
 import data.apim.action as act
+import data.properties as ppts
 
 class ActionWrapper(act.Action):
 	"""
@@ -37,8 +38,8 @@ class ActionWrapper(act.Action):
 	
 	The ActionWrapper can be thought of as a black-box for any other action.
 	"""
-	
-	def __init__(self, actionRef: 'act.Action', parent: 'ap.ActionPipeline') -> 'ActionWrapper':
+
+	def __init__(self, actionRef: 'act.Action', parent: 'ap.ActionPipeline' = None) -> 'ActionWrapper':
 		"""
 		Constructs a WrapperAction that stores a reference to an action.
 		
@@ -46,6 +47,9 @@ class ActionWrapper(act.Action):
 		we can store the parent as well.
 		
 		The wrapper is added to the parent action pipeline.
+
+		Both actionRef and parent are optional, but if they are not given, the initializeAfterLink() function must be
+		called after they are set manually.
 		
 		:param actionRef: The action to be referenced.
 		:type actionRef: Action
@@ -60,13 +64,15 @@ class ActionWrapper(act.Action):
 		self._parent = parent
 		self._inputPortMapping = {}
 		self._outputPortMapping = {}
-		
-		if self not in parent.getActions():
-			parent.addAction(self)
-		
+
+		if parent:
+			if self not in parent.getActions():
+				parent.addAction(self)
+
 		self.setName(self._actionRef.getName())
 		self._actionRef.registerWrapper(self)
 		self.synchronizePorts()
+
 
 	def getUnderlyingAction(self) -> 'Action':
 		"""
@@ -92,6 +98,15 @@ class ActionWrapper(act.Action):
 		:rtype: Action
 		"""
 		return self._actionRef
+
+	def getChildActions(self) -> List['Action']:
+		"""
+		A replacement for self.getActionReference(), but returns a list with only one element.
+
+		:return: The referenced action in a 1-element list
+		:rtype: List[Action]
+		"""
+		return [self.getActionReference()]
 	
 	def forgetActionReference(self) -> None:
 		"""
@@ -175,7 +190,8 @@ class ActionWrapper(act.Action):
 				
 				# we remove the port through the parent because it will remove all wires
 				# connected to the port as well.
-				self._parent.removePort(port)
+				if self._parent:
+					self._parent.removePort(port)
 				
 		# maintain correct ordering of ports
 		myPortList.clear()
@@ -202,6 +218,42 @@ class ActionWrapper(act.Action):
 		
 		return self._actionRef.getMethodCode()
 
+	def asDict(self) -> dict:
+		"""
+		Get a dictionary representation of the action wrapper.
 
+		.. note::
+			This is not just a getter of the __dict__ attribute.
 
+		:return: The dictionary representation of the object.
+		:rtype: dict
+		"""
 
+		actionDict = act.Action.asDict(self)
+		actionDict["reference action"] = self._actionRef.getId()
+
+		return actionDict
+
+	@staticmethod
+	def fromDict(d: dict, compActs: dict, parent: 'ActionPipeline') -> 'ActionWrapper':
+		"""
+		Creates an ActionWrapper from the dictionary
+
+		:param d: The dictionary that represents the ActionWrapper.
+		:type d: dict
+		:param compActs: Dictionary of component actions
+		:type compActs: dict
+		:param parent: The parent ActionPipeline that contains this actionwrapper
+		:type parent:
+		:return: The ActionWrapper object that was constructed from the dictionary
+		:rtype: ActionWrapper
+		"""
+
+		actionRef = compActs[d['reference action']]
+
+		aw = ActionWrapper(actionRef, parent)
+
+		if d['properties']:
+			aw.setProperties(ppts.Properties.fromDict(d['properties']))
+
+		return aw
