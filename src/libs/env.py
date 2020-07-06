@@ -23,7 +23,7 @@ This file contains information about the environment that Facile is running in.
 
 import os
 
-CONTEXT = None
+CONTEXT = "API"
 TEMP_DIR = os.path.abspath("./temp/")
 LOG_FILES_DIR = os.path.join(TEMP_DIR, "log_files/")
 
