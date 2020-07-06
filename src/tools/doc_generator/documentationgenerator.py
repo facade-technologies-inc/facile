@@ -28,9 +28,7 @@ from PySide2.QtCore import QObject, Signal
 
 import data.statemachine as sm
 from data.compilationprofile import CompilationProfile
-
 from libs.logging import compiler_logger as logger
-
 
 class DocGenerator(QObject):
     """
@@ -51,7 +49,7 @@ class DocGenerator(QObject):
         :type projectName: str
         """
         QObject.__init__(self)
-        logger.debug("instantiating documentation generator")
+        logger.info("Instantiating the Documentation Generator")
         self.projectDir = sm.StateMachine.instance._project.getProjectDir()
         self.apiName = sm.StateMachine.instance._project.getAPIName()
         self.projectName = projectName
@@ -64,26 +62,33 @@ class DocGenerator(QObject):
 
         :param debug: If true, invalid commands will be printed to the console.
         :type debug: bool
-		:return: None
-		:rtype: NoneType
+        :return: None
+        :rtype: NoneType
         """
+
         logger.debug("Generating documentation")
 
         restorePoint = os.getcwd()
         docDir = os.path.join(self.projectDir, self.apiName + "_API_Files", self.apiName, "Documentation")
+        srcDir = os.path.join(docDir, "src")
 
+        logger.debug("Creating documentation directory")
         if not os.path.exists(docDir):
             os.mkdir(docDir)
 
-        os.chdir(docDir)
-        logger.debug("copying sphinx project struction to the location of the API")
-        self.execCommand(f'xcopy "{self.sphinxFacileDir}" /e 1>nul 2>&1', printErrorCode=debug)
+        logger.info("Copying the sphinx directory")
+        try:
+            shutil.copytree(os.path.join(self.sphinxFacileDir, "src"), srcDir)
+        except FileExistsError as e:
+            logger.exception(e)
 
-        srcDir = os.path.join(docDir, "src")
+        logger.info("Copying the contents of the API directory into the sphinx src directory")
+        apiDir = os.path.realpath(os.path.join(docDir, "../"))
 
-        # wait until src dir exists.
-        while not os.path.exists(srcDir):
-            pass
+        try:
+            shutil.copytree(apiDir, os.path.join(srcDir, "facile_src"), ignore=lambda x, y: ["Documentation"])
+        except FileExistsError as e:
+            logger.exception(e)
 
         os.chdir(srcDir)
         self.modifyConf()
@@ -135,10 +140,10 @@ class DocGenerator(QObject):
         os.chdir(restorePoint)
 
         # remove the src directory.
-        logger.info("Removing initial src directory")
-        self.execCommand(f'RMDIR /S/Q "{srcDir}" 1>nul 2>&1', printErrorCode=debug)
-
-        logger.info("Finished generating documentation.")
+        exit_code = self.execCommand(f'RMDIR /S/Q "{srcDir}" 1>nul 2>&1', printErrorCode=debug)
+        if exit_code:
+            logger.critical(f"Unable to remove the {srcDir}. This may cause import issues when the API is run.")
+        logger.info("Finished creating documentation.")
         self.finished.emit()
             
     def modifyConf(self):
