@@ -33,7 +33,7 @@ if env.CONTEXT in ("Facile", "Sphinx"):
     from tguiil.matchoption import MatchOption
     from tguiil.application import Application
     from tguiil.supertokens import SuperToken
-if env.CONTEXT in ("API"):
+elif env.CONTEXT in ("API"):
     from .tokens import Token
     from .matchoption import MatchOption
     from .application import Application

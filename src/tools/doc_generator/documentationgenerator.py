@@ -49,6 +49,7 @@ class DocGenerator(QObject):
         :type projectName: str
         """
         QObject.__init__(self)
+        logger.info("Instantiating the Documentation Generator")
         self.projectDir = sm.StateMachine.instance._project.getProjectDir()
         self.apiName = sm.StateMachine.instance._project.getAPIName()
         self.projectName = projectName
@@ -64,25 +65,21 @@ class DocGenerator(QObject):
         :return: None
         :rtype: NoneType
         """
-
+        logger.info("Creating documentation")
         restorePoint = os.getcwd()
         docDir = os.path.join(self.projectDir, self.apiName, "Documentation")
+        srcDir = os.path.join(docDir, "src")
 
+        logger.debug("Creating documentation directory")
         if not os.path.exists(docDir):
             os.mkdir(docDir)
 
-        os.chdir(docDir)
-        self.execCommand('xcopy "{0}" /e 1>nul 2>&1'.format(self.sphinxFacileDir), printErrorCode=debug)
+        logger.info("Copying the sphinx directory")
+        shutil.copytree(os.path.join(self.sphinxFacileDir, "src"), srcDir)
 
-        srcDir = os.path.join(self.projectDir, self.apiName, "Documentation", "src")
-
-        # wait until src dir exists.
-        while not os.path.exists(srcDir):
-            pass
-
-        # copy the contents of the API directory into the sphinx src directory
+        logger.info("Copying the contents of the API directory into the sphinx src directory")
         apiDir = os.path.join(self.projectDir, self.apiName)
-        shutil.copytree(apiDir, srcDir)
+        shutil.copytree(apiDir, os.path.join(srcDir, "facile_src"), ignore=lambda x, y: ["Documentation"])
 
         os.chdir(srcDir)
         self.modifyConf()
@@ -126,6 +123,7 @@ class DocGenerator(QObject):
         if exit_code:
             logger.critical(f"Unable to remove the {srcDir}. This may cause import issues when the API is run.")
 
+        logger.info("Finished creating documentation.")
         self.finished.emit()
             
     def modifyConf(self):

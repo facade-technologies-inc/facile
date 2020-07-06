@@ -180,13 +180,16 @@ class Compiler(QObject):
 
         :return: None
         """
-        self.stepStarted.emit("Saving target GUI model")
+        msg = "Saving target GUI model"
+        self.stepStarted.emit(msg)
+        logger.info(msg)
         self.statem._project.save()
         path = self.statem._project.getTargetGUIModelFile()
         name = self.statem._project.getName()
 
         copyfile(path, os.path.join(self._srcFolder, name + '.tguim'))
         self.stepComplete.emit()
+        logger.info("Finished saving the target GUI model")
     
     def compileAPI(self) -> None:
         """
@@ -194,17 +197,22 @@ class Compiler(QObject):
 
         :return: None
         """
+        logger.info("Compiling API")
         self.copyNecessaryFiles()
         self.saveTGUIM()
 
-        self.stepStarted.emit("Copying base application")
+        msg = "Copying base application"
+        self.stepStarted.emit(msg)
+        logger.info(msg)
         curPath = os.path.abspath(__file__)
         dir, filename = os.path.split(curPath)
         copyfile(os.path.join(dir, 'baseapplication.py'), os.path.join(self._srcFolder, 'baseapplication.py'))
         self.stepComplete.emit()
 
         # Create setup.py so user can install install API as a package with pip.
-        self.stepStarted.emit("Generating setup.py file")
+        msg = "Generating setup.py file"
+        self.stepStarted.emit(msg)
+        logger.info(msg)
         setupTempFile = open(os.path.join(dir, "setup-template.txt"), 'r')
         setupStr = setupTempFile.read().format(projectName=self.statem._project.getAPIName(),
                                                projectVersion='0.1.0')  # TODO Add versioning
@@ -214,8 +222,9 @@ class Compiler(QObject):
         setupFile.close()
         self.stepComplete.emit()
 
-        # Create __init__.py so API is a package.
-        self.stepStarted.emit("Generating __init__.py file")
+        msg = "Generating __init__.py file"
+        self.stepStarted.emit(msg)
+        logger.info(msg)
         initTempFile = open(os.path.join(dir, "__init__template.txt"), 'r')
         targetAppName = self.statem._project.getExecutableFile().split('/')[-1].split('.')[0]  # '.../app.exe' -> 'app'
         targetAppName = targetAppName[0].upper() + targetAppName[1:]  # 'app' -> 'App'
@@ -230,9 +239,13 @@ class Compiler(QObject):
 
         # Auto install API if user selected to do so.
         if self._compProf.installApi:
-            self.stepStarted.emit("Installing as python package")
+            msg = "Installing as python package"
+            self.stepStarted.emit(msg)
+            logger.info(msg)
             os.chdir(self._saveFolder)
             os.system(self._compProf.interpExeDir + " -m pip install . 1>install.log 2>&1")
             self.stepComplete.emit()
+            logger.info("Finished installing python package")
 
+        logger.info("Finished compiling API")
         self.finished.emit()
