@@ -6,7 +6,8 @@ outputs = [
 	{
 		"name": "value",
 		"description": "Value obtained from reading component text.",
-		"type": str,
+		"optional": False,
+		"data type": str,
 	}
 ]
 code = """

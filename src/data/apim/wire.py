@@ -83,3 +83,21 @@ class Wire:
         """
 
         return (self._src, self._dest)
+
+    def asDict(self) -> dict:
+        """
+        Get a dictionary representation of the wire.
+
+        .. note::
+            This is not just a getter of the __dict__ attribute.
+
+        :return: The dictionary representation of the object.
+        :rtype: dict
+        """
+        wDict = {}
+
+        # We only store the IDs of the ports the wires connect to because the actions own the ports.
+        wDict['source'] = [self._src.getAction().getId(), self._src.getName()]
+        wDict['destination'] = [self._dest.getAction().getId(), self._dest.getName()]
+
+        return wDict

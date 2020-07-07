@@ -20,21 +20,26 @@
 
 This file contains the component finder, a class that gets a PyWinAuto handle based on a SuperToken
 """
+
 from typing import Set
 
 import pywinauto
 from pywinauto import timings
+import libs.env as env
+from libs.env import InvalidContextException
 
-try:  # Facile imports
+if env.CONTEXT in ("Facile", "Sphinx"):
     from tguiil.tokens import Token
     from tguiil.matchoption import MatchOption
     from tguiil.application import Application
     from tguiil.supertokens import SuperToken
-except ImportError:  # API imports
+elif env.CONTEXT in ("API"):
     from .tokens import Token
     from .matchoption import MatchOption
     from .application import Application
     from .supertokens import SuperToken
+else:
+    raise InvalidContextException(env.CONTEXT)
 
 
 class ComponentNotFoundException(Exception):

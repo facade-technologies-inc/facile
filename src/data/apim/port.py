@@ -314,7 +314,6 @@ class Port(Entity):
         :return: A copy of the port (without wires)
         :rtype: Port
         """
-        
         newPort = Port(self._dataType, self._optional)
         newPort.setName(self.getName())
         newPort.setAnnotation(self.getAnnotation())
@@ -358,3 +357,68 @@ class Port(Entity):
             return self in self._action.getOutputPorts()
         
         return False
+
+    def asDict(self) -> dict:
+        """
+        Get a dictionary representation of the action.
+
+        .. note::
+            This is not just a getter of the __dict__ attribute.
+
+        :return: The dictionary representation of the object.
+        :rtype: dict
+        """
+
+        portDict = {}
+
+        portDict["id"] = self.getId()
+        portDict['name'] = self.getName()
+        portDict["input"] = None
+        portDict["outputs"] = None  # Wires take care of these
+        portDict["optional"] = self.isOptional()
+        portDict["action"] = None  # no need to store action since the action stores the port info
+        portDict["default"] = self._default
+        portDict['properties'] = self.getProperties().asDict()
+
+        try:
+            portDict["data type"] = self.getDataType().__name__
+        except:
+            portDict["data type"] = self.getDataType
+
+        return portDict
+
+    @staticmethod
+    def fromDict(d: dict, action: 'Action' = None) -> 'Port':
+        """
+        Creates a Port from the dictionary
+
+        :param d: The dictionary that represents the Port.
+        :type d: dict
+        :param action: The port's parent Action
+        :type action: Action
+        :return: The Port object that was constructed from the dictionary
+        :rtype: Port
+        """
+        port = Port()
+
+        port.setOptional(d['optional'])
+
+        if d['optional']:
+            port.setDefaultValue(d['default'])
+
+        port.setName(d['name'])
+
+        if action:
+            port.setAction(action)
+
+        try:
+            port._dataType = eval(d["data type"])
+        except:
+            port._dataType = d["data type"]
+
+        try:
+            port.setProperties(Properties.fromDict(d['properties']))
+        except:
+            pass
+
+        return port

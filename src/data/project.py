@@ -21,7 +21,7 @@
 This module contains the Project class.
 """
 
-import traceback
+from typing import Dict, Tuple
 import json
 import os
 from subprocess import PIPE
@@ -352,7 +352,7 @@ class Project:
 		
 		return self._projectDir
 	
-	def getMainProjectFile(self) -> str:
+	def getProjectFile(self) -> str:
 		"""
 		Gets the project's main file path (the .fcl file)
 		
@@ -361,27 +361,7 @@ class Project:
 		"""
 		
 		return os.path.join(self._projectDir, self._name + ".fcl")
-	
-	def getTargetGUIModelFile(self) -> str:
-		"""
-		Gets the project's target GUI model file path (.tguim)
-		
-		:return: The path to the project's .tguim file
-		:rtype: str
-		"""
-		
-		return os.path.join(self._projectDir, self._name + ".tguim")
-	
-	def getAPIModelFile(self) -> str:
-		"""
-		Gets the project's API model file path (.apim)
-		
-		:return: The path to the project's .apim file
-		:rtype: str
-		"""
-		
-		return os.path.join(self._projectDir, self._name + ".apim")
-	
+
 	def startTargetApplication(self) -> None:
 		"""
 		Starts the target application
@@ -426,12 +406,12 @@ class Project:
 		return ProjectExplorerModel(self, view)
 	
 	@staticmethod
-	def load(mainFile: str, onEntityCreation = None, onCompletion = None ) -> 'Project':
+	def load(projectFile: str, onEntityCreation = None, onCompletion = None) -> 'Project':
 		"""
 		Creates a Project object from a .fcl file.
 		
-		:param mainFile: The project's .fcl file
-		:type mainFile: str
+		:param projectFile: The project's .fcl file
+		:type projectFile: str
 		:param onEntityCreation: The function to run when an entity is created (may be None)
 		:type onEntityCreation: callable
 		:param onCompletion: The function to run when loading is complete
@@ -440,12 +420,10 @@ class Project:
 		:rtype: Project
 		"""
 		
-		mainProjectFile = open(mainFile)
-		contents = mainProjectFile.read()
-		projectJSON = json.loads(contents)
-		mainProjectFile.close()
+		with open(projectFile) as mainProjectFile:
+			projectJSON = json.loads(mainProjectFile.read())
 		
-		projectDir = os.path.dirname(mainFile)
+		projectDir = os.path.dirname(projectFile)
 		name = projectJSON["Project Information"]["Name"]
 		description = projectJSON["Project Information"]["Description"]
 		exe = projectJSON["Application Information"]["Target Application"]
@@ -459,19 +437,9 @@ class Project:
 		loadedProject.acaWarningShown = warningShown
 
 		Entity.onCreation = onEntityCreation
-
-		try:
-			with open(loadedProject.getTargetGUIModelFile(), 'r') as tguimFile:
-				d = json.loads(tguimFile.read())
-				tguim = TargetGuiModel.fromDict(d)
-		except:
-			print("Couldn't load from {}".format(loadedProject.getTargetGUIModelFile()))
-			# traceback.print_exc()
-		else:
-			loadedProject._targetGUIModel = tguim
-		
-		# TODO: Load the API Model
-		# loadedProject.setAPIModel(["Model Files"]["API Model"] = self._APIModel)
+		loadedProject._targetGUIModel = TargetGuiModel.fromDict(projectJSON["Data Structures"]["Target GUI Model"])
+		loadedProject._apiModel = ApiModel.fromDict(projectJSON["Data Structures"]["API Model"],
+													loadedProject._targetGUIModel)
 
 		Entity.onCreation = None
 		onCompletion()
@@ -513,22 +481,15 @@ class Project:
 		projectDict["Settings"] = {}
 		projectDict["Settings"]["Close App on Exit"] = self.autoCloseAppOnExit
 		projectDict["Settings"]["AutoClose Warning Shown"] = self.acaWarningShown
-		
-		tguimFileName = self._name + ".tguim"
-		projectDict["Model Files"] = {}
-		projectDict["Model Files"]["Target GUI Model"] = tguimFileName
-		# projectDict["Model Files"]["API Model"] = self._APIModel
-		
-		with open(self.getMainProjectFile(), "w") as file:
-			file.write(json.dumps(projectDict, indent=4))
-		
-		# save Target GUI Model
-		with open(self.getTargetGUIModelFile(), 'w') as tguimFile:
-			d = self._targetGUIModel.asDict()
-			tguimFile.write(json.dumps(d, indent=4))
-			
-		# TODO: Save the API Model.
-	
+		projectDict["Data Structures"] = {}
+		projectDict["Data Structures"]["Target GUI Model"] = self._targetGUIModel.asDict()
+		projectDict["Data Structures"]["API Model"] = self._apiModel.asDict()
+
+		# save the project file
+		with open(self.getProjectFile(), "w") as file:
+			s = json.dumps(projectDict, indent=4)
+			file.write(s)
+
 	def addToRecents(self) -> None:
 		"""
 		Adds the project to the recents file.
@@ -547,8 +508,8 @@ class Project:
 				recentProjects = json.loads(recents.read())
 		except:
 			pass
-		if not self.getMainProjectFile() in recentProjects:
-			recentProjects.insert(0, self.getMainProjectFile())
+		if not self.getProjectFile() in recentProjects:
+			recentProjects.insert(0, self.getProjectFile())
 			with open(recentsFile, "w") as recents:
 				recents.write(json.dumps(recentProjects, indent=4))
 	

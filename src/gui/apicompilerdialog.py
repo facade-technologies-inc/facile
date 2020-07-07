@@ -22,10 +22,11 @@ This module contains the code for the copy project dialog.
 """
 import sys
 import os
+import subprocess
 import data.statemachine as sm
 
 from PySide2.QtCore import Signal, Slot, Qt, QThread
-from PySide2.QtWidgets import QDialog, QFileDialog, QWidget, QProgressDialog, QApplication
+from PySide2.QtWidgets import QDialog, QFileDialog, QWidget, QProgressDialog, QMessageBox
 from data.compilationprofile import CompilationProfile
 from tools.api_compiler.compiler import Compiler
 from tools.doc_generator.documentationgenerator import DocGenerator
@@ -215,25 +216,17 @@ class ApiCompilerDialog(QDialog):
 		self.setApiCompiler.emit(compProfile)
 		projectName = sm.StateMachine.instance._project.getAPIName()
 
-		# determine number of steps in compilation and documentation generation.
-		numSteps = 0
-		numSteps += 6  # number of required compile steps (you have to go count)
-		if compProfile.installApi:
-			numSteps += 1 # optional if installing API.
-		numSteps += len(compProfile.docTypes)
-
 		# create and show progressbar dialog
-		self.progress = QProgressDialog("Compiling API...", "Cancel API Generation", 0, numSteps * 2, parent=self.parent())
+		self.progress = QProgressDialog("Compiling API...", "Cancel API Generation", 0, 0, parent=self.parent())
+		self.progress.setWindowTitle("Compiling API...")
 		self.progress.setValue(0)
 		self.progress.setModal(True)
 
 		def stepStartedCatcher(message):
-			self.progress.setValue(self.progress.value() + 1)
 			self.progress.setLabelText(message + "...")
 
 		def stepCompleteCatcher():
-			self.progress.setValue(self.progress.value() + 1)
-			self.progress.setLabelText(self.progress.labelText() + " done.")
+			self.progress.setLabelText(self.progress.labelText() + " Done.")
 
 		# since compilation takes a long time, we do it in another thread to keep the GUI responsive.
 		self.thread = QThread()
@@ -252,11 +245,29 @@ class ApiCompilerDialog(QDialog):
 		self.thread.started.connect(self.progress.exec_, type=Qt.QueuedConnection)
 		self.thread.started.connect(self.compiler.compileAPI, type=Qt.QueuedConnection)
 		self.compiler.finished.connect(self.docGenerator.createDoc)
+		self.docGenerator.finished.connect(self.progress.cancel)
 		self.docGenerator.finished.connect(self.thread.terminate)
 		self.docGenerator.finished.connect(self.thread.deleteLater)
 		self.docGenerator.finished.connect(self.close)
-		self.docGenerator.finished.connect(lambda: QDialog.accept(self))
+		self.docGenerator.finished.connect(self.finalize)
 		self.progress.canceled.connect(self.thread.terminate)
 		self.progress.canceled.connect(self.thread.deleteLater)
 
 		self.thread.start()
+
+	def finalize(self):
+		"""
+		Once Compilation is finished, this runs.
+		Closes self first, then opens a dialog confirming that the API was generated, then once the user presses ok,
+		opens a file explorer in the API location if the option was checked.
+		"""
+
+		QDialog.accept(self)
+		QMessageBox.information(self, "Compilation Successful", "Your API was successfully generated.",
+								QMessageBox.StandardButton.Ok)
+
+		if self.ui.checkBoxOpenFolder.isChecked():
+			path = os.path.join(self.ui.apiLocation.text(),
+								sm.StateMachine.instance._project.getAPIName() + '_API_Files')
+
+			subprocess.Popen(f'explorer "{path}"')

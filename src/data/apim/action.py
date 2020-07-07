@@ -229,6 +229,20 @@ class Action(Entity):
 		for wrapper in self._wrappers:
 			wrapper.synchronizePorts()
 
+	def getChildActions(self) -> List['Action']:
+		"""
+		Returns all children actions. A child action is usually either the reference action in the case of self being an
+		ActionWrapper or the action wrappers if self is an ActionPipeline. As other actions are added to this architecture,
+		a child action may be defined differently, however, the child actions must be Action References.
+
+		This method shall be overriden by subclasses that have child components.
+
+		:return: All child actions of this action.
+		:rtype: List['Action']
+		"""
+
+		return []
+
 	def getMethodSignature(self) -> str:
 		"""
 		Gives the signature for a method using its name and parameter list. Newline at end.
@@ -265,7 +279,7 @@ class Action(Entity):
 		else:
 			return 'None'
 
-	def getMethodName(self) -> None:
+	def getMethodName(self):
 		"""
 		Must be overwritten in children classes; raises exception here if not.
 		"""
@@ -316,3 +330,28 @@ class Action(Entity):
 		code += '\n'
 
 		return code
+
+	def asDict(self) -> dict:
+		"""
+		Get a dictionary representation of the action.
+
+		.. note::
+			This is not just a getter of the __dict__ attribute.
+
+		:return: The dictionary representation of the object.
+		:rtype: dict
+		"""
+
+		actionDict = {}
+
+		actionDict['id'] = self.getId()
+		actionDict["inputs"] = [port.asDict() for port in self._inputs]
+		actionDict["outputs"] = [port.asDict() for port in self._outputs]
+		actionDict["wrappers"] = [wrapper.getId() for wrapper in self._wrappers]
+
+		if self._properties:
+			actionDict['properties'] = self.getProperties().asDict()
+		else:
+			actionDict['properties'] = None
+
+		return actionDict
