@@ -352,6 +352,10 @@ class FacileView(QMainWindow):
 		proj = Project.load(url, onEntityCreation=increment, onCompletion=complete)
 		self.setProject(proj)
 
+		# add action pipelines to the menu/view
+		for ap in proj.getAPIModel().getActionPipelines():
+			self.addActionPipelineToMenu(ap)
+
 		self.thread.deleteLater()
 
 	@Slot()
@@ -671,6 +675,17 @@ class FacileView(QMainWindow):
 			self.close()
 		event.accept()
 
+	def addActionPipelineToMenu(self, ap: 'ActionPipeline'):
+		"""
+		Adds an action pipeline to the action pipeline menu, and sets it as the current one.
+
+		:param ap: The action pipeline to add
+		:type ap: ActionPipeline
+		"""
+
+		self._actionPipelinesMenu.addAction(ap)
+		self.ui.actionMenuTabWidget.setCurrentWidget(self._actionPipelinesMenu)
+
 	def setTheme(self, theme: Theme) -> None:
 		"""
 		Sets theme to the one that is input, does nothing if not a valid theme.
@@ -952,4 +967,5 @@ class FacileView(QMainWindow):
 
 		stngs = FacileView.TGUIM_COL_SETTINGS
 		self.ui.targetGUIModelView.updateColors(stngs[0], stngs[1])
-		#TODO: add for apim themes to be saved
+		# TODO: Put command to update APIM colors here
+

@@ -22,16 +22,20 @@ This module contains the VisibilityBehavior class.
 """
 
 from enum import Enum, auto
+import libs.env as env
+from libs.env import InvalidContextException
 
-try: # Facile imports
+if env.CONTEXT in ("Facile", "Sphinx"):
 	from data.entity import Entity
 	from data.properties import Properties
 	from data.tguim.condition import Condition
 	from data.apim.componentaction import ComponentAction
-except ImportError: # API imports
+elif env.CONTEXT in ("API"):
 	from ..entity import Entity
 	from ..properties import Properties
 	from .condition import Condition
+else:
+	raise InvalidContextException(env.CONTEXT)
 
 class VisibilityBehavior(Entity):
 	"""
@@ -197,7 +201,7 @@ class VisibilityBehavior(Entity):
 		d["src"] = self._srcComponent.getId()
 		d["dest"] = self._destComponent.getId()
 		d['properties'] = self.getProperties().asDict()
-		# d['triggerAction'] = self._triggerAction.asDict()
+		d['triggerAction'] = self._triggerAction.asDict()
 		d["methodName"] = self.methodName
 		
 		return d
@@ -229,18 +233,18 @@ class VisibilityBehavior(Entity):
 		
 		vb = VisibilityBehavior(tguim)
 		vb._id = d['id']
+
 		vb._srcComponent = d['src']
 		vb._destComponent = d['dest']
+		vb.triggerActionDict = d['triggerAction']
+
 		vb.setProperties(Properties.fromDict(d['properties']))
+
 		reactionType = vb.getProperties().getProperty("Reaction Type")[1].getValue()
+
 		vb.getProperties().getProperty("Reaction Type")[1].setValue(
 			VisibilityBehavior.ReactionType[reactionType])
-		# vb._triggerAction = ComponentAction.fromDict(d['triggerAction'], tguim)
-		methodName = d["methodName"]
-		vb.methodName = methodName
-		
-		# Getting the trigger action from tguim
-		# s = methodName.split("_")
-		# id = s[1]
-		# vb._triggerAction = ComponentAction(tguim.getComponent(id), None)
+
+		vb.methodName = d["methodName"]
+
 		return vb

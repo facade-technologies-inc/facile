@@ -18,55 +18,15 @@
     |                                                                              |
     \------------------------------------------------------------------------------/
 
-This is the main file that launches Facile. This module should only be run by the
-user and never imported.
-
+This file contains information about the environment that Facile is running in.
 """
 
-import sys
 import os
-import warnings
-import libs.env as env
-env.CONTEXT = "Facile"
 
-sys.path.append(os.path.abspath("./gui/rc/"))
+CONTEXT = "API"
+TEMP_DIR = os.path.abspath("./temp/")
+LOG_FILES_DIR = os.path.join(TEMP_DIR, "log_files/")
 
-# These lines are needed to integrate Qt and pywinauto
-warnings.simplefilter("ignore", UserWarning)
-sys.coinit_flags = 2
-
-from PySide2.QtWidgets import QApplication
-
-from gui.facileview import FacileView
-from gui.splashscreen import FacileSplashScreen
-import psutil
-
-from libs.logging import archive_logs, root_logger
-
-if __name__ == "__main__":
-    archive_logs()
-    root_logger.info("Initializing Application")
-
-    # increases performance by hogging more processor time
-    p = psutil.Process()
-    p.nice(psutil.HIGH_PRIORITY_CLASS)
-    
-    app = QApplication([])
-
-    splash = FacileSplashScreen()
-    splash.show()
-
-    view = FacileView()
-
-    splash.finish(view)
-    view.showMaximized()
-
-    root_logger.info("Launching Facile")
-    status = app.exec_()
-
-    exit_msg = f"Facile has been terminated. Exiting with status: {status}"
-    if status:
-        root_logger.error(exit_msg)
-    else:
-        root_logger.info(exit_msg)
-    sys.exit(status)
+class InvalidContextException(Exception):
+    def __init__(self, msg):
+        Exception.__init__(self, msg)

@@ -20,24 +20,23 @@
 
 This module contains the Component class.
 """
-from PIL.Image import Image
-from datetime import datetime
 
 from datetime import datetime
+import libs.env as env
+from libs.env import InvalidContextException
 
-try: # Facile imports
+if env.CONTEXT in ("Facile", "Sphinx"):
 	from data.entity import Entity
 	from data.properties import Properties
 	from data.tguim.visibilitybehavior import VisibilityBehavior
 	from tguiil.supertokens import SuperToken
-except ImportError: # API imports
+elif env.CONTEXT in ("API"):
 	from ..entity import Entity
 	from ..properties import Properties
 	from .visibilitybehavior import VisibilityBehavior
 	from ...tguiil.supertokens import SuperToken
-
-
-
+else:
+	raise InvalidContextException(env.CONTEXT)
 
 class Component(Entity):
 	"""

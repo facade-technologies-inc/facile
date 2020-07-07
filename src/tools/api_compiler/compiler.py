@@ -21,13 +21,17 @@
 This file contains the Compiler class - the part of Facile that interprets a user's 
 work in the gui, and converts it into the desired API.
 """
-import os
+import os, json
 from shutil import copyfile
 
 from PySide2.QtCore import QObject, Signal
 
 import data.statemachine as sm
 from data.compilationprofile import CompilationProfile
+from libs.logging import compiler_logger as logger
+
+curPath = os.path.abspath(__file__)
+dir, filename = os.path.split(curPath)
 
 
 class Compiler(QObject):
@@ -41,6 +45,7 @@ class Compiler(QObject):
 
         :return: None
         """
+        logger.debug("Instantiating compiler")
         QObject.__init__(self)
         self.statem = sm.StateMachine.instance
         self._compProf = compProf
@@ -53,7 +58,7 @@ class Compiler(QObject):
         self._tguim = self.statem._project.getTargetGUIModel()
         
         # Save Folders
-        self._saveFolder = compProf.apiFolderDir + '/'
+        self._saveFolder = os.path.join(compProf.apiFolderDir, self._name + '_API_Files/')
         self._srcFolder = os.path.join(self._saveFolder, self._apiName + '/')
         self._docFolder = os.path.join(self._srcFolder, 'Documentation/')
         
@@ -70,7 +75,8 @@ class Compiler(QObject):
                                 "../../tguiil/matchoption.py", "../../data/entity.py",
                                 "../../data/tguim/component.py", "../../data/tguim/visibilitybehavior.py",
                                 "../../data/properties.py", "../../data/tguim/condition.py",
-                                "../../data/tguim/targetguimodel.py", "../../data/property.py"]
+                                "../../data/tguim/targetguimodel.py", "../../data/property.py",
+                                "../../libs/env.py"]
                                 # "../../data/apim/componentaction.py", "../../data/apim/action.py",
                                 # "../../data/apim/actionspecification.py", "../../data/apim/port.py",
                                 # "../../data/apim/wire.py", "../../data/apim/actionpipeline.py",
@@ -82,7 +88,9 @@ class Compiler(QObject):
 
         :return: None
         """
-        self.stepStarted.emit("Generating custom application driver")
+        msg = "Generating custom application driver"
+        logger.info(msg)
+        self.stepStarted.emit(msg)
 
         with open(self._srcFolder + "application.py", "w+") as f:
             
@@ -90,37 +98,54 @@ class Compiler(QObject):
             #  to use it for their own purposes and may want to share their generated API online.
             #  Could make a custom tag. I put the original in for the moment though.
 
-            curPath = os.path.abspath(__file__)
-            dir, filename = os.path.split(curPath)
+            logger.debug("Reading application-unfilled.py")
+            try:
+                with open(os.path.join(dir, 'application-template.py'), 'r') as g:
+                    appStr = g.read()
+            except Exception as e:
+                logger.exception(e)
 
-            with open(os.path.join(dir, 'application-unfilled.py'), 'r') as g:
-                appStr = g.read()
-
-            # Generate options set
+            logger.debug("Generating options set")
             optStr = '{'
             for opt in self._opts:
                 optStr += str(opt) + ', '
             optStr = optStr[:-2] + '}'
 
-            # Generate str of required compIDs
+            logger.debug("Generating str of required compIDs")
+            alreadyWritten = []
             aps, cas = self._apim.getActionsByType()
             compIDs = '['
             for action in cas:
+                alreadyWritten.append(action.getTargetComponent().getId())
                 compIDs += str(action.getTargetComponent().getId()) + ', '
+
+            # We also want the visibilitybehaviors' triggeractions' components' IDs
+            vbs = self._tguim.getVisibilityBehaviors()
+            for id in vbs:
+                vb = vbs[id]
+                name = vb.methodName
+                triggerAction = vb.getTriggerAction()
+                if name not in alreadyWritten and triggerAction is not None:
+                    compIDs += str(triggerAction.getTargetComponent().getId()) + ', '
+
             compIDs = compIDs[:-2] + ']'  # remove the final ", " and close bracket
 
-            # Format BaseApp superclass call with necessary info
-            appStr = appStr.format(exeLoc="'" + self._exeLoc + "'", options=optStr, name="'" + self._name + "'",
-                                   backend="'" + self._backend + "'", reqCompIDs=compIDs)
+            logger.debug("Format BaseApp superclass call with necessary info")
+            try:
+                appStr = appStr.format(exeLoc="'" + self._exeLoc + "'", options=optStr, name="'" + self._name + "'",
+                                       backend="'" + self._backend + "'", reqCompIDs=compIDs)
+            except Exception as e:
+                logger.exception(e)
+            logger.debug("Writing BaseApp")
             f.write(appStr)
 
-            vbs = self._tguim.getVisibilityBehaviors()
+            logger.debug("Writing methods generated from actions that are used in action pipelines.")
             alreadyWritten = []
-
             for action in cas:
                 alreadyWritten.append(action.getMethodName())
                 f.write(action.getMethod())
 
+            logger.debug("Writing methods generated from actions that are used by visibility behaviors.")
             for id in vbs:
                 vb = vbs[id]
                 name = vb.methodName
@@ -128,9 +153,11 @@ class Compiler(QObject):
                 if name not in alreadyWritten and triggerAction is not None:
                     f.write(triggerAction.getMethod())
 
+            logger.debug("Writing methods generated from action pipelines.")
             for ap in aps:
                 f.write(ap.getMethod())
 
+        logger.info("Finished generating custom application driver.")
         self.stepComplete.emit()
 
     def copyNecessaryFiles(self) -> None:
@@ -140,17 +167,24 @@ class Compiler(QObject):
         :return: None
         """
         self.stepStarted.emit("Copying necessary files")
+
         # make necessary directories before copying files
-        targetDirs = ['data', 'data/tguim', 'tguiil']  # 'data/apim',
-        for dir in targetDirs:
-            dir = os.path.join(self._srcFolder, dir)
-            if not os.path.exists(dir):
-                os.mkdir(dir)
-        
-        curPath = os.path.abspath(__file__)
-        dir, filename = os.path.split(curPath)
+        targetDirs = ['data', 'data/tguim', 'tguiil', 'libs']  # 'data/apim',
+        for tdir in targetDirs:
+            tdir = os.path.join(self._srcFolder, tdir)
+            if not os.path.exists(tdir):
+                os.mkdir(tdir)
+
         for path in self._necessaryFiles:
-            copyfile(os.path.join(dir, path), os.path.join(self._srcFolder, path[6:]))
+            src = os.path.normpath(os.path.join(dir, path))
+            dest = os.path.join(self._srcFolder, path[6:])
+            logger.info(f"Copying file: {src} -> {dest}")
+            try:
+                copyfile(src, dest)
+            except Exception as e:
+                logger.critical("Unable to copy file.")
+                logger.exception(e)
+
         self.stepComplete.emit()
     
     def saveTGUIM(self):
@@ -159,31 +193,36 @@ class Compiler(QObject):
 
         :return: None
         """
-        self.stepStarted.emit("Saving target GUI model")
+
+        msg = "Saving target GUI model"
+        self.stepStarted.emit(msg)
+        logger.info(msg)
         self.statem._project.save()
-        path = self.statem._project.getTargetGUIModelFile()
-        name = self.statem._project.getName()
+        with open(self._srcFolder + "tguim.json", "w+") as f:
+            f.write(json.dumps(self._tguim.asDict()))
 
-        copyfile(path, os.path.join(self._srcFolder, name + '.tguim'))
         self.stepComplete.emit()
-    
-    def compileAPI(self) -> None:
-        """
-        Generates the functional API: the final result of compilation.
 
-        :return: None
+    def copyBaseApp(self):
         """
-        self.copyNecessaryFiles()
-        self.saveTGUIM()
+        Copies the BaseApplication file to the API
+        """
 
-        self.stepStarted.emit("Copying base application")
-        curPath = os.path.abspath(__file__)
-        dir, filename = os.path.split(curPath)
+        msg = "Copying base application"
+        self.stepStarted.emit(msg)
+        logger.info(msg)
         copyfile(os.path.join(dir, 'baseapplication.py'), os.path.join(self._srcFolder, 'baseapplication.py'))
         self.stepComplete.emit()
 
+    def generateSetupFile(self):
+        """
+        Generates the setup file for installing the API
+        """
         # Create setup.py so user can install install API as a package with pip.
-        self.stepStarted.emit("Generating setup.py file")
+        msg = "Generating setup.py file"
+        self.stepStarted.emit(msg)
+        logger.info(msg)
+
         setupTempFile = open(os.path.join(dir, "setup-template.txt"), 'r')
         setupStr = setupTempFile.read().format(projectName=self.statem._project.getAPIName(),
                                                projectVersion='0.1.0')  # TODO Add versioning
@@ -191,27 +230,79 @@ class Compiler(QObject):
         setupFile = open(os.path.join(self._saveFolder, 'setup.py'), 'w')
         setupFile.write(setupStr)
         setupFile.close()
+
         self.stepComplete.emit()
 
+    def generateInitFile(self):
+        """
+        Generates the init file so the package can be installed as an API
+        """
         # Create __init__.py so API is a package.
-        self.stepStarted.emit("Generating __init__.py file")
+        msg = "Generating __init__.py file"
+        self.stepStarted.emit(msg)
+        logger.info(msg)
+
         initTempFile = open(os.path.join(dir, "__init__template.txt"), 'r')
         targetAppName = self.statem._project.getExecutableFile().split('/')[-1].split('.')[0]  # '.../app.exe' -> 'app'
         targetAppName = targetAppName[0].upper() + targetAppName[1:]  # 'app' -> 'App'
         initStr = initTempFile.read().format(targetApplicationName=targetAppName)
         initTempFile.close()
+
         initFile = open(os.path.join(self._srcFolder, '__init__.py'), 'w')
         initFile.write(initStr)
         initFile.close()
+
         self.stepComplete.emit()
-        
+
+    def installAPI(self):
+        """
+        Installs the generated API to PATH
+        """
+        msg = "Installing as python package"
+        self.stepStarted.emit(msg)
+        logger.info(msg)
+
+        os.chdir(self._saveFolder)
+        os.system(self._compProf.interpExeDir + " -m pip install . 1>install.log 2>&1")
+
+        logger.info("Finished installing python package")
+        self.stepComplete.emit()
+
+    def copyHelpFiles(self):
+        """
+        Generates files that give the basic structure and outline of a functional script.
+        Will only write them if they do not yet exist, to avoid overwriting any existing work in the automate.py file.
+        """
+        msg = "Copying help files"
+        self.stepStarted.emit(msg)
+        logger.info(msg)
+        if not os.path.exists(self._saveFolder + "automate.py"):
+            with open(self._saveFolder + "automate.py", "w+") as f:
+                with open(os.path.join(dir, 'automate-template.py'), 'r') as g:
+                    autoStr = g.read()
+
+                f.write(autoStr.format(name=self._name))
+
+            copyfile(os.path.join(dir, 'run-script.bat'), os.path.join(self._saveFolder, 'run-script.bat'))
+
+    def compileAPI(self):
+        """
+        Generates the functional API: the final result of compilation.
+        """
+        logger.info("Compiling API")
+        self.copyNecessaryFiles()
+        self.saveTGUIM()
+        self.copyBaseApp()
+
+        if self._compProf.installApi:
+            self.generateSetupFile()
+            self.generateInitFile()
+
         self.generateCustomApp()
 
-        # Auto install API if user selected to do so.
         if self._compProf.installApi:
-            self.stepStarted.emit("Installing as python package")
-            os.chdir(self._saveFolder)
-            os.system(self._compProf.interpExeDir + " -m pip install . 1>install.log 2>&1")
-            self.stepComplete.emit()
+            self.installAPI()
 
+        self.copyHelpFiles()
         self.finished.emit()
+        logger.info("Finished compiling API")
