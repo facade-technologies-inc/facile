@@ -36,12 +36,12 @@ class ActionWrapperGraphics(ActionGraphics):
 	
 	TAG_FONT = QFont("Times", 10)
 	TAG_TEXT_COLOR = QColor(0, 0, 0)
-	TAG_BACKGROUND_COLOR = QColor(150, 150, 150)
+	TAG_BACKGROUND_COLOR = QColor(255, 255, 255)
 	
 	NAME_FONT = QFont("Times", 10)
-	NAME_TEXT_COLOR = QColor(0, 0, 0)
+	NAME_TEXT_COLOR = QColor(255, 255, 255)
 	
-	COLOR = QColor(188, 183, 255)
+	COLOR = QColor(52, 73, 94)
 
 	POPUP_ARROW_WIDTH = 40
 	POPUP_BUFFER = 10

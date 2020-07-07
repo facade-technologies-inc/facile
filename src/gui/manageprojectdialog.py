@@ -59,6 +59,8 @@ class ManageProjectDialog(QDialog):
 		self.tguimBaseCol = None
 		self.actionPipelineBaseCol = None
 		self.actionPipelineActionCol = None
+		self.actionPipelineInsidePortCol = None
+		self.actionPipeLineOutsidePortCol = None
 
 		self.initializeValues()
 		self.connectSignals()
@@ -74,9 +76,10 @@ class ManageProjectDialog(QDialog):
 			self.setTGUIMBaseCol(self.mainWindow.ui.targetGUIModelView.baseColor())
 			
 			# APIM settings
-			self.ui.dynamicCol.setChecked(self.mainWindow.ui.apiModelView.isFlat())
-			self.setActionPipelineBaseCol(self.mainWindow.ui.apiModelView.baseColor())
-			#self.setActionPipelineActionCol(self.mainWindow.ui.actionWrapperGraphicsView.COLOR)
+			self.setActionPipelineBaseCol(self.mainWindow.APIM_COLORS[0])
+			self.setActionPipelineWrapperCol(self.mainWindow.APIM_COLORS[1])
+			self.setActionPipelineInsidePortCol(self.mainWindow.APIM_COLORS[2])
+			self.setActionPipelineOutsidePortCol(self.mainWindow.APIM_COLORS[3])
 
 			# Project settings
 			self.ui.locationEdit.setText(project.getProjectDir())
@@ -105,7 +108,9 @@ class ManageProjectDialog(QDialog):
 		self.ui.buttonBox.clicked.connect(lambda button: self.applySettings(button))
 		self.ui.t_baseColButton.clicked.connect(lambda: self.colorPicker_tguim())
 		self.ui.a_baseColButton.clicked.connect(lambda: self.colorPicker_actionpipeline_base())
-		self.ui.a_actionColButton.clicked.connect(lambda: self.colorPicker_actionpipeline_action())
+		self.ui.a_actionColButton.clicked.connect(lambda: self.colorPicker_actionpipeline_wrapper())
+		self.ui.a_port_InsideColButton.clicked.connect(lambda: self.colorPicker_actionpipeline_inside_port())
+		self.ui.a_port_OutsideColButton.clicked.connect(lambda: self.colorPicker_actionpipeline_outside_port())
 
 	def setTGUIMBaseCol(self, color):
 		"""
@@ -133,7 +138,7 @@ class ManageProjectDialog(QDialog):
 		palette.setColor(QPalette.Background, color)
 		self.ui.a_baseCol.setPalette(palette)
 	
-	def setActionPipelineActionCol(self, color):
+	def setActionPipelineWrapperCol(self, color):
 		"""
 		Opens the color picker, and once it is closed it shows a preview of the current color in a widget.
 		Keeps an internal record of the accent color picked as well.
@@ -141,10 +146,36 @@ class ManageProjectDialog(QDialog):
 		:param color: The color to set
 		:type color: QColor
 		"""
-		self.actionPipelineActionCol = color
+		self.actionPipelineWrapperCol = color
 		palette = QPalette()
 		palette.setColor(QPalette.Background, color)
 		self.ui.a_baseCol.setPalette(palette)
+	
+	def setActionPipelineInsidePortCol(self, color):
+		"""
+		Opens the color picker, and once it is closed it shows a preview of the current color in a widget.
+		Keeps an internal record of the accent color picked as well.
+
+		:param color: The color to set
+		:type color: QColor
+		"""
+		self.actionPipelineInsidePortCol = color
+		palette = QPalette()
+		palette.setColor(QPalette.Background, color)
+		self.ui.a_port_InsideCol.setPalette(palette)
+		
+	def setActionPipelineOutsidePortCol(self, color):
+		"""
+		Opens the color picker, and once it is closed it shows a preview of the current color in a widget.
+		Keeps an internal record of the accent color picked as well.
+
+		:param color: The color to set
+		:type color: QColor
+		"""
+		self.actionPipelineOutsidePortCol = color
+		palette = QPalette()
+		palette.setColor(QPalette.Background, color)
+		self.ui.a_port_OutsideCol.setPalette(palette)
 		
 	def colorPicker_tguim(self):
 		"""
@@ -162,15 +193,29 @@ class ManageProjectDialog(QDialog):
 		colSelect.colorSelected.connect(lambda col: self.setActionPipelineBaseCol(col))
 		colSelect.exec_()
 		
-	def colorPicker_actionpipeline_action(self):
+	def colorPicker_actionpipeline_wrapper(self):
 		"""
 		Opens a color picking dialog, then returns the color chosen
 		"""
 		colSelect = QColorDialog(self.actionPipelineActionCol)
-		colSelect.colorSelected.connect(lambda col: self.setActionPipelineActionCol(col))
+		colSelect.colorSelected.connect(lambda col: self.setActionPipelineWrapperCol(col))
 		colSelect.exec_()
 		
-	#TODO: add color picker for Ports
+	def colorPicker_actionpipeline_inside_port(self):
+		"""
+		Opens a color picking dialog, then returns the color chosen
+		"""
+		colSelect = QColorDialog(self.actionPipelineInsidePortCol)
+		colSelect.colorSelected.connect(lambda col: self.setActionPipelineInsidePortCol(col))
+		colSelect.exec_()
+	
+	def colorPicker_actionpipeline_outside_port(self):
+		"""
+		Opens a color picking dialog, then returns the color chosen
+		"""
+		colSelect = QColorDialog(self.actionPipelineOutsidePortCol)
+		colSelect.colorSelected.connect(lambda col: self.setActionPipelineOutsidePortCol(col))
+		colSelect.exec_()
 	
 	def initializeValues(self):
 		"""
@@ -231,7 +276,9 @@ class ManageProjectDialog(QDialog):
 			# Save accent colors
 			fv.FacileView.TGUIM_COL_SETTINGS = [self.tguimBaseCol, self.ui.dynamicCol.isChecked()]
 			fv.FacileView.APIM_SETTINGS = [self.actionPipelineBaseCol, self.ui.dynamicCol.isChecked()]
-			fv.FacileView.APIM_SETTINGS = [self.actionPipelineActionCol, self.ui.dynamicCol.isChecked()]
+			fv.FacileView.APIM_SETTINGS = [self.actionPipelineWrapperCol, self.ui.dynamicCol.isChecked()]
+			fv.FacileView.APIM_SETTINGS = [self.actionPipelineInsidePortCol, self.ui.dynamicCol.isChecked()]
+			fv.FacileView.APIM_SETTINGS = [self.actionPipelineOutsidePortCol, self.ui.dynamicCol.isChecked()]
 			self.mainWindow.updateColors()
 
 			# Save settings once applied
@@ -239,7 +286,11 @@ class ManageProjectDialog(QDialog):
 
 			# Called to fix weird bug with color getting reset.
 			self.setTGUIMBaseCol(self.tguimBaseCol)
-			self.mainWindow.updateAPIMColors(self.actionPipelineBaseCol, self.actionPipelineActionCol, None, None, None)
+			self.mainWindow.updateAPIMColors(self.actionPipelineBaseCol,
+			                                 self.actionPipelineWrapperCol,
+			                                 self.actionPipelineInsidePortCol,
+			                                 self.actionPipelineOutsidePortCol,
+			                                 None)
 	
 	def accept(self) -> None:
 		"""

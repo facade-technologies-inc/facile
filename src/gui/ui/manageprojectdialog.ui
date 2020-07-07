@@ -1024,7 +1024,7 @@
                </size>
               </property>
               <property name="text">
-               <string>Current Port Accent Color:</string>
+               <string>Inside Port Accent Color:</string>
               </property>
              </widget>
             </item>
@@ -1054,7 +1054,7 @@
                </size>
               </property>
               <property name="text">
-               <string>Action Port Accent Color:</string>
+               <string>Outside Port Accent Color:</string>
               </property>
              </widget>
             </item>
@@ -1212,7 +1212,7 @@
           <item>
            <layout class="QHBoxLayout" name="horizontalLayout_18">
             <item>
-             <widget class="QWidget" name="a_port1Col" native="true">
+             <widget class="QWidget" name="a_port_InsideCol" native="true">
               <property name="minimumSize">
                <size>
                 <width>28</width>
@@ -1238,7 +1238,7 @@
              </spacer>
             </item>
             <item>
-             <widget class="QPushButton" name="a_port1ColButton">
+             <widget class="QPushButton" name="a_port_InsideColButton">
               <property name="maximumSize">
                <size>
                 <width>16777215</width>
@@ -1255,7 +1255,7 @@
           <item>
            <layout class="QHBoxLayout" name="horizontalLayout_33">
             <item>
-             <widget class="QWidget" name="a_port2Col" native="true">
+             <widget class="QWidget" name="a_port_OutsideCol" native="true">
               <property name="minimumSize">
                <size>
                 <width>28</width>
@@ -1281,7 +1281,7 @@
              </spacer>
             </item>
             <item>
-             <widget class="QPushButton" name="a_port2ColButton">
+             <widget class="QPushButton" name="a_port_OutsideColButton">
               <property name="maximumSize">
                <size>
                 <width>16777215</width>
@@ -1298,7 +1298,7 @@
           <item>
            <layout class="QHBoxLayout" name="horizontalLayout_34">
             <item>
-             <widget class="QWidget" name="a_sNumBG" native="true">
+             <widget class="QWidget" name="a_sequence_Col" native="true">
               <property name="minimumSize">
                <size>
                 <width>28</width>
@@ -1324,7 +1324,7 @@
              </spacer>
             </item>
             <item>
-             <widget class="QPushButton" name="a_sNumBG_2">
+             <widget class="QPushButton" name="a_sequence_ColButton">
               <property name="maximumSize">
                <size>
                 <width>16777215</width>

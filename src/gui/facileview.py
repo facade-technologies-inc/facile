@@ -80,7 +80,11 @@ class FacileView(QMainWindow):
 	themeChanged = Signal(Theme)
 
 	TGUIM_COL_SETTINGS = []
-	APIM_COLORS = []
+	APIM_COLORS = [ActionGraphics.COLOR,
+	               ActionWrapperGraphics.COLOR,
+	               PortGraphics.INNER_COLOR,
+	               PortGraphics.OUTER_COLOR,
+	               None]
 	
 	def __init__(self) -> 'FacileView':
 		"""
@@ -176,6 +180,8 @@ class FacileView(QMainWindow):
 		
 		ActionGraphics.COLOR = col1
 		ActionWrapperGraphics.COLOR = col2
+		PortGraphics.INNER_COLOR = col3
+		PortGraphics.OUTER_COLOR = col4
 		
 		self.refreshAPIM()
 	
