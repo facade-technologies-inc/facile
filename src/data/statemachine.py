@@ -404,8 +404,7 @@ class StateMachine:
 				return
 			else:
 				self._project.getAPIModel().addActionPipeline(ap)
-				v._actionPipelinesMenu.addAction(ap)
-				ui.actionMenuTabWidget.setCurrentWidget(v._actionPipelinesMenu)
+				v.addActionPipelineToMenu(ap)
 		
 		ui.actionAdd_Action_Pipeline.triggered.connect(onNewActionPipeline)
 		v._actionPipelinesMenu.actionSelected.connect(self.setCurrentActionPipeline)

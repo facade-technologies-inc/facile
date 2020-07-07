@@ -22,12 +22,17 @@
 """
 
 import sys, os
-try:
-    from .baseapplication import BaseApplication
-except:
-    # When importing from sphinx
-    from baseapplication import BaseApplication
+
 from tguiil.matchoption import MatchOption
+import libs.env as env
+from libs.env import InvalidContextException
+
+if env.CONTEXT in ("API"):
+	from .baseapplication import BaseApplication
+elif env.CONTEXT in ("Sphinx"):
+	from baseapplication import BaseApplication
+else:
+	raise Exception(f"Invalid context: {{env.CONTEXT}}")
 
 pathToThisFile, thisFile = os.path.split(os.path.abspath(__file__))
 sys.path.insert(0, pathToThisFile)
@@ -61,6 +66,6 @@ class Application(BaseApplication):
 		Returns self, that way the user can just call Application().start() when initializing their app.
 		"""
 		
-		self.startApp()
+		self._startApp()
 		return self
 

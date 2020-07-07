@@ -22,19 +22,22 @@ This module contains the TargetGuiModel class.
 """
 
 from collections import OrderedDict
-
 from PySide2.QtCore import QObject, Slot, Signal
+import libs.env as env
+from libs.env import InvalidContextException
 
-try: # Facile imports
+if env.CONTEXT in ("Facile", "Sphinx"):
 	from data.entity import Entity
 	from tguiil.supertokens import SuperToken
 	from data.tguim.component import Component
 	from data.tguim.visibilitybehavior import VisibilityBehavior
-except ImportError: # API imports
+elif env.CONTEXT in ("API"):
 	from ..entity import Entity
 	from ...tguiil.supertokens import SuperToken
 	from .component import Component
 	from .visibilitybehavior import VisibilityBehavior
+else:
+	raise InvalidContextException(env.CONTEXT)
 
 class TargetGuiModel(QObject):
 	"""
@@ -270,7 +273,7 @@ class TargetGuiModel(QObject):
 		return tguimDict
 	
 	@staticmethod
-	def fromDict(d: dict) -> 'TargetGui':
+	def fromDict(d: dict) -> 'TargetGuiModel':
 		"""
 		Creates a target GUI model from a dictionary.
 		

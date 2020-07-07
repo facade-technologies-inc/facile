@@ -28,7 +28,7 @@ from PySide2.QtCore import QObject, Signal
 
 import data.statemachine as sm
 from data.compilationprofile import CompilationProfile
-
+from libs.logging import compiler_logger as logger
 
 class DocGenerator(QObject):
     """
@@ -49,6 +49,7 @@ class DocGenerator(QObject):
         :type projectName: str
         """
         QObject.__init__(self)
+        logger.info("Instantiating the Documentation Generator")
         self.projectDir = sm.StateMachine.instance._project.getProjectDir()
         self.apiName = sm.StateMachine.instance._project.getAPIName()
         self.projectName = projectName
@@ -61,23 +62,33 @@ class DocGenerator(QObject):
 
         :param debug: If true, invalid commands will be printed to the console.
         :type debug: bool
-		:return: None
-		:rtype: NoneType
+        :return: None
+        :rtype: NoneType
         """
-        restorePoint = os.getcwd()
-        docDir = os.path.join(self.projectDir, self.apiName, "Documentation")
 
+        logger.debug("Generating documentation")
+
+        restorePoint = os.getcwd()
+        docDir = os.path.join(self.projectDir, self.apiName + "_API_Files", self.apiName, "Documentation")
+        srcDir = os.path.join(docDir, "src")
+
+        logger.debug("Creating documentation directory")
         if not os.path.exists(docDir):
             os.mkdir(docDir)
 
-        os.chdir(docDir)
-        self.execCommand('xcopy "{0}" /e 1>nul 2>&1'.format(self.sphinxFacileDir), printErrorCode=debug)
+        logger.info("Copying the sphinx directory")
+        try:
+            shutil.copytree(os.path.join(self.sphinxFacileDir, "src"), srcDir)
+        except FileExistsError as e:
+            logger.exception(e)
 
-        srcDir = os.path.join(self.projectDir, self.apiName, "Documentation", "src")
+        logger.info("Copying the contents of the API directory into the sphinx src directory")
+        apiDir = os.path.realpath(os.path.join(docDir, "../"))
 
-        # wait until src dir exists.
-        while not os.path.exists(srcDir):
-            pass
+        try:
+            shutil.copytree(apiDir, os.path.join(srcDir, "facile_src"), ignore=lambda x, y: ["Documentation"])
+        except FileExistsError as e:
+            logger.exception(e)
 
         os.chdir(srcDir)
         self.modifyConf()
@@ -85,31 +96,43 @@ class DocGenerator(QObject):
         for type in self.docType:
 
             if type is CompilationProfile.DocType.Html:
-                self.stepStarted.emit("Generating HTML documentation...")
+                initMsg = "Generating HTML documentation..."
+                logger.info(initMsg)
+                self.stepStarted.emit(initMsg)
                 if os.path.exists(os.path.abspath('../html')):
                     self.execCommand('cd ../ & RMDIR /Q/S html 1>nul 2>&1', printErrorCode=debug)
                 self.execCommand('make html 1> ..\\build_html.log 2>&1 & move _build\\html ..\\ 1>nul 2>&1', printErrorCode=debug)
+                logger.info("finished generating HTML documentation")
 
             elif type is CompilationProfile.DocType.Txt:
-                self.stepStarted.emit("Generating TXT documentation...")
+                initMsg = "Generating TXT documentation..."
+                logger.info(initMsg)
+                self.stepStarted.emit(initMsg)
                 if os.path.exists(os.path.abspath('../text')):
                     self.execCommand('cd ../ & RMDIR /Q/S text 1>nul 2>&1', printErrorCode=debug)
                 self.execCommand('make text 1> ..\\build_text.log 2>&1 & move _build\\text ..\\ 1>nul 2>&1', printErrorCode=debug)
+                logger.info("finished generating TXT documentation")
 
             elif type is CompilationProfile.DocType.Pdf:
-                self.stepStarted.emit("Generating PDF documentation...")
+                initMsg = "Generating PDF documentation..."
+                logger.info(initMsg)
+                self.stepStarted.emit(initMsg)
                 if os.path.exists(os.path.abspath('../pdf')):
                     self.execCommand('cd ../ & RMDIR /Q/S pdf 1>nul 2>&1', printErrorCode=debug)
                 self.execCommand('make latex 1> ..\\build_pdf.log 2>&1', printErrorCode=debug)
                 self.execCommand('cd _build\\latex & make 1>nul 2>&1 ', printErrorCode=debug)
                 self.execCommand('mkdir ..\\pdf', printErrorCode=debug)
                 self.execCommand('xcopy _build\\latex\\*.pdf ..\\pdf 1>nul 2>&1', printErrorCode=debug)
+                logger.info("finished generating PDF documentation")
             
             elif type is CompilationProfile.DocType.EPub:
-                self.stepStarted.emit("Generating EPUB documentation...")
+                initMsg = "Generating EPUB documentation..."
+                logger.info(initMsg)
+                self.stepStarted.emit(initMsg)
                 if os.path.exists(os.path.abspath('../epub')):
                     self.execCommand('cd ../ & RMDIR /Q/S epub 1>nul 2>&1', printErrorCode=debug)
                 self.execCommand('make epub 1> ..\\build_epub.log 2>&1 & move _build\\epub ..\\ 1>nul 2>&1', printErrorCode=debug)
+                logger.info("finished generating EPUB documentation")
 
             self.stepComplete.emit()
 
@@ -117,8 +140,10 @@ class DocGenerator(QObject):
         os.chdir(restorePoint)
 
         # remove the src directory.
-        self.execCommand(f'RMDIR /S/Q {srcDir} 1>nul 2>&1', printErrorCode=debug)
-
+        exit_code = self.execCommand(f'RMDIR /S/Q "{srcDir}" 1>nul 2>&1', printErrorCode=debug)
+        if exit_code:
+            logger.critical(f"Unable to remove the {srcDir}. This may cause import issues when the API is run.")
+        logger.info("Finished creating documentation.")
         self.finished.emit()
             
     def modifyConf(self):

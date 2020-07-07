@@ -20,15 +20,18 @@
 
 This module contains the Properties() class.
 """
-
 from collections import OrderedDict
 from enum import Enum
+import libs.env as env
+from libs.env import InvalidContextException
 
-try: # Facile imports
+if env.CONTEXT in ("Facile", "Sphinx"):
 	from data.property import Property
 	from qt_models.propeditormodel import PropModel
-except ImportError: # API imports
+elif env.CONTEXT in ("API"):
 	from .property import Property
+else:
+	raise InvalidContextException(env.CONTEXT)
 
 
 class Properties:

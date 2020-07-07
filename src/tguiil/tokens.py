@@ -39,7 +39,6 @@ from nltk.corpus import stopwords
 
 stopwords = stopwords.words('english')
 
-
 # Can support more languages in future
 screenWidth = pyautogui.size()[0]
 
