@@ -9,7 +9,12 @@ if __name__ == "__main__":
             print("=============================================================================")
             sys.exit(1)
 
-    os.system("python build_exe.py")
+    exit_code = os.system("python build_exe.py")
+
+    if exit_code != 0:
+        print("Executable not properly built. Cannot create an installer.")
+        sys.exit(1)
+
     os.chdir("../")
 
     print("building msi...", end="", flush=True)
