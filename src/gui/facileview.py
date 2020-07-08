@@ -84,7 +84,8 @@ class FacileView(QMainWindow):
 	               ActionWrapperGraphics.COLOR,
 	               PortGraphics.INNER_COLOR,
 	               PortGraphics.OUTER_COLOR,
-	               None]
+	               ActionWrapperGraphics.TAG_BACKGROUND_COLOR
+	                       ]
 	
 	def __init__(self) -> 'FacileView':
 		"""
@@ -182,6 +183,7 @@ class FacileView(QMainWindow):
 		ActionWrapperGraphics.COLOR = col2
 		PortGraphics.INNER_COLOR = col3
 		PortGraphics.OUTER_COLOR = col4
+		ActionWrapperGraphics.TAG_BACKGROUND_COLOR = col5
 		
 		self.refreshAPIM()
 	

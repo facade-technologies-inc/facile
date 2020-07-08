@@ -61,6 +61,7 @@ class ManageProjectDialog(QDialog):
 		self.actionPipelineActionCol = None
 		self.actionPipelineInsidePortCol = None
 		self.actionPipeLineOutsidePortCol = None
+		self.actionPipelineSequenceTagCol = None
 
 		self.initializeValues()
 		self.connectSignals()
@@ -80,6 +81,7 @@ class ManageProjectDialog(QDialog):
 			self.setActionPipelineWrapperCol(self.mainWindow.APIM_COLOR_SETTINGS[1])
 			self.setActionPipelineInsidePortCol(self.mainWindow.APIM_COLOR_SETTINGS[2])
 			self.setActionPipelineOutsidePortCol(self.mainWindow.APIM_COLOR_SETTINGS[3])
+			self.setActionPipelineSequenceTagCol(self.mainWindow.APIM_COLOR_SETTINGS[4])
 
 			# Project settings
 			self.ui.locationEdit.setText(project.getProjectDir())
@@ -111,6 +113,7 @@ class ManageProjectDialog(QDialog):
 		self.ui.a_actionColButton.clicked.connect(lambda: self.colorPicker_actionpipeline_wrapper())
 		self.ui.a_port_InsideColButton.clicked.connect(lambda: self.colorPicker_actionpipeline_inside_port())
 		self.ui.a_port_OutsideColButton.clicked.connect(lambda: self.colorPicker_actionpipeline_outside_port())
+		self.ui.a_sequence_ColButton.clicked.connect(lambda: self.colorPicker_actionpipeline_sequence_tag())
 
 	def setTGUIMBaseCol(self, color):
 		"""
@@ -176,6 +179,19 @@ class ManageProjectDialog(QDialog):
 		palette = QPalette()
 		palette.setColor(QPalette.Background, color)
 		self.ui.a_port_OutsideCol.setPalette(palette)
+	
+	def setActionPipelineSequenceTagCol(self, color):
+		"""
+		Opens the color picker, and once it is closed it shows a preview of the current color in a widget.
+		Keeps an internal record of the accent color picked as well.
+
+		:param color: The color to set
+		:type color: QColor
+		"""
+		self.actionPipelineSequenceTagCol = color
+		palette = QPalette()
+		palette.setColor(QPalette.Background, color)
+		self.ui.a_sequence_Col.setPalette(palette)
 		
 	def colorPicker_tguim(self):
 		"""
@@ -217,6 +233,14 @@ class ManageProjectDialog(QDialog):
 		colSelect.colorSelected.connect(lambda col: self.setActionPipelineOutsidePortCol(col))
 		colSelect.exec_()
 	
+	def colorPicker_actionpipeline_sequence_tag(self):
+		"""
+		Opens a color picking dialog, then returns the color chosen
+		"""
+		colSelect = QColorDialog(self.actionPipelineSequenceTagCol)
+		colSelect.colorSelected.connect(lambda col: self.setActionPipelineSequenceTagCol(col))
+		colSelect.exec_()
+		
 	def initializeValues(self):
 		"""
 		Initializes all the user settings to be visible/selected
@@ -279,6 +303,7 @@ class ManageProjectDialog(QDialog):
 			fv.FacileView.APIM_COLOR_SETTINGS = [self.actionPipelineWrapperCol, self.ui.dynamicCol.isChecked()]
 			fv.FacileView.APIM_COLOR_SETTINGS = [self.actionPipelineInsidePortCol, self.ui.dynamicCol.isChecked()]
 			fv.FacileView.APIM_COLOR_SETTINGS = [self.actionPipelineOutsidePortCol, self.ui.dynamicCol.isChecked()]
+			fv.FacileView.APIM_COLOR_SETTINGS = [self.actionPipelineSequenceTagCol, self.ui.dynamicCol.isChecked()]
 			self.mainWindow.updateColors()
 
 			# Save settings once applied
@@ -290,7 +315,8 @@ class ManageProjectDialog(QDialog):
 			                                 self.actionPipelineWrapperCol,
 			                                 self.actionPipelineInsidePortCol,
 			                                 self.actionPipelineOutsidePortCol,
-			                                 None)
+			                                 self.actionPipelineSequenceTagCol
+			                                 )
 	
 	def accept(self) -> None:
 		"""

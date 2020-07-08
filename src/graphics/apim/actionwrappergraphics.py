@@ -137,7 +137,7 @@ class ActionWrapperGraphics(ActionGraphics):
 		offset = 5
 		radius = 15
 		size = ActionGraphics.H_SPACE/2 - offset*2
-		painter.setBrush(QColor(29, 110, 37))
+		painter.setBrush(ActionWrapperGraphics.TAG_BACKGROUND_COLOR)
 		painter.drawRoundedRect(QRectF(x + offset, y + offset, size, size), radius, radius)
 		painter.setPen(ActionWrapperGraphics.TAG_TEXT_COLOR)
 		painter.setBrush(ActionWrapperGraphics.TAG_TEXT_COLOR)
