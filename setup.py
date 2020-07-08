@@ -31,6 +31,7 @@ buildOptions = {
                       ],
 
     "excludes": ["scipy.spatial.cKDTree",
+                 "src.tools.api_compiler.automate-template"
                  ]
 }
 
