@@ -80,7 +80,7 @@ class FacileView(QMainWindow):
 	themeChanged = Signal(Theme)
 
 	TGUIM_COL_SETTINGS = []
-	APIM_COLORS = [ActionGraphics.COLOR,
+	APIM_COLOR_SETTINGS = [ActionGraphics.COLOR,
 	               ActionWrapperGraphics.COLOR,
 	               PortGraphics.INNER_COLOR,
 	               PortGraphics.OUTER_COLOR,
@@ -176,7 +176,7 @@ class FacileView(QMainWindow):
 		:return:
 		"""
 
-		FacileView.APIM_COlORS = [col1, col2, col3, col4, col5]
+		FacileView.APIM_COLOR_SETTINGS = [col1, col2, col3, col4, col5]
 		
 		ActionGraphics.COLOR = col1
 		ActionWrapperGraphics.COLOR = col2

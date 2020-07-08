@@ -48,7 +48,7 @@ class ActionGraphics(QGraphicsItem):
 	TOTAL_RECT_HEIGHT = PortGraphics.TOTAL_HEIGHT + V_SPACE
 	MAX_HEIGHT = TOTAL_RECT_HEIGHT + PortGraphics.TOTAL_HEIGHT
 	
-	COLOR = QColor(88, 183, 255)
+	COLOR = QColor(0, 76, 153)
 	
 	def __init__(self, action: 'Action', parent=None) -> 'ActionGraphics':
 		"""

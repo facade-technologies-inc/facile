@@ -76,10 +76,10 @@ class ManageProjectDialog(QDialog):
 			self.setTGUIMBaseCol(self.mainWindow.ui.targetGUIModelView.baseColor())
 			
 			# APIM settings
-			self.setActionPipelineBaseCol(self.mainWindow.APIM_COLORS[0])
-			self.setActionPipelineWrapperCol(self.mainWindow.APIM_COLORS[1])
-			self.setActionPipelineInsidePortCol(self.mainWindow.APIM_COLORS[2])
-			self.setActionPipelineOutsidePortCol(self.mainWindow.APIM_COLORS[3])
+			self.setActionPipelineBaseCol(self.mainWindow.APIM_COLOR_SETTINGS[0])
+			self.setActionPipelineWrapperCol(self.mainWindow.APIM_COLOR_SETTINGS[1])
+			self.setActionPipelineInsidePortCol(self.mainWindow.APIM_COLOR_SETTINGS[2])
+			self.setActionPipelineOutsidePortCol(self.mainWindow.APIM_COLOR_SETTINGS[3])
 
 			# Project settings
 			self.ui.locationEdit.setText(project.getProjectDir())
@@ -275,10 +275,10 @@ class ManageProjectDialog(QDialog):
 
 			# Save accent colors
 			fv.FacileView.TGUIM_COL_SETTINGS = [self.tguimBaseCol, self.ui.dynamicCol.isChecked()]
-			fv.FacileView.APIM_SETTINGS = [self.actionPipelineBaseCol, self.ui.dynamicCol.isChecked()]
-			fv.FacileView.APIM_SETTINGS = [self.actionPipelineWrapperCol, self.ui.dynamicCol.isChecked()]
-			fv.FacileView.APIM_SETTINGS = [self.actionPipelineInsidePortCol, self.ui.dynamicCol.isChecked()]
-			fv.FacileView.APIM_SETTINGS = [self.actionPipelineOutsidePortCol, self.ui.dynamicCol.isChecked()]
+			fv.FacileView.APIM_COLOR_SETTINGS = [self.actionPipelineBaseCol, self.ui.dynamicCol.isChecked()]
+			fv.FacileView.APIM_COLOR_SETTINGS = [self.actionPipelineWrapperCol, self.ui.dynamicCol.isChecked()]
+			fv.FacileView.APIM_COLOR_SETTINGS = [self.actionPipelineInsidePortCol, self.ui.dynamicCol.isChecked()]
+			fv.FacileView.APIM_COLOR_SETTINGS = [self.actionPipelineOutsidePortCol, self.ui.dynamicCol.isChecked()]
 			self.mainWindow.updateColors()
 
 			# Save settings once applied
