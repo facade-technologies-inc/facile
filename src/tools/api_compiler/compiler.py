@@ -29,8 +29,9 @@ from PySide2.QtCore import QObject, Signal
 import data.statemachine as sm
 from data.compilationprofile import CompilationProfile
 from libs.logging import compiler_logger as logger
+import libs.env as env
 
-curPath = os.path.abspath(__file__)
+curPath = os.path.abspath(os.path.join(env.FACILE_DIR, "tools/api_compiler/compiler.py"))
 dir, filename = os.path.split(curPath)
 
 
