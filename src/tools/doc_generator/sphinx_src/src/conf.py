@@ -17,7 +17,7 @@ sys.path.insert(0, os.path.abspath('../../'))
 # -- Context used for imports ------------------------------------------------
 
 import libs.env as env
-env.CONTEXT = "Sphinx"
+env.updateContext("Sphinx")
 
 # -- Project information -----------------------------------------------------
 
