@@ -32,7 +32,7 @@ from data.apim.componentaction import ComponentAction
 from data.apim.actionwrapper import ActionWrapper
 from data.apim.actionspecification import ActionSpecification
 from data.apim.wireset import WireSet
-
+import libs.env as env
 
 class ApiModel(QObject):
 	"""
@@ -70,7 +70,7 @@ class ApiModel(QObject):
 		:return: None
 		:rtype: NoneType
 		"""
-		curPath = os.path.abspath(__file__)
+		curPath = os.path.abspath(os.path.join(env.FACILE_DIR, "data/apim/apimodel.py"))
 		path, filename = os.path.split(curPath)
 		specDir = os.path.abspath(os.path.join(path,"../../../database/component_actions"))
 		if not os.path.exists(specDir):
