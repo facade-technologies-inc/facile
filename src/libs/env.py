@@ -41,7 +41,7 @@ class InvalidContextException(Exception):
     def __init__(self, msg):
         Exception.__init__(self, msg)
 
-def updateContext(newContext:str):
+def update_context(newContext:str):
     """
     Updates the context to "Facile", "Sphinx", or "API".
 
@@ -75,6 +75,19 @@ def updateContext(newContext:str):
             FACILE_ENTRY_MODE = "PY"
             active_file = sys.argv[0] # the python file
 
-        FACILE_DIR = os.path.dirname(active_file)
-        TEMP_DIR = os.path.abspath(os.path.join(FACILE_DIR,"temp"))
-        LOG_FILES_DIR = os.path.abspath(os.path.join(TEMP_DIR, "log_files"))
+        FACILE_DIR = os.path.normpath(os.path.dirname(active_file))
+        TEMP_DIR = os.path.normpath(os.path.abspath(os.path.join(FACILE_DIR,"temp")))
+        LOG_FILES_DIR = os.path.normpath(os.path.abspath(os.path.join(TEMP_DIR, "log_files")))
+
+def dump_vars():
+    """Prints all env variables to stdout"""
+    print(f"CONTEXT:              {CONTEXT}")
+    print("")
+    print(f"FACILE_ENTRY_MODE:    {FACILE_ENTRY_MODE}")
+    print(f"FACILE_DIR:           {FACILE_DIR}")
+    print(f"TEMP_DIR:             {TEMP_DIR}")
+    print(f"LOG_FILES_DIR:        {LOG_FILES_DIR}")
+
+
+updateContext = update_context
+dumpVars = dump_vars
