@@ -17,6 +17,19 @@ if __name__ == "__main__":
         os.mkdir("build")
     os.system("python setup.py build 1> build/build_exe.log 2>&1")
 
+    definitely_failed = True
+    for item in os.listdir("build"):
+        if os.path.isdir(os.path.realpath(os.path.join("./build", item))) and item.startswith("exe."):
+            definitely_failed = False
+
+    with open(os.path.join("build", "build_exe.log")) as f:
+        if "Traceback (most recent call last):" in f.read():
+            definitely_failed = True
+
+    if definitely_failed:
+        print("\nBuilding definitely failed. Check build_exe.log")
+        sys.exit(1)
+
     build_path = os.path.abspath("./build")
     exe_path = os.path.join(build_path, [item for item in os.listdir(build_path) if item.startswith("exe.")][0])
     lib_path = os.path.join(exe_path, "lib")
