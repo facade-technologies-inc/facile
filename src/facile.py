@@ -26,6 +26,8 @@ user and never imported.
 import sys
 import os
 import warnings
+import libs.env as env
+env.CONTEXT = "Facile"
 
 sys.path.append(os.path.abspath("./gui/rc/"))
 
@@ -42,7 +44,6 @@ import psutil
 from libs.logging import archive_logs, root_logger
 
 if __name__ == "__main__":
-
     archive_logs()
     root_logger.info("Initializing Application")
 

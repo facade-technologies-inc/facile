@@ -22,16 +22,20 @@ This module contains the VisibilityBehavior class.
 """
 
 from enum import Enum, auto
+import libs.env as env
+from libs.env import InvalidContextException
 
-try: # Facile imports
+if env.CONTEXT in ("Facile", "Sphinx"):
 	from data.entity import Entity
 	from data.properties import Properties
 	from data.tguim.condition import Condition
 	from data.apim.componentaction import ComponentAction
-except ImportError: # API imports
+elif env.CONTEXT in ("API"):
 	from ..entity import Entity
 	from ..properties import Properties
 	from .condition import Condition
+else:
+	raise InvalidContextException(env.CONTEXT)
 
 class VisibilityBehavior(Entity):
 	"""

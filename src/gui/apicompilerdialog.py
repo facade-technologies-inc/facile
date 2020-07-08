@@ -218,6 +218,8 @@ class ApiCompilerDialog(QDialog):
 
 		# create and show progressbar dialog
 		self.progress = QProgressDialog("Compiling API...", "Cancel API Generation", 0, 0, parent=self.parent())
+		self.progress.setWindowTitle("Compiling API...")
+		self.progress.setValue(0)
 		self.progress.setModal(True)
 
 		def stepStartedCatcher(message):

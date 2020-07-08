@@ -23,8 +23,10 @@ This file contains information about the environment that Facile is running in.
 
 import os
 
+CONTEXT = "API"
 TEMP_DIR = os.path.abspath("./temp/")
 LOG_FILES_DIR = os.path.join(TEMP_DIR, "log_files/")
 
-# TODO: Add variable to detect if we're running Facile, or a Facile API. This will be very useful for conditional
-#  imports rather than over-doing try/except blocks.
+class InvalidContextException(Exception):
+    def __init__(self, msg):
+        Exception.__init__(self, msg)
