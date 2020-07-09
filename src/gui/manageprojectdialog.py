@@ -127,7 +127,7 @@ class ManageProjectDialog(QDialog):
 		palette = QPalette()
 		palette.setColor(QPalette.Background, color)
 		self.ui.t_baseCol.setPalette(palette)
-	
+		
 	def setActionPipelineBaseCol(self, color):
 		"""
 		Opens the color picker, and once it is closed it shows a preview of the current color in a widget.
@@ -140,7 +140,7 @@ class ManageProjectDialog(QDialog):
 		palette = QPalette()
 		palette.setColor(QPalette.Background, color)
 		self.ui.a_baseCol.setPalette(palette)
-	
+
 	def setActionPipelineWrapperCol(self, color):
 		"""
 		Opens the color picker, and once it is closed it shows a preview of the current color in a widget.
@@ -153,7 +153,7 @@ class ManageProjectDialog(QDialog):
 		palette = QPalette()
 		palette.setColor(QPalette.Background, color)
 		self.ui.a_baseCol.setPalette(palette)
-	
+
 	def setActionPipelineInsidePortCol(self, color):
 		"""
 		Opens the color picker, and once it is closed it shows a preview of the current color in a widget.
@@ -166,7 +166,7 @@ class ManageProjectDialog(QDialog):
 		palette = QPalette()
 		palette.setColor(QPalette.Background, color)
 		self.ui.a_port_InsideCol.setPalette(palette)
-		
+
 	def setActionPipelineOutsidePortCol(self, color):
 		"""
 		Opens the color picker, and once it is closed it shows a preview of the current color in a widget.
@@ -179,7 +179,7 @@ class ManageProjectDialog(QDialog):
 		palette = QPalette()
 		palette.setColor(QPalette.Background, color)
 		self.ui.a_port_OutsideCol.setPalette(palette)
-	
+
 	def setActionPipelineSequenceTagCol(self, color):
 		"""
 		Opens the color picker, and once it is closed it shows a preview of the current color in a widget.
@@ -299,11 +299,16 @@ class ManageProjectDialog(QDialog):
 
 			# Save accent colors
 			fv.FacileView.TGUIM_COL_SETTINGS = [self.tguimBaseCol, self.ui.dynamicCol.isChecked()]
-			fv.FacileView.APIM_COLOR_SETTINGS = [self.actionPipelineBaseCol, self.ui.dynamicCol.isChecked()]
-			fv.FacileView.APIM_COLOR_SETTINGS = [self.actionPipelineWrapperCol, self.ui.dynamicCol.isChecked()]
-			fv.FacileView.APIM_COLOR_SETTINGS = [self.actionPipelineInsidePortCol, self.ui.dynamicCol.isChecked()]
-			fv.FacileView.APIM_COLOR_SETTINGS = [self.actionPipelineOutsidePortCol, self.ui.dynamicCol.isChecked()]
-			fv.FacileView.APIM_COLOR_SETTINGS = [self.actionPipelineSequenceTagCol, self.ui.dynamicCol.isChecked()]
+			# fv.FacileView.APIM_COLOR_SETTINGS = [self.actionPipelineBaseCol]
+			# fv.FacileView.APIM_COLOR_SETTINGS = [self.actionPipelineWrapperCol]
+			# fv.FacileView.APIM_COLOR_SETTINGS = [self.actionPipelineInsidePortCol]
+			# fv.FacileView.APIM_COLOR_SETTINGS = [self.actionPipelineOutsidePortCol]
+			# fv.FacileView.APIM_COLOR_SETTINGS = [self.actionPipelineSequenceTagCol]
+			fv.FacileView.APIM_COLOR_SETTINGS = [self.actionPipelineBaseCol,
+			                                     self.actionPipelineWrapperCol,
+			                                     self.actionPipelineInsidePortCol,
+			                                     self.actionPipelineOutsidePortCol,
+			                                     self.actionPipelineSequenceTagCol]
 			self.mainWindow.updateColors()
 
 			# Save settings once applied

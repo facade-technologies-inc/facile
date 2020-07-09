@@ -168,13 +168,16 @@ class FacileView(QMainWindow):
 		"""
 		Updates the colors for the APIM.
 		
-		#TODO: Complete docstring
-		:param col1:
-		:param col2:
-		:param col3:
-		:param col4:
-		:param col5:
-		:return:
+		:param col1: The base color to update
+		:type col1: QColor
+		:param col2: The action wrapper color to update
+		:type col2: QColor
+		:param col3: The inside port color to update
+		:type col3: QColor
+		:param col4: The outside port color to update
+		:type col4: QColor
+		:param col5: The sequence tag color to update
+		:type col5: QColor
 		"""
 
 		FacileView.APIM_COLOR_SETTINGS = [col1, col2, col3, col4, col5]
