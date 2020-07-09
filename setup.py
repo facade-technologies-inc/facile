@@ -36,8 +36,6 @@ buildOptions = {
 
 installOptions = {"skip_build":True}
 
-bdistOptions = {"skip_build":True}
-
 base = None
 
 # Uncomment for GUI applications to NOT show cmd window while running.
@@ -54,6 +52,5 @@ setup(name='Facile',
       options = {
           "build_exe": buildOptions,
           "install_exe": installOptions,
-          "bdist_msi": bdistOptions,
       },
       executables = executables)
