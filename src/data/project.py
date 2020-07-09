@@ -38,6 +38,9 @@ from tguiil.explorer import Explorer
 from tguiil.observer import Observer
 import data.statemachine as sm
 
+import libs.env as env
+from libs.logging import main_logger as logger
+
 
 class Project:
 	"""
@@ -498,16 +501,14 @@ class Project:
 		:rtype: NoneType
 		"""
 		cwd = os.getcwd()
-		tempDir = os.path.join(cwd, "temp")
-		recentsFile = os.path.join(tempDir, "recentProjects.json")
+		recentsFile = os.path.join(env.TEMP_DIR, "recentProjects.json")
 		recentProjects = []
-		if not os.path.exists(tempDir):
-			os.mkdir(tempDir)
 		try:
 			with open(recentsFile, "r") as recents:
 				recentProjects = json.loads(recents.read())
-		except:
-			pass
+		except Exception as e:
+			logger.exception(e)
+
 		if not self.getProjectFile() in recentProjects:
 			recentProjects.insert(0, self.getProjectFile())
 			with open(recentsFile, "w") as recents:
@@ -525,10 +526,11 @@ class Project:
 		:rtype: list[str]
 		"""
 		try:
-			with open(os.path.join(os.getcwd(), "temp/recentProjects.json"), "r") as recents:
+			with open(os.path.join(env.TEMP_DIR, "recentProjects.json"), "r") as recents:
 				recentProjects = json.loads(recents.read())
 		
-		except FileNotFoundError:
+		except FileNotFoundError as e:
+			logger.exception(e)
 			recentProjects = []
 		
 		# limit the length of the list
