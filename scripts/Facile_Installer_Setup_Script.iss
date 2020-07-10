@@ -10,7 +10,7 @@
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application. Do not use the same AppId value in installers for other applications.
 ; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
-AppId={{F32A6434-43E6-485F-B766-BF56B4A1E9BA}
+AppId={{78FDF148-3564-4C07-9DAA-87F3A488C38C}
 AppName={#MyAppName}
 AppVersion={#MyAppVersion}
 ;AppVerName={#MyAppName} {#MyAppVersion}
@@ -21,9 +21,10 @@ AppUpdatesURL={#MyAppURL}
 DefaultDirName={autopf}\{#MyAppName}
 DisableProgramGroupPage=yes
 ; Uncomment the following line to run in non administrative install mode (install for current user only.)
-;PrivilegesRequired=lowest
+PrivilegesRequired=admin
+PrivilegesRequiredOverridesAllowed=dialog
 OutputDir={#SourcePath}\..\dist
-OutputBaseFilename=mysetup
+OutputBaseFilename=facile_installer
 SetupIconFile={#SourcePath}\..\resources\facade_logo_256.ico
 Compression=lzma
 SolidCompression=yes
