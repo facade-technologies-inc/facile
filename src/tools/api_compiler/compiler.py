@@ -29,8 +29,9 @@ from PySide2.QtCore import QObject, Signal
 import data.statemachine as sm
 from data.compilationprofile import CompilationProfile
 from libs.logging import compiler_logger as logger
+import libs.env as env
 
-curPath = os.path.abspath(__file__)
+curPath = os.path.abspath(os.path.join(env.FACILE_DIR, "tools/api_compiler/compiler.py"))
 dir, filename = os.path.split(curPath)
 
 
@@ -278,7 +279,7 @@ class Compiler(QObject):
         logger.info(msg)
         if not os.path.exists(self._saveFolder + "automate.py"):
             with open(self._saveFolder + "automate.py", "w+") as f:
-                with open(os.path.join(dir, 'automate-template.py'), 'r') as g:
+                with open(os.path.join(dir, 'automate-template.txt'), 'r') as g:
                     autoStr = g.read()
 
                 f.write(autoStr.format(name=self._name))

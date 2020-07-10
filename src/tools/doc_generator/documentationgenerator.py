@@ -29,6 +29,8 @@ from PySide2.QtCore import QObject, Signal
 import data.statemachine as sm
 from data.compilationprofile import CompilationProfile
 from libs.logging import compiler_logger as logger
+import libs.env as env
+
 
 class DocGenerator(QObject):
     """
@@ -54,7 +56,8 @@ class DocGenerator(QObject):
         self.apiName = sm.StateMachine.instance._project.getAPIName()
         self.projectName = projectName
         self.docType = docType
-        self.sphinxFacileDir = os.path.join(os.path.split(__file__)[0], "sphinx_src")
+        directory, path = os.path.split(os.path.join(env.FACILE_DIR, "tools/doc_generator/documentationgenerator.py"))
+        self.sphinxFacileDir = os.path.join(directory, "sphinx_src")
     
     def createDoc(self, debug:bool=True):
         """

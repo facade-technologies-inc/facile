@@ -27,7 +27,7 @@ import sys
 import os
 import warnings
 import libs.env as env
-env.CONTEXT = "Facile"
+env.updateContext("Facile")
 
 sys.path.append(os.path.abspath("./gui/rc/"))
 
