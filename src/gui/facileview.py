@@ -981,7 +981,6 @@ class FacileView(QMainWindow):
 
 		# TGUIM
 		stngs = FacileView.TGUIM_COL_SETTINGS
-		print(stngs[0].getRgb())
 		self.ui.targetGUIModelView.updateColors(stngs[0], stngs[1])
 
 		# APIM (try/except is because it initially breaks on project loading)
