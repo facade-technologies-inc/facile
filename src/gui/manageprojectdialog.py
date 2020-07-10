@@ -73,15 +73,15 @@ class ManageProjectDialog(QDialog):
 			self.ui.api_model_tab.setEnabled(True)
 
 			# TGUIM settings
-			self.ui.dynamicCol.setChecked(self.mainWindow.ui.targetGUIModelView.isFlat())
-			self.setTGUIMBaseCol(self.mainWindow.ui.targetGUIModelView.baseColor())
+			self.ui.dynamicCol.setChecked(fv.FacileView.TGUIM_COL_SETTINGS[1])
+			self.setTGUIMBaseCol(fv.FacileView.TGUIM_COL_SETTINGS[0])
 			
 			# APIM settings
-			self.setActionPipelineBaseCol(self.mainWindow.APIM_COLOR_SETTINGS[0])
-			self.setActionPipelineWrapperCol(self.mainWindow.APIM_COLOR_SETTINGS[1])
-			self.setActionPipelineInsidePortCol(self.mainWindow.APIM_COLOR_SETTINGS[2])
-			self.setActionPipelineOutsidePortCol(self.mainWindow.APIM_COLOR_SETTINGS[3])
-			self.setActionPipelineSequenceTagCol(self.mainWindow.APIM_COLOR_SETTINGS[4])
+			self.setActionPipelineBaseCol(fv.FacileView.APIM_COLOR_SETTINGS[0])
+			self.setActionPipelineWrapperCol(fv.FacileView.APIM_COLOR_SETTINGS[1])
+			self.setActionPipelineInsidePortCol(fv.FacileView.APIM_COLOR_SETTINGS[2])
+			self.setActionPipelineOutsidePortCol(fv.FacileView.APIM_COLOR_SETTINGS[3])
+			self.setActionPipelineSequenceTagCol(fv.FacileView.APIM_COLOR_SETTINGS[4])
 
 			# Project settings
 			self.ui.locationEdit.setText(project.getProjectDir())
@@ -280,6 +280,9 @@ class ManageProjectDialog(QDialog):
 		"""
 
 		if bypass or button.text() == 'Apply':
+			# First, save theme
+			self.mainWindow.setTheme(fv.FacileView.Theme(self.ui.themeBox.currentIndex() + 1))
+			
 			# Save project settings
 			if self._project:
 				self._project.setBackend(self.ui.backendEdit.currentText())
@@ -303,8 +306,7 @@ class ManageProjectDialog(QDialog):
 													 self.actionPipelineSequenceTagCol]
 				self.mainWindow.updateColors()
 
-			# Save selected theme and layout
-			self.mainWindow.setTheme(fv.FacileView.Theme(self.ui.themeBox.currentIndex() + 1))
+			# Save selected layout
 			if self.ui.layoutBox.currentIndex() < 4:
 				self.mainWindow.setLayout(fv.FacileView.Layout(self.ui.layoutBox.currentIndex() + 1))
 			else:

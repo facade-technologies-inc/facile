@@ -816,7 +816,7 @@ class FacileView(QMainWindow):
 				TopLevelWrapperGraphics.Button.BUTTON_IMG_THM = 1
 
 			self.ui.targetGUIModelView.setTheme(theme)
-			self.ui.apiModelView.setTheme(theme)
+			# self.ui.apiModelView.setTheme(theme)  # Has to be overloaded in facileactiongraphicsview in order to work
 
 		self.themeChanged.connect(changeTheme)
 
@@ -981,6 +981,7 @@ class FacileView(QMainWindow):
 
 		# TGUIM
 		stngs = FacileView.TGUIM_COL_SETTINGS
+		print(stngs[0].getRgb())
 		self.ui.targetGUIModelView.updateColors(stngs[0], stngs[1])
 
 		# APIM (try/except is because it initially breaks on project loading)
