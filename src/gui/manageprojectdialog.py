@@ -60,7 +60,7 @@ class ManageProjectDialog(QDialog):
 		self.actionPipelineBaseCol = None
 		self.actionPipelineActionCol = None
 		self.actionPipelineInsidePortCol = None
-		self.actionPipeLineOutsidePortCol = None
+		self.actionPipelineOutsidePortCol = None
 		self.actionPipelineSequenceTagCol = None
 
 		self.initializeValues()
@@ -149,10 +149,10 @@ class ManageProjectDialog(QDialog):
 		:param color: The color to set
 		:type color: QColor
 		"""
-		self.actionPipelineWrapperCol = color
+		self.actionPipelineActionCol = color
 		palette = QPalette()
 		palette.setColor(QPalette.Background, color)
-		self.ui.a_baseCol.setPalette(palette)
+		self.ui.a_actionCol.setPalette(palette)
 
 	def setActionPipelineInsidePortCol(self, color):
 		"""
@@ -249,6 +249,11 @@ class ManageProjectDialog(QDialog):
 		self.setInitTheme()
 		self.setInitLayout()
 		self.ui.t_baseCol.setAutoFillBackground(True)
+		self.ui.a_baseCol.setAutoFillBackground(True)
+		self.ui.a_actionCol.setAutoFillBackground(True)
+		self.ui.a_port_InsideCol.setAutoFillBackground(True)
+		self.ui.a_port_OutsideCol.setAutoFillBackground(True)
+		self.ui.a_sequence_Col.setAutoFillBackground(True)
 
 	def setInitTheme(self):
 		"""
@@ -289,6 +294,15 @@ class ManageProjectDialog(QDialog):
 					else:
 						self._project.autoCloseAppOnExit = False
 
+				# Save accent colors
+				fv.FacileView.TGUIM_COL_SETTINGS = [self.tguimBaseCol, self.ui.dynamicCol.isChecked()]
+				fv.FacileView.APIM_COLOR_SETTINGS = [self.actionPipelineBaseCol,
+													 self.actionPipelineActionCol,
+													 self.actionPipelineInsidePortCol,
+													 self.actionPipelineOutsidePortCol,
+													 self.actionPipelineSequenceTagCol]
+				self.mainWindow.updateColors()
+
 			# Save selected theme and layout
 			self.mainWindow.setTheme(fv.FacileView.Theme(self.ui.themeBox.currentIndex() + 1))
 			if self.ui.layoutBox.currentIndex() < 4:
@@ -297,31 +311,17 @@ class ManageProjectDialog(QDialog):
 				self.mainWindow.setLayout(fv.FacileView.Layout.CLASSIC)
 			self.mainWindow.enableScrollBars(self.ui.enableSBs.isChecked())
 
-			# Save accent colors
-			fv.FacileView.TGUIM_COL_SETTINGS = [self.tguimBaseCol, self.ui.dynamicCol.isChecked()]
-			# fv.FacileView.APIM_COLOR_SETTINGS = [self.actionPipelineBaseCol]
-			# fv.FacileView.APIM_COLOR_SETTINGS = [self.actionPipelineWrapperCol]
-			# fv.FacileView.APIM_COLOR_SETTINGS = [self.actionPipelineInsidePortCol]
-			# fv.FacileView.APIM_COLOR_SETTINGS = [self.actionPipelineOutsidePortCol]
-			# fv.FacileView.APIM_COLOR_SETTINGS = [self.actionPipelineSequenceTagCol]
-			fv.FacileView.APIM_COLOR_SETTINGS = [self.actionPipelineBaseCol,
-			                                     self.actionPipelineWrapperCol,
-			                                     self.actionPipelineInsidePortCol,
-			                                     self.actionPipelineOutsidePortCol,
-			                                     self.actionPipelineSequenceTagCol]
-			self.mainWindow.updateColors()
-
 			# Save settings once applied
 			self.mainWindow.saveSettings()
 
-			# Called to fix weird bug with color getting reset.
-			self.setTGUIMBaseCol(self.tguimBaseCol)
-			self.mainWindow.updateAPIMColors(self.actionPipelineBaseCol,
-			                                 self.actionPipelineWrapperCol,
-			                                 self.actionPipelineInsidePortCol,
-			                                 self.actionPipelineOutsidePortCol,
-			                                 self.actionPipelineSequenceTagCol
-			                                 )
+			# Has to be after settings are saved: Called to fix weird bug with color getting reset.
+			if self._project:
+				self.setTGUIMBaseCol(self.tguimBaseCol)
+				self.setActionPipelineBaseCol(self.mainWindow.APIM_COLOR_SETTINGS[0])
+				self.setActionPipelineWrapperCol(self.mainWindow.APIM_COLOR_SETTINGS[1])
+				self.setActionPipelineInsidePortCol(self.mainWindow.APIM_COLOR_SETTINGS[2])
+				self.setActionPipelineOutsidePortCol(self.mainWindow.APIM_COLOR_SETTINGS[3])
+				self.setActionPipelineSequenceTagCol(self.mainWindow.APIM_COLOR_SETTINGS[4])
 	
 	def accept(self) -> None:
 		"""
