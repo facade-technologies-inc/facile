@@ -26,6 +26,7 @@ This file contains information about the environment that Facile is running in.
 
 import os
 import sys
+from pathlib import Path
 
 CONTEXT = "API"                         # "Facile", "Sphinx", or "API" depending on where the process was started from.
 
@@ -69,15 +70,20 @@ def update_context(newContext:str):
     # -- Update other global environment variables ---------------------------------
     if CONTEXT in {"Facile"}:
         if sys.executable.endswith("facile.exe"):
-            FACILE_ENTRY_MODE = "EXE"
             active_file = sys.executable
+            FACILE_ENTRY_MODE = "EXE"
+            FACILE_DIR = os.path.normpath(os.path.dirname(active_file))
+            TEMP_DIR = os.path.normpath(os.path.abspath(os.path.join(os.environ['USERPROFILE'], "AppData", "LocalLow", "Facile", "temp")))
         else:
+            active_file = sys.argv[0]  # the python file
             FACILE_ENTRY_MODE = "PY"
-            active_file = sys.argv[0] # the python file
+            FACILE_DIR = os.path.normpath(os.path.dirname(active_file))
+            TEMP_DIR = os.path.normpath(os.path.abspath(os.path.join(FACILE_DIR, "temp")))
 
-        FACILE_DIR = os.path.normpath(os.path.dirname(active_file))
-        TEMP_DIR = os.path.normpath(os.path.abspath(os.path.join(FACILE_DIR,"temp")))
         LOG_FILES_DIR = os.path.normpath(os.path.abspath(os.path.join(TEMP_DIR, "log_files")))
+
+    # -- Make sure necessary directories exist -------------------------------------
+    Path(TEMP_DIR).mkdir(parents=True, exist_ok=True)
 
 def dump_vars():
     """Prints all env variables to stdout"""
