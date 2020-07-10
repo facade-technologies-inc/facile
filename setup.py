@@ -30,7 +30,7 @@ buildOptions = {
                       "src/data/"
                       ],
 
-    "excludes": ["scipy.spatial.cKDTree",
+    "excludes": ["scipy.spatial.cKDTree"
                  ]
 }
 
