@@ -36,7 +36,7 @@ class ActionWrapperGraphics(ActionGraphics):
 	
 	TAG_FONT = QFont("Times", 10)
 	TAG_TEXT_COLOR = QColor(0, 0, 0)
-	TAG_BACKGROUND_COLOR = QColor(255, 255, 255)
+	TAG_BACKGROUND_COLOR = QColor(121, 125, 127)
 	
 	NAME_FONT = QFont("Times", 10)
 	NAME_TEXT_COLOR = QColor(255, 255, 255)
