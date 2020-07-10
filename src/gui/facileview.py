@@ -356,6 +356,9 @@ class FacileView(QMainWindow):
 			self.progress.setValue(numSteps)
 			self.thread.terminate()
 
+			self._componentActionMenu.clearActions()
+			self._actionPipelinesMenu.clearActions()
+
 		proj = Project.load(url, onEntityCreation=increment, onCompletion=complete)
 		self.setProject(proj)
 
