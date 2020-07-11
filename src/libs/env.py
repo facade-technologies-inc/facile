@@ -37,6 +37,7 @@ FACILE_ENTRY_MODE = ""                  # "EXE" or "PY" depending on how facile 
 FACILE_DIR = ""                         # Working directory when Facile was started
 TEMP_DIR = ""                           # temp/ directory
 LOG_FILES_DIR = ""                      # temp/log_files/ directory
+COMTYPES_CLIENT_GEN_DIR = ""            # temp/comptypes/client/gen/ directory
 
 class InvalidContextException(Exception):
     def __init__(self, msg):
@@ -55,10 +56,16 @@ def update_context(newContext:str):
     :type newContext: str
     :return: None
     """
+
+    def norm_abs_path(*args, **kwargs):
+        path = os.path.normpath(os.path.abspath(os.path.join(*args, **kwargs)))
+        print(path)
+        return path
+
     if newContext not in {"Facile", "Sphinx", "API"}:
         raise InvalidContextException(newContext)
 
-    global CONTEXT, TEMP_DIR, LOG_FILES_DIR, FACILE_ENTRY_MODE, FACILE_DIR
+    global CONTEXT, TEMP_DIR, LOG_FILES_DIR, FACILE_ENTRY_MODE, FACILE_DIR, COMTYPES_CLIENT_GEN_DIR
     CONTEXT = newContext
 
     # Clear other global variables - some will be set and some may not.
@@ -72,18 +79,27 @@ def update_context(newContext:str):
         if sys.executable.endswith("facile.exe"):
             active_file = sys.executable
             FACILE_ENTRY_MODE = "EXE"
-            FACILE_DIR = os.path.normpath(os.path.dirname(active_file))
-            TEMP_DIR = os.path.normpath(os.path.abspath(os.path.join(os.environ['USERPROFILE'], "AppData", "LocalLow", "Facile", "temp")))
+            FACILE_DIR = norm_abs_path(os.path.dirname(active_file))
+            TEMP_DIR = norm_abs_path(os.environ['USERPROFILE'], "AppData", "LocalLow", "Facile", "temp")
         else:
             active_file = sys.argv[0]  # the python file
             FACILE_ENTRY_MODE = "PY"
-            FACILE_DIR = os.path.normpath(os.path.dirname(active_file))
-            TEMP_DIR = os.path.normpath(os.path.abspath(os.path.join(FACILE_DIR, "temp")))
+            FACILE_DIR = norm_abs_path(os.path.dirname(active_file))
+            TEMP_DIR = norm_abs_path(FACILE_DIR, "temp")
 
-        LOG_FILES_DIR = os.path.normpath(os.path.abspath(os.path.join(TEMP_DIR, "log_files")))
+        LOG_FILES_DIR = norm_abs_path(TEMP_DIR, "log_files")
+        COMTYPES_CLIENT_GEN_DIR = norm_abs_path(TEMP_DIR, "comptypes", "client", "gen")
+
+        # other Facile-related environment setup.
+        import comtypes.client
+        comtypes.client.gen_dir = COMTYPES_CLIENT_GEN_DIR
 
     # -- Make sure necessary directories exist -------------------------------------
-    Path(TEMP_DIR).mkdir(parents=True, exist_ok=True)
+    if TEMP_DIR:
+        Path(TEMP_DIR).mkdir(parents=True, exist_ok=True)
+
+    if COMTYPES_CLIENT_GEN_DIR:
+        Path(COMTYPES_CLIENT_GEN_DIR).mkdir(parents=True, exist_ok=True)
 
 def dump_vars():
     """Prints all env variables to stdout"""
