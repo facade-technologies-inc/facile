@@ -29,6 +29,7 @@ from PySide2.QtCore import QObject, Signal
 import data.statemachine as sm
 from data.compilationprofile import CompilationProfile
 from libs.logging import compiler_logger as logger
+from libs.logging import log_exceptions
 import libs.env as env
 
 curPath = os.path.abspath(os.path.join(env.FACILE_DIR, "tools/api_compiler/compiler.py"))
@@ -286,11 +287,13 @@ class Compiler(QObject):
 
             copyfile(os.path.join(dir, 'run-script.bat'), os.path.join(self._saveFolder, 'run-script.bat'))
 
+    @log_exceptions(logger=logger)
     def compileAPI(self):
         """
         Generates the functional API: the final result of compilation.
         """
         logger.info("Compiling API")
+
         self.copyNecessaryFiles()
         self.saveTGUIM()
         self.copyBaseApp()
@@ -306,4 +309,5 @@ class Compiler(QObject):
 
         self.copyHelpFiles()
         self.finished.emit()
+
         logger.info("Finished compiling API")

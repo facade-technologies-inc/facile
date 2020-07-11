@@ -138,22 +138,49 @@ logging.config.dictConfig(benedict.load_yaml_str(logging_config_YAML))
 # USE:                                                                                                                 #
 #   Using the loggers is simple. First, you need to import the proper one from the list below. For example:            #
 #                                                                                                                      #
-#   >>> from libs.logging import main_logger                                                                           #
+#   >>> from libs.logging import main_logger as logger                                                                 #
 #                                                                                                                      #
 #   Then, you can output whatever information you want using the following functions:                                  #
 #                                                                                                                      #
-#   >>> main_logger.debug("Some debug info")                                                                           #
-#   >>> main_logger.info("Your information message")                                                                   #
-#   >>> main_logger.warning("A warning message")                                                                       #
-#   >>> main_logger.error("a non-fatal error message")                                                                 #
-#   >>> main_logger.critical("You really fucked up.")                                                                  #
+#   >>> logger.debug("Some debug info")                                                                                #
+#   >>> logger.info("Your information message")                                                                        #
+#   >>> logger.warning("A warning message")                                                                            #
+#   >>> logger.error("a non-fatal error message")                                                                      #
+#   >>> logger.critical("You really fucked up.")                                                                       #
 #   >>> try:                                                                                                           #
 #   >>>     a = 1 + "a"                                                                                                #
 #   >>> except Exception as e:                                                                                         #
-#   >>>     main_logger.exception(e)                                                                                   #
+#   >>>     logger.exception(e)                                                                                        #
 ########################################################################################################################
 
 root_logger     = logging.getLogger("root")                     # PURPOSE: Prolog/Epilog information
 main_logger     = logging.getLogger("facile")                   # PURPOSE: General application information
 explorer_logger = logging.getLogger("facile.explorer")          # PURPOSE: Explorer/Observer related information
 compiler_logger = logging.getLogger("facile.compiler")          # PURPOSE: Compiler/Doc Generator related information
+
+
+def log_exceptions(logger: logging.Logger = main_logger, suppress: bool = False):
+    """
+    A decorator to automatically log any unhandled exceptions that occur within a function.
+
+    The exceptions are raised again after logging if suppress is set to False.
+
+    .. seealso::
+        If you don't know about decorators, they're really useful! You can read about them here:
+        https://python-3-patterns-idioms-test.readthedocs.io/en/latest/PythonDecorators.html
+
+    :param logger: The logger to use to do the logging.
+    :type logger: logging.Logger
+    :param suppress: If True, the caught exceptions will not be raised again after logging.
+    :type suppress: bool
+    """
+    def wrapper(f):
+        def wrapped(*args, **kwargs):
+            try:
+                return f(*args, **kwargs)
+            except Exception as e:
+                logger.exception(e)
+                if not suppress:
+                    raise e
+        return wrapped
+    return wrapper

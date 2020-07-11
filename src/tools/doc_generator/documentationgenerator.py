@@ -29,6 +29,7 @@ from PySide2.QtCore import QObject, Signal
 import data.statemachine as sm
 from data.compilationprofile import CompilationProfile
 from libs.logging import compiler_logger as logger
+from libs.logging import log_exceptions
 import libs.env as env
 
 
@@ -58,7 +59,8 @@ class DocGenerator(QObject):
         self.docType = docType
         directory, path = os.path.split(os.path.join(env.FACILE_DIR, "tools/doc_generator/documentationgenerator.py"))
         self.sphinxFacileDir = os.path.join(directory, "sphinx_src")
-    
+
+    @log_exceptions(logger=logger)
     def createDoc(self, debug:bool=True):
         """
         Create the documentation(s).
