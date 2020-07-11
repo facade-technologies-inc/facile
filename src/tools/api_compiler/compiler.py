@@ -28,13 +28,13 @@ from PySide2.QtCore import QObject, Signal
 
 import data.statemachine as sm
 from data.compilationprofile import CompilationProfile
+from tools.api_compiler.necessaryfiles import necessary_source_files
 from libs.logging import compiler_logger as logger
 from libs.logging import log_exceptions
 import libs.env as env
 
 curPath = os.path.abspath(os.path.join(env.FACILE_DIR, "tools/api_compiler/compiler.py"))
 dir, filename = os.path.split(curPath)
-
 
 class Compiler(QObject):
     stepStarted = Signal(str)
@@ -72,17 +72,7 @@ class Compiler(QObject):
         if not os.path.exists(self._docFolder):
             os.mkdir(self._docFolder)
         
-        self._necessaryFiles = ["../../tguiil/componentfinder.py", "../../tguiil/application.py",
-                                "../../tguiil/tokens.py", "../../tguiil/supertokens.py",
-                                "../../tguiil/matchoption.py", "../../data/entity.py",
-                                "../../data/tguim/component.py", "../../data/tguim/visibilitybehavior.py",
-                                "../../data/properties.py", "../../data/tguim/condition.py",
-                                "../../data/tguim/targetguimodel.py", "../../data/property.py",
-                                "../../libs/env.py"]
-                                # "../../data/apim/componentaction.py", "../../data/apim/action.py",
-                                # "../../data/apim/actionspecification.py", "../../data/apim/port.py",
-                                # "../../data/apim/wire.py", "../../data/apim/actionpipeline.py",
-                                # "../../data/apim/actionwrapper.py", "../../data/apim/wireset.py"]
+        self._necessaryFiles = [os.path.abspath(os.path.join(env.FACILE_DIR, sf)) for sf in necessary_source_files]
     
     def generateCustomApp(self) -> None:
         """
@@ -178,8 +168,13 @@ class Compiler(QObject):
                 os.mkdir(tdir)
 
         for path in self._necessaryFiles:
-            src = os.path.normpath(os.path.join(dir, path))
-            dest = os.path.join(self._srcFolder, path[6:])
+            if env.FACILE_ENTRY_MODE == "EXE":
+                prefix = env.FACILE_DIR
+            else:
+                prefix = os.path.join(env.FACILE_DIR, "src")
+
+            src = os.path.abspath(os.path.join(prefix, path))
+            dest = os.path.join(self._srcFolder, path)
             logger.info(f"Copying file: {src} -> {dest}")
             try:
                 copyfile(src, dest)
