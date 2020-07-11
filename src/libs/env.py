@@ -101,6 +101,7 @@ def update_context(newContext:str):
     if COMTYPES_CLIENT_GEN_DIR:
         Path(COMTYPES_CLIENT_GEN_DIR).mkdir(parents=True, exist_ok=True)
 
+
 def dump_vars():
     """Prints all env variables to stdout"""
     print(f"CONTEXT:              {CONTEXT}")
