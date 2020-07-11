@@ -1,6 +1,17 @@
 import os
+import pygit2
+import pip
+import subprocess
+
 temp_req_file = "temp_requirements.txt"
 perm_req_file = "../requirements.txt"
+
+# Mapping of dependencies to download and install from Facade Technologies github
+# These are generally repositories that needed to be forked and modified to work with Facile.
+requirements_from_source = {
+#    "qtmodern":              ("https://github.com/facade-technologies-inc/qtmodern.git",   "master"),
+}
+
 
 if __name__ == "__main__":
 
@@ -9,31 +20,59 @@ if __name__ == "__main__":
 
     with open(temp_req_file) as f:
         cur_reqs = set(f.readlines())
+    os.remove(temp_req_file)
 
-    # -- Get list of. --------------------------------------------------------------------------------------------------
+    # -- Get list of necessary requirements ----------------------------------------------------------------------------
     with open(perm_req_file) as f:
         needed_reqs = set(f.readlines())
 
     # -- Determine which requirements we have, need to get rid of, or need to install. ---------------------------------
-    unnecessary_packages = list(cur_reqs - needed_reqs)
+    unnecessary_packages = [p for p in cur_reqs - needed_reqs if p not in requirements_from_source]
     have_packages = cur_reqs.intersection(needed_reqs)
     needed_packages = list(needed_reqs - cur_reqs)
 
     # -- Uninstall unnecessary packages --------------------------------------------------------------------------------
-    with open(temp_req_file, 'w') as f:
-        f.writelines(unnecessary_packages)
+    for package in unnecessary_packages:
+        print(f"Uninstalling {package}")
+        os.system(f"pip uninstall -y {package} 1>nul 2>&1")
 
-    os.system(f"pip uninstall -y -r {temp_req_file} 1>nul 2>&1")
-    os.remove(temp_req_file)
+    # -- Install all required dependencies (if not installing from source) ---------------------------------------------
+    for package in needed_packages:
+        stripped_package = package.replace("="," ").replace(">", " ").replace("<", " ").split()[0].lower()
+        if stripped_package not in requirements_from_source:
+            os.system(f"pip install --no-deps {package} 1>nul 2>&1")
 
-    # -- Install all required dependencies -----------------------------------------------------------------------------
-    os.system(f"pip install --no-deps -r {perm_req_file} 1>nul 2>&1")
+    # -- Clone/Pull any dependencies which are not hosted on PyPi) -----------------------------------------------------
+    for package, repo in requirements_from_source.items():
+        url, branchName = repo
+        repo_path = os.path.normpath(os.path.join(os.path.dirname(__file__), "../../", package))
+
+        # if the repo already exists, switch to the target branch and pull
+        if os.path.exists(repo_path):
+            print(f"Pulling: {package} @ branch: {branchName}")
+            repoObj = pygit2.Repository(os.path.join(repo_path, ".git"))
+            branch = repo.lookup_branch(branchName)
+            ref = repo.lookup_reference(branch.name)
+            repo.checkout(ref)
+
+            freeze_loc = os.getcwd()
+            os.chdir(repo_path)
+            output = subprocess.check_output(["git", "pull"])
+            os.chdir(freeze_loc)
+
+        else:
+            print(f"Cloning: {package} @ branch: {branchName}")
+            pygit2.clone_repository(url, repo_path, checkout_branch=branchName)
+
+        print(f"Installing from source: {package}")
+        pip.main(["install", repo_path])
 
     # -- Print a report of what was done -------------------------------------------------------------------------------
     report = {
         "These are extra (we uninstalled them for you)": unnecessary_packages,
         "You have these required packages already (no action)": have_packages,
-        "You need these packages (we installed them for you)": needed_packages
+        "You need these packages (we installed them for you)": needed_packages,
+        "We also pulled the following packages from github": requirements_from_source.keys()
     }
 
     for x, l in report.items():
