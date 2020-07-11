@@ -59,7 +59,6 @@ def update_context(newContext:str):
 
     def norm_abs_path(*args, **kwargs):
         path = os.path.normpath(os.path.abspath(os.path.join(*args, **kwargs)))
-        print(path)
         return path
 
     if newContext not in {"Facile", "Sphinx", "API"}:
