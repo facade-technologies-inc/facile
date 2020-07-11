@@ -27,7 +27,8 @@ buildOptions = {
 
     "include_files": ["database/",
                       "src/tguiil/",
-                      "src/data/"
+                      "src/data/",
+                      "src/libs/"
                       ],
 
     "excludes": ["scipy.spatial.cKDTree"
