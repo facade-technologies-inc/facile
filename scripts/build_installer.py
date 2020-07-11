@@ -5,6 +5,10 @@ INNO_DIR = "C:\Program Files (x86)\Inno Setup 6"
 if __name__ == "__main__":
     import os, sys
 
+    if not os.path.exists(INNO_DIR):
+        print(f"INNO Setup is not installed or is not installed in the correct location. Please install it at {INNO_DIR}")
+        sys.exit(1)
+
     if os.path.exists("../venv/"):
         if "venv" not in sys.executable:
             print("=================================== ERROR ===================================")
