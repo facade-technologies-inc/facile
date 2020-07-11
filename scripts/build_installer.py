@@ -1,3 +1,7 @@
+import subprocess
+
+INNO_DIR = "C:\Program Files (x86)\Inno Setup 6"
+
 if __name__ == "__main__":
     import os, sys
 
@@ -17,8 +21,19 @@ if __name__ == "__main__":
 
     os.chdir("../")
 
-    print("building msi...", end="", flush=True)
-    os.system("python setup.py bdist_msi 1> build/build_msi.log 2>&1")
-    print("done.", flush=True)
+    print("building installer...", end="", flush=True)
+    iscc = os.path.abspath(os.path.join(INNO_DIR, 'Compil32.exe'))
+    iss = os.path.abspath(os.path.join(os.path.dirname(__file__), 'Facile_Installer_Setup_Script.iss'))
+    exit_code = subprocess.call([iscc, '/cc', iss])
 
+    if exit_code == 0:
+        print("done.", flush=True)
+    elif exit_code == 1:
+        print("The installer command was invalid.")
+    elif exit_code == 2:
+        print("The executable failed to build properly.")
+    else:
+        print("Unkown exit code.")
     os.chdir("../")
+
+    sys.exit(exit_code)
