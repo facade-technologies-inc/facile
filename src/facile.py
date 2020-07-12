@@ -41,12 +41,13 @@ from gui.facileview import FacileView
 from gui.splashscreen import FacileSplashScreen
 import psutil
 
-from libs.logging import archive_logs, root_logger
+from libs.logging import archive_logs, root_logger as logger
 
 
 if __name__ == "__main__":
     archive_logs()
-    root_logger.info("Initializing Application")
+    logger.info("Initializing Application")
+    env.dumpVars(logger)
 
     # increases performance by hogging more processor time
     p = psutil.Process()
@@ -62,12 +63,12 @@ if __name__ == "__main__":
     splash.finish(view)
     view.showMaximized()
 
-    root_logger.info("Launching Facile")
+    logger.info("Launching Facile")
     status = app.exec_()
 
     exit_msg = f"Facile has been terminated. Exiting with status: {status}"
     if status:
-        root_logger.error(exit_msg)
+        logger.error(exit_msg)
     else:
-        root_logger.info(exit_msg)
+        logger.info(exit_msg)
     sys.exit(status)

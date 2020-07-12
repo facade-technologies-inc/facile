@@ -35,9 +35,11 @@ CONTEXT = "API"                         # "Facile", "Sphinx", or "API" depending
 ####################################
 FACILE_ENTRY_MODE = ""                  # "EXE" or "PY" depending on how facile was run.
 FACILE_DIR = ""                         # Working directory when Facile was started
-TEMP_DIR = ""                           # temp/ directory
-LOG_FILES_DIR = ""                      # temp/log_files/ directory
-COMTYPES_CLIENT_GEN_DIR = ""            # temp/comptypes/client/gen/ directory
+FACILE_SRC_DIR = ""                     # <FACILE_DIR>/src if running from python. <FACILE_DIR>/ if running exe.
+FACILE_SPHINX_DIR = ""                  # Location of the sphinx_src/ directory
+TEMP_DIR = ""                           # <TEMP_DIR>/ directory
+LOG_FILES_DIR = ""                      # <TEMP_DIR>/log_files/ directory
+COMTYPES_CLIENT_GEN_DIR = ""            # <TEMP_DIR>/comptypes/client/gen/ directory
 
 class InvalidContextException(Exception):
     def __init__(self, msg):
@@ -56,6 +58,14 @@ def update_context(newContext:str):
     :type newContext: str
     :return: None
     """
+    global CONTEXT, \
+        TEMP_DIR, \
+        LOG_FILES_DIR, \
+        FACILE_ENTRY_MODE, \
+        FACILE_DIR, \
+        FACILE_SRC_DIR, \
+        FACILE_SPHINX_DIR, \
+        COMTYPES_CLIENT_GEN_DIR
 
     def norm_abs_path(*args, **kwargs):
         path = os.path.normpath(os.path.abspath(os.path.join(*args, **kwargs)))
@@ -64,7 +74,6 @@ def update_context(newContext:str):
     if newContext not in {"Facile", "Sphinx", "API"}:
         raise InvalidContextException(newContext)
 
-    global CONTEXT, TEMP_DIR, LOG_FILES_DIR, FACILE_ENTRY_MODE, FACILE_DIR, COMTYPES_CLIENT_GEN_DIR
     CONTEXT = newContext
 
     # Clear other global variables - some will be set and some may not.
@@ -79,11 +88,15 @@ def update_context(newContext:str):
             active_file = sys.executable
             FACILE_ENTRY_MODE = "EXE"
             FACILE_DIR = norm_abs_path(os.path.dirname(active_file))
+            FACILE_SRC_DIR = FACILE_DIR
+            FACILE_SPHINX_DIR = norm_abs_path(FACILE_DIR, "sphinx_src")
             TEMP_DIR = norm_abs_path(os.environ['USERPROFILE'], "AppData", "LocalLow", "Facile", "temp")
         else:
             active_file = sys.argv[0]  # the python file
             FACILE_ENTRY_MODE = "PY"
             FACILE_DIR = norm_abs_path(os.path.dirname(active_file))
+            FACILE_SRC_DIR = FACILE_DIR
+            FACILE_SPHINX_DIR = norm_abs_path(FACILE_SRC_DIR, "tools", "doc_generator", "sphinx_src")
             TEMP_DIR = norm_abs_path(FACILE_DIR, "temp")
 
         LOG_FILES_DIR = norm_abs_path(TEMP_DIR, "log_files")
@@ -101,15 +114,37 @@ def update_context(newContext:str):
         Path(COMTYPES_CLIENT_GEN_DIR).mkdir(parents=True, exist_ok=True)
 
 
-def dump_vars():
-    """Prints all env variables to stdout"""
-    print(f"CONTEXT:              {CONTEXT}")
-    print("")
-    print(f"FACILE_ENTRY_MODE:    {FACILE_ENTRY_MODE}")
-    print(f"FACILE_DIR:           {FACILE_DIR}")
-    print(f"TEMP_DIR:             {TEMP_DIR}")
-    print(f"LOG_FILES_DIR:        {LOG_FILES_DIR}")
+def dump_vars(logger=None):
+    """
+    Prints all env variables to stdout (or a logger if provided)
 
+    :param logger: The logger to log the env vars to.
+    :type logger: logging.Logger
+    """
+
+    if logger:
+        pFunc = logger.info
+    else:
+        pFunc = print
+
+    dump_var_str = f"""
+    /==================================================================================================================
+    | ENV VARIABLES                                                                                                    
+    ===================================================================================================================
+    |
+    |    CONTEXT:                   {CONTEXT}
+    |    FACILE_ENTRY_MODE:         {FACILE_ENTRY_MODE}
+    |    FACILE_DIR:                {FACILE_DIR}
+    |    FACILE_SRC_DIR:            {FACILE_SRC_DIR}
+    |    FACILE_SPHINX_DIR:         {FACILE_SPHINX_DIR}
+    |    TEMP_DIR:                  {TEMP_DIR}
+    |    LOG_FILES_DIR:             {LOG_FILES_DIR}
+    |    COMTYPES_CLIENT_GEN_DIR:   {COMTYPES_CLIENT_GEN_DIR}
+    |
+    \\==================================================================================================================
+    """
+
+    pFunc(dump_var_str)
 
 updateContext = update_context
 dumpVars = dump_vars
