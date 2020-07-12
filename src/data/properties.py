@@ -25,10 +25,10 @@ from enum import Enum
 import libs.env as env
 from libs.env import InvalidContextException
 
-if env.CONTEXT in ("Facile", "Sphinx"):
+if env.CONTEXT in ("Facile"):
 	from data.property import Property
 	from qt_models.propeditormodel import PropModel
-elif env.CONTEXT in ("API"):
+elif env.CONTEXT in ("API", "Sphinx"):
 	from .property import Property
 else:
 	raise InvalidContextException(env.CONTEXT)
@@ -137,7 +137,9 @@ class Properties:
 				newProperties.addProperty(category, name, default, type, readOnly)
 		
 		return newProperties
-	
+
+	# TODO: move this functionality to the qt_models.propeditormodel module
+	#  Having this method here requires us to import qt_models, which seems unnecessary.
 	def getModel(self) -> 'PropModel':
 		"""
 		Gets a new PropModel object for this properties object.
