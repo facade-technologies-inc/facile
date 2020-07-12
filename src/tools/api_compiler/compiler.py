@@ -28,7 +28,7 @@ from PySide2.QtCore import QObject, Signal
 
 import data.statemachine as sm
 from data.compilationprofile import CompilationProfile
-from tools.api_compiler.necessaryfiles import necessary_source_files
+from tools.api_compiler.copy_file_manifest import necessary_source_files
 from libs.logging import compiler_logger as logger
 from libs.logging import log_exceptions
 import libs.env as env
@@ -72,7 +72,7 @@ class Compiler(QObject):
         if not os.path.exists(self._docFolder):
             os.mkdir(self._docFolder)
         
-        self._necessaryFiles = [os.path.abspath(os.path.join(env.FACILE_DIR, sf)) for sf in necessary_source_files]
+        self._necessaryFiles = necessary_source_files
     
     def generateCustomApp(self) -> None:
         """
@@ -84,7 +84,7 @@ class Compiler(QObject):
         logger.info(msg)
         self.stepStarted.emit(msg)
 
-        with open(self._srcFolder + "application.py", "w+") as f:
+        with open(os.path.join(self._srcFolder, "application.py"), "w+") as f:
             
             # TODO: The Facade Tech watermark thing is a little intense when the user needs
             #  to use it for their own purposes and may want to share their generated API online.
@@ -168,13 +168,8 @@ class Compiler(QObject):
                 os.mkdir(tdir)
 
         for path in self._necessaryFiles:
-            if env.FACILE_ENTRY_MODE == "EXE":
-                prefix = env.FACILE_DIR
-            else:
-                prefix = os.path.join(env.FACILE_DIR, "src")
-
-            src = os.path.abspath(os.path.join(prefix, path))
-            dest = os.path.join(self._srcFolder, path)
+            src = os.path.abspath(os.path.join(env.FACILE_SRC_DIR, path))
+            dest = os.path.abspath(os.path.join(self._srcFolder, path))
             logger.info(f"Copying file: {src} -> {dest}")
             try:
                 copyfile(src, dest)

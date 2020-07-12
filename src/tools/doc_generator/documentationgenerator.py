@@ -57,8 +57,6 @@ class DocGenerator(QObject):
         self.apiName = sm.StateMachine.instance._project.getAPIName()
         self.projectName = projectName
         self.docType = docType
-        directory, path = os.path.split(os.path.join(env.FACILE_DIR, "tools/doc_generator/documentationgenerator.py"))
-        self.sphinxFacileDir = os.path.join(directory, "sphinx_src")
 
     @log_exceptions(logger=logger)
     def createDoc(self, debug:bool=True):
@@ -83,7 +81,7 @@ class DocGenerator(QObject):
 
         logger.info("Copying the sphinx directory")
         try:
-            shutil.copytree(os.path.join(self.sphinxFacileDir, "src"), srcDir)
+            shutil.copytree(os.path.join(env.FACILE_SPHINX_DIR, "src"), srcDir)
         except FileExistsError as e:
             logger.exception(e)
 
