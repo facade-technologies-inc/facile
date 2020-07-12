@@ -25,8 +25,8 @@ the files are available to be copied into the generated APIs.
 
 import os
 
-# all files are listed starting from the facile/src/ directory because that directory does not exist when installed.
-necessary_source_files = [
+# List of files that will be directly copied during the API compilation process. This does not include templated files.
+compilation_copy_files = [
     os.path.join("tguiil", "componentfinder.py"),
     os.path.join("tguiil", "application.py"),
     os.path.join("tguiil", "tokens.py"),
@@ -42,3 +42,20 @@ necessary_source_files = [
     os.path.join("libs", "env.py"),
 ]
 
+# List of other files that are necessary for compilation, but will NOT be directly copied during the compilation process.
+#
+# This list must contain tuples specifying the current location of the file and where the file will be copied to
+# relative to the facile.exe file.
+#
+# NOTE: This list will only be used by the setup.py file, so the current working directory will be facile/
+additional_files_for_compilation = [
+    (f"{os.path.abspath('./src/tools/api_compiler/baseapplication.py')}", "tools/api_compiler/baseapplication.py"),
+    (f"{os.path.abspath('./src/tools/api_compiler/setup-template.txt')}", "tools/api_compiler/setup-template.txt"),
+    (f"{os.path.abspath('./src/tools/api_compiler/__init__template.txt')}", "tools/api_compiler/__init__template.txt"),
+    (f"{os.path.abspath('./src/tools/api_compiler/application-template.py')}", "tools/api_compiler/application-template.py"),
+    (f"{os.path.abspath('./src/tools/api_compiler/automate-template.txt')}", "tools/api_compiler/automate-template.txt"),
+    (f"{os.path.abspath('./src/tools/api_compiler/run-script.bat')}", "tools/api_compiler/run-script.bat"),
+    (f"{os.path.abspath('./src/tools/doc_generator/sphinx_src/')}", "sphinx_src/"),
+]
+
+necessary_files_for_installation = [(os.path.abspath(os.path.join("src", f)), f) for f in compilation_copy_files] + additional_files_for_compilation

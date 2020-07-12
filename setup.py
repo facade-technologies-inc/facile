@@ -1,7 +1,7 @@
 import sys
 import os
 from cx_Freeze import setup, Executable
-from src.tools.api_compiler.copy_file_manifest import necessary_source_files
+from src.tools.api_compiler.copy_file_manifest import necessary_files_for_installation
 
 
 sys.path.append(os.path.abspath("./src/"))
@@ -30,18 +30,10 @@ buildOptions = {
 
     "include_files": [
         "database/",
-        (f"{os.path.abspath('./src/tools/api_compiler/baseapplication.py')}", "tools/api_compiler/baseapplication.py"),
-        (f"{os.path.abspath('./src/tools/api_compiler/setup-template.txt')}", "tools/api_compiler/setup-template.txt"),
-        (f"{os.path.abspath('./src/tools/api_compiler/__init__template.txt')}", "tools/api_compiler/__init__template.txt"),
-        (f"{os.path.abspath('./src/tools/api_compiler/application-template.py')}", "tools/api_compiler/application-template.py"),
-        (f"{os.path.abspath('./src/tools/api_compiler/automate-template.txt')}", "tools/api_compiler/automate-template.txt"),
-        (f"{os.path.abspath('./src/tools/api_compiler/run-script.bat')}", "tools/api_compiler/run-script.bat"),
-        (f"{os.path.abspath('./src/tools/doc_generator/sphinx_src/')}", "sphinx_src/"),
-    ] + [(os.path.abspath(os.path.join("src", sf)), sf) for sf in necessary_source_files],
+    ] + necessary_files_for_installation,
 
     "excludes": ["scipy.spatial.cKDTree"]
 }
-
 
 base = None
 

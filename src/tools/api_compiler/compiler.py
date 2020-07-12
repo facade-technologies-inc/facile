@@ -28,7 +28,7 @@ from PySide2.QtCore import QObject, Signal
 
 import data.statemachine as sm
 from data.compilationprofile import CompilationProfile
-from tools.api_compiler.copy_file_manifest import necessary_source_files
+from tools.api_compiler.copy_file_manifest import compilation_copy_files
 from libs.logging import compiler_logger as logger
 from libs.logging import log_exceptions
 import libs.env as env
@@ -72,7 +72,7 @@ class Compiler(QObject):
         if not os.path.exists(self._docFolder):
             os.mkdir(self._docFolder)
         
-        self._necessaryFiles = necessary_source_files
+        self._necessaryFiles = compilation_copy_files
     
     def generateCustomApp(self) -> None:
         """
