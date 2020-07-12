@@ -295,7 +295,7 @@ class TargetGuiModel(QObject):
 			newComp = Component.fromDict(comp, tguim)
 			tguim._components[int(id)] = newComp
 			tguim._superTokenToComponentMapping[newComp.getSuperToken()] = newComp
-		
+
 		# create all visibility behaviors
 		for id, vb in d['behaviors'].items():
 			newVB = VisibilityBehavior.fromDict(vb, tguim)
@@ -327,14 +327,14 @@ class TargetGuiModel(QObject):
 			vb._srcComponent = tguim._components[vb._srcComponent]
 			vb._destComponent = tguim._components[vb._destComponent]
 
-
 		# Link up all children.
 		work = [(tguim._root, None)]
 		while work:
 			cur, parent = work.pop()
 
 			if parent:
-				parent._children.append(cur)
+				parent._children.append(cur)  # tried insert(0, cur) here but it loads backwards every time
+				parent._children = sorted(parent._children, key=lambda com: com.timestamp)
 				child_ids = d["components"][str(cur._id)]["children"]
 			else:
 				child_ids = d["root"]["children"]
