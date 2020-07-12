@@ -1,7 +1,7 @@
 import sys
 import os
 from cx_Freeze import setup, Executable
-from src.tools.api_compiler.necessaryfiles import necessary_source_files
+from src.tools.api_compiler.copy_file_manifest import necessary_source_files
 
 
 sys.path.append(os.path.abspath("./src/"))
@@ -28,7 +28,16 @@ buildOptions = {
                  "scipy._distributor_init",
                  ],
 
-    "include_files": ["database/"] + [(os.path.abspath(os.path.join("src", sf)), sf) for sf in necessary_source_files],
+    "include_files": [
+        "database/",
+        (f"{os.path.abspath('./src/tools/api_compiler/baseapplication.py')}", "tools/api_compiler/baseapplication.py"),
+        (f"{os.path.abspath('./src/tools/api_compiler/setup-template.txt')}", "tools/api_compiler/setup-template.txt"),
+        (f"{os.path.abspath('./src/tools/api_compiler/__init__template.txt')}", "tools/api_compiler/__init__template.txt"),
+        (f"{os.path.abspath('./src/tools/api_compiler/application-template.py')}", "tools/api_compiler/application-template.py"),
+        (f"{os.path.abspath('./src/tools/api_compiler/automate-template.txt')}", "tools/api_compiler/automate-template.txt"),
+        (f"{os.path.abspath('./src/tools/api_compiler/run-script.bat')}", "tools/api_compiler/run-script.bat"),
+        (f"{os.path.abspath('./src/tools/doc_generator/sphinx_src/')}", "sphinx_src/"),
+    ] + [(os.path.abspath(os.path.join("src", sf)), sf) for sf in necessary_source_files],
 
     "excludes": ["scipy.spatial.cKDTree"]
 }
@@ -37,8 +46,8 @@ buildOptions = {
 base = None
 
 # Uncomment for GUI applications to NOT show cmd window while running.
-# if sys.platform =='win32':
-#     base = 'Win32GUI'
+if sys.platform =='win32':
+    base = 'Win32GUI'
 
 executables = [
     Executable(script = 'src/facile.py', base=base, targetName = 'facile.exe', icon = 'resources/facade_logo_256.ico')
