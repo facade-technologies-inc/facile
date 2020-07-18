@@ -694,6 +694,13 @@ class FacileView(QMainWindow):
 		"""
 
 		theme.applyTo(self)
+
+		for thm in self.themeList:
+			if theme.getName() == thm.getName():
+				self.themeList.remove(thm)
+				break
+
+		self.themeList.append(theme)
 		self._theme = theme
 
 	def saveSettings(self) -> None:
@@ -735,12 +742,14 @@ class FacileView(QMainWindow):
 				self.themeList.append(thm)
 
 			for theme in self.themeList:
+				print(theme.getName(), settings['theme'])
 				if theme.getName() == settings['theme']:
 					self.setTheme(theme)
 
-		except (FileNotFoundError, IndexError, TypeError, KeyError):  # For older versions of Facile
+		except (FileNotFoundError, IndexError, TypeError, KeyError) as e:  # For older versions of Facile
 			logger.warning("Could not load settings. Expected if it's the first time loading an updated version, or if"
 						   "the settings file was deleted. Otherwise, this is bad.")
+			logger.exception(str(e))
 			# Set the initial settings to classic theme, layout, and model colors
 			self.setTheme(FacileView.DEFAULT_THEMES[0])
 			self.themeList = FacileView.DEFAULT_THEMES

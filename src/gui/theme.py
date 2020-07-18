@@ -250,7 +250,7 @@ class Theme:
 
         :param d: The dictionary containing Theme information
         """
-
+        print(d)
         # Get base function created and stored in temporary dictionary
         lcl = {'styles': styles}
         exec('base = styles.' + d['base'], lcl)
@@ -258,18 +258,19 @@ class Theme:
         thm = Theme(lcl['base'], custom=True)  # Only saving custom functions
 
         tguimDict = {
-            'Base Color': QColor.fromRgba(d['Base Color']),
-            'Is Flat':    d['Is Flat']
+            'Base Color': QColor.fromRgba(d['tguim']['Base Color']),
+            'Is Flat':    d['tguim']['Is Flat']
         }
         apimDict = {
-            'Action Pipeline': QColor.fromRgba(d['Action Pipeline']),
-            'Action Wrapper':  QColor.fromRgba(d['Action Wrapper']),
-            'Inside Port':     QColor.fromRgba(d['Inside Port']),
-            'Outside Port':    QColor.fromRgba(d['Outside Port']),
-            'Sequence Tag':    QColor.fromRgba(d['Sequence Tag'])
+            'Action Pipeline': QColor.fromRgba(d['apim']['Action Pipeline']),
+            'Action Wrapper':  QColor.fromRgba(d['apim']['Action Wrapper']),
+            'Inside Port':     QColor.fromRgba(d['apim']['Inside Port']),
+            'Outside Port':    QColor.fromRgba(d['apim']['Outside Port']),
+            'Sequence Tag':    QColor.fromRgba(d['apim']['Sequence Tag'])
         }
 
         thm.tguimColorSettings = tguimDict
         thm.apimColors = apimDict
+        thm.setName(d['name'])
 
         return thm
