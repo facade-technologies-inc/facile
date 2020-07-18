@@ -45,7 +45,7 @@ PyWavelets==1.1.1
 pywin32==228
 pywinauto==0.6.8
 PyYAML==5.3.1
-regex==2020.6.8
+regex==2020.7.14
 requests==2.24.0
 scikit-image==0.17.2
 scikit-learn==0.23.1
