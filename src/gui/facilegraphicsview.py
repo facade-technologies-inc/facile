@@ -26,8 +26,8 @@ from PySide2.QtCore import QPoint, QTimer, Slot, QRectF
 from PySide2.QtGui import QWheelEvent, Qt, QColor, QKeyEvent, QPainter, QBrush, QPen
 from PySide2.QtWidgets import QGraphicsView, QGraphicsScene, QGraphicsRectItem, QGraphicsTextItem, QGraphicsItem
 from PySide2.QtWidgets import QWidget
-import gui.facileview as fv
 import graphics.tguim.tguimscene as tgs
+import graphics.tguim.componentgraphics as cg
 
 
 class FacileGraphicsView(QGraphicsView):
@@ -72,83 +72,20 @@ class FacileGraphicsView(QGraphicsView):
 		self.focusHistory = []  # holds mix of graphics items and rectangles
 		self._zoom = 0
 
-		# Theme settings
-		self._baseColor = None
-		self._penColor = None
-		self._flat = False
-
-	def setTheme(self, theme: 'fv.FacileView.Theme'):
-		"""
-		Sets the current theme in order to update the componentGraphics's colors
-
-		:param theme: the theme to apply
-		:type theme: Theme
-		"""
-
-		baseColor = None
-		penColor = None
-		flat = False
-		if theme == fv.FacileView.Theme.CLASSIC_DARK:
-			baseColor = QColor(0, 141, 222).lighter(f=75)
-			penColor = QColor(0, 0, 0)
-		elif theme == fv.FacileView.Theme.CLASSIC_LIGHT:
-			baseColor = QColor(0, 141, 222)
-			penColor = QColor(0, 0, 0)
-		elif theme == fv.FacileView.Theme.FLAT_DARK:
-			baseColor = QColor(0, 141, 222).lighter(f=85)
-			penColor = QColor(0, 0, 0)
-			flat = True
-		elif theme == fv.FacileView.Theme.FLAT_LIGHT:
-			baseColor = QColor(0, 141, 222).lighter(f=120)
-			penColor = QColor(0, 0, 0)
-			flat = True
-		elif theme == fv.FacileView.Theme.ULTRA_DARK:
-			baseColor = QColor(240, 95, 0).darker(f=180)
-			penColor = QColor(0, 0, 0)
-			flat = True
-		elif theme == fv.FacileView.Theme.ULTRA_LIGHT:
-			baseColor = QColor(0, 190, 230).lighter(f=110)
-			penColor = QColor(0, 0, 0)
-			flat = True
-
-		self.updateColors(baseColor, flat, penColor=penColor)
-
-	def isFlat(self) -> bool:
-		"""
-		Whether the color scheme is flattened or not.
-
-		:return: If the color scheme is flattened or not
-		:rtype: bool
-		"""
-		return self._flat
-
-	def baseColor(self) -> QColor:
-		"""
-		Returns the current base color
-
-		:return: Current base color
-		:rtype: QColor
-		"""
-		return self._baseColor
-
-	def updateColors(self, baseColor: QColor, flat: bool, penColor: QColor = None):
+	def updateColors(self, baseColor: QColor, flat: bool):
 		"""
 		Updates all component colors to have a base color of baseColor and an outline color of penColor.
 		Flatness removes the dynamic color assignment.
 
 		:param baseColor: the darkest color a component will take
 		:type baseColor: QColor
-		:param penColor: the outline and text color
-		:type penColor: QColor
 		:param flat: whether to lighten colors based on depth or not.
 		:type flat: bool
 		"""
-		if not penColor:
-			penColor = QColor(0, 0, 0)  # Defaulting done here to avoid compilation issues
 
-		self._baseColor = baseColor
-		self._penColor = penColor
-		self._flat = flat
+		cg.ComponentGraphics.COLOR = baseColor
+		cg.ComponentGraphics.FLAT = flat
+		penColor = QColor(0, 0, 0)  # Defaulting done here to avoid compilation issues
 
 		scene = self.scene()
 		if isinstance(scene, tgs.TGUIMScene):

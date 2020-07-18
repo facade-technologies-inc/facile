@@ -55,6 +55,7 @@ import gui.frame.styles as styles
 import pyautogui
 import json
 from enum import Enum
+from gui.theme import Theme
 from libs.logging import main_logger as logger
 
 
@@ -63,14 +64,6 @@ class FacileView(QMainWindow):
 	FacileView is the main window for Facile.
 	"""
 
-	class Theme(Enum):
-		CLASSIC_DARK = 1
-		CLASSIC_LIGHT = 2
-		FLAT_DARK = 3
-		FLAT_LIGHT = 4
-		ULTRA_DARK = 5
-		ULTRA_LIGHT = 6
-
 	class Layout(Enum):
 		MODELS = 1
 		ESSENTIALS = 2
@@ -78,14 +71,19 @@ class FacileView(QMainWindow):
 		ALL = 4
 		CUSTOM = 5
 
-	themeChanged = Signal(Theme)
+	DEFAULT_THEMES = [Theme(styles.darkClassic),
+					  Theme(styles.lightClassic),
+					  Theme(styles.darkModern),
+					  Theme(styles.lightModern),
+					  Theme(styles.darkUltra),
+					  Theme(styles.lightUltra)]
 
 	TGUIM_COL_SETTINGS = [QColor(0, 141, 222).lighter(f=75), False]
 	APIM_COLOR_SETTINGS = [ActionGraphics.COLOR,
-	               ActionWrapperGraphics.COLOR,
-	               PortGraphics.INNER_COLOR,
-	               PortGraphics.OUTER_COLOR,
-	               ActionWrapperGraphics.TAG_BACKGROUND_COLOR]
+						   ActionWrapperGraphics.COLOR,
+						   PortGraphics.INNER_COLOR,
+						   PortGraphics.OUTER_COLOR,
+						   ActionWrapperGraphics.TAG_BACKGROUND_COLOR]
 	
 	def __init__(self) -> 'FacileView':
 		"""
@@ -101,7 +99,8 @@ class FacileView(QMainWindow):
 		self.ui.setupUi(self)
 
 		# Set up variables
-		self._theme = FacileView.Theme.CLASSIC_DARK
+		self._theme = None  # Handled by the loadSettings function
+		self.themeList = FacileView.DEFAULT_THEMES
 		self._layout = FacileView.Layout.CLASSIC
 		self._scrollBarsEnabled = False
 
@@ -146,7 +145,7 @@ class FacileView(QMainWindow):
 		self._layout = FacileView.Layout.CLASSIC
 		self.loadSettings()
 
-	def getTheme(self) -> Theme:
+	def getCurrentTheme(self) -> Theme:
 		"""
 		Returns the current Theme
 
@@ -166,30 +165,20 @@ class FacileView(QMainWindow):
 		self._actionPipelinesMenu.refresh()
 		self._componentActionMenu.refresh()
 		
-	def updateAPIMColors(self, col1, col2, col3, col4, col5):
+	def updateAPIMColors(self, apimColors):
 		"""
 		Updates the colors for the APIM.
 		
-		:param col1: The base color to update
-		:type col1: QColor
-		:param col2: The action wrapper color to update
-		:type col2: QColor
-		:param col3: The inside port color to update
-		:type col3: QColor
-		:param col4: The outside port color to update
-		:type col4: QColor
-		:param col5: The sequence tag color to update
-		:type col5: QColor
+		:param apimColors: The dictionary of APIM Colors
+		:type apimColors: dict
 		"""
 
-		FacileView.APIM_COLOR_SETTINGS = [col1, col2, col3, col4, col5]
-		
-		ActionGraphics.COLOR = col1
-		ActionWrapperGraphics.COLOR = col2
-		PortGraphics.INNER_COLOR = col3
-		PortGraphics.OUTER_COLOR = col4
-		ActionWrapperGraphics.TAG_BACKGROUND_COLOR = col5
-		
+		ActionGraphics.COLOR = apimColors['Action Pipeline']
+		ActionWrapperGraphics.COLOR = apimColors['Action Wrapper']
+		PortGraphics.INNER_COLOR = apimColors['Inside Port']
+		PortGraphics.OUTER_COLOR = apimColors['Outside Port']
+		ActionWrapperGraphics.TAG_BACKGROUND_COLOR = apimColors['Sequence Tag']
+
 		self.refreshAPIM()
 	
 	def getLayout(self) -> Layout:
@@ -703,23 +692,9 @@ class FacileView(QMainWindow):
 		:param theme: the theme to set
 		:type theme: Theme
 		"""
-		app = QApplication.instance()
 
-		if theme == FacileView.Theme.CLASSIC_DARK:
-			styles.darkClassic(app, self)
-		elif theme == FacileView.Theme.CLASSIC_LIGHT:
-			styles.lightClassic(app, self)
-		elif theme == FacileView.Theme.FLAT_DARK:
-			styles.darkModern(app, self)
-		elif theme == FacileView.Theme.FLAT_LIGHT:
-			styles.lightModern(app, self)
-		elif theme == FacileView.Theme.ULTRA_DARK:
-			styles.darkUltra(app, self)
-		elif theme == FacileView.Theme.ULTRA_LIGHT:
-			styles.lightUltra(app, self)
-
+		theme.applyTo(self)
 		self._theme = theme
-		self.themeChanged.emit(theme)
 
 	def saveSettings(self) -> None:
 		"""
@@ -730,12 +705,10 @@ class FacileView(QMainWindow):
 		tempDir = os.path.join(cwd, "temp")
 		settingsFile = os.path.join(tempDir, "settings.json")
 
-		settings = {}
-		settings['theme'] = self._theme.value
-		settings['layout'] = self._layout.value
-		settings['scrollbars'] = self._scrollBarsEnabled
-		settings['tguim color'] = [FacileView.TGUIM_COL_SETTINGS[0].getRgb(), FacileView.TGUIM_COL_SETTINGS[1]]
-		settings['apim colors'] = [color.getRgb() for color in FacileView.APIM_COLOR_SETTINGS]
+		settings = {'theme':       self._theme.getName(),
+					'theme list':  [theme.asDict() for theme in self.themeList if theme.isCustom()],
+					'layout':      self._layout.value,
+					'scrollbars':  self._scrollBarsEnabled}
 
 		if not os.path.exists(tempDir):
 			os.mkdir(tempDir)
@@ -749,25 +722,28 @@ class FacileView(QMainWindow):
 		"""
 
 		try:
-			with open(os.path.join(os.getcwd(), "temp/settings.json"), "r") as f:
+			with open(os.path.join(os.getcwd(), "temp", "settings.json"), "r") as f:
 				settings = json.loads(f.read())
 
-			self.setTheme(FacileView.Theme(settings['theme']))
 			self.setLayout(FacileView.Layout(settings['layout']))
 			self.enableScrollBars(settings['scrollbars'])
 
-			# TGUIM Accent Color
-			col = settings['tguim color'][0]
-			tguimBaseCol = QColor(col[0], col[1], col[2], col[3])
-			FacileView.TGUIM_COL_SETTINGS = [tguimBaseCol, settings['tguim color'][1]]
+			# Load custom themes
+			self.themeList = FacileView.DEFAULT_THEMES
+			for themeDict in settings['theme list']:
+				thm = Theme.fromDict(themeDict)
+				self.themeList.append(thm)
 
-			# APIM Accent Color
-			colors = settings['apim colors']
-			FacileView.APIM_COLOR_SETTINGS = [QColor(col[0], col[1], col[2], col[3]) for col in colors]
+			for theme in self.themeList:
+				if theme.getName() == settings['theme']:
+					self.setTheme(theme)
 
-		except (FileNotFoundError, IndexError, TypeError):  # For older versions of Facile
+		except (FileNotFoundError, IndexError, TypeError, KeyError):  # For older versions of Facile
+			logger.warning("Could not load settings. Expected if it's the first time loading an updated version, or if"
+						   "the settings file was deleted. Otherwise, this is bad.")
 			# Set the initial settings to classic theme, layout, and model colors
-			self.setTheme(FacileView.Theme.CLASSIC_DARK)
+			self.setTheme(FacileView.DEFAULT_THEMES[0])
+			self.themeList = FacileView.DEFAULT_THEMES
 			self.setLayout(FacileView.Layout.CLASSIC)
 			self.enableScrollBars(False)
 
@@ -807,18 +783,6 @@ class FacileView(QMainWindow):
 		self.ui.actionClassic.toggled.connect(self.showClassic)
 		self.ui.actionAll.toggled.connect(self.showAll)
 		# TODO: Implement custom layout saving/applying
-
-		def changeTheme(theme):
-			thm = FacileView.Theme
-			if theme in (thm.CLASSIC_DARK, thm.ULTRA_DARK, thm.FLAT_DARK):
-				TopLevelWrapperGraphics.Button.BUTTON_IMG_THM = 0
-			else:
-				TopLevelWrapperGraphics.Button.BUTTON_IMG_THM = 1
-
-			self.ui.targetGUIModelView.setTheme(theme)
-			# self.ui.apiModelView.setTheme(theme)  # Has to be overloaded in facileactiongraphicsview in order to work
-
-		self.themeChanged.connect(changeTheme)
 
 	def setLayout(self, layout: Layout):
 		"""
@@ -974,19 +938,16 @@ class FacileView(QMainWindow):
 		toolbar.show()
 		self.ui.toolBar = toolbar
 
-	def updateColors(self):
+	def updateColors(self, tguim: dict, apimColors: dict):
 		"""
 		Updates the accent colors. Necessary for colors to persist through loading projects and closing/opening Facile.
+
+		:param tguim: the dictionary of color settings for the tguim
+		:type tguim: dict
+		:param apimColors: the dictionary of color settings for the apim
+		:type apimColors: dict
 		"""
 
-		# TGUIM
-		stngs = FacileView.TGUIM_COL_SETTINGS
-		self.ui.targetGUIModelView.updateColors(stngs[0], stngs[1])
-
-		# APIM (try/except is because it initially breaks on project loading)
-		try:
-			apimCols = FacileView.APIM_COLOR_SETTINGS
-			self.updateAPIMColors(apimCols[0], apimCols[1], apimCols[2], apimCols[3], apimCols[4])
-		except:
-			logger.info('Loaded project, causing APIM refresh to fail (expected).')
+		self.ui.targetGUIModelView.updateColors(tguim['Base Color'], tguim['Is Flat'])
+		self.updateAPIMColors(apimColors)
 

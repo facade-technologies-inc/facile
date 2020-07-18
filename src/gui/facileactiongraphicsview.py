@@ -23,8 +23,9 @@ view, but can be zoomed.
 """
 
 
-from PySide2.QtWidgets import QGraphicsScene, QGraphicsTextItem, QGraphicsRectItem
+from PySide2.QtWidgets import QGraphicsScene, QGraphicsTextItem
 from PySide2.QtCore import Signal
+from PySide2.QtGui import QColor
 
 import data.statemachine as sm
 from data.entity import Entity
@@ -65,5 +66,5 @@ class FacileActionGraphicsView(FacileGraphicsView):
 		:rtype: NoneType
 		"""
 		cap = sm.StateMachine.instance.getCurrentActionPipeline()
-		self.showAction(cap)
-		
+		if cap is not None:
+			self.showAction(cap)
