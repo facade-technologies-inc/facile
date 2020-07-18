@@ -77,13 +77,6 @@ class FacileView(QMainWindow):
 					  Theme(styles.lightModern),
 					  Theme(styles.darkUltra),
 					  Theme(styles.lightUltra)]
-
-	TGUIM_COL_SETTINGS = [QColor(0, 141, 222).lighter(f=75), False]
-	APIM_COLOR_SETTINGS = [ActionGraphics.COLOR,
-						   ActionWrapperGraphics.COLOR,
-						   PortGraphics.INNER_COLOR,
-						   PortGraphics.OUTER_COLOR,
-						   ActionWrapperGraphics.TAG_BACKGROUND_COLOR]
 	
 	def __init__(self) -> 'FacileView':
 		"""
@@ -742,7 +735,6 @@ class FacileView(QMainWindow):
 				self.themeList.append(thm)
 
 			for theme in self.themeList:
-				print(theme.getName(), settings['theme'])
 				if theme.getName() == settings['theme']:
 					self.setTheme(theme)
 

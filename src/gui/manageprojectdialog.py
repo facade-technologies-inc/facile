@@ -394,7 +394,6 @@ class ManageProjectDialog(QDialog):
 		for theme in self.themeList:
 			if theme.getName() == self.initialTheme.getName():
 				name = theme.getName() + ' - Default'
-				print(name)
 			else:
 				name = theme.getName()
 
