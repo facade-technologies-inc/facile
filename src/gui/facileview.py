@@ -711,7 +711,7 @@ class FacileView(QMainWindow):
 			tguimBaseCol = QColor(sList[3][0], sList[3][1], sList[3][2], sList[3][3])
 			FacileView.TGUIM_COL_SETTINGS = [tguimBaseCol, sList[4]]
 
-		except (FileNotFoundError, IndexError):  # For older versions of Facile
+		except (FileNotFoundError, IndexError, KeyError):  # For older versions of Facile
 			# Set the initial settings to classic theme, layout, and model colors
 			self.setTheme(FacileView.Theme.CLASSIC_DARK)
 			self.setLayout(FacileView.Layout.CLASSIC)
