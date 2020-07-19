@@ -92,7 +92,7 @@ class ActionSpecification:
 	
 	@staticmethod
 	def fromFile(specFile: "str") -> 'ActionSpecification':
-		with open(specFile, 'r+') as f:
+		with open(specFile, 'r') as f:
 			specContents = f.read()
 		
 		name = None

@@ -1,6 +1,8 @@
 import sys
 import os
 from cx_Freeze import setup, Executable
+from src.tools.api_compiler.copy_file_manifest import necessary_files_for_installation
+
 
 sys.path.append(os.path.abspath("./src/"))
 sys.path.append(os.path.abspath("./src/gui/rc/"))
@@ -8,6 +10,7 @@ sys.path.append(os.path.abspath("./database/component_actions"))
 
 # Dependencies are automatically detected, but it might need
 # fine tuning.
+
 buildOptions = {
     "packages": [
                 # Facile sub-packages
@@ -25,18 +28,12 @@ buildOptions = {
                  "scipy._distributor_init",
                  ],
 
-    "include_files": ["database/",
-                      "src/tguiil/",
-                      "src/data/"
-                      ],
+    "include_files": [
+        "database/",
+    ] + necessary_files_for_installation,
 
-    "excludes": ["scipy.spatial.cKDTree",
-                 ]
+    "excludes": ["scipy.spatial.cKDTree"]
 }
-
-installOptions = {"skip_build":True}
-
-bdistOptions = {"skip_build":True}
 
 base = None
 
@@ -52,8 +49,6 @@ setup(name='Facile',
       version = '1.0',
       description = 'A platform for generating Python APIs used to control graphical user interfaces.',
       options = {
-          "build_exe": buildOptions,
-          "install_exe": installOptions,
-          "bdist_msi": bdistOptions,
+          "build_exe": buildOptions
       },
       executables = executables)

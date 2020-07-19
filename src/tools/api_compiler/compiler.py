@@ -28,12 +28,13 @@ from PySide2.QtCore import QObject, Signal
 
 import data.statemachine as sm
 from data.compilationprofile import CompilationProfile
+from tools.api_compiler.copy_file_manifest import compilation_copy_files
 from libs.logging import compiler_logger as logger
+from libs.logging import log_exceptions
 import libs.env as env
 
 curPath = os.path.abspath(os.path.join(env.FACILE_DIR, "tools/api_compiler/compiler.py"))
 dir, filename = os.path.split(curPath)
-
 
 class Compiler(QObject):
     stepStarted = Signal(str)
@@ -71,17 +72,7 @@ class Compiler(QObject):
         if not os.path.exists(self._docFolder):
             os.mkdir(self._docFolder)
         
-        self._necessaryFiles = ["../../tguiil/componentfinder.py", "../../tguiil/application.py",
-                                "../../tguiil/tokens.py", "../../tguiil/supertokens.py",
-                                "../../tguiil/matchoption.py", "../../data/entity.py",
-                                "../../data/tguim/component.py", "../../data/tguim/visibilitybehavior.py",
-                                "../../data/properties.py", "../../data/tguim/condition.py",
-                                "../../data/tguim/targetguimodel.py", "../../data/property.py",
-                                "../../libs/env.py"]
-                                # "../../data/apim/componentaction.py", "../../data/apim/action.py",
-                                # "../../data/apim/actionspecification.py", "../../data/apim/port.py",
-                                # "../../data/apim/wire.py", "../../data/apim/actionpipeline.py",
-                                # "../../data/apim/actionwrapper.py", "../../data/apim/wireset.py"]
+        self._necessaryFiles = compilation_copy_files
     
     def generateCustomApp(self) -> None:
         """
@@ -93,7 +84,7 @@ class Compiler(QObject):
         logger.info(msg)
         self.stepStarted.emit(msg)
 
-        with open(self._srcFolder + "application.py", "w+") as f:
+        with open(os.path.join(self._srcFolder, "application.py"), "w+") as f:
             
             # TODO: The Facade Tech watermark thing is a little intense when the user needs
             #  to use it for their own purposes and may want to share their generated API online.
@@ -177,8 +168,8 @@ class Compiler(QObject):
                 os.mkdir(tdir)
 
         for path in self._necessaryFiles:
-            src = os.path.normpath(os.path.join(dir, path))
-            dest = os.path.join(self._srcFolder, path[6:])
+            src = os.path.abspath(os.path.join(env.FACILE_SRC_DIR, path))
+            dest = os.path.abspath(os.path.join(self._srcFolder, path))
             logger.info(f"Copying file: {src} -> {dest}")
             try:
                 copyfile(src, dest)
@@ -279,18 +270,20 @@ class Compiler(QObject):
         logger.info(msg)
         if not os.path.exists(self._saveFolder + "automate.py"):
             with open(self._saveFolder + "automate.py", "w+") as f:
-                with open(os.path.join(dir, 'automate-template.py'), 'r') as g:
+                with open(os.path.join(dir, 'automate-template.txt'), 'r') as g:
                     autoStr = g.read()
 
                 f.write(autoStr.format(name=self._name))
 
             copyfile(os.path.join(dir, 'run-script.bat'), os.path.join(self._saveFolder, 'run-script.bat'))
 
+    @log_exceptions(logger=logger)
     def compileAPI(self):
         """
         Generates the functional API: the final result of compilation.
         """
         logger.info("Compiling API")
+
         self.copyNecessaryFiles()
         self.saveTGUIM()
         self.copyBaseApp()
@@ -306,4 +299,5 @@ class Compiler(QObject):
 
         self.copyHelpFiles()
         self.finished.emit()
+
         logger.info("Finished compiling API")
