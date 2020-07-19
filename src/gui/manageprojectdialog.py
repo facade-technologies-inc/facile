@@ -30,7 +30,7 @@ from gui.ui.ui_manageprojectdialog import Ui_Dialog as Ui_ManageProjectDialog
 import gui.facileview as fv
 import data.statemachine as sm
 from gui.theme import Theme
-import gui.frame.styles as styles
+import QNotifications
 
 # TODO: get rid of this once Project backend gets switched to enums.
 backends = ["win32", "uia"]
@@ -42,6 +42,12 @@ class ManageProjectDialog(QDialog):
 	"""
 
 	projectUpdated = Signal()
+	notify = Signal(str, str, int, bool, str)  # text to show, severity, duration, autohide, close button text
+
+	# Possible message levels are: primary, success, info, warning, and danger
+	NOTIF_LENGTH = 5000  # Time in ms to show a notification
+	NOTIF_AUTOHIDE = False  # Automatically hide notifications on mouse hover
+	NOTIF_BUTTON = ''  # Text for button to close the notification. Empty str is a good looking X
 	
 	def __init__(self, project: Project, mainWindow: 'FacileView', parent: QWidget = None):
 		"""
@@ -59,6 +65,9 @@ class ManageProjectDialog(QDialog):
 		self.mainWindow: fv.FacileView = mainWindow
 		self._project = project
 
+		self.notificationArea = self.setupNotificationArea()
+		self.lastClickedTab = 0
+
 		self.themeList = self.mainWindow.themeList
 		self.theme = self.mainWindow.getCurrentTheme()
 		self.initialTheme = self.theme
@@ -70,6 +79,41 @@ class ManageProjectDialog(QDialog):
 		if project:
 			self.ui.project_tab.setEnabled(True)
 			self.loadProjectSettings()
+
+		self.ui.tabWidget.tabBarClicked.connect(self.checkNotifs)
+
+	def checkNotifs(self, index: int):
+		"""
+		If the theme tab is selected, this allows certain messages to be shown.
+		"""
+
+		if index is not 2 or index is self.lastClickedTab:
+			self.lastClickedTab = index
+			return
+
+		self.lastClickedTab = index
+
+		if not self._project:
+			self.notify.emit("Custom theme colors can't be changed until a project is loaded.", 'primary',
+							 ManageProjectDialog.NOTIF_LENGTH, ManageProjectDialog.NOTIF_AUTOHIDE,
+							 ManageProjectDialog.NOTIF_BUTTON)
+			return
+
+		if not sm.StateMachine.instance.getCurrentActionPipeline():
+			self.notify.emit("API Model colors can't be changed until you make an Action Pipeline.", 'primary',
+							 ManageProjectDialog.NOTIF_LENGTH, ManageProjectDialog.NOTIF_AUTOHIDE,
+							 ManageProjectDialog.NOTIF_BUTTON)
+
+	def setupNotificationArea(self):
+		"""
+		Sets up the notification area for this dialog
+		"""
+
+		notificationArea = QNotifications.QNotificationArea(self.ui.tabWidget)
+		notificationArea.setEntryEffect('fadeIn', 300)
+		notificationArea.setExitEffect('fadeOut', 300)
+		self.notify.connect(notificationArea.display)
+		return notificationArea
 
 	def loadProjectSettings(self):
 		"""
@@ -352,14 +396,6 @@ class ManageProjectDialog(QDialog):
 
 		self.setCurrentTheme(self.theme.getName(), refreshBox=True)
 		self.setInitLayout()
-
-		# For the color display squares. TODO: Change this in QtCreator to be the default, to make code cleaner
-		self.ui.t_baseCol.setAutoFillBackground(True)
-		self.ui.a_baseCol.setAutoFillBackground(True)
-		self.ui.a_actionCol.setAutoFillBackground(True)
-		self.ui.a_port_InsideCol.setAutoFillBackground(True)
-		self.ui.a_port_OutsideCol.setAutoFillBackground(True)
-		self.ui.a_sequence_Col.setAutoFillBackground(True)
 
 	def setCurrentTheme(self, themeName, refreshBox: bool = False):
 		"""

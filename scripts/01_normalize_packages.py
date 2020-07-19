@@ -9,7 +9,8 @@ perm_req_file = "../requirements.txt"
 # Mapping of dependencies to download and install from Facade Technologies github
 # These are generally repositories that needed to be forked and modified to work with Facile.
 requirements_from_source = {
-#    "qtmodern":              ("https://github.com/facade-technologies-inc/qtmodern.git",   "master"),
+    "qtmodern":              ("https://github.com/facade-technologies-inc/qtmodern.git",   "master"),
+    "qnotifications":        ("https://github.com/facade-technologies-inc/QNotifications", "master"),
 }
 
 
@@ -49,11 +50,12 @@ if __name__ == "__main__":
 
         # if the repo already exists, switch to the target branch and pull
         if os.path.exists(repo_path):
+            print('')
             print(f"Pulling: {package} @ branch: {branchName}")
             repoObj = pygit2.Repository(os.path.join(repo_path, ".git"))
-            branch = repo.lookup_branch(branchName)
-            ref = repo.lookup_reference(branch.name)
-            repo.checkout(ref)
+            branch = repoObj.lookup_branch(branchName)
+            ref = repoObj.lookup_reference(branch.name)
+            repoObj.checkout(ref)
 
             freeze_loc = os.getcwd()
             os.chdir(repo_path)
@@ -66,6 +68,7 @@ if __name__ == "__main__":
 
         print(f"Installing from source: {package}")
         pip.main(["install", repo_path])
+        print('')
 
     # -- Print a report of what was done -------------------------------------------------------------------------------
     report = {

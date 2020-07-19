@@ -263,6 +263,11 @@ class ApiCompilerDialog(QDialog):
 		"""
 
 		QDialog.accept(self)
+
+		sm.StateMachine.instance.view.notify.emit(
+			sm.StateMachine.instance._project.getAPIName() + " API Generation Successful.", 'success', 5000, False, ''
+		)
+
 		QMessageBox.information(self, "Compilation Successful", "Your API was successfully generated.",
 								QMessageBox.StandardButton.Ok)
 

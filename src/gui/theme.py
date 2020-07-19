@@ -250,7 +250,7 @@ class Theme:
 
         :param d: The dictionary containing Theme information
         """
-        print(d)
+        
         # Get base function created and stored in temporary dictionary
         lcl = {'styles': styles}
         exec('base = styles.' + d['base'], lcl)

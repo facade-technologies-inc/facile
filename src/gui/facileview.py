@@ -57,12 +57,16 @@ import json
 from enum import Enum
 from gui.theme import Theme
 from libs.logging import main_logger as logger
+import QNotifications
 
 
 class FacileView(QMainWindow):
 	"""
 	FacileView is the main window for Facile.
 	"""
+
+	# Allows notifications to be shown
+	notify = Signal(str, str, int, bool, str)  # text to show, severity, duration, autohide, close button text
 
 	class Layout(Enum):
 		MODELS = 1
@@ -77,6 +81,11 @@ class FacileView(QMainWindow):
 					  Theme(styles.lightModern),
 					  Theme(styles.darkUltra),
 					  Theme(styles.lightUltra)]
+
+	# Possible message levels are: primary, success, info, warning, and danger
+	NOTIF_LENGTH = 5000  # Time in ms to show a notification
+	NOTIF_AUTOHIDE = False  # Automatically hide notifications on mouse hover
+	NOTIF_BUTTON = ''  # Text for button to close the notification. Empty str is a good looking X
 	
 	def __init__(self) -> 'FacileView':
 		"""
@@ -138,6 +147,22 @@ class FacileView(QMainWindow):
 		self._layout = FacileView.Layout.CLASSIC
 		self.loadSettings()
 
+		self.notificationArea = self.setupNotificationArea()
+
+		self.notify.emit("Welcome back!", 'primary', FacileView.NOTIF_LENGTH, FacileView.NOTIF_AUTOHIDE,
+						 FacileView.NOTIF_BUTTON)
+
+	def setupNotificationArea(self):
+		"""
+		Sets up the notification area for this dialog
+		"""
+
+		notificationArea = QNotifications.QNotificationArea(self, location='facileview', maxMessages=2)
+		notificationArea.setEntryEffect('fadeIn', 200)
+		notificationArea.setExitEffect('fadeOut', 300)
+		self.notify.connect(notificationArea.display)
+		return notificationArea
+
 	def getCurrentTheme(self) -> Theme:
 		"""
 		Returns the current Theme
@@ -198,6 +223,9 @@ class FacileView(QMainWindow):
 		
 		if project is not None:
 			self._stateMachine.projectOpened(project)
+
+			self.notify.emit("Opened Project: " + project.getName(), 'primary', FacileView.NOTIF_LENGTH,
+							 FacileView.NOTIF_AUTOHIDE, FacileView.NOTIF_BUTTON)
 	
 	@Slot()
 	def onSaveProjectAsTriggered(self) -> None:
@@ -430,9 +458,10 @@ class FacileView(QMainWindow):
 		
 		if response == QMessageBox.StandardButton.Yes:
 			self.ui.actionPower_App.setChecked(True)
+			self.notify.emit("The target application has been terminated.", 'danger', FacileView.NOTIF_LENGTH,
+							 FacileView.NOTIF_AUTOHIDE, FacileView.NOTIF_BUTTON)
 			self._project.stopTargetApplication()
 			self._stateMachine.stopApp()
-			self.info("The target application has been\nterminated.")
 	
 	@Slot(int)
 	def onItemSelected(self, id: int) -> None:
