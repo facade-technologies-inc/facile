@@ -23,14 +23,32 @@
 
 import os
 import shutil
+import subprocess
 
 from PySide2.QtCore import QObject, Signal
+from PySide2.QtWidgets import QApplication
 
 import data.statemachine as sm
 from data.compilationprofile import CompilationProfile
 from libs.logging import compiler_logger as logger
 from libs.logging import log_exceptions
 import libs.env as env
+from multiprocessing.pool import ThreadPool
+
+
+def nongui(fun):
+    """Decorator running the function in non-gui thread while
+    processing the gui events."""
+
+    def wrap(*args, **kwargs):
+        pool = ThreadPool(processes=1)
+        a_sync = pool.apply_async(fun, args, kwargs)
+        while not a_sync.ready():
+            a_sync.wait(0.01)
+            QApplication.processEvents()
+        return a_sync.get()
+
+    return wrap
 
 
 class DocGenerator(QObject):
@@ -58,6 +76,7 @@ class DocGenerator(QObject):
         self.projectName = projectName
         self.docType = docType
 
+    @nongui
     @log_exceptions(logger=logger)
     def createDoc(self, debug:bool=True):
         """
@@ -102,6 +121,7 @@ class DocGenerator(QObject):
                 initMsg = "Generating HTML documentation..."
                 logger.info(initMsg)
                 self.stepStarted.emit(initMsg)
+
                 if os.path.exists(os.path.abspath('../html')):
                     self.execCommand('cd ../ & RMDIR /Q/S html 1>nul 2>&1', printErrorCode=debug)
                 self.execCommand('make html 1> ..\\build_html.log 2>&1 & move _build\\html ..\\ 1>nul 2>&1', printErrorCode=debug)
@@ -111,6 +131,7 @@ class DocGenerator(QObject):
                 initMsg = "Generating TXT documentation..."
                 logger.info(initMsg)
                 self.stepStarted.emit(initMsg)
+
                 if os.path.exists(os.path.abspath('../text')):
                     self.execCommand('cd ../ & RMDIR /Q/S text 1>nul 2>&1', printErrorCode=debug)
                 self.execCommand('make text 1> ..\\build_text.log 2>&1 & move _build\\text ..\\ 1>nul 2>&1', printErrorCode=debug)
@@ -120,6 +141,7 @@ class DocGenerator(QObject):
                 initMsg = "Generating PDF documentation..."
                 logger.info(initMsg)
                 self.stepStarted.emit(initMsg)
+
                 if os.path.exists(os.path.abspath('../pdf')):
                     self.execCommand('cd ../ & RMDIR /Q/S pdf 1>nul 2>&1', printErrorCode=debug)
                 self.execCommand('make latex 1> ..\\build_pdf.log 2>&1', printErrorCode=debug)
@@ -132,9 +154,11 @@ class DocGenerator(QObject):
                 initMsg = "Generating EPUB documentation..."
                 logger.info(initMsg)
                 self.stepStarted.emit(initMsg)
+
                 if os.path.exists(os.path.abspath('../epub')):
                     self.execCommand('cd ../ & RMDIR /Q/S epub 1>nul 2>&1', printErrorCode=debug)
                 self.execCommand('make epub 1> ..\\build_epub.log 2>&1 & move _build\\epub ..\\ 1>nul 2>&1', printErrorCode=debug)
+
                 logger.info("finished generating EPUB documentation")
 
             self.stepComplete.emit()
@@ -144,6 +168,7 @@ class DocGenerator(QObject):
 
         # remove the src directory.
         exit_code = self.execCommand(f'RMDIR /S/Q "{srcDir}" 1>nul 2>&1', printErrorCode=debug)
+
         if exit_code:
             logger.critical(f"Unable to remove the {srcDir}. This may cause import issues when the API is run.")
         logger.info("Finished creating documentation.")
@@ -169,6 +194,7 @@ class DocGenerator(QObject):
         f.write(fileStr.format(userDefinedProjectName = self.projectName))
         f.close()
 
+    @nongui
     def execCommand(self, command:str, printErrorCode:bool=True) -> int:
         """
         Execute the command and return the error code.
@@ -180,7 +206,7 @@ class DocGenerator(QObject):
         :rtype: int
         """
 
-        exit_code = os.system(command)
+        exit_code = subprocess.call(command, shell=True)
         if printErrorCode and exit_code != 0:
             print()
             print(f'CURRENT DIRECTORY: {os.getcwd()}')

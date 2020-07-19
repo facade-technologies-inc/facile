@@ -25,6 +25,7 @@ import os, json
 from shutil import copyfile
 
 from PySide2.QtCore import QObject, Signal
+from PySide2.QtWidgets import QApplication
 
 import data.statemachine as sm
 from data.compilationprofile import CompilationProfile
@@ -276,6 +277,7 @@ class Compiler(QObject):
                 f.write(autoStr.format(name=self._name))
 
             copyfile(os.path.join(dir, 'run-script.bat'), os.path.join(self._saveFolder, 'run-script.bat'))
+        self.stepComplete.emit()
 
     @log_exceptions(logger=logger)
     def compileAPI(self):
@@ -285,8 +287,11 @@ class Compiler(QObject):
         logger.info("Compiling API")
 
         self.copyNecessaryFiles()
+        QApplication.instance().processEvents()
         self.saveTGUIM()
+        QApplication.instance().processEvents()
         self.copyBaseApp()
+        QApplication.instance().processEvents()
 
         if self._compProf.installApi:
             self.generateSetupFile()
