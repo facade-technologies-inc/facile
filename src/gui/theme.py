@@ -111,7 +111,7 @@ class Theme:
 
             self.setTGUIMColorSettings(QColor(0, 141, 222).lighter(f=75), False)
 
-            self.apimColors['Action Pipeline'] = QColor(0, 76, 153)
+            self.apimColors['Action Pipeline'] = QColor(0, 141, 222).lighter(f=75)
             self.apimColors['Action Wrapper'] = QColor(52, 73, 94)
             self.apimColors['Inside Port'] = QColor(121, 125, 127)
             self.apimColors['Outside Port'] = QColor(121, 125, 127)
@@ -123,7 +123,7 @@ class Theme:
 
             self.setTGUIMColorSettings(QColor(0, 141, 222), False)
 
-            self.apimColors['Action Pipeline'] = QColor(0, 76, 153).lighter()
+            self.apimColors['Action Pipeline'] = QColor(0, 141, 222)
             self.apimColors['Action Wrapper'] = QColor(52, 73, 94).lighter()
             self.apimColors['Inside Port'] = QColor(121, 125, 127).lighter(f=140)
             self.apimColors['Outside Port'] = QColor(121, 125, 127).lighter(f=140)
@@ -135,10 +135,10 @@ class Theme:
 
             self.setTGUIMColorSettings(QColor(0, 141, 222).lighter(f=85), True)
 
-            self.apimColors['Action Pipeline'] = QColor(0, 76, 153)
-            self.apimColors['Action Wrapper'] = QColor(52, 73, 94)
-            self.apimColors['Inside Port'] = QColor(121, 125, 127)
-            self.apimColors['Outside Port'] = QColor(121, 125, 127)
+            self.apimColors['Action Pipeline'] = QColor(0, 141, 222).lighter(f=85)
+            self.apimColors['Action Wrapper'] = QColor(52, 73, 94).lighter(f=110)
+            self.apimColors['Inside Port'] = QColor(100, 100, 100)
+            self.apimColors['Outside Port'] = QColor(100, 100, 100)
             self.apimColors['Sequence Tag'] = QColor(121, 125, 127)
 
         elif self._base is styles.lightModern:
@@ -157,22 +157,22 @@ class Theme:
 
             self._name = 'Ultra Dark'
 
-            self.setTGUIMColorSettings(QColor(150, 141, 222).lighter(f=85), True)
+            self.setTGUIMColorSettings(QColor(42, 65, 88), True)
 
-            self.apimColors['Action Pipeline'] = QColor(150, 76, 153)  # QColor(0, 76, 153)
-            self.apimColors['Action Wrapper'] = QColor(52, 73, 94)
-            self.apimColors['Inside Port'] = QColor(121, 125, 127)
-            self.apimColors['Outside Port'] = QColor(121, 125, 127)
-            self.apimColors['Sequence Tag'] = QColor(121, 125, 127)
+            self.apimColors['Action Pipeline'] = QColor(42, 65, 88)
+            self.apimColors['Action Wrapper'] = QColor(89, 115, 135)
+            self.apimColors['Inside Port'] = QColor(60, 70, 72)
+            self.apimColors['Outside Port'] = QColor(60, 70, 72)
+            self.apimColors['Sequence Tag'] = QColor(149, 138, 86)
 
         elif self._base is styles.lightUltra:
 
             self._name = 'Ultra Light'
 
-            self.setTGUIMColorSettings(QColor(0, 190, 230).lighter(f=110), True)
+            self.setTGUIMColorSettings(QColor(70, 190, 210).lighter(f=110), True)
 
-            self.apimColors['Action Pipeline'] = QColor(0, 76, 153).lighter(f=180)
-            self.apimColors['Action Wrapper'] = QColor(52, 73, 94).lighter(f=180)
+            self.apimColors['Action Pipeline'] = QColor(70, 190, 210)
+            self.apimColors['Action Wrapper'] = QColor(52, 73, 94).lighter(f=130)
             self.apimColors['Inside Port'] = QColor(121, 125, 127).lighter(f=140)
             self.apimColors['Outside Port'] = QColor(121, 125, 127).lighter(f=140)
             self.apimColors['Sequence Tag'] = QColor(121, 125, 127).lighter(f=180)
