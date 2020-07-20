@@ -123,8 +123,9 @@ class DocGenerator(QObject):
                 self.stepStarted.emit(initMsg)
 
                 if os.path.exists(os.path.abspath('../html')):
-                    self.execCommand('cd ../ & RMDIR /Q/S html 1>nul 2>&1', printErrorCode=debug)
-                self.execCommand('make html 1> ..\\build_html.log 2>&1 & move _build\\html ..\\ 1>nul 2>&1', printErrorCode=debug)
+                    self.execCommand(['cd', '../', '&', 'RMDIR', '/Q/S', 'html', '1>nul', '2>&1'], printErrorCode=debug)
+                self.execCommand(['make', 'html', '1>', '..\\build_html.log', '2>&1', '&',
+                                  'move', '_build\\html', '..\\', '1>nul', '2>&1'], printErrorCode=debug)
                 logger.info("finished generating HTML documentation")
 
             elif type is CompilationProfile.DocType.Txt:
@@ -133,8 +134,9 @@ class DocGenerator(QObject):
                 self.stepStarted.emit(initMsg)
 
                 if os.path.exists(os.path.abspath('../text')):
-                    self.execCommand('cd ../ & RMDIR /Q/S text 1>nul 2>&1', printErrorCode=debug)
-                self.execCommand('make text 1> ..\\build_text.log 2>&1 & move _build\\text ..\\ 1>nul 2>&1', printErrorCode=debug)
+                    self.execCommand(['cd', '../', '&', 'RMDIR', '/Q/S', 'text', '1>nul', '2>&1'], printErrorCode=debug)
+                self.execCommand(['make', 'text', '1>', '..\\build_text.log', '2>&1', '&',
+                                  'move', '_build\\text', '..\\', '1>nul', '2>&1'], printErrorCode=debug)
                 logger.info("finished generating TXT documentation")
 
             elif type is CompilationProfile.DocType.Pdf:
@@ -143,11 +145,11 @@ class DocGenerator(QObject):
                 self.stepStarted.emit(initMsg)
 
                 if os.path.exists(os.path.abspath('../pdf')):
-                    self.execCommand('cd ../ & RMDIR /Q/S pdf 1>nul 2>&1', printErrorCode=debug)
-                self.execCommand('make latex 1> ..\\build_pdf.log 2>&1', printErrorCode=debug)
-                self.execCommand('cd _build\\latex & make 1>nul 2>&1 ', printErrorCode=debug)
-                self.execCommand('mkdir ..\\pdf', printErrorCode=debug)
-                self.execCommand('xcopy _build\\latex\\*.pdf ..\\pdf 1>nul 2>&1', printErrorCode=debug)
+                    self.execCommand(['cd', '../', '&', 'RMDIR', '/Q/S', 'pdf', '1>nul', '2>&1'], printErrorCode=debug)
+                self.execCommand(['make', 'latex', '1>', '..\\build_pdf.log', '2>&1'], printErrorCode=debug)
+                self.execCommand(['cd', '_build\\latex', '&', 'make', '1>nul', '2>&1 '], printErrorCode=debug)
+                self.execCommand(['mkdir', '..\\pdf'], printErrorCode=debug)
+                self.execCommand(['xcopy', '_build\\latex\\*.pdf', '..\\pdf', '1>nul', '2>&1'], printErrorCode=debug)
                 logger.info("finished generating PDF documentation")
             
             elif type is CompilationProfile.DocType.EPub:
@@ -156,8 +158,9 @@ class DocGenerator(QObject):
                 self.stepStarted.emit(initMsg)
 
                 if os.path.exists(os.path.abspath('../epub')):
-                    self.execCommand('cd ../ & RMDIR /Q/S epub 1>nul 2>&1', printErrorCode=debug)
-                self.execCommand('make epub 1> ..\\build_epub.log 2>&1 & move _build\\epub ..\\ 1>nul 2>&1', printErrorCode=debug)
+                    self.execCommand(['cd', '../', '&', 'RMDIR', '/Q/S', 'epub', '1>nul', '2>&1'], printErrorCode=debug)
+                self.execCommand(['make', 'epub', '1>', '..\\build_epub.log', '2>&1', '&',
+                                  'move _build\\epub', '..\\', '1>nul', '2>&1'], printErrorCode=debug)
 
                 logger.info("finished generating EPUB documentation")
 
@@ -167,7 +170,7 @@ class DocGenerator(QObject):
         os.chdir(restorePoint)
 
         # remove the src directory.
-        exit_code = self.execCommand(f'RMDIR /S/Q "{srcDir}" 1>nul 2>&1', printErrorCode=debug)
+        exit_code = self.execCommand(['RMDIR', '/S/Q', f'"{srcDir}"', '1>nul', '2>&1'], printErrorCode=debug)
 
         if exit_code:
             logger.critical(f"Unable to remove the {srcDir}. This may cause import issues when the API is run.")
@@ -195,22 +198,22 @@ class DocGenerator(QObject):
         f.close()
 
     @nongui
-    def execCommand(self, command:str, printErrorCode:bool=True) -> int:
+    def execCommand(self, command: list, printErrorCode: bool = True) -> int:
         """
         Execute the command and return the error code.
-        :param command: The command to execute.
-        :type command: str
+        :param command: The command to execute as a list of arguments.
+        :type command: list
         :param printErrorCode: If there was an error, print the error code if true.
         :type printErrorCode: bool
         :return: The exit code from the command.
         :rtype: int
         """
 
-        exit_code = subprocess.call(command, shell=True)
+        exit_code = subprocess.call(command)
         if printErrorCode and exit_code != 0:
             print()
             print(f'CURRENT DIRECTORY: {os.getcwd()}')
-            print(f'COMMAND:           {command}')
+            print(f'COMMAND:           {" ".join(command)}')
             print(f'EXIT CODE:         {exit_code}')
             print()
         return exit_code

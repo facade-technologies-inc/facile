@@ -87,7 +87,7 @@ class ManageProjectDialog(QDialog):
 		If the theme tab is selected, this allows certain messages to be shown.
 		"""
 
-		if index is not 2 or index is self.lastClickedTab:
+		if index != 2 or index == self.lastClickedTab:
 			self.lastClickedTab = index
 			return
 
@@ -145,18 +145,18 @@ class ManageProjectDialog(QDialog):
 		Connects any signals needed for proper behavior of the dialog
 		"""
 
-		self.ui.buttonBox.clicked.connect(lambda button: self.applySettings(button))
+		self.ui.buttonBox.clicked.connect(self.applySettings)
 
-		self.ui.t_baseColButton.clicked.connect(lambda: self.colorPicker_tguim())
-		self.ui.a_baseColButton.clicked.connect(lambda: self.colorPicker_actionpipeline_base())
-		self.ui.a_actionColButton.clicked.connect(lambda: self.colorPicker_actionpipeline_wrapper())
-		self.ui.a_port_InsideColButton.clicked.connect(lambda: self.colorPicker_actionpipeline_inside_port())
-		self.ui.a_port_OutsideColButton.clicked.connect(lambda: self.colorPicker_actionpipeline_outside_port())
-		self.ui.a_sequence_ColButton.clicked.connect(lambda: self.colorPicker_actionpipeline_sequence_tag())
+		self.ui.t_baseColButton.clicked.connect(self.colorPicker_tguim)
+		self.ui.a_baseColButton.clicked.connect(self.colorPicker_actionpipeline_base)
+		self.ui.a_actionColButton.clicked.connect(self.colorPicker_actionpipeline_wrapper)
+		self.ui.a_port_InsideColButton.clicked.connect(self.colorPicker_actionpipeline_inside_port)
+		self.ui.a_port_OutsideColButton.clicked.connect(self.colorPicker_actionpipeline_outside_port)
+		self.ui.a_sequence_ColButton.clicked.connect(self.colorPicker_actionpipeline_sequence_tag)
 
-		self.ui.themeBox.currentTextChanged.connect(lambda: self.setCurrentTheme(self.ui.themeBox.currentText()))
-		self.ui.newThemeButton.clicked.connect(lambda: self.newThemePrompts())
-		self.ui.deleteThemeButton.clicked.connect(lambda: self.deleteCurrentTheme())
+		self.ui.themeBox.currentTextChanged.connect(self.setCurrentTheme)
+		self.ui.newThemeButton.clicked.connect(self.newThemePrompts)
+		self.ui.deleteThemeButton.clicked.connect(self.deleteCurrentTheme)
 
 	def deleteCurrentTheme(self):
 		"""
@@ -345,7 +345,7 @@ class ManageProjectDialog(QDialog):
 		Opens a color picking dialog, then returns the color chosen
 		"""
 		colSelect = QColorDialog(self.theme.tguimColorSettings['Base Color'])
-		colSelect.colorSelected.connect(lambda col: self.setTGUIMBaseCol(col))
+		colSelect.colorSelected.connect(self.setTGUIMBaseCol)
 		colSelect.exec_()
 	
 	def colorPicker_actionpipeline_base(self):
@@ -353,7 +353,7 @@ class ManageProjectDialog(QDialog):
 		Opens a color picking dialog, then returns the color chosen
 		"""
 		colSelect = QColorDialog(self.theme.apimColors['Action Pipeline'])
-		colSelect.colorSelected.connect(lambda col: self.setActionPipelineBaseCol(col))
+		colSelect.colorSelected.connect(self.setActionPipelineBaseCol)
 		colSelect.exec_()
 		
 	def colorPicker_actionpipeline_wrapper(self):
@@ -361,7 +361,7 @@ class ManageProjectDialog(QDialog):
 		Opens a color picking dialog, then returns the color chosen
 		"""
 		colSelect = QColorDialog(self.theme.apimColors['Action Wrapper'])
-		colSelect.colorSelected.connect(lambda col: self.setActionPipelineWrapperCol(col))
+		colSelect.colorSelected.connect(self.setActionPipelineWrapperCol)
 		colSelect.exec_()
 		
 	def colorPicker_actionpipeline_inside_port(self):
@@ -369,7 +369,7 @@ class ManageProjectDialog(QDialog):
 		Opens a color picking dialog, then returns the color chosen
 		"""
 		colSelect = QColorDialog(self.theme.apimColors['Inside Port'])
-		colSelect.colorSelected.connect(lambda col: self.setActionPipelineInsidePortCol(col))
+		colSelect.colorSelected.connect(self.setActionPipelineInsidePortCol)
 		colSelect.exec_()
 	
 	def colorPicker_actionpipeline_outside_port(self):
@@ -377,7 +377,7 @@ class ManageProjectDialog(QDialog):
 		Opens a color picking dialog, then returns the color chosen
 		"""
 		colSelect = QColorDialog(self.theme.apimColors['Outside Port'])
-		colSelect.colorSelected.connect(lambda col: self.setActionPipelineOutsidePortCol(col))
+		colSelect.colorSelected.connect(self.setActionPipelineOutsidePortCol)
 		colSelect.exec_()
 	
 	def colorPicker_actionpipeline_sequence_tag(self):
@@ -385,7 +385,7 @@ class ManageProjectDialog(QDialog):
 		Opens a color picking dialog, then returns the color chosen
 		"""
 		colSelect = QColorDialog(self.theme.apimColors['Sequence Tag'])
-		colSelect.colorSelected.connect(lambda col: self.setActionPipelineSequenceTagCol(col))
+		colSelect.colorSelected.connect(self.setActionPipelineSequenceTagCol)
 		colSelect.exec_()
 		
 	def initializeValues(self):

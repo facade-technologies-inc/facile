@@ -250,12 +250,9 @@ class Theme:
 
         :param d: The dictionary containing Theme information
         """
-        
-        # Get base function created and stored in temporary dictionary
-        lcl = {'styles': styles}
-        exec('base = styles.' + d['base'], lcl)
 
-        thm = Theme(lcl['base'], custom=True)  # Only saving custom functions
+        baseFunc = getattr(styles, d['base'])
+        thm = Theme(baseFunc, custom=True)  # Only saving custom functions
 
         tguimDict = {
             'Base Color': QColor.fromRgba(d['tguim']['Base Color']),
