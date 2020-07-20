@@ -60,18 +60,18 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: "{#SourcePath}\..\build\exe.win32-3.7\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
-;Source: "{#SourcePath}\..\build\exe.win32-3.7\api-ms-win-crt-heap-l1-1-0.dll"; DestDir: "{app}"; Flags: ignoreversion
-;Source: "{#SourcePath}\..\build\exe.win32-3.7\api-ms-win-crt-locale-l1-1-0.dll"; DestDir: "{app}"; Flags: ignoreversion
-;Source: "{#SourcePath}\..\build\exe.win32-3.7\api-ms-win-crt-math-l1-1-0.dll"; DestDir: "{app}"; Flags: ignoreversion
-;Source: "{#SourcePath}\..\build\exe.win32-3.7\api-ms-win-crt-runtime-l1-1-0.dll"; DestDir: "{app}"; Flags: ignoreversion
-;Source: "{#SourcePath}\..\build\exe.win32-3.7\api-ms-win-crt-stdio-l1-1-0.dll"; DestDir: "{app}"; Flags: ignoreversion
-;Source: "{#SourcePath}\..\build\exe.win32-3.7\python37.dll"; DestDir: "{app}"; Flags: ignoreversion
-;Source: "{#SourcePath}\..\build\exe.win32-3.7\data\*"; DestDir: "{app}\data"; Flags: ignoreversion recursesubdirs createallsubdirs
-;Source: "{#SourcePath}\..\build\exe.win32-3.7\database\*"; DestDir: "{app}\database"; Flags: ignoreversion recursesubdirs createallsubdirs
-;Source: "{#SourcePath}\..\build\exe.win32-3.7\lib\*"; DestDir: "{app}\lib"; Flags: ignoreversion recursesubdirs createallsubdirs
-;Source: "{#SourcePath}\..\build\exe.win32-3.7\temp\*"; DestDir: "{app}\temp"; Flags: ignoreversion recursesubdirs createallsubdirs
-;Source: "{#SourcePath}\..\build\exe.win32-3.7\tguiil\*"; DestDir: "{app}\tguiil"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "{#SourcePath}\..\build\exe\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+;Source: "{#SourcePath}\..\build\exe\api-ms-win-crt-heap-l1-1-0.dll"; DestDir: "{app}"; Flags: ignoreversion
+;Source: "{#SourcePath}\..\build\exe\api-ms-win-crt-locale-l1-1-0.dll"; DestDir: "{app}"; Flags: ignoreversion
+;Source: "{#SourcePath}\..\build\exe\api-ms-win-crt-math-l1-1-0.dll"; DestDir: "{app}"; Flags: ignoreversion
+;Source: "{#SourcePath}\..\build\exe\api-ms-win-crt-runtime-l1-1-0.dll"; DestDir: "{app}"; Flags: ignoreversion
+;Source: "{#SourcePath}\..\build\exe\api-ms-win-crt-stdio-l1-1-0.dll"; DestDir: "{app}"; Flags: ignoreversion
+;Source: "{#SourcePath}\..\build\exe\python37.dll"; DestDir: "{app}"; Flags: ignoreversion
+;Source: "{#SourcePath}\..\build\exe\data\*"; DestDir: "{app}\data"; Flags: ignoreversion recursesubdirs createallsubdirs
+;Source: "{#SourcePath}\..\build\exe\database\*"; DestDir: "{app}\database"; Flags: ignoreversion recursesubdirs createallsubdirs
+;Source: "{#SourcePath}\..\build\exe\lib\*"; DestDir: "{app}\lib"; Flags: ignoreversion recursesubdirs createallsubdirs
+;Source: "{#SourcePath}\..\build\exe\temp\*"; DestDir: "{app}\temp"; Flags: ignoreversion recursesubdirs createallsubdirs
+;Source: "{#SourcePath}\..\build\exe\tguiil\*"; DestDir: "{app}\tguiil"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]

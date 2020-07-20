@@ -4,13 +4,13 @@ import sys
 
 INNO_DIR = "C:\Program Files (x86)\Inno Setup 6"
 INNO_COMPILER = os.path.join(INNO_DIR, 'Compil32.exe')
-INNO_SCRIPT = os.path.abspath(os.path.join(os.path.dirname(__file__), 'Facile_Installer_Setup_Script.iss'))
+INNO_SCRIPT = os.path.realpath(os.path.join(os.path.dirname(__file__), 'Facile_Installer_Setup_Script.iss'))
 
 
 if __name__ == "__main__":
 
     if not os.path.exists(INNO_DIR):
-        print(f"INNO Setup is not installed or is not installed in the correct location. Please install it at {INNO_DIR}")
+        print(f"INNO Setup is not installed o is not installed in the correct location. Please install it at {INNO_DIR}")
         sys.exit(1)
 
     if not os.path.exists(INNO_SCRIPT):
