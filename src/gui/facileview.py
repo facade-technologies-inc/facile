@@ -46,12 +46,18 @@ from qt_models.propeditormodel import PropModel
 from tguiil.blinker import Blinker
 from gui.actionmenu import ActionMenu
 from graphics.tguim.toplevelwrappergraphics import TopLevelWrapperGraphics
+from graphics.apim.actiongraphics import ActionGraphics
+from graphics.apim.actionwrappergraphics import ActionWrapperGraphics
+from graphics.apim.portgraphics import PortGraphics
 
 import data.statemachine as sm
 import gui.frame.styles as styles
 import pyautogui
 import json
 from enum import Enum
+from gui.theme import Theme
+from libs.logging import main_logger as logger
+import QNotifications
 
 
 class FacileView(QMainWindow):
@@ -59,13 +65,8 @@ class FacileView(QMainWindow):
 	FacileView is the main window for Facile.
 	"""
 
-	class Theme(Enum):
-		CLASSIC_DARK = 1
-		CLASSIC_LIGHT = 2
-		FLAT_DARK = 3
-		FLAT_LIGHT = 4
-		ULTRA_DARK = 5
-		ULTRA_LIGHT = 6
+	# Allows notifications to be shown
+	notify = Signal(str, str, int, bool, str)  # text to show, severity, duration, autohide, close button text
 
 	class Layout(Enum):
 		MODELS = 1
@@ -74,9 +75,17 @@ class FacileView(QMainWindow):
 		ALL = 4
 		CUSTOM = 5
 
-	themeChanged = Signal(Theme)
+	DEFAULT_THEMES = [Theme(styles.darkClassic),
+					  Theme(styles.lightClassic),
+					  Theme(styles.darkModern),
+					  Theme(styles.lightModern),
+					  Theme(styles.darkUltra),
+					  Theme(styles.lightUltra)]
 
-	TGUIM_COL_SETTINGS = []
+	# Possible message levels are: primary, success, info, warning, and danger
+	NOTIF_LENGTH = 5000  # Time in ms to show a notification
+	NOTIF_AUTOHIDE = False  # Automatically hide notifications on mouse hover
+	NOTIF_BUTTON = ''  # Text for button to close the notification. Empty str is a good looking X
 	
 	def __init__(self) -> 'FacileView':
 		"""
@@ -92,7 +101,8 @@ class FacileView(QMainWindow):
 		self.ui.setupUi(self)
 
 		# Set up variables
-		self._theme = FacileView.Theme.CLASSIC_DARK
+		self._theme = None  # Handled by the loadSettings function
+		self.themeList = FacileView.DEFAULT_THEMES
 		self._layout = FacileView.Layout.CLASSIC
 		self._scrollBarsEnabled = False
 
@@ -137,7 +147,23 @@ class FacileView(QMainWindow):
 		self._layout = FacileView.Layout.CLASSIC
 		self.loadSettings()
 
-	def getTheme(self) -> Theme:
+		self.notificationArea = self.setupNotificationArea()
+
+		self.notify.emit("Welcome back!", 'primary', FacileView.NOTIF_LENGTH, FacileView.NOTIF_AUTOHIDE,
+						 FacileView.NOTIF_BUTTON)
+
+	def setupNotificationArea(self):
+		"""
+		Sets up the notification area for this dialog
+		"""
+
+		notificationArea = QNotifications.QNotificationArea(self, location='facileview', maxMessages=2)
+		notificationArea.setEntryEffect('fadeIn', 200)
+		notificationArea.setExitEffect('fadeOut', 300)
+		self.notify.connect(notificationArea.display)
+		return notificationArea
+
+	def getCurrentTheme(self) -> Theme:
 		"""
 		Returns the current Theme
 
@@ -145,7 +171,34 @@ class FacileView(QMainWindow):
 		:rtype: Theme
 		"""
 		return self._theme
+	
+	def refreshAPIM(self) -> None:
+		"""
+		Clears the APIMGraphicsView scene and recreates it. Also refreshes the action menus.
+		
+		:return: None
+		:rtype: NoneType
+		"""
+		self.ui.apiModelView.refresh()
+		self._actionPipelinesMenu.refresh()
+		self._componentActionMenu.refresh()
+		
+	def updateAPIMColors(self, apimColors):
+		"""
+		Updates the colors for the APIM.
+		
+		:param apimColors: The dictionary of APIM Colors
+		:type apimColors: dict
+		"""
 
+		ActionGraphics.COLOR = apimColors['Action Pipeline']
+		ActionWrapperGraphics.COLOR = apimColors['Action Wrapper']
+		PortGraphics.INNER_COLOR = apimColors['Inside Port']
+		PortGraphics.OUTER_COLOR = apimColors['Outside Port']
+		ActionWrapperGraphics.TAG_BACKGROUND_COLOR = apimColors['Sequence Tag']
+
+		self.refreshAPIM()
+	
 	def getLayout(self) -> Layout:
 		"""
 		Returns the current Theme
@@ -170,6 +223,9 @@ class FacileView(QMainWindow):
 		
 		if project is not None:
 			self._stateMachine.projectOpened(project)
+
+			self.notify.emit("Opened Project: " + project.getName(), 'primary', FacileView.NOTIF_LENGTH,
+							 FacileView.NOTIF_AUTOHIDE, FacileView.NOTIF_BUTTON)
 	
 	@Slot()
 	def onSaveProjectAsTriggered(self) -> None:
@@ -310,6 +366,9 @@ class FacileView(QMainWindow):
 			self.progress.setValue(numSteps)
 			self.thread.terminate()
 
+			self._componentActionMenu.clearActions()
+			self._actionPipelinesMenu.clearActions()
+
 		proj = Project.load(url, onEntityCreation=increment, onCompletion=complete)
 		self.setProject(proj)
 
@@ -399,9 +458,10 @@ class FacileView(QMainWindow):
 		
 		if response == QMessageBox.StandardButton.Yes:
 			self.ui.actionPower_App.setChecked(True)
+			self.notify.emit("The target application has been terminated.", 'danger', FacileView.NOTIF_LENGTH,
+							 FacileView.NOTIF_AUTOHIDE, FacileView.NOTIF_BUTTON)
 			self._project.stopTargetApplication()
 			self._stateMachine.stopApp()
-			self.info("The target application has been\nterminated.")
 	
 	@Slot(int)
 	def onItemSelected(self, id: int) -> None:
@@ -654,23 +714,16 @@ class FacileView(QMainWindow):
 		:param theme: the theme to set
 		:type theme: Theme
 		"""
-		app = QApplication.instance()
 
-		if theme == FacileView.Theme.CLASSIC_DARK:
-			styles.darkClassic(app, self)
-		elif theme == FacileView.Theme.CLASSIC_LIGHT:
-			styles.lightClassic(app, self)
-		elif theme == FacileView.Theme.FLAT_DARK:
-			styles.darkModern(app, self)
-		elif theme == FacileView.Theme.FLAT_LIGHT:
-			styles.lightModern(app, self)
-		elif theme == FacileView.Theme.ULTRA_DARK:
-			styles.darkUltra(app, self)
-		elif theme == FacileView.Theme.ULTRA_LIGHT:
-			styles.lightUltra(app, self)
+		theme.applyTo(self)
 
+		for thm in self.themeList:
+			if theme.getName() == thm.getName():
+				self.themeList.remove(thm)
+				break
+
+		self.themeList.append(theme)
 		self._theme = theme
-		self.themeChanged.emit(theme)
 
 	def saveSettings(self) -> None:
 		"""
@@ -681,18 +734,16 @@ class FacileView(QMainWindow):
 		tempDir = os.path.join(cwd, "temp")
 		settingsFile = os.path.join(tempDir, "settings.json")
 
-		color = self.ui.targetGUIModelView.baseColor().getRgb()
-		settingsList = [self._theme.value,
-						self._layout.value,
-						self._scrollBarsEnabled,
-						color,
-						self.ui.targetGUIModelView.isFlat()]
+		settings = {'theme':       self._theme.getName(),
+					'theme list':  [theme.asDict() for theme in self.themeList if theme.isCustom()],
+					'layout':      self._layout.value,
+					'scrollbars':  self._scrollBarsEnabled}
 
 		if not os.path.exists(tempDir):
 			os.mkdir(tempDir)
 
 		with open(settingsFile, "w") as f:
-			f.write(json.dumps(settingsList, indent=4))
+			f.write(json.dumps(settings, indent=4))
 
 	def loadSettings(self) -> None:
 		"""
@@ -700,23 +751,31 @@ class FacileView(QMainWindow):
 		"""
 
 		try:
-			with open(os.path.join(os.getcwd(), "temp/settings.json"), "r") as settings:
-				sList = json.loads(settings.read())
+			with open(os.path.join(os.getcwd(), "temp", "settings.json"), "r") as f:
+				settings = json.loads(f.read())
 
-			self.setTheme(FacileView.Theme(sList[0]))
-			self.setLayout(FacileView.Layout(sList[1]))
-			self.enableScrollBars(sList[2])
+			self.setLayout(FacileView.Layout(settings['layout']))
+			self.enableScrollBars(settings['scrollbars'])
 
-			# TGUIM Accent Color
-			tguimBaseCol = QColor(sList[3][0], sList[3][1], sList[3][2], sList[3][3])
-			FacileView.TGUIM_COL_SETTINGS = [tguimBaseCol, sList[4]]
+			# Load custom themes
+			self.themeList = FacileView.DEFAULT_THEMES
+			for themeDict in settings['theme list']:
+				thm = Theme.fromDict(themeDict)
+				self.themeList.append(thm)
 
-		except (FileNotFoundError, IndexError, KeyError):  # For older versions of Facile
+			for theme in self.themeList:
+				if theme.getName() == settings['theme']:
+					self.setTheme(theme)
+
+		except (FileNotFoundError, IndexError, TypeError, KeyError) as e:  # For older versions of Facile
+			logger.warning("Could not load settings. Expected if it's the first time loading an updated version, or if"
+						   "the settings file was deleted. Otherwise, this is bad.")
+			logger.exception(str(e))
 			# Set the initial settings to classic theme, layout, and model colors
-			self.setTheme(FacileView.Theme.CLASSIC_DARK)
+			self.setTheme(FacileView.DEFAULT_THEMES[0])
+			self.themeList = FacileView.DEFAULT_THEMES
 			self.setLayout(FacileView.Layout.CLASSIC)
 			self.enableScrollBars(False)
-			FacileView.TGUIM_COL_SETTINGS = [QColor(0, 141, 222).lighter(f=75), False]
 
 	def enableScrollBars(self, enabled: bool = True):
 		"""
@@ -754,18 +813,6 @@ class FacileView(QMainWindow):
 		self.ui.actionClassic.toggled.connect(self.showClassic)
 		self.ui.actionAll.toggled.connect(self.showAll)
 		# TODO: Implement custom layout saving/applying
-
-		def changeTheme(theme):
-			thm = FacileView.Theme
-			if theme in (thm.CLASSIC_DARK, thm.ULTRA_DARK, thm.FLAT_DARK):
-				TopLevelWrapperGraphics.Button.BUTTON_IMG_THM = 0
-			else:
-				TopLevelWrapperGraphics.Button.BUTTON_IMG_THM = 1
-
-			self.ui.targetGUIModelView.setTheme(theme)
-			# self.ui.apiModelView.setTheme(theme)  # TODO: Uncomment when api theming is implemented
-
-		self.themeChanged.connect(changeTheme)
 
 	def setLayout(self, layout: Layout):
 		"""
@@ -921,12 +968,16 @@ class FacileView(QMainWindow):
 		toolbar.show()
 		self.ui.toolBar = toolbar
 
-	def updateColors(self):
+	def updateColors(self, tguim: dict, apimColors: dict):
 		"""
 		Updates the accent colors. Necessary for colors to persist through loading projects and closing/opening Facile.
+
+		:param tguim: the dictionary of color settings for the tguim
+		:type tguim: dict
+		:param apimColors: the dictionary of color settings for the apim
+		:type apimColors: dict
 		"""
 
-		stngs = FacileView.TGUIM_COL_SETTINGS
-		self.ui.targetGUIModelView.updateColors(stngs[0], stngs[1])
-		# TODO: Put command to update APIM colors here
+		self.ui.targetGUIModelView.updateColors(tguim['Base Color'], tguim['Is Flat'])
+		self.updateAPIMColors(apimColors)
 

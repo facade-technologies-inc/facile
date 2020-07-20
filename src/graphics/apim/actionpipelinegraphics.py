@@ -69,7 +69,7 @@ class ActionPipelineGraphics(ActionGraphics):
 		"""
 		Updates the graphics and all sub-graphics for the action pipeline.
 		
-		starts by updating the sub-actions, then sub-wires, then calls teh same method but in the
+		starts by updating the sub-actions, then sub-wires, then calls the same method but in the
 		ActionGraphics class to update the ports.
 		
 		:return: None

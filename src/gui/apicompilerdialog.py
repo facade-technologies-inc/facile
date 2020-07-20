@@ -26,7 +26,7 @@ import subprocess
 import data.statemachine as sm
 
 from PySide2.QtCore import Signal, Slot, Qt, QThread
-from PySide2.QtWidgets import QDialog, QFileDialog, QWidget, QProgressDialog, QMessageBox
+from PySide2.QtWidgets import QDialog, QFileDialog, QWidget, QProgressDialog, QMessageBox, QApplication
 from data.compilationprofile import CompilationProfile
 from tools.api_compiler.compiler import Compiler
 from tools.doc_generator.documentationgenerator import DocGenerator
@@ -219,14 +219,15 @@ class ApiCompilerDialog(QDialog):
 		# create and show progressbar dialog
 		self.progress = QProgressDialog("Compiling API...", "Cancel API Generation", 0, 0, parent=self.parent())
 		self.progress.setWindowTitle("Compiling API...")
-		self.progress.setValue(0)
 		self.progress.setModal(True)
 
 		def stepStartedCatcher(message):
 			self.progress.setLabelText(message + "...")
+			QApplication.instance().processEvents()
 
 		def stepCompleteCatcher():
 			self.progress.setLabelText(self.progress.labelText() + " Done.")
+			QApplication.instance().processEvents()
 
 		# since compilation takes a long time, we do it in another thread to keep the GUI responsive.
 		self.thread = QThread()
@@ -242,7 +243,7 @@ class ApiCompilerDialog(QDialog):
 		self.docGenerator.stepStarted.connect(stepStartedCatcher)
 		self.docGenerator.stepComplete.connect(stepCompleteCatcher)
 
-		self.thread.started.connect(self.progress.exec_, type=Qt.QueuedConnection)
+		self.thread.started.connect(self.progress.forceShow, type=Qt.QueuedConnection)
 		self.thread.started.connect(self.compiler.compileAPI, type=Qt.QueuedConnection)
 		self.compiler.finished.connect(self.docGenerator.createDoc)
 		self.docGenerator.finished.connect(self.progress.cancel)
@@ -263,6 +264,11 @@ class ApiCompilerDialog(QDialog):
 		"""
 
 		QDialog.accept(self)
+
+		sm.StateMachine.instance.view.notify.emit(
+			sm.StateMachine.instance._project.getAPIName() + " API Generation Successful.", 'success', 5000, False, ''
+		)
+
 		QMessageBox.information(self, "Compilation Successful", "Your API was successfully generated.",
 								QMessageBox.StandardButton.Ok)
 

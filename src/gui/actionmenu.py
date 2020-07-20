@@ -56,6 +56,7 @@ class ActionMenu(QWidget):
 		# UI Initialization
 		self.ui = Ui_ActionMenu()
 		self.ui.setupUi(self)
+		self._actions = []
 		
 		self.clearActions()
 		
@@ -73,6 +74,8 @@ class ActionMenu(QWidget):
 		self.ui._centralWidget.setLayout(self.ui._itemLayout)
 		self.ui.menuItemScrollArea.setWidget(self.ui._centralWidget)
 		self.ui._itemLayout.addStretch()
+
+		self._actions = []
 		
 	def addAction(self, action: "Action") -> None:
 		"""
@@ -89,6 +92,8 @@ class ActionMenu(QWidget):
 		self.ui._itemLayout.addWidget(menuItem)
 		self.actionSelected.emit(action)
 
+		self._actions.append(action)
+
 	def setLabelText(self, text: str) -> None:
 		"""
 		Setting the label for the menu's description.
@@ -99,6 +104,16 @@ class ActionMenu(QWidget):
 		:rtype: Nonetype
 		"""
 		self.ui.menuLabel.setText(text)
+
+	def refresh(self):
+		"""
+		Refreshes the menu so that the colors get updated
+		"""
+		actions = self._actions
+		self.clearActions()
+
+		for action in actions:
+			self.addAction(action)
 		
 if __name__ == "__main__":
 	app = QApplication()

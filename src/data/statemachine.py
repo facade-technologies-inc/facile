@@ -491,7 +491,6 @@ class StateMachine:
 			p.addToRecents()
 			scene = TGUIMScene(p.getTargetGUIModel())
 			ui.targetGUIModelView.setScene(scene)
-			ui.targetGUIModelView.setTheme(v.getTheme())
 			scene.itemSelected.connect(v.onItemSelected)
 			scene.itemBlink.connect(v.onItemBlink)
 			p.getTargetGUIModel().dataChanged.connect(lambda: ui.projectExplorerView.update())
@@ -505,7 +504,6 @@ class StateMachine:
 			ui.propertyEditorView.setItemDelegate(propertyDelegate)
 			ui.actionPower_App.setChecked(False)
 			ui.actionManage_Project.setEnabled(True)
-			v.updateColors()
 		
 		if previousState == StateMachine.State.EXPLORATION:
 			o = self._project.getObserver()

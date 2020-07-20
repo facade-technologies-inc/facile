@@ -36,12 +36,12 @@ class ActionWrapperGraphics(ActionGraphics):
 	
 	TAG_FONT = QFont("Times", 10)
 	TAG_TEXT_COLOR = QColor(0, 0, 0)
-	TAG_BACKGROUND_COLOR = QColor(150, 150, 150)
+	TAG_BACKGROUND_COLOR = QColor(121, 125, 127)
 	
 	NAME_FONT = QFont("Times", 10)
-	NAME_TEXT_COLOR = QColor(0, 0, 0)
+	NAME_TEXT_COLOR = QColor(255, 255, 255)
 	
-	COLOR = QColor(188, 183, 255)
+	COLOR = QColor(52, 73, 94)
 
 	POPUP_ARROW_WIDTH = 40
 	POPUP_BUFFER = 10
@@ -137,7 +137,7 @@ class ActionWrapperGraphics(ActionGraphics):
 		offset = 5
 		radius = 15
 		size = ActionGraphics.H_SPACE/2 - offset*2
-		painter.setBrush(QColor(29, 110, 37))
+		painter.setBrush(ActionWrapperGraphics.TAG_BACKGROUND_COLOR)
 		painter.drawRoundedRect(QRectF(x + offset, y + offset, size, size), radius, radius)
 		painter.setPen(ActionWrapperGraphics.TAG_TEXT_COLOR)
 		painter.setBrush(ActionWrapperGraphics.TAG_TEXT_COLOR)

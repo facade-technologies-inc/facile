@@ -1,3 +1,5 @@
+import shutil
+
 if __name__ == "__main__":
     import os, sys
 
@@ -10,6 +12,11 @@ if __name__ == "__main__":
             sys.exit(1)
 
     os.chdir("../")
+
+    if os.path.exists("build/"):
+        print("Removing old build directory...", end='')
+        shutil.rmtree("build/")
+        print(" Done.")
 
     print("Building exe...", end="", flush=True)
 
@@ -38,5 +45,9 @@ if __name__ == "__main__":
     # rename multiprocessing.Pool to multiprocessing.pool to fix imports in executable.
     os.rename(os.path.join(multiprocessing_path, "Pool.pyc"), os.path.join(multiprocessing_path, "pool.pyc"))
     print("done.", flush=True)
+
+    buildDir = os.path.abspath(os.path.join('.', 'build'))
+    oldName = [os.path.join(buildDir, d) for d in os.listdir(buildDir) if os.path.isdir(os.path.join(buildDir, d))][0]
+    os.rename(oldName, os.path.join(buildDir, 'exe'))
 
     os.chdir("scripts/")

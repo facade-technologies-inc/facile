@@ -71,6 +71,9 @@ class ComponentGraphics(QGraphicsItem):
     LRG_PCT_OVERLAP = .30  # Percent of overlap on either component for an overlap to be considered large (or 'a lot')
     MIN_TIME_DIFF = .00005  # Time difference from the overlapping component
                             # to qualify moving self to extra components section
+
+    COLOR = QColor(0, 141, 222).lighter(f=85)
+    FLAT = True
     
     def __init__(self, dataComponent: 'Component', rect: tuple = (), parent=None):
         """
@@ -94,7 +97,7 @@ class ComponentGraphics(QGraphicsItem):
         self._depth = dataComponent.depth  # Depth relative to top-level window (-1 if root)
         self.isMenu = False
         self.picChild = None
-        self._brush = QBrush(QColor(0, 141, 222).lighter(f=85))
+        self._brush = QBrush(ComponentGraphics.COLOR)
         self._pen = QPen(QColor(0, 0, 0))
         
         # --- MENUS --- #
@@ -717,8 +720,12 @@ class ComponentGraphics(QGraphicsItem):
             if self.picChild:
                 self.scene().removeItem(self.picChild)
 
-            painter.setBrush(self._brush)
-            painter.fillRect(boundingRect, self._brush)
+            if ComponentGraphics.FLAT:
+                brush = QBrush(ComponentGraphics.COLOR)
+            else:
+                brush = QBrush(ComponentGraphics.COLOR.lighter(f=100 + self.getDepth() * 12))
+
+            painter.setBrush(brush)
             painter.drawRoundedRect(boundingRect, 5, 5)
 
             # draw name label

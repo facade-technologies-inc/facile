@@ -27,12 +27,16 @@ QScrollArea > QWidget > QWidget {
   background-color: palette(alternate-base);
 }
 
-#v_scrollArea > QWidget > QWidget {
+QScrollArea > QWidget > QTabWidget {
+  background-color: palette(window);
+}
+
+#v_scrollArea {
   background-color: palette(base);
 }""")
 
 
-def darkModern(app, view):
+def darkModern(app):
     """
     Apply a modern dark-colored theme to Facile. This palette is from qtmodern.
 
@@ -76,7 +80,7 @@ def darkModern(app, view):
     _apply_base_theme(app)
 
 
-def darkUltra(app, view):
+def darkUltra(app):
     """
     Apply a super dark-colored theme to Facile. This palette is custom made, based on qtmodern dark.
 
@@ -118,7 +122,7 @@ def darkUltra(app, view):
     _apply_base_theme(app)
 
 
-def lightUltra(app, view):
+def lightUltra(app):
     """
     Apply the ultra light theme to Facile. This palette is a slightly modified version of qtmodern light.
 
@@ -160,7 +164,7 @@ def lightUltra(app, view):
     _apply_base_theme(app)
 
 
-def lightModern(app, view):
+def lightModern(app):
     """
     Apply the modern light theme to Facile. This palette is custom made, based on qtmodern light.
 
@@ -202,7 +206,7 @@ def lightModern(app, view):
     _apply_base_theme(app)
 
 
-def darkClassic(app, view):
+def darkClassic(app):
     """
     Apply the classic dark theme to Facile. This palette is the default option,
     derived from https://gist.github.com/QuantumCD/6245215, and was the original theme that came with Facile.
@@ -242,7 +246,7 @@ def darkClassic(app, view):
     _apply_base_theme(app, False)
 
 
-def lightClassic(app, view):
+def lightClassic(app):
     """
     Apply the classic light theme to Facile.
     This theme is meant to imitate the classic dark theme, just lighter.

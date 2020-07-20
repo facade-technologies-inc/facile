@@ -53,8 +53,8 @@ class PortGraphics(QGraphicsItem):
 	
 	PEN_COLOR = QColor(Qt.black)
 	
-	INNER_COLOR = QColor(100, 200, 0)
-	OUTER_COLOR = QColor(252, 140, 3)
+	INNER_COLOR = QColor(121, 125, 127)
+	OUTER_COLOR = QColor(121, 125, 127)
 	
 	NAME_FONT = QFont("Times", 15)
 	TYPE_FONT = QFont("Times", 15)
