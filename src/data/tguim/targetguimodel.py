@@ -23,21 +23,29 @@ This module contains the TargetGuiModel class.
 
 from collections import OrderedDict
 from PySide2.QtCore import QObject, Slot, Signal
-import libs.env as env
-from libs.env import InvalidContextException
 
-if env.CONTEXT in ("Facile", "Sphinx"):
+if 'CONTEXT' not in locals():
+	try:  # Facile
+		from libs.env import CONTEXT
+		from libs.env import InvalidContextException
+	except:  # Sphinx
+		from .libs.env import CONTEXT
+		from .libs.env import InvalidContextException
+
+if CONTEXT in ("Facile", "Sphinx"):
 	from data.entity import Entity
 	from tguiil.supertokens import SuperToken
 	from data.tguim.component import Component
 	from data.tguim.visibilitybehavior import VisibilityBehavior
-elif env.CONTEXT in ("API"):
-	from ..entity import Entity
-	from ...tguiil.supertokens import SuperToken
-	from .component import Component
-	from .visibilitybehavior import VisibilityBehavior
+elif CONTEXT in ("API"):
+	# from ..entity import Entity
+	# from ...tguiil.supertokens import SuperToken
+	# from .component import Component
+	# from .visibilitybehavior import VisibilityBehavior
+	pass
 else:
-	raise InvalidContextException(env.CONTEXT)
+	raise InvalidContextException(CONTEXT)
+
 
 class TargetGuiModel(QObject):
 	"""
@@ -96,7 +104,7 @@ class TargetGuiModel(QObject):
 		:return: The dictionary of components.
 		:rtype: dict
 		"""
-		return self._components
+		return dict(self._components)
 	
 	def getTopLevelWindows(self) -> list:
 		"""

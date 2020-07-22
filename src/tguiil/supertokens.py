@@ -23,15 +23,23 @@ iterates through the tokens in the token list.
 """
 
 from threading import Lock
-import libs.env as env
-from libs.env import InvalidContextException
 
-if env.CONTEXT in ("Facile", "Sphinx"):
+if 'CONTEXT' not in locals():
+	try:  # Facile
+		from libs.env import CONTEXT
+		from libs.env import InvalidContextException
+	except:  # Sphinx
+		from .libs.env import CONTEXT
+		from .libs.env import InvalidContextException
+
+if CONTEXT in ("Facile", "Sphinx"):
 	from tguiil.tokens import Token
-elif env.CONTEXT in ("API"):
-	from .tokens import Token
+elif CONTEXT in ("API"):
+	# from .tokens import Token
+	pass
 else:
-	raise Exception(f"Invalid context: {env.CONTEXT}")
+	raise InvalidContextException(f"Invalid context: {CONTEXT}")
+
 
 class SuperToken:
 	"""

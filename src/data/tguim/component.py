@@ -22,21 +22,29 @@ This module contains the Component class.
 """
 
 from datetime import datetime
-import libs.env as env
-from libs.env import InvalidContextException
 
-if env.CONTEXT in ("Facile", "Sphinx"):
+if 'CONTEXT' not in locals():
+	try:  # Facile
+		from libs.env import CONTEXT
+		from libs.env import InvalidContextException
+	except:  # Sphinx
+		from .libs.env import CONTEXT
+		from .libs.env import InvalidContextException
+
+if CONTEXT in ("Facile", "Sphinx"):
 	from data.entity import Entity
 	from data.properties import Properties
 	from data.tguim.visibilitybehavior import VisibilityBehavior
 	from tguiil.supertokens import SuperToken
-elif env.CONTEXT in ("API"):
-	from ..entity import Entity
-	from ..properties import Properties
-	from .visibilitybehavior import VisibilityBehavior
-	from ...tguiil.supertokens import SuperToken
+elif CONTEXT in ("API"):
+	# from ..entity import Entity
+	# from ..properties import Properties
+	# from .visibilitybehavior import VisibilityBehavior
+	# from ...tguiil.supertokens import SuperToken
+	pass
 else:
-	raise InvalidContextException(env.CONTEXT)
+	raise InvalidContextException(CONTEXT)
+
 
 class Component(Entity):
 	"""

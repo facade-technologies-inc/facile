@@ -25,21 +25,22 @@ the files are available to be copied into the generated APIs.
 
 import os
 
-# List of files that will be directly copied during the API compilation process. This does not include templated files.
+# List of files that will be processed during the API compilation process. This does not include templated files.
 compilation_copy_files = [
-    os.path.join("tguiil", "componentfinder.py"),
-    os.path.join("tguiil", "application.py"),
-    os.path.join("tguiil", "tokens.py"),
-    os.path.join("tguiil", "supertokens.py"),
-    os.path.join("tguiil", "matchoption.py"),
-    os.path.join("data", "tguim", "component.py"),
-    os.path.join("data", "tguim", "visibilitybehavior.py"),
-    os.path.join("data", "tguim", "condition.py"),
-    os.path.join("data", "tguim", "targetguimodel.py"),
-    os.path.join("data", "properties.py"),
-    os.path.join("data", "property.py"),
-    os.path.join("data", "entity.py"),
-    os.path.join("libs", "env.py"),
+    ("tguiil.componentfinder",          os.path.join("tguiil", "componentfinder.py")),
+    ("tguiil.application",              os.path.join("tguiil", "application.py")),
+    ("tguiil.tokens",                   os.path.join("tguiil", "tokens.py")),
+    ("tguiil.supertokens",              os.path.join("tguiil", "supertokens.py")),
+    ("tguiil.matchoption",              os.path.join("tguiil", "matchoption.py")),
+    ("data.tguim.component",            os.path.join("data", "tguim", "component.py")),
+    ("data.tguim.visibilitybehavior",   os.path.join("data", "tguim", "visibilitybehavior.py")),
+    ("data.tguim.condition",            os.path.join("data", "tguim", "condition.py")),
+    ("data.tguim.targetguimodel",       os.path.join("data", "tguim", "targetguimodel.py")),
+    ("data.properties",                 os.path.join("data", "properties.py")),
+    ("data.property",                   os.path.join("data", "property.py")),
+    ("data.entity",                     os.path.join("data", "entity.py")),
+    ("libs.env",                        os.path.join("libs", "env.py")),
+    ("baseapplication",                 os.path.join("tools", "api_compiler", "baseapplication.py"))
 ]
 
 # List of other files that are necessary for compilation, but will NOT be directly copied during the compilation process.
@@ -49,7 +50,6 @@ compilation_copy_files = [
 #
 # NOTE: This list will only be used by the setup.py file, so the current working directory will be facile/
 additional_files_for_compilation = [
-    (f"{os.path.abspath('./src/tools/api_compiler/baseapplication.py')}", "tools/api_compiler/baseapplication.py"),
     (f"{os.path.abspath('./src/tools/api_compiler/setup-template.txt')}", "tools/api_compiler/setup-template.txt"),
     (f"{os.path.abspath('./src/tools/api_compiler/__init__template.txt')}", "tools/api_compiler/__init__template.txt"),
     (f"{os.path.abspath('./src/tools/api_compiler/application-template.py')}", "tools/api_compiler/application-template.py"),
@@ -58,4 +58,12 @@ additional_files_for_compilation = [
     (f"{os.path.abspath('./src/tools/doc_generator/sphinx_src/')}", "sphinx_src/"),
 ]
 
-necessary_files_for_installation = [(os.path.abspath(os.path.join("src", f)), f) for f in compilation_copy_files] + additional_files_for_compilation
+# THIS IS FOR OBFUSCATING ALL FILES INDEPENDENTLY
+#
+# necessary_files_for_installation = [
+#     (os.path.abspath(os.path.join("scripts", "apifiles", f + 'd')), f + 'd')
+#     for tmp, f in compilation_copy_files
+#                                    ] + additional_files_for_compilation
+
+necessary_files_for_installation = additional_files_for_compilation + \
+   [(os.path.abspath(os.path.join("scripts", "obfuscation", 'compiled', 'apicore.pyd')), 'apicore.pyd')]

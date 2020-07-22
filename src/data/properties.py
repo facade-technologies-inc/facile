@@ -22,16 +22,25 @@ This module contains the Properties() class.
 """
 from collections import OrderedDict
 from enum import Enum
-import libs.env as env
-from libs.env import InvalidContextException
 
-if env.CONTEXT in ("Facile"):
+if 'CONTEXT' not in locals():
+	try:  # Facile
+		from libs.env import CONTEXT
+		from libs.env import InvalidContextException
+	except:  # Sphinx
+		from .libs.env import CONTEXT
+		from .libs.env import InvalidContextException
+
+if CONTEXT in ("Facile",):
 	from data.property import Property
 	from qt_models.propeditormodel import PropModel
-elif env.CONTEXT in ("API", "Sphinx"):
+elif CONTEXT in ("Sphinx",):
 	from .property import Property
+elif CONTEXT in ("API",):
+	# from .property import Property
+	pass
 else:
-	raise InvalidContextException(env.CONTEXT)
+	raise InvalidContextException(CONTEXT)
 
 
 class Properties:

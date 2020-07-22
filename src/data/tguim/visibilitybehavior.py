@@ -22,20 +22,30 @@ This module contains the VisibilityBehavior class.
 """
 
 from enum import Enum, auto
-import libs.env as env
-from libs.env import InvalidContextException
 
-if env.CONTEXT in ("Facile"):
+if 'CONTEXT' not in locals():
+	try:  # Facile
+		from libs.env import CONTEXT
+		from libs.env import InvalidContextException
+	except:  # Sphinx
+		from .libs.env import CONTEXT
+		from .libs.env import InvalidContextException
+
+if CONTEXT in ("Facile"):
 	from data.entity import Entity
 	from data.properties import Properties
 	from data.tguim.condition import Condition
 	from data.apim.componentaction import ComponentAction
-elif env.CONTEXT in ("API", "Sphinx"):
+elif CONTEXT in ("Sphinx",):
 	from ..entity import Entity
 	from ..properties import Properties
 	from .condition import Condition
+elif CONTEXT in ("API",):
+	# Usually same as sphinx
+	pass
 else:
-	raise InvalidContextException(env.CONTEXT)
+	raise InvalidContextException(CONTEXT)
+
 
 class VisibilityBehavior(Entity):
 	"""

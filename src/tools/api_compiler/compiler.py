@@ -21,8 +21,11 @@
 This file contains the Compiler class - the part of Facile that interprets a user's 
 work in the gui, and converts it into the desired API.
 """
-import os, json
-from shutil import copyfile
+import os
+import sys
+import json
+from subprocess import check_call, DEVNULL, STDOUT
+from shutil import copyfile, rmtree
 
 from PySide2.QtCore import QObject, Signal
 from PySide2.QtWidgets import QApplication
@@ -33,9 +36,27 @@ from tools.api_compiler.copy_file_manifest import compilation_copy_files
 from libs.logging import compiler_logger as logger
 from libs.logging import log_exceptions
 import libs.env as env
+from multiprocessing.pool import ThreadPool
+
 
 curPath = os.path.abspath(os.path.join(env.FACILE_DIR, "tools/api_compiler/compiler.py"))
 dir, filename = os.path.split(curPath)
+
+
+def nongui(fun):
+    """Decorator running the function in non-gui thread while
+    processing the gui events."""
+
+    def wrap(*args, **kwargs):
+        pool = ThreadPool(processes=1)
+        a_sync = pool.apply_async(fun, args, kwargs)
+        while not a_sync.ready():
+            a_sync.wait(0.01)
+            QApplication.processEvents()
+        return a_sync.get()
+
+    return wrap
+
 
 class Compiler(QObject):
     stepStarted = Signal(str)
@@ -61,9 +82,9 @@ class Compiler(QObject):
         self._tguim = self.statem._project.getTargetGUIModel()
         
         # Save Folders
-        self._saveFolder = os.path.join(compProf.apiFolderDir, self._name + '_API_Files/')
-        self._srcFolder = os.path.join(self._saveFolder, self._apiName + '/')
-        self._docFolder = os.path.join(self._srcFolder, 'Documentation/')
+        self._saveFolder = os.path.join(compProf.apiFolderDir, self._name + '_API_Files')
+        self._srcFolder = os.path.join(self._saveFolder, self._apiName)
+        self._docFolder = os.path.join(self._srcFolder, 'Documentation')
         
         # Make all save folders if they don't exist
         if not os.path.exists(self._saveFolder):  # If the user enters a path that doesn't exist, it is created
@@ -72,8 +93,49 @@ class Compiler(QObject):
             os.mkdir(self._srcFolder)
         if not os.path.exists(self._docFolder):
             os.mkdir(self._docFolder)
-        
-        self._necessaryFiles = compilation_copy_files
+
+        self._necessaryFiles = ['apicore.pyd']
+
+        # THIS IS WHEN OBFUSCATING ALL FILES INDEPENDENTLY
+        #
+        # if sys.executable.endswith('facile.exe'):
+        #     self._necessaryFiles = [filepath + 'd' for tmp, filepath in compilation_copy_files]
+        #
+        #     # baseapplication is out of place when we make facile into an executable
+        #     for filepath in self._necessaryFiles:
+        #         if filepath.endswith('baseapplication.pyd'):
+        #             self._necessaryFiles.remove(filepath)
+        #             self._necessaryFiles.append('baseapplication.pyd')
+        #             break
+        #
+        # else:
+        #     self._necessaryFiles = [filepath for tmp, filepath in compilation_copy_files]
+
+    @nongui
+    def _dev_generateAPICore(self):
+        """
+        Makes the api core file and places it in facile's root directory
+        NOTE: Should only ever be called in a development setting, never by a facile executable.
+        """
+        msg = 'Generating API core file'
+        logger.info(msg)
+        self.stepStarted.emit(msg)
+
+        os.chdir(os.path.abspath(os.path.join(env.FACILE_DIR, '..', 'scripts', 'obfuscation')))
+        exit_code = check_call("python obfuscate_files.py", shell=True, stdout=DEVNULL, stderr=STDOUT)
+
+        if exit_code != 0:
+            logger.critical("File compilation was unsuccessful, which will cause the API not to work.")
+            raise Exception("File compilation was unsuccessful, which will cause the API not to work.")
+        else:
+            copyfile(os.path.abspath(os.path.join('compiled', 'apicore.pyd')),
+                     os.path.join(env.FACILE_DIR, 'apicore.pyd'))
+            rmtree('compiled')
+
+        os.chdir(dir)
+
+        logger.info("Finished compiling api core and moving it to facile directory.")
+        self.stepComplete.emit()
     
     def generateCustomApp(self) -> None:
         """
@@ -96,6 +158,7 @@ class Compiler(QObject):
                 with open(os.path.join(dir, 'application-template.py'), 'r') as g:
                     appStr = g.read()
             except Exception as e:
+                appStr = 'There was an error generating your API.\n'
                 logger.exception(e)
 
             logger.debug("Generating options set")
@@ -161,17 +224,21 @@ class Compiler(QObject):
         """
         self.stepStarted.emit("Copying necessary files")
 
+        # Only necessary when using multiple files
+        #
         # make necessary directories before copying files
-        targetDirs = ['data', 'data/tguim', 'tguiil', 'libs']  # 'data/apim',
-        for tdir in targetDirs:
-            tdir = os.path.join(self._srcFolder, tdir)
-            if not os.path.exists(tdir):
-                os.mkdir(tdir)
+        # targetDirs = ['data', 'data/tguim', 'tguiil', 'libs']  # 'data/apim',
+        # for tdir in targetDirs:
+        #     tdir = os.path.join(self._srcFolder, tdir)
+        #     if not os.path.exists(tdir):
+        #         os.mkdir(tdir)
 
         for path in self._necessaryFiles:
             src = os.path.abspath(os.path.join(env.FACILE_SRC_DIR, path))
             dest = os.path.abspath(os.path.join(self._srcFolder, path))
+
             logger.info(f"Copying file: {src} -> {dest}")
+
             try:
                 copyfile(src, dest)
             except Exception as e:
@@ -190,21 +257,11 @@ class Compiler(QObject):
         msg = "Saving target GUI model"
         self.stepStarted.emit(msg)
         logger.info(msg)
+
         self.statem._project.save()
-        with open(self._srcFolder + "tguim.json", "w+") as f:
+        with open(os.path.join(self._srcFolder, "tguim.json"), "w+") as f:
             f.write(json.dumps(self._tguim.asDict()))
 
-        self.stepComplete.emit()
-
-    def copyBaseApp(self):
-        """
-        Copies the BaseApplication file to the API
-        """
-
-        msg = "Copying base application"
-        self.stepStarted.emit(msg)
-        logger.info(msg)
-        copyfile(os.path.join(dir, 'baseapplication.py'), os.path.join(self._srcFolder, 'baseapplication.py'))
         self.stepComplete.emit()
 
     def generateSetupFile(self):
@@ -235,15 +292,13 @@ class Compiler(QObject):
         self.stepStarted.emit(msg)
         logger.info(msg)
 
-        initTempFile = open(os.path.join(dir, "__init__template.txt"), 'r')
-        targetAppName = self.statem._project.getExecutableFile().split('/')[-1].split('.')[0]  # '.../app.exe' -> 'app'
-        targetAppName = targetAppName[0].upper() + targetAppName[1:]  # 'app' -> 'App'
-        initStr = initTempFile.read().format(targetApplicationName=targetAppName)
-        initTempFile.close()
+        with open(os.path.join(dir, "__init__template.txt"), 'r') as initTempFile:
+            targetAppName = self.statem._project.getExecutableFile().split('/')[-1].split('.')[0]  # '/app.exe' -> 'app'
+            targetAppName = targetAppName[0].upper() + targetAppName[1:]  # 'app' -> 'App'
+            initStr = initTempFile.read().format(targetApplicationName=targetAppName)
 
-        initFile = open(os.path.join(self._srcFolder, '__init__.py'), 'w')
-        initFile.write(initStr)
-        initFile.close()
+        with open(os.path.join(self._srcFolder, '__init__.py'), 'w') as initFile:
+            initFile.write(initStr)
 
         self.stepComplete.emit()
 
@@ -257,6 +312,7 @@ class Compiler(QObject):
 
         os.chdir(self._saveFolder)
         os.system(self._compProf.interpExeDir + " -m pip install . 1>install.log 2>&1")
+        rmtree('setup.py')  # Delete setup.py after it's used
 
         logger.info("Finished installing python package")
         self.stepComplete.emit()
@@ -269,14 +325,20 @@ class Compiler(QObject):
         msg = "Copying help files"
         self.stepStarted.emit(msg)
         logger.info(msg)
-        if not os.path.exists(self._saveFolder + "automate.py"):
-            with open(self._saveFolder + "automate.py", "w+") as f:
+
+        if not os.path.exists(os.path.join(self._saveFolder, "automate.py")):
+            with open(os.path.join(self._saveFolder, "automate.py"), "w+") as f:
                 with open(os.path.join(dir, 'automate-template.txt'), 'r') as g:
                     autoStr = g.read()
 
-                f.write(autoStr.format(name=self._name))
+                targetAppName = self.statem._project.getExecutableFile().split('/')[-1].split('.')[0]
+                targetAppName = targetAppName[0].upper() + targetAppName[1:]  # 'app' -> 'App'
 
+                f.write(autoStr.format(name=self._name, targetapp=targetAppName))
+
+            # Not adding this to compilation_copy_files because we don't need to obfuscate it. also it isn't a py file
             copyfile(os.path.join(dir, 'run-script.bat'), os.path.join(self._saveFolder, 'run-script.bat'))
+
         self.stepComplete.emit()
 
     @log_exceptions(logger=logger)
@@ -286,23 +348,25 @@ class Compiler(QObject):
         """
         logger.info("Compiling API")
 
+        if not sys.executable.endswith('facile.exe'):
+            self._dev_generateAPICore()
+
         self.copyNecessaryFiles()
-        QApplication.instance().processEvents()
         self.saveTGUIM()
-        QApplication.instance().processEvents()
-        self.copyBaseApp()
-        QApplication.instance().processEvents()
 
         if self._compProf.installApi:
             self.generateSetupFile()
-            self.generateInitFile()
 
+        self.generateInitFile()  # We want this regardless of installing the api or not
         self.generateCustomApp()
 
         if self._compProf.installApi:
             self.installAPI()
 
         self.copyHelpFiles()
-        self.finished.emit()
 
+        # if not sys.executable.endswith('facile.exe'):
+        #     os.remove(os.path.join(env.FACILE_DIR, 'apicore.pyd'))
+
+        self.finished.emit()
         logger.info("Finished compiling API")
