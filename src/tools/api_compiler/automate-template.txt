@@ -1,18 +1,30 @@
 # Here is how you can use your API!
 
 # Import your API like this
-from {name}.application import Application
+from {name} import {targetapp}
 
 # This statement isn't necessary, but it's good to have it when writing scripts
 if __name__ == '__main__':
 
     # --- Starting Your Application --- #
     # To start your application, do
-    myApp = Application().start()
+    myApp = {targetapp}().start()
 
-    # You can also do this. Either way works:
-    # myApp = Application()
+    # You can also do this:
+    # myApp = {targetapp}()
     # myApp.start()
+    #
+    # Either way works, but the second case can be useful when using multiple instances:
+    # 
+    # myApp, myApp2, myApp3 = {targetapp}(), {targetapp}(), {targetapp}()
+    # 
+    # myApp.start()
+    # # Do some processing
+    # myApp2.start()
+    # # Do some processing
+    # myApp3.start()
+    # # Now use the three together or whatever you want
+    #
     # ---------------------- #
 
     # --- The Automation --- #
@@ -29,6 +41,8 @@ if __name__ == '__main__':
     # You can take advantage of Python's built-in functions here to do some really cool things with your API,
     # or just loop your functions a couple times if you're doing some testing. It's up to you!
 
+    
+    # DELETE THIS AND PUT YOUR CODE HERE:
     # Just a small example
 
     # for task in todoList:
@@ -38,25 +52,27 @@ if __name__ == '__main__':
     # assert(life.isBetter())
 
 
-
     # ------------------------ #
 
     # --- Useful Functions --- #
     # We also offer some useful functions that make automating your application even more flexible
     #
-    # If you want to wait a couple seconds for something to finish before running the next line, do:
+    # If you want to wait a couple seconds (s) or minutes (m) for something to finish before running the next line, do:
     myApp.wait('2 s')
 
-    # If you want a couple minutes instead, replace the s with an m.
-    #
+    # You can also wait dynamically for your app to be ready by doing:
+    # myApp.wait('ready')
+    # 
+    # which will wait until the application's main window is visible and able to be interacted with.
+
     # You can also pause your automation script's execution with
     myApp.pause(demo=True)
 
-    # except, you know, without the demo=True part. I mean, unless you want the cool text
+    # except, you know, without the demo=True part. I mean unless you want the cool text
     # as if you were running this demo. It'll have the same functionality either way.
 
     # Finally, to stop your application, call the stop() function:
     myApp.stop()
 
     # You don't have to do this, but it's practical if you ever need it. Be careful though, because it is more
-    # of a kill-switch: It will not ask you to save or give any warnings, the process will just be stopped.
+    # of a kill-switch: It will not ask you to save or give any warnings, the process itself will just be stopped.

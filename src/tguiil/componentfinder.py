@@ -25,21 +25,28 @@ from typing import Set
 
 import pywinauto
 from pywinauto import timings
-import libs.env as env
-from libs.env import InvalidContextException
 
-if env.CONTEXT in ("Facile", "Sphinx"):
+if 'CONTEXT' not in locals():
+    try:  # Facile
+        from libs.env import CONTEXT
+        from libs.env import InvalidContextException
+    except ImportError:  # Sphinx
+        from .libs.env import CONTEXT
+        from .libs.env import InvalidContextException
+
+if CONTEXT in ("Facile", "Sphinx"):
     from tguiil.tokens import Token
     from tguiil.matchoption import MatchOption
     from tguiil.application import Application
     from tguiil.supertokens import SuperToken
-elif env.CONTEXT in ("API"):
-    from .tokens import Token
-    from .matchoption import MatchOption
-    from .application import Application
-    from .supertokens import SuperToken
+elif CONTEXT in ("API"):
+    # from .tokens import Token
+    # from .matchoption import MatchOption
+    # from .application import Application
+    # from .supertokens import SuperToken
+    pass
 else:
-    raise InvalidContextException(env.CONTEXT)
+    raise InvalidContextException(CONTEXT)
 
 
 class ComponentNotFoundException(Exception):
