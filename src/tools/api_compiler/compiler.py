@@ -21,7 +21,9 @@
 This file contains the Compiler class - the part of Facile that interprets a user's 
 work in the gui, and converts it into the desired API.
 """
-import os, json
+import os
+import subprocess
+import json
 from shutil import copyfile
 
 from PySide2.QtCore import QObject, Signal
@@ -276,8 +278,37 @@ class Compiler(QObject):
 
                 f.write(autoStr.format(name=self._name))
 
-            copyfile(os.path.join(dir, 'run-script.bat'), os.path.join(self._saveFolder, 'run-script.bat'))
+            with open(os.path.join(self._saveFolder, "run-script.bat"), "w+") as f:
+                with open(os.path.join(dir, "run-script-template.bat"), 'r') as g:
+                    rsStr = g.read()
+
+                f.write(rsStr.format(interpreterLocation=self._compProf.interpExeDir))
         self.stepComplete.emit()
+
+    def installRequirements(self):
+        """
+        Installs the necessary requirements to the chosen python interpreter, if they aren't already installed.
+        """
+
+        # Get currently installed packages in a list
+        current = subprocess.check_output([self._compProf.interpExeDir, '-m', 'pip', 'freeze'])
+        installed = [r.decode().split('==')[0] for r in current.split()]
+
+        # Get necessary packages in a list
+        with open(os.path.join(dir, "api_requirements.txt"), 'r') as f:
+            reqFile = f.read()
+        required = [r.split('==')[0] for r in reqFile.split()]
+
+        # Check for each package and install the missing ones
+        diff = set(required) - set(installed)
+        for package in diff:
+            msg = "Installing package: " + package
+            self.stepStarted.emit(msg)
+            logger.info(msg)
+
+            subprocess.check_call([self._compProf.interpExeDir, '-m', 'pip', 'install', package])
+
+            self.stepComplete.emit()
 
     @log_exceptions(logger=logger)
     def compileAPI(self):
@@ -285,6 +316,8 @@ class Compiler(QObject):
         Generates the functional API: the final result of compilation.
         """
         logger.info("Compiling API")
+
+        self.installRequirements()
 
         self.copyNecessaryFiles()
         QApplication.instance().processEvents()
