@@ -336,20 +336,26 @@ class Compiler(QObject):
 
                 f.write(autoStr.format(name=self._name, targetapp=targetAppName))
 
-            with open(os.path.join(self._saveFolder, "run-script.bat"), "w+") as f:
-                with open(os.path.join(dir, "run-script-template.bat"), 'r') as g:
-                    rsStr = g.read()
+        # Remove run script and rewrite every time so that interpreter gets written to it
+        if os.path.exists(os.path.join(self._saveFolder, "run-script.bat")):
+            os.remove(os.path.join(self._saveFolder, "run-script.bat"))
 
-                f.write(rsStr.format(interpreterLocation=self._compProf.interpExeDir))
+        with open(os.path.join(self._saveFolder, "run-script.bat"), "w+") as f:
+            with open(os.path.join(dir, "run-script-template.bat"), 'r') as g:
+                rsStr = g.read()
+
+            f.write(rsStr.format(interpreterLocation=self._compProf.interpExeDir))
+
         self.stepComplete.emit()
 
+    @nongui
     def installRequirements(self):
         """
         Installs the necessary requirements to the chosen python interpreter, if they aren't already installed.
         """
 
         # Get currently installed packages in a list
-        current = subprocess.check_output([self._compProf.interpExeDir, '-m', 'pip', 'freeze'])
+        current = check_output([self._compProf.interpExeDir, '-m', 'pip', 'freeze'])
         installed = [r.decode().split('==')[0] for r in current.split()]
 
         # Get necessary packages in a list
@@ -364,7 +370,7 @@ class Compiler(QObject):
             self.stepStarted.emit(msg)
             logger.info(msg)
 
-            subprocess.check_call([self._compProf.interpExeDir, '-m', 'pip', 'install', package])
+            check_call([self._compProf.interpExeDir, '-m', 'pip', 'install', package], stdout=DEVNULL, stderr=STDOUT)
 
             self.stepComplete.emit()
 
@@ -394,8 +400,8 @@ class Compiler(QObject):
 
         self.copyHelpFiles()
 
-        # if not sys.executable.endswith('facile.exe'):
-        #     os.remove(os.path.join(env.FACILE_DIR, 'apicore.pyd'))
+        if not sys.executable.endswith('facile.exe'):
+            os.remove(os.path.join(env.FACILE_DIR, 'apicore.pyd'))
 
         self.finished.emit()
         logger.info("Finished compiling API")
