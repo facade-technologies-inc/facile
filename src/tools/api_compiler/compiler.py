@@ -117,7 +117,7 @@ class Compiler(QObject):
         Makes the api core file and places it in facile's root directory
         NOTE: Should only ever be called in a development setting, never by a facile executable.
         """
-        msg = 'Generating API core file'
+        msg = 'Generating API core file, this will take a while'
         logger.info(msg)
         self.stepStarted.emit(msg)
 

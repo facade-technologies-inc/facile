@@ -38,7 +38,7 @@ if __name__ == '__main__':
     shutil.copyfile(os.path.join(thisDir, 'apicore.pyx'), os.path.join(dstDir, 'apicore.pyx'))
     print(' Done.')
 
-    print("Compiling API Core File...", end='')
+    print("Compiling API Core File (this will take a while)...", end='')
     # comment out stdout=...etc for debugging
     check_call('python compile.py build_ext', shell=True)  # , stdout=DEVNULL, stderr=STDOUT)
     print(' Done.')
