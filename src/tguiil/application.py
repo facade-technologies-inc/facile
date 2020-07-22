@@ -163,15 +163,10 @@ class Application(pywinauto.Desktop):
         procSecs = timeout / len(pids)
         success = False
 
-        # TODO: Change this to use desktop stuff, for the moment this method is the only one I could find that works.
-        #  Info: the only types that '.wait()' works on is windowspecifications, and i couldnt find any desktop methods
-        #  that return them. Probably because theyre from pywinauto.application.windowspecification, and might only
-        #  be 'gettable' from the application class.
-
         for pid in pids:
             try:
                 pywinauto.Application().connect(process=pid).top_window().wait(state, timeout=procSecs)
-                success = True  # TODO: Counts as success if one of them works. Reevaluate if this is good or not
+                success = True  # NOTE: Counts as success if one of them works.
             except:
                 continue
 
