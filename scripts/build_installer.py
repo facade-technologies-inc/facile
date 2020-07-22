@@ -25,7 +25,7 @@ if __name__ == "__main__":
             print("=============================================================================")
             sys.exit(1)
 
-    exit_code = os.system("python build_exe.py")
+    exit_code = subprocess.check_call("python build_exe.py", shell=True)
 
     if exit_code != 0:
         print("Executable not properly built. Cannot create an installer.")

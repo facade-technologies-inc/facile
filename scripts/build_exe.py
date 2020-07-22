@@ -1,4 +1,5 @@
 import shutil
+import subprocess
 
 if __name__ == "__main__":
     import os, sys
@@ -13,7 +14,7 @@ if __name__ == "__main__":
 
     os.chdir("obfuscation/")
 
-    exit_code = os.system("python obfuscate_files.py")
+    exit_code = subprocess.check_call("python obfuscate_files.py", shell=True)
 
     os.chdir('..')
 

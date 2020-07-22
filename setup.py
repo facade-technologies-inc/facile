@@ -9,13 +9,16 @@ sys.path.append(os.path.abspath("./src/gui/rc/"))
 sys.path.append(os.path.abspath("./database/component_actions"))
 
 install_files = necessary_files_for_installation
-for filepath, filename in install_files:
-    if filename.endswith('baseapplication.pyd'):
-        install_files.remove((filepath, filename))
 
-        path = os.path.join(filepath.split('apifiles')[0], 'apifiles', 'baseapplication.pyd')
-        install_files.append((path, 'baseapplication.pyd'))
-        break
+# FOR INDIVIDUAL FILE COMPILATION
+#
+# for filepath, filename in install_files:
+#     if filename.endswith('baseapplication.pyd'):
+#         install_files.remove((filepath, filename))
+#
+#         path = os.path.join(filepath.split('apifiles')[0], 'apifiles', 'baseapplication.pyd')
+#         install_files.append((path, 'baseapplication.pyd'))
+#         break
 
 # Dependencies are automatically detected, but it might need
 # fine tuning.
