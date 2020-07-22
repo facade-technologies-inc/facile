@@ -32,7 +32,7 @@ import traceback
 from datetime import datetime
 from typing import Set
 
-if not CONTEXT:
+if 'CONTEXT' not in locals():
     from libs.env import CONTEXT
 
 if CONTEXT in ("API"):

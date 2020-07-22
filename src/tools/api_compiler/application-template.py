@@ -25,7 +25,7 @@ import sys, os
 
 try:
 	from .apicore import BaseApplication, MatchOption
-except:
+except ImportError:
 	from apicore import BaseApplication, MatchOption
 
 pathToThisFile, thisFile = os.path.split(os.path.abspath(__file__))

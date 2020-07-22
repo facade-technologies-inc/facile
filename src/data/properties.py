@@ -27,7 +27,7 @@ if 'CONTEXT' not in locals():
 	try:  # Facile
 		from libs.env import CONTEXT
 		from libs.env import InvalidContextException
-	except:  # Sphinx
+	except ImportError:  # Sphinx
 		from .libs.env import CONTEXT
 		from .libs.env import InvalidContextException
 
