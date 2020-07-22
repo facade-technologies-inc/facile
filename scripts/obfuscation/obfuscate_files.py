@@ -12,7 +12,7 @@ if __name__ == '__main__':
 
     # THIS IS FOR CREATING A SINGLE API CORE FILE
 
-    print("Copying source files to temporary directory...", end='')
+    print("Copying source files to temporary directory and removing all comments...", end='')
     srcDir = os.path.abspath(os.path.join('..', '..', 'src'))
     dstDir = os.path.abspath('tmp')
     thisDir = os.path.abspath('.')
@@ -32,7 +32,7 @@ if __name__ == '__main__':
             newPath = 'baseapplication.py'
         else:
             newPath = path
-        shutil.copyfile(os.path.join(srcDir, path), os.path.join(dstDir, newPath))
+        check_call(f'pyminifier "{os.path.join(srcDir, path)}" > "{os.path.join(dstDir, newPath)}"', shell=True)
 
     # Copy apicore.pyx into tmp dir
     shutil.copyfile(os.path.join(thisDir, 'apicore.pyx'), os.path.join(dstDir, 'apicore.pyx'))
@@ -40,7 +40,7 @@ if __name__ == '__main__':
 
     print("Compiling API Core File...", end='')
     # comment out stdout=...etc for debugging
-    check_call('python compile.py build_ext', shell=True, stdout=DEVNULL, stderr=STDOUT)
+    check_call('python compile.py build_ext', shell=True)  # , stdout=DEVNULL, stderr=STDOUT)
     print(' Done.')
 
     print("Moving file into compiled dir...", end='')
