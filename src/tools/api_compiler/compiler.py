@@ -24,7 +24,7 @@ work in the gui, and converts it into the desired API.
 import os
 import sys
 import json
-from subprocess import check_call, DEVNULL, STDOUT
+from subprocess import check_call, DEVNULL, STDOUT, check_output
 from shutil import copyfile, rmtree
 
 from PySide2.QtCore import QObject, Signal
@@ -336,10 +336,43 @@ class Compiler(QObject):
 
                 f.write(autoStr.format(name=self._name, targetapp=targetAppName))
 
-            # Not adding this to compilation_copy_files because we don't need to obfuscate it. also it isn't a py file
-            copyfile(os.path.join(dir, 'run-script.bat'), os.path.join(self._saveFolder, 'run-script.bat'))
+        # Remove run script and rewrite every time so that interpreter gets written to it
+        if os.path.exists(os.path.join(self._saveFolder, "run-script.bat")):
+            os.remove(os.path.join(self._saveFolder, "run-script.bat"))
 
+        with open(os.path.join(self._saveFolder, "run-script.bat"), "w+") as f:
+            with open(os.path.join(dir, "run-script-template.bat"), 'r') as g:
+                rsStr = g.read()
+
+            f.write(rsStr.format(interpreterLocation=self._compProf.interpExeDir))
+        
         self.stepComplete.emit()
+
+    @nongui
+    def installRequirements(self):
+        """
+        Installs the necessary requirements to the chosen python interpreter, if they aren't already installed.
+        """
+
+        # Get currently installed packages in a list
+        current = check_output([self._compProf.interpExeDir, '-m', 'pip', 'freeze'])
+        installed = [r.decode().split('==')[0] for r in current.split()]
+
+        # Get necessary packages in a list
+        with open(os.path.join(dir, "api_requirements.txt"), 'r') as f:
+            reqFile = f.read()
+        required = [r.split('==')[0] for r in reqFile.split()]
+
+        # Check for each package and install the missing ones
+        diff = set(required) - set(installed)
+        for package in diff:
+            msg = "Installing package: " + package
+            self.stepStarted.emit(msg)
+            logger.info(msg)
+
+            check_call([self._compProf.interpExeDir, '-m', 'pip', 'install', package], stdout=DEVNULL, stderr=STDOUT)
+
+            self.stepComplete.emit()
 
     @log_exceptions(logger=logger)
     def compileAPI(self):
@@ -348,6 +381,7 @@ class Compiler(QObject):
         """
         logger.info("Compiling API")
 
+        self.installRequirements()
         if not sys.executable.endswith('facile.exe'):
             self._dev_generateAPICore()
 
@@ -365,8 +399,8 @@ class Compiler(QObject):
 
         self.copyHelpFiles()
 
-        # if not sys.executable.endswith('facile.exe'):
-        #     os.remove(os.path.join(env.FACILE_DIR, 'apicore.pyd'))
+        if not sys.executable.endswith('facile.exe'):
+            os.remove(os.path.join(env.FACILE_DIR, 'apicore.pyd'))
 
         self.finished.emit()
         logger.info("Finished compiling API")

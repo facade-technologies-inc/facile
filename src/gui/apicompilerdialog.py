@@ -188,7 +188,11 @@ class ApiCompilerDialog(QDialog):
 			errors.append("You must select at least one component resolution type.")
 		
 		apiFolderDir = self.ui.apiLocation.text()
+
 		interpExeDir = self.ui.interpreterLocation.text()
+		if not interpExeDir.endswith('python.exe'):
+			errors.append('Please choose a valid Python interpreter (path/to/python.exe file).')
+
 		installApi = self.ui.checkBoxInstallAPI.isChecked()
 		
 		theCompilationProfile = CompilationProfile(setDocType, setcompResOpts, apiFolderDir, interpExeDir, installApi)
