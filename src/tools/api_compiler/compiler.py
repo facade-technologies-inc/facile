@@ -345,7 +345,7 @@ class Compiler(QObject):
                 rsStr = g.read()
 
             f.write(rsStr.format(interpreterLocation=self._compProf.interpExeDir))
-
+        
         self.stepComplete.emit()
 
     @nongui
@@ -382,7 +382,6 @@ class Compiler(QObject):
         logger.info("Compiling API")
 
         self.installRequirements()
-
         if not sys.executable.endswith('facile.exe'):
             self._dev_generateAPICore()
 
