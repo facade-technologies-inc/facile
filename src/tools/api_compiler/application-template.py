@@ -23,16 +23,10 @@
 
 import sys, os
 
-from tguiil.matchoption import MatchOption
-import libs.env as env
-from libs.env import InvalidContextException
-
-if env.CONTEXT in ("API"):
-	from .baseapplication import BaseApplication
-elif env.CONTEXT in ("Sphinx"):
-	from baseapplication import BaseApplication
-else:
-	raise Exception(f"Invalid context: {{env.CONTEXT}}")
+try:
+	from .apicore import BaseApplication, MatchOption
+except ImportError:
+	from apicore import BaseApplication, MatchOption
 
 pathToThisFile, thisFile = os.path.split(os.path.abspath(__file__))
 sys.path.insert(0, pathToThisFile)
@@ -68,4 +62,38 @@ class Application(BaseApplication):
 		
 		self._startApp()
 		return self
+
+	# --------------------- Overloading BaseApplication Methods for Documentation --------------------- #
+
+	def stop(self):
+		return BaseApplication.stop(self)
+
+	def pause(self, demo=False):
+		return BaseApplication.pause(self, demo)
+
+	def wait(self, state: str, timeout: int = 10):
+		return BaseApplication.wait(self, state, timeout)
+
+	def _startApp(self):
+		return BaseApplication._startApp(self)
+
+	def _generatePathMap(self):
+		return BaseApplication._generatePathMap(self)
+
+	def _findComponent(self, fcgvh):
+		return BaseApplication._findComponent(self, fcgvh)
+
+	def _getComponentObject(self, hcfgvjh):
+		return BaseApplication._getComponentObject(self, hcfgvjh)
+
+	def _getWindowObjectIDFromHandle(self, chtfgj):
+		return BaseApplication._getWindowObjectIDFromHandle(self, chtfgj)
+
+	def _forceShow(self, iugkyhgf):
+		return BaseApplication._forceShow(self, iugkyhgf)
+
+	def _selectMenuItem(self, kgvhhbj):
+		return BaseApplication._selectMenuItem(self, kgvhhbj)
+
+	# ------------------------------------------------------------------------------------------------ #
 

@@ -1,4 +1,5 @@
 import shutil
+import subprocess
 
 if __name__ == "__main__":
     import os, sys
@@ -10,6 +11,16 @@ if __name__ == "__main__":
             print("    Please activate your virtual environment before running this script.")
             print("=============================================================================")
             sys.exit(1)
+
+    os.chdir("obfuscation/")
+
+    exit_code = subprocess.check_call("python obfuscate_files.py", shell=True)
+
+    os.chdir('..')
+
+    if exit_code != 0:
+        print("File compilation was unsuccessful, which will cause exe building to fail.")
+        sys.exit(1)
 
     os.chdir("../")
 
@@ -50,4 +61,10 @@ if __name__ == "__main__":
     oldName = [os.path.join(buildDir, d) for d in os.listdir(buildDir) if os.path.isdir(os.path.join(buildDir, d))][0]
     os.rename(oldName, os.path.join(buildDir, 'exe'))
 
-    os.chdir("scripts/")
+    # Removing the compiled directory now that it has been copied by setup.py
+    # NOTE: Must be changed if trying to compile independent files
+    os.chdir(os.path.join("scripts", 'obfuscation'))
+    shutil.rmtree('compiled')
+
+    # Setting current directory back to scripts
+    os.chdir('..')

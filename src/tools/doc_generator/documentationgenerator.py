@@ -211,7 +211,6 @@ class DocGenerator(QObject):
         """
 
         exit_code = subprocess.run(command, shell=True).returncode
-        print(exit_code)
         if printErrorCode and exit_code != 0:
             print()
             print(f'CURRENT DIRECTORY: {os.getcwd()}')

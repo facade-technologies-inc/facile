@@ -8,6 +8,18 @@ sys.path.append(os.path.abspath("./src/"))
 sys.path.append(os.path.abspath("./src/gui/rc/"))
 sys.path.append(os.path.abspath("./database/component_actions"))
 
+install_files = necessary_files_for_installation
+
+# FOR INDIVIDUAL FILE COMPILATION
+#
+# for filepath, filename in install_files:
+#     if filename.endswith('baseapplication.pyd'):
+#         install_files.remove((filepath, filename))
+#
+#         path = os.path.join(filepath.split('apifiles')[0], 'apifiles', 'baseapplication.pyd')
+#         install_files.append((path, 'baseapplication.pyd'))
+#         break
+
 # Dependencies are automatically detected, but it might need
 # fine tuning.
 
@@ -30,7 +42,7 @@ buildOptions = {
 
     "include_files": [
         "database/",
-    ] + necessary_files_for_installation,
+    ] + install_files,
 
     "excludes": ["scipy.spatial.cKDTree"]
 }
@@ -47,7 +59,7 @@ executables = [
 
 setup(name='Facile',
       version = '1.0',
-      description = 'A platform for generating Python APIs used to control graphical user interfaces.',
+      description = 'Facile: A platform for generating Python APIs used to control graphical user interfaces.',
       options = {
           "build_exe": buildOptions
       },

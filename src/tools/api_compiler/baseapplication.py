@@ -31,16 +31,19 @@ import pyautogui
 import traceback
 from datetime import datetime
 from typing import Set
-import libs.env as env
 
-if env.CONTEXT in ("API"):
-    from .tguiil.tokens import Token
-    from .tguiil.application import Application
-    from .tguiil.matchoption import MatchOption
-    from .tguiil.componentfinder import ComponentFinder
-    from .data.tguim.targetguimodel import TargetGuiModel
-    from .data.tguim.visibilitybehavior import VisibilityBehavior
-elif env.CONTEXT in ("Sphinx"):
+if 'CONTEXT' not in locals():
+    from libs.env import CONTEXT
+
+if CONTEXT in ("API"):
+    # from .tguiil.tokens import Token
+    # from .tguiil.application import Application
+    # from .tguiil.matchoption import MatchOption
+    # from .tguiil.componentfinder import ComponentFinder
+    # from .data.tguim.targetguimodel import TargetGuiModel
+    # from .data.tguim.visibilitybehavior import VisibilityBehavior
+    pass
+elif CONTEXT in ("Sphinx"):
     from tguiil.tokens import Token
     from tguiil.application import Application
     from tguiil.matchoption import MatchOption
@@ -48,7 +51,7 @@ elif env.CONTEXT in ("Sphinx"):
     from data.tguim.targetguimodel import TargetGuiModel
     from data.tguim.visibilitybehavior import VisibilityBehavior
 else:
-    raise Exception(f"Invalid context: {env.CONTEXT}")
+    raise Exception(f"Invalid context: {CONTEXT}")
 
 pathToThisFile, thisFile = os.path.split(os.path.abspath(__file__))
 sys.path.insert(0, pathToThisFile)
@@ -279,7 +282,7 @@ class BaseApplication:
         # # All top-level windows in the TGUIM (These are the nodes)
         # tlwComps = self._tgm.getTopLevelWindows()
         # ------------------------------------------------------------ #
-
+        
         # Get the window that we want to show. This is the starting point.
         startWindow, pos = compObj.getPathFromRoot()[-2]  # -1 position is root, -2 is window
         
@@ -293,7 +296,7 @@ class BaseApplication:
                 if child.is_dialog():
                     handles.append(child)
             targets.append(self._getWindowObjectIDFromHandle(handle))  # Ids are faster to compare than Comps
-        
+
         # Find path to one of the windows from desired component's window.
         # How this works:
         # Store lists of (component, window, VB) tuples, where the VB is performed on component.
@@ -320,7 +323,7 @@ class BaseApplication:
                     tmpWin, pos = vb.getSrcComponent().getPathFromRoot()[-2]
                     tmp.append((tmpComp, tmpWin, vb))
                     work.append(tmp)
-        
+
         if not success:
             print(compObj, startWindow)
             pyautogui.alert('Could not force component appearance. Please manually ensure that component "' +
@@ -332,12 +335,7 @@ class BaseApplication:
             while path:
                 curComp, window, visB = path.pop()
                 if visB:
-                    # if curComp.getSuperToken().getTokens()[0].type not in ['Menu', 'MenuItem']:
-                    #     comp = self._compFinder.find(curComp.getSuperToken())
-                    # else:
-                    #     comp = curComp
-                    methodName = visB.methodName
-                    exec("self." + methodName + "()")
+                    getattr(self, visB.methodName)()  # This does self.(methodName contents)()
     
     def _selectMenuItem(self, component: 'Component'):
         """
