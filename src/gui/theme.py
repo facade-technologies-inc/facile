@@ -23,8 +23,9 @@ This module contains the Theme class, which lets users customize colors in Facil
 
 from PySide2.QtWidgets import QApplication
 from PySide2.QtGui import QColor
-import gui.frame.styles as styles
+import qtmodern.styles as styles
 import graphics.tguim.toplevelwrappergraphics as tlwg
+
 
 class Theme:
 
