@@ -23,11 +23,12 @@ view, but can be zoomed.
 """
 
 from PySide2.QtCore import QPoint, QTimer, Slot, QRectF
-from PySide2.QtGui import QWheelEvent, Qt, QColor, QKeyEvent, QPainter, QBrush, QPen
+from PySide2.QtGui import QWheelEvent, Qt, QColor, QPainter, QBrush, QPen
 from PySide2.QtWidgets import QGraphicsView, QGraphicsScene, QGraphicsRectItem, QGraphicsTextItem, QGraphicsItem
-from PySide2.QtWidgets import QWidget
+from PySide2.QtWidgets import QWidget, QApplication, QGraphicsSceneMouseEvent
 import graphics.tguim.tguimscene as tgs
 import graphics.tguim.componentgraphics as cg
+from copy import copy
 
 
 class FacileGraphicsView(QGraphicsView):
@@ -71,6 +72,16 @@ class FacileGraphicsView(QGraphicsView):
 		self.smoothFocusTimer.timeout.connect(self.smoothFocusTick)
 		self.focusHistory = []  # holds mix of graphics items and rectangles
 		self._zoom = 0
+
+		self.leftMousePressed = False
+		self._startX = None
+		self._startY = None
+		self._panStartX = None
+		self._panStartY = None
+		self.cursorSet = False
+		self.mvmtLimit = 2  # giving user 2*2x2*2 (4x4) pixel square of movement before identifying dragging
+		self.mvmtOverride = False
+		self.restoreCursor = None
 
 	def updateColors(self, baseColor: QColor, flat: bool):
 		"""
@@ -338,3 +349,84 @@ class FacileGraphicsView(QGraphicsView):
 
 		if self.curTick == self.smoothFocusTicks:
 			self.smoothFocusTimer.stop()
+
+	def mousePressEvent(self, event):
+		"""
+		Handles what happens when a mouse button is pressed
+
+		:param event: The event that happened
+		:type event: QMouseEvent
+		"""
+
+		if event.button() == Qt.LeftButton:
+			self.leftMousePressed = True
+			self._startX = event.x()
+			self._startY = event.y()
+			self._panStartX = event.x()
+			self._panStartY = event.y()
+
+		event.accept()
+
+	def mouseReleaseEvent(self, event):
+		"""
+		Handles what happens when a mouse button is released
+
+		:param event: The event that happened
+		:type event: QMouseEvent
+		"""
+
+		if event.button() == Qt.LeftButton:
+			self.leftMousePressed = False
+			self._startX = None
+			self._startY = None
+			self._panStartX = None
+			self._panStartY = None
+
+			if self.mvmtOverride:
+				self.cursorSet = False
+				self.mvmtOverride = False
+
+				if self.restoreCursor:
+					QApplication.changeOverrideCursor(self.restoreCursor)
+				else:
+					QApplication.restoreOverrideCursor()
+
+				self.restoreCursor = None
+			else:
+				QGraphicsView.mousePressEvent(self, event)
+
+		QGraphicsView.mouseReleaseEvent(self, event)
+
+	def mouseMoveEvent(self, event):
+		"""
+		Handles what happens when the mouse is moved
+
+		:param event: The event that happened
+		:type event: QMouseEvent
+		"""
+
+		if self.leftMousePressed:
+			if self.mvmtOverride or \
+					abs(event.x() - self._startX) > self.mvmtLimit or \
+					abs(event.y() - self._startY) > self.mvmtLimit:
+
+				if not self.cursorSet:
+					self.restoreCursor = copy(QApplication.overrideCursor())
+					if self.restoreCursor:
+						QApplication.changeOverrideCursor(Qt.ClosedHandCursor)
+					else:
+						QApplication.setOverrideCursor(Qt.ClosedHandCursor)
+					self.cursorSet = True
+
+				hor = self.horizontalScrollBar()
+				ver = self.verticalScrollBar()
+
+				hor.setValue(hor.value() - (event.x() - self._panStartX))
+				ver.setValue(ver.value() - (event.y() - self._panStartY))
+
+				self._panStartX = event.x()
+				self._panStartY = event.y()
+				self.mvmtOverride = True
+
+		else:
+			QGraphicsView.mouseMoveEvent(self, event)

@@ -23,15 +23,10 @@ This module contains the ComponentGraphics class.
 
 from PIL import Image
 
-from PySide2.QtCore import QRectF
-from PySide2.QtGui import QPainterPath, QColor, QPen, Qt, QFont, QFontMetricsF, QImage, QPixmap
-from PySide2.QtWidgets import QGraphicsScene, QGraphicsItem, QGraphicsSceneContextMenuEvent, QGraphicsPixmapItem
-from PySide2.QtCore import QRectF
-from PySide2.QtGui import QPainterPath, QColor, QPen, Qt, QFont, QFontMetricsF, QBrush
-from PySide2.QtWidgets import QGraphicsScene, QGraphicsItem, QGraphicsSceneContextMenuEvent, QMenu, QGraphicsWidget
-import data.statemachine as sm
-from graphics.tguim.scrollablegraphicsitem import ScrollableGraphicsItem
-from graphics.tguim.toplevelwrappergraphics import TopLevelWrapperGraphics
+from PySide2.QtCore import QRectF, Qt
+from PySide2.QtGui import QPainterPath, QColor, QPen, Qt, QFont, QFontMetricsF, QBrush, QImage, QPixmap
+from PySide2.QtWidgets import (QGraphicsScene, QGraphicsItem, QGraphicsSceneContextMenuEvent,
+                               QGraphicsPixmapItem, QApplication)
 
 import data.statemachine as sm
 from graphics.tguim.scrollablegraphicsitem import ScrollableGraphicsItem
@@ -87,6 +82,7 @@ class ComponentGraphics(QGraphicsItem):
         
         QGraphicsItem.__init__(self, parent)
         self.setFlag(QGraphicsItem.ItemIsSelectable)
+        self.setAcceptHoverEvents(True)
         
         if parent is None:
             self.isRoot = True  # TODO: Have to resize scene to smallest possible
@@ -867,3 +863,20 @@ class ComponentGraphics(QGraphicsItem):
             parent = parent.parentItem()
 
         return False, None
+
+    def hoverEnterEvent(self, event):
+        """
+        Handles cursor changing
+        """
+
+        QGraphicsItem.hoverEnterEvent(self, event)
+        QApplication.setOverrideCursor(Qt.PointingHandCursor)
+        # self.scene().views()[0]
+
+    def hoverLeaveEvent(self, event):
+        """
+        Handles resetting cursor
+        """
+
+        QGraphicsItem.hoverLeaveEvent(self, event)
+        QApplication.restoreOverrideCursor()
