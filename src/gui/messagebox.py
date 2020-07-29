@@ -26,7 +26,7 @@ from PySide2.QtCore import Qt
 from PySide2.QtGui import QResizeEvent
 import pyautogui
 import data.statemachine as sm
-from gui.frame.windows import ModernWindow
+from qtmodern.windows import ModernWindow
 
 
 class MessageBox(QMessageBox):

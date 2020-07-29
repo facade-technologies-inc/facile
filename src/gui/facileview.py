@@ -45,13 +45,12 @@ from qt_models.projectexplorermodel import ProjectExplorerModel
 from qt_models.propeditormodel import PropModel
 from tguiil.blinker import Blinker
 from gui.actionmenu import ActionMenu
-from graphics.tguim.toplevelwrappergraphics import TopLevelWrapperGraphics
 from graphics.apim.actiongraphics import ActionGraphics
 from graphics.apim.actionwrappergraphics import ActionWrapperGraphics
 from graphics.apim.portgraphics import PortGraphics
 
 import data.statemachine as sm
-import gui.frame.styles as styles
+import qtmodern.styles as styles
 import pyautogui
 import json
 from enum import Enum
