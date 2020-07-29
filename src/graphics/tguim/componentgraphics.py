@@ -24,7 +24,7 @@ This module contains the ComponentGraphics class.
 from PIL import Image
 
 from PySide2.QtCore import QRectF, Qt
-from PySide2.QtGui import QPainterPath, QColor, QPen, Qt, QFont, QFontMetricsF, QBrush, QImage, QPixmap
+from PySide2.QtGui import QPainterPath, QColor, QPen, QFont, QFontMetricsF, QBrush, QImage, QPixmap
 from PySide2.QtWidgets import (QGraphicsScene, QGraphicsItem, QGraphicsSceneContextMenuEvent,
                                QGraphicsPixmapItem, QApplication)
 
