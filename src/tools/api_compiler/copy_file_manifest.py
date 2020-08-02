@@ -54,7 +54,7 @@ additional_files_for_compilation = [
     (f"{os.path.abspath('./src/tools/api_compiler/__init__template.txt')}", "tools/api_compiler/__init__template.txt"),
     (f"{os.path.abspath('./src/tools/api_compiler/application-template.py')}", "tools/api_compiler/application-template.py"),
     (f"{os.path.abspath('./src/tools/api_compiler/automate-template.txt')}", "tools/api_compiler/automate-template.txt"),
-    (f"{os.path.abspath('./src/tools/api_compiler/run-script.bat')}", "tools/api_compiler/run-script-template.bat"),
+    (f"{os.path.abspath('./src/tools/api_compiler/run-script-template.bat')}", "tools/api_compiler/run-script-template.bat"),
     (f"{os.path.abspath('./src/tools/api_compiler/api_requirements.txt')}", "tools/api_compiler/api_requirements.txt"),
     (f"{os.path.abspath('./src/tools/doc_generator/sphinx_src/')}", "sphinx_src/"),
 ]
