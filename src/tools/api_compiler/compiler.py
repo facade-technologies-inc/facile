@@ -122,7 +122,7 @@ class Compiler(QObject):
         self.stepStarted.emit(msg)
 
         os.chdir(os.path.abspath(os.path.join(env.FACILE_DIR, '..', 'scripts', 'obfuscation')))
-        exit_code = check_call(["python", "obfuscate_files.py"], stdout=DEVNULL, stderr=STDOUT)
+        exit_code = check_call([sys.executable, "obfuscate_files.py"], stdout=DEVNULL, stderr=STDOUT)
 
         if exit_code != 0:
             logger.critical("File compilation was unsuccessful, which will cause the API not to work.")
