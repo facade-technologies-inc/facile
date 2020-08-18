@@ -1,4 +1,3 @@
-[![CodeFactor](https://www.codefactor.io/repository/github/facade-technologies-inc/facile/badge?s=994ad6c964cc8e3069eb9bef97156966b2422077)](https://www.codefactor.io/repository/github/facade-technologies-inc/facile)
 
 # facile
 A framework for designing custom Python APIs for controlling existing user interfaces.
