@@ -34,9 +34,17 @@ The following tools will be used by the development team while working on this p
 |Qt Creator |4.10.0    |[Tutorial](https://github.com/facade-technologies-inc/facile/blob/master/tutorials/Qt5.md) - GUI development toolset. We'll be using PySide2 (a Python Qt wrapper) to create the GUI.|
 |Git        |2.23.0    |[Tutorial](https://github.com/facade-technologies-inc/facile/blob/master/tutorials/Git.md) - Used for version control|
 
+Note: We highly recommend you configure a virtual environment using PyCharm. Refer to this link: https://www.jetbrains.com/help/pycharm/creating-virtual-environment.html
+
 ## Git Branching Scheme
 This repository uses the [GitFlow](https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow) branching scheme with the following caveats:
-  1. the `git flow <subcommand> finish <branch>` commands are never used. Instead, when you would like a branch to be merged, simply push the branch to GitHub and submit a pull request.
+
+  1. Click on the upper green "Code" button and copy our SSH key.
+  1. On your PC's File Explorer, go to the destination you want to store Facile and clone the repository. 
+  1. Create a new branch to work on. Make sure the name of the branch is detailed on the feature/issue that you are working on. 
+  1. Once you are done with you're work, committ the changes (Please add an insightful description of what you completed for every commit).
+  1. The `git flow <subcommand> finish <branch>` commands are never used. Instead, when you would like a branch to be merged, simply push the branch to GitHub and submit a pull request.
+  Refer to this link for Pull Request: https://docs.github.com/en/github/collaborating-with-issues-and-pull-requests/about-pull-request-reviews#about-pull-request-reviews
 
 ## Coding Standards
 By default, this project will be developed to the [PEP 8](https://www.python.org/dev/peps/pep-0008/) and [PEP 257](https://www.python.org/dev/peps/pep-0257/) standards. Any preferred deviations from these styles are specified below:
