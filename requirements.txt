@@ -65,7 +65,7 @@ sphinxcontrib-jsmath==1.0.1
 sphinxcontrib-qthelp==1.0.3
 sphinxcontrib-serializinghtml==1.1.4
 threadpoolctl==2.1.0
-tifffile==2020.7.4
+tifffile==2021.1.8
 tqdm==4.47.0
 typing==3.7.4.3
 urllib3==1.25.10
