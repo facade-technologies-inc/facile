@@ -32,7 +32,7 @@ PyAutoGUI==0.9.50
 pycparser==2.20
 PyGetWindow==0.0.8
 pygit2==1.2.1
-Pygments==2.6.1
+Pygments==2.8.1
 pyminifier==2.1
 PyMsgBox==1.0.8
 pyparsing==2.4.7
