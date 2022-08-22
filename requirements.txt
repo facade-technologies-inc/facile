@@ -68,4 +68,4 @@ threadpoolctl==2.1.0
 tifffile==2020.7.4
 tqdm==4.47.0
 typing==3.7.4.3
-urllib3==1.25.10
+urllib3==1.26.12
